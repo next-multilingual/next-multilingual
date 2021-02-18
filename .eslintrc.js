@@ -26,6 +26,8 @@ module.exports = {
         'plugin:prettier/recommended',
       ],
       rules: {
+        semi: 'off',
+        '@typescript-eslint/semi': ['error'],
         '@typescript-eslint/no-unused-vars': ['error'],
         '@typescript-eslint/explicit-function-return-type': [
           'warn',
@@ -38,4 +40,4 @@ module.exports = {
       },
     },
   ],
-}
+};
