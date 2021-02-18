@@ -1,0 +1,35 @@
+{
+  "name": "next-intl-router",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "./lib/intl-router.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=13"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prettier": "prettier --ignore-path .gitignore --write ."
+  },
+  "dependencies": {
+    "dot-properties": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.28",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
+    "next": "^10.0.6",
+    "prettier": "^2.2.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "typescript": "^4.1.5"
+  },
+  "peerDependencies": {
+    "next": "10",
+    "react": "^17"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "none"
+  }
+}
