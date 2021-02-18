@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { getClientBuildManifest } from 'next/dist/client/route-loader';
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 
-function useRewriteSource(path: string, locale: string) {
+function useRewriteSource(path: string, locale: string): string {
   const [rewrites, setRewrites] = useState<Rewrite[]>([]);
 
   useEffect(() => {
