@@ -19,7 +19,7 @@ export default class IntlRouter {
   /**
    * Constructor
    *
-   * @param directory The base directory used to browser localizable assets.
+   * @param directory The base directory used to browser localisable assets.
    * @param extensions The file extensions of the (page) files.
    * @param locales The locales.
    * @param useCasesInUrls Set this to `true` if you want to use cases in your URLs (by default its lowercase).
