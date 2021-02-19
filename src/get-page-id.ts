@@ -2,11 +2,7 @@ import { parse as parseProperties } from 'dot-properties';
 import { readFile } from 'fs/promises';
 import { basename, parse as parsePath, resolve } from 'path';
 
-export async function getPageId(
-  pagePath: string,
-  locale: string,
-  atRoot: boolean
-) {
+export async function getPageId(pagePath: string, locale: string, atRoot: boolean) {
   const { dir, name } = parsePath(pagePath);
   const propPath = resolve(dir, `${name}.${locale}.properties`);
   let title: any;
@@ -19,5 +15,5 @@ export async function getPageId(
   }
   if (!title || typeof title !== 'string')
     return name && (atRoot || name !== 'index') ? name : basename(dir);
-  return title.replace(/[ \/-]+/g, '-');
+  return title.replace(/[ /-]+/g, '-');
 }

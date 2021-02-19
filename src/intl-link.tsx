@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ReactElement } from 'react';
 
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
@@ -29,7 +29,7 @@ export function IntlLink({
   href,
   locale,
   ...props
-}: LinkProps & { href: string; locale?: string }) {
+}: LinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
   const _href = useRewriteSource(href, locale || router.locale);
   return <Link href={_href} locale={locale} {...props} />;

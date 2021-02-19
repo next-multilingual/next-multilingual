@@ -14,12 +14,7 @@ export async function getRoutes(
   for (const path of await readdir(directory, { withFileTypes: true })) {
     const completePath = resolve(directory, path.name);
     if (path.isDirectory()) {
-      const pathRoutes = await getRoutes(
-        completePath,
-        extensions,
-        locales,
-        false
-      );
+      const pathRoutes = await getRoutes(completePath, extensions, locales, false);
       const indexRoute = pathRoutes.find((route) => route._ === 'index');
       for (const route of pathRoutes) {
         if (route === indexRoute) {
