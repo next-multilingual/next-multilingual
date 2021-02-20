@@ -8,10 +8,18 @@ import { useGetCanonicalUrl } from './hooks/useGetCanonicalUrl';
 interface IntlHeadProps {
   children: ReactNode;
   title: string;
+  language?: string;
 }
 
-export function IntlHead({ children, title }: IntlHeadProps): ReactElement {
-  const { locale, query, asPath, locales, pathname } = useRouter();
+export function IntlHead({ children, title, language }: IntlHeadProps): ReactElement {
+  const { locale: lang, query, asPath, locales, pathname, defaultLocale } = useRouter();
+
+  type SupportedLocale = typeof locales[number];
+  const isSupportedLocale = (locale: SupportedLocale): boolean => locales.includes(locale);
+  const toSupportedLocale = (l: SupportedLocale): SupportedLocale =>
+    isSupportedLocale(l) ? l : defaultLocale;
+  const locale = toSupportedLocale(language) ?? lang;
+  console.warn('locale in Intl', locale);
   const canonicalUrl = useGetCanonicalUrl({ locale, asPath, query });
   const alternateLinks = useGetAlternateLinks({ locales, locale, asPath, pathname });
 
