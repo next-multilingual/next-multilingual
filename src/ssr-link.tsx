@@ -21,7 +21,7 @@ function getRewrites() {
   return (__rewrites = self.__BUILD_MANIFEST.__rewrites);
 }
 
-export function useRewriteSource(path: string, locale: string): string {
+function useRewriteSource(path: string, locale: string): string {
   const rewrites = getRewrites();
   const lcPath = `/${locale}${path}`;
   const match = rewrites.find(
