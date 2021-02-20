@@ -6,7 +6,12 @@ import { useRouter } from 'next/router';
 import { getClientBuildManifest } from 'next/dist/client/route-loader';
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 
-function useRewriteSource(path: string, locale: string): string {
+interface RewriteSourceProps {
+  path: string;
+  locale: string;
+}
+
+export function useRewriteSource({ path, locale }: RewriteSourceProps): string {
   const [rewrites, setRewrites] = useState<Rewrite[]>([]);
 
   useEffect(() => {
@@ -18,10 +23,14 @@ function useRewriteSource(path: string, locale: string): string {
       .catch(console.error);
   }, []);
 
+  console.warn('rewrites', rewrites);
+
   const lcPath = `/${locale}${path}`;
-  const match = rewrites.find(
-    ({ destination, locale }) => locale === false && destination === lcPath
-  );
+  const match = rewrites.find(({ destination, locale }) => {
+    console.warn('destination', destination);
+    return locale === false && destination === lcPath;
+  });
+  console.warn('match', match);
   return match ? match.source : path;
 }
 
@@ -31,6 +40,6 @@ export function IntlLink({
   ...props
 }: LinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
-  const _href = useRewriteSource(href, locale || router.locale);
+  const _href = useRewriteSource({ path: href, locale: locale || router.locale });
   return <Link href={_href} locale={locale} {...props} />;
 }
