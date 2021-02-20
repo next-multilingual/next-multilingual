@@ -23,14 +23,10 @@ export function useRewriteSource({ path, locale }: RewriteSourceProps): string {
       .catch(console.error);
   }, []);
 
-  console.warn('rewrites', rewrites);
-
   const lcPath = `/${locale}${path}`;
   const match = rewrites.find(({ destination, locale }) => {
-    console.warn('destination', destination);
     return locale === false && destination === lcPath;
   });
-  console.warn('match', match);
   return match ? match.source : path;
 }
 
