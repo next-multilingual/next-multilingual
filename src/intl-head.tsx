@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import Head from 'next/head';
 import { ReactNode, ReactElement } from 'react';
+import { useGetOriginUrl } from './hooks/useGetOriginUrl';
 import { useGetAlternateLinks } from './hooks/useGetAlternateLinks';
 import { useGetCanonicalUrl } from './hooks/useGetCanonicalUrl';
 
@@ -16,18 +17,28 @@ export function IntlHead({ children, title, language }: IntlHeadProps): ReactEle
 
   type SupportedLocale = typeof locales[number];
   const isSupportedLocale = (locale: SupportedLocale): boolean => locales.includes(locale);
-  const toSupportedLocale = (l: SupportedLocale): SupportedLocale =>
-    isSupportedLocale(l) ? l : defaultLocale;
+
+  const toSupportedLocale = (lang: string): SupportedLocale => {
+    if (lang.length === 2) {
+      return locales.find((l) => {
+        const [languageCode] = l.split('-');
+        return languageCode === lang;
+      });
+    }
+    return isSupportedLocale(lang) ? lang : defaultLocale;
+  };
+
   const locale = toSupportedLocale(language) ?? lang;
-  console.warn('locale in Intl', locale);
+
   const canonicalUrl = useGetCanonicalUrl({ locale, asPath, query });
   const alternateLinks = useGetAlternateLinks({ locales, locale, asPath, pathname });
+  const origin = useGetOriginUrl();
 
   return (
     <Head>
       <title>{title}</title>
       {alternateLinks}
-      {pathname !== '/' && <link rel="canonical" href={`http://localhost${canonicalUrl}`} />}
+      {pathname !== '/' && <link rel="canonical" href={`${origin}/${canonicalUrl}`} />}
       {children}
     </Head>
   );
