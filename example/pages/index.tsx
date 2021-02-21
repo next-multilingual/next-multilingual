@@ -1,8 +1,9 @@
-import { NextApiRequest } from 'next';
-import { ReactElement } from 'react';
+import type { GetServerSidePropsContext } from 'next';
+import type { ReactElement } from 'react';
 import { IntlLink } from '../../lib/intl-link';
 import { useRouter } from 'next/router';
 import { IntlHead } from '../../lib/intl-head';
+import accept from '@hapi/accept';
 
 export default function IndexPage({ locale }): ReactElement {
   console.warn('props in index', locale);
@@ -49,9 +50,14 @@ function LanguageSwitcher(props: LanguageSwitcherProps) {
   }
 }
 
-export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const language = req.headers['accept-language'];
-  const locale = language.split(',')[0];
+export const getServerSideProps = async (
+  serverSidePropsContext: GetServerSidePropsContext
+) => {
+  //TODO: add cookie logic
+  const locale = accept.language(
+    serverSidePropsContext.req.headers['accept-language'],
+    serverSidePropsContext.locales
+  );
 
   return {
     props: {
