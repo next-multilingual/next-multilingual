@@ -1,4 +1,6 @@
 import React, { ReactElement, useEffect, useState } from 'react';
+import { getMatchingUrl } from '../helpers/getMatchingUrl';
+import { useRewrites } from '../hooks/useRewrites';
 import { useGetOriginUrl } from '../hooks/useGetOriginUrl';
 
 interface GetAlternateLinks {
@@ -14,15 +16,19 @@ export const useGetAlternateLinks = ({
   asPath,
   pathname,
 }: GetAlternateLinks): ReactElement[] | null => {
+  const rewrites = useRewrites();
   const [alternateLinks, setAlternateLinks] = useState<ReactElement[]>([]);
   const origin = useGetOriginUrl();
 
   useEffect(() => {
     const alternateLocales = locales.filter((lang) => lang !== locale);
     setAlternateLinks(
-      alternateLocales.map((lang) => (
-        <link rel="alternate" href={`${origin}/${lang}${pathname}`} hrefLang={lang} key={lang} />
-      ))
+      alternateLocales.map((lang) => {
+        const alternateLink = getMatchingUrl({ rewrites, locale: lang, path: pathname });
+        return (
+          <link rel="alternate" href={`${origin}/${alternateLink}`} hrefLang={lang} key={lang} />
+        );
+      })
     );
 
     if (asPath === '/') {
@@ -32,7 +38,7 @@ export const useGetAlternateLinks = ({
         <link rel="alternate" href={`${origin}/${locale}`} hrefLang={locale} key={locale} />,
       ]);
     }
-  }, [asPath, locale, locales, origin, pathname]);
+  }, [asPath, locale, locales, origin, pathname, rewrites]);
 
   return alternateLinks;
 };
