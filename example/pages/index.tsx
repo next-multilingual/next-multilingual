@@ -1,34 +1,32 @@
-import type { GetServerSidePropsContext } from 'next';
+import accept from '@hapi/accept';
+import Layout from '../layout/Layout';
+import type {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType
+} from 'next';
+import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
 import { IntlLink } from '../../lib/intl-link';
-import { useRouter } from 'next/router';
-import { IntlHead } from '../../lib/intl-head';
-import accept from '@hapi/accept';
 
-export default function IndexPage({ locale }): ReactElement {
-  console.warn('props in index', locale);
-  const router = useRouter();
-  const { locales, defaultLocale } = router;
+export default function IndexPage({
+  language
+}: InferGetServerSidePropsType<typeof getServerSideProps>): ReactElement {
+  const { locales, defaultLocale } = useRouter();
 
   return (
-    <div>
-      <IntlHead title="Home Page" language={locale}>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
-        />
-      </IntlHead>
+    <Layout title="Home Page" language={language}>
       <h1>Homepage</h1>
-      <p>Current locale: {locale}</p>
+      <p>Current locale: {language}</p>
       <p>Default locale: {defaultLocale}</p>
       <p>Configured locales: {JSON.stringify(locales)}</p>
-      <LanguageSwitcher locales={locales} locale={locale} />
+      <LanguageSwitcher locales={locales} locale={language} />
       <br />
       <br />
-      <IntlLink href="/about-us" locale={locale}>
+      <IntlLink href="/about-us" locale={language}>
         <a>About us page</a>
       </IntlLink>
-    </div>
+    </Layout>
   );
 }
 
@@ -37,7 +35,7 @@ type LanguageSwitcherProps = {
   locales: string[];
 };
 
-function LanguageSwitcher(props: LanguageSwitcherProps) {
+function LanguageSwitcher(props: LanguageSwitcherProps): ReactElement {
   const { locale, locales } = props;
   for (const supportedLocale of locales) {
     if (locale !== supportedLocale) {
@@ -50,18 +48,19 @@ function LanguageSwitcher(props: LanguageSwitcherProps) {
   }
 }
 
-export const getServerSideProps = async (
-  serverSidePropsContext: GetServerSidePropsContext
-) => {
-  //TODO: add cookie logic
-  const locale = accept.language(
-    serverSidePropsContext.req.headers['accept-language'],
-    serverSidePropsContext.locales
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  locales
+}: GetServerSidePropsContext) => {
+  console.warn(
+    "req.headers['accept-language']",
+    req.headers['accept-language']
   );
+  const language = accept.language(req.headers['accept-language'], locales);
 
   return {
     props: {
-      locale
+      language
     }
   };
 };
