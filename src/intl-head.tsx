@@ -19,7 +19,7 @@ export function IntlHead({ children, title, language }: IntlHeadProps): ReactEle
   const isSupportedLocale = (locale: SupportedLocale): boolean => locales.includes(locale);
 
   const toSupportedLocale = (lang: string): SupportedLocale => {
-    if (lang.length === 2) {
+    if (lang?.length === 2) {
       return locales.find((l) => {
         const [languageCode] = l.split('-');
         return languageCode === lang;
