@@ -2,33 +2,27 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import Head from 'next/head';
 import { ReactNode, ReactElement } from 'react';
-import { useGetOriginUrl } from './hooks/useGetOriginUrl';
-import { useGetAlternateLinks } from './hooks/useGetAlternateLinks';
-import { useGetCanonicalUrl } from './hooks/useGetCanonicalUrl';
+import { useAlternateLinks } from './hooks/useAlternateLinks';
+import { useCanonicalUrl } from './hooks/useCanonicalUrl';
 
 interface IntlHeadProps {
-  children: ReactNode;
   title: string;
+  children?: ReactNode;
   language?: string;
 }
 
 export function IntlHead({ children, title, language }: IntlHeadProps): ReactElement {
-  const { locale, query, asPath, locales, pathname } = useRouter();
-
-  const canonicalUrl = useGetCanonicalUrl({ locale: language ?? locale, asPath, query });
-  const alternateLinks = useGetAlternateLinks({
-    locales,
-    locale: language ?? locale,
-    asPath,
-    pathname,
-  });
-  const origin = useGetOriginUrl();
+  const { locale } = useRouter();
+  const canonicalUrl = useCanonicalUrl(language ?? locale);
+  const alternateLinks = useAlternateLinks(language ?? locale);
 
   return (
     <Head>
       <title>{title}</title>
-      {alternateLinks}
-      {pathname !== '/' && <link rel="canonical" href={`${origin}${canonicalUrl}`} />}
+      {alternateLinks.map(({ href, hrefLang }) => {
+        return <link rel="alternate" href={`${href}`} hrefLang={hrefLang} key={hrefLang} />;
+      })}
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       {children}
     </Head>
   );
