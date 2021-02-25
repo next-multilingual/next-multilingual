@@ -68,11 +68,9 @@ import { IntlLink } from 'next-intl-router/lib/link';
 
 export default function ContactUs() {
   return (
-    <>
       <IntlLink href="/contact-us/message-sent">
         <a>Link using page id</a>
       </IntlLink>
-    </>
   );
 }
 ```
@@ -91,3 +89,30 @@ module.exports = {
   }
 };
 ```
+
+### IntlHead
+IntlHead is a component to help with metadata. It will build alternate links and canonical URL.
+This component should be inserted in a `<Layout />` component or if you prefer, you can add it in each of your pages 
+and pass 
+in `children` to add more metadata.
+
+If you set locales as `['en-CA', 'fr-CA']` in the `i18n` object in your `next.config.js` file
+
+Then when the home page is served, it will build the following alternate links:
+```js
+<link rel="alternate" hreflang="x-default" href="https://your-website.com"/>
+<link rel="alternate" hreflang="en-CA" href="https://your-website.com/en-ca"/>
+<link rel="alternate" hreflang="fr-CA" href="https://your-website.com/fr-ca"/>
+```
+
+If you visit https://your-site.com/who-we-are it will build the following alternate links and alternate canonical:
+
+```js
+<link rel="alternate" hreflang="fr-CA" href="https://your-website.com/fr-ca/qui-sommes-nous"/>
+<link rel="canonical" href="https://your-website.com/en-ca/wo-we-are"/>
+```
+
+## Limitations
+At this moment, we are not injecting the locale in the path if we are in the default locale
+
+If you set `basePath` in your `next.config.js` file there might be some cases that are not yet handled.
