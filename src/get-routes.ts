@@ -45,6 +45,5 @@ export async function getRoutes(
       }
     }
   }
-  // if (atRoot) console.dir({ routes }, { depth: null });
   return routes;
 }
