@@ -1,4 +1,4 @@
-import { getMatchingUrl } from '../helpers/getMatchingUrl';
+import { getSourceUrl } from '../helpers/getSourceUrl';
 import { useRewrites } from '../hooks/useRewrites';
 
 export interface RewriteSourceProps {
@@ -9,5 +9,5 @@ export interface RewriteSourceProps {
 export function useRewriteSource({ path, locale }: RewriteSourceProps): string {
   const rewrites = useRewrites();
 
-  return getMatchingUrl({ rewrites, path, locale });
+  return getSourceUrl({ rewrites, path, locale });
 }
