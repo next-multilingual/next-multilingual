@@ -12,12 +12,12 @@ import { IntlLink } from '../../lib/intl-link';
 export default function IndexPage({
   language
 }: InferGetServerSidePropsType<typeof getServerSideProps>): ReactElement {
-  const { locales, defaultLocale, locale } = useRouter();
+  const { locales, defaultLocale } = useRouter();
 
   return (
     <Layout title="Home Page" language={language}>
       <h1>Homepage</h1>
-      <p>Current locale: {locale}</p>
+      <p>Current locale: {language}</p>
       <p>Default locale: {defaultLocale}</p>
       <p>Configured locales: {JSON.stringify(locales)}</p>
       <IntlLink href="/" locale="en-CA">
@@ -33,24 +33,6 @@ export default function IndexPage({
       </IntlLink>
     </Layout>
   );
-}
-
-type LanguageSwitcherProps = {
-  locale: string;
-  locales: string[];
-};
-
-function LanguageSwitcher(props: LanguageSwitcherProps): ReactElement {
-  const { locale, locales } = props;
-  for (const supportedLocale of locales) {
-    if (locale !== supportedLocale) {
-      return (
-        <IntlLink href="/" locale={supportedLocale}>
-          <a>Switch language</a>
-        </IntlLink>
-      );
-    }
-  }
 }
 
 export const getServerSideProps: GetServerSideProps = async ({
