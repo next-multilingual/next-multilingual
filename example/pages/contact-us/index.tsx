@@ -1,9 +1,7 @@
 import Layout from '../../layout/Layout';
-import { useRouter } from 'next/router';
 import { IntlLink } from '../../../lib/intl-link';
 
 export default function ContactUs() {
-  const { locale } = useRouter();
   return (
     <Layout title="Nous joindre">
       <h1>This is the contact</h1>
@@ -14,7 +12,7 @@ export default function ContactUs() {
       </label>
       <button type="submit">Send</button>
       <br />
-      <IntlLink href="/contact-us/message-sent" locale={locale}>
+      <IntlLink href="/contact-us/message-sent">
         <a>IntlLink with page id</a>
       </IntlLink>
     </Layout>
