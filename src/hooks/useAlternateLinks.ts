@@ -9,7 +9,7 @@ interface AlterNateLinks {
   hrefLang: string;
 }
 
-export const useAlternateLinks = (locale: string): AlterNateLinks[] | null => {
+export const useAlternateLinks = (currentLocale: string): AlterNateLinks[] | null => {
   const { basePath, pathname, locales } = useRouter();
   const rewrites = useRewrites();
   const [alternateLinks, setAlternateLinks] = useState<AlterNateLinks[]>([]);
@@ -22,7 +22,8 @@ export const useAlternateLinks = (locale: string): AlterNateLinks[] | null => {
       If we are at the root '/' of the website we should build alternate
       links for all the locales
     */
-    const alternateLocales = pathname === '/' ? locales : locales.filter((lang) => lang !== locale);
+    const alternateLocales =
+      pathname === '/' ? locales : locales.filter((lang) => lang !== currentLocale);
     const alternateLinks = alternateLocales.map((lang) => {
       const alternateLink = getSourceUrl({ rewrites, locale: lang, path });
       return { href: `${origin}${alternateLink}`, hrefLang: lang };
@@ -34,7 +35,7 @@ export const useAlternateLinks = (locale: string): AlterNateLinks[] | null => {
     setAlternateLinks(
       pathname === '/' ? [...alternateLinks, { href: path, hrefLang: 'x-default' }] : alternateLinks
     );
-  }, [locale, locales, path, pathname, rewrites]);
+  }, [currentLocale, locales, path, pathname, rewrites]);
 
   return alternateLinks;
 };
