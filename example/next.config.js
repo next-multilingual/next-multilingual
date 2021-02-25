@@ -10,6 +10,10 @@ module.exports = {
     defaultLocale: 'en-CA',
     localeDetection: false
   },
+  // basePath: '/sub-folder',
+  publicRuntimeConfig: {
+    origin: process.env.NEXT_PUBLIC_DOMAIN_URL
+  },
   poweredByHeader: false,
   webpack(config, { dev, isServer }) {
     if (isServer && !dev)
