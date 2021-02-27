@@ -7,18 +7,36 @@
   "engines": {
     "node": ">=13"
   },
+  "watch": {
+    "build": {
+      "patterns": "*",
+      "extensions": "*.ts?(x)",
+      "ignore": "node_modules"
+    }
+  },
   "scripts": {
+    "build_watch": "npm-watch",
     "build": "tsc",
-    "prettier": "prettier --ignore-path .gitignore --write ."
+    "type-check": "tsc --project tsconfig.json --pretty --noEmit",
+    "lint": "eslint --ext js,jsx,ts,tsx --fix"
   },
   "dependencies": {
     "dot-properties": "^1.0.1"
   },
   "devDependencies": {
-    "@types/node": "^14.14.28",
+    "@types/node": "^14.14.31",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.15.1",
+    "@typescript-eslint/parser": "^4.15.1",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^5.0.9",
+    "lint-staged": "^10.5.4",
     "next": "^10.0.6",
+    "npm-watch": "^0.7.0",
     "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -28,8 +46,9 @@
     "next": "10",
     "react": "^17"
   },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "none"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
