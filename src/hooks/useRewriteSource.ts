@@ -1,5 +1,5 @@
-import { getSourceUrl } from 'helpers/getSourceUrl';
-import { useRewrites } from 'hooks/useRewrites';
+import { getSourceUrl } from '../helpers/getSourceUrl';
+import { useRewrites } from '../hooks/useRewrites';
 
 export interface RewriteSourceProps {
   path: string;
