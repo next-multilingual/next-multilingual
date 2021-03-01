@@ -4,7 +4,11 @@ const locales = ['en-CA', 'fr-CA'];
 const intlRouter = new IntlRouter('pages', locales);
 
 module.exports = {
-  i18n: { locales, defaultLocale: 'en-CA' },
+  i18n: {
+    locales,
+    defaultLocale: 'en-CA'
+  },
+  origin: process.env.NEXT_PUBLIC_DOMAIN_URL,
   poweredByHeader: false,
   webpack(config, { dev, isServer }) {
     if (isServer && !dev)
