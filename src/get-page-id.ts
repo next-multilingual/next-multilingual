@@ -19,7 +19,9 @@ export async function getPageId(
     }
     title = '';
   }
-  if (!title || typeof title !== 'string')
+  if (!title || typeof title !== 'string') {
     return name && (atRoot || name !== 'index') ? name : basename(dir);
+  }
+
   return title.replace(/[ /-]+/g, '-');
 }
