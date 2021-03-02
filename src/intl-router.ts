@@ -1,17 +1,17 @@
 import { getRoutes } from './get-routes';
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
 
-const escapeId = (src: string) => encodeURIComponent(src).replace(/%2F/g, '/');
+const escapeId = (src: string): string => encodeURIComponent(src).replace(/%2F/g, '/');
 
 export default class IntlRouter {
-  /** The base directory used to browse localizable assets. */
-  private directory: string;
+  /** The base directory used to browse localisable assets. */
+  private readonly directory: string;
   /** The file extensions of the (page) files. */
-  private extensions: string[] = ['.tsx'];
+  private readonly extensions: string[] = ['.tsx'];
   /** The locales. */
-  private locales: string[];
+  private readonly locales: string[];
   /** By the default, the URLs are lowercase. */
-  private useCasesInUrls: boolean = false;
+  private useCasesInUrls = false;
 
   /** Cache of routes. */
   private _routes?: Record<string, string>[];
@@ -19,7 +19,7 @@ export default class IntlRouter {
   /**
    * Constructor
    *
-   * @param directory The base directory used to browser localizable assets.
+   * @param directory The base directory used to browser localisable assets.
    * @param extensions The file extensions of the (page) files.
    * @param locales The locales.
    * @param useCasesInUrls Set this to `true` if you want to use cases in your URLs (by default its lowercase).
@@ -35,9 +35,7 @@ export default class IntlRouter {
     this.useCasesInUrls = !!useCasesInUrls;
 
     if (extensions?.length) {
-      this.extensions = extensions.map((ext) =>
-        ext.startsWith('.') ? ext : `.${ext}`
-      );
+      this.extensions = extensions.map((ext) => (ext.startsWith('.') ? ext : `.${ext}`));
     }
   }
 
@@ -46,11 +44,7 @@ export default class IntlRouter {
    */
   private async getRoutes(): Promise<Record<string, string>[]> {
     if (!this._routes) {
-      this._routes = await getRoutes(
-        this.directory,
-        this.extensions,
-        this.locales
-      );
+      this._routes = await getRoutes(this.directory, this.extensions, this.locales);
     }
     return this._routes;
   }
@@ -81,7 +75,7 @@ export default class IntlRouter {
           rewrites.push({
             source,
             destination,
-            locale: false
+            locale: false,
           });
         }
       }
@@ -105,14 +99,14 @@ export default class IntlRouter {
           source.normalize('NFKC'),
           source.normalize('NFKD'),
           source.normalize('NFKD').replace(/[^\x21-\x7e]/g, ''), // é → e
-          this.normalisePath(locale, route._).normalize('NFC')
+          this.normalisePath(locale, route._).normalize('NFC'),
         ]) {
           if (!done.includes(alternative) && canonical !== alternative) {
             redirects.push({
               source: escapeId(alternative),
               destination: escapeId(canonical),
               locale: false,
-              permanent: true
+              permanent: true,
             });
             done.push(alternative);
           }
