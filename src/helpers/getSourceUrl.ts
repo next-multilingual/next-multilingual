@@ -1,4 +1,4 @@
-interface GetMatchingUrlProps {
+interface GetSourceUrlProps {
   rewrites;
   locale: string;
   path: string;
