@@ -1,14 +1,15 @@
 import { readFileSync } from 'fs';
+
+import type { Rewrite } from 'next/dist/lib/load-custom-routes';
+import Link, { LinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 import { resolve } from 'path';
 
 import React, { ReactElement } from 'react';
-import Link, { LinkProps } from 'next/link';
-import { useRouter } from 'next/router';
-
-import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 
 let __rewrites: Rewrite[] = null;
-function getRewrites(): Rewrite[] | null {
+
+function getRewrites(): Rewrite[] {
   if (__rewrites) return __rewrites;
   const bmPath = resolve('.next', 'build-manifest.json');
   const bmSrc = readFileSync(bmPath, 'utf8');
