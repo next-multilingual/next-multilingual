@@ -21,6 +21,7 @@
     "lint": "eslint --ext js,jsx,ts,tsx --fix"
   },
   "dependencies": {
+    "@hapi/accept": "^5.0.1",
     "dot-properties": "^1.0.1"
   },
   "devDependencies": {
