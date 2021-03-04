@@ -5,7 +5,7 @@ import { getOrigin } from '../helpers/getOrigin';
 import { getSourceUrl } from '../helpers/getSourceUrl';
 import { useRewrites } from './useRewrites';
 
-interface AlterNateLinks {
+interface AlternateLink {
   href: string;
   hrefLang: string;
 }
