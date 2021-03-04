@@ -15,7 +15,7 @@ const Layout = ({ title, language, children }: LayoutProps): ReactElement => {
   const { locales } = useRouter();
   return (
     <div className={styles.container}>
-      <IntlHead language={language} title={title}>
+      <IntlHead language={language}>
         <title>{title}</title>
         <meta
           name="viewport"
