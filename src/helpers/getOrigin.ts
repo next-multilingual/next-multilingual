@@ -14,7 +14,7 @@ export const getOrigin = (): string | Error => {
     );
   }
 
-  if (!originURL.protocol || !/https?/.test(originURL.protocol)) {
+  if (!originURL.protocol || !originURL.protocol.startsWith('http')) {
     throw new Error('Please add a valid (http / https) protocol to your domain');
   }
   return originURL.toString();
