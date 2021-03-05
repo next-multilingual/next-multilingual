@@ -17,13 +17,15 @@ export const useAlternateLinks = (currentLocale: string): AlternateLink[] => {
 
   useEffect(() => {
     const origin = getOrigin();
-    const alternateLinks = locales.map((lang) => {
-      const alternateLink = getSourceUrl({ rewrites, locale: lang, path: pathname });
-      return {
-        href: `${origin}${getBasePath(basePath)}${lang}${alternateLink}`,
-        hrefLang: lang,
-      };
-    });
+    const alternateLinks = locales
+      .filter((l) => l !== 'catchAll')
+      .map((lang) => {
+        const alternateLink = getSourceUrl({ rewrites, locale: lang, path: pathname });
+        return {
+          href: `${origin}${getBasePath(basePath)}${lang}${alternateLink}`,
+          hrefLang: lang,
+        };
+      });
     setAlternateLinks(
       pathname !== '/'
         ? alternateLinks
