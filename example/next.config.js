@@ -11,7 +11,6 @@ module.exports = {
     locales,
     defaultLocale: 'catchAll'
   },
-  // basePath: '/folder',
   publicRuntimeConfig: {
     origin: process.env.NEXT_PUBLIC_DOMAIN_URL
   },
