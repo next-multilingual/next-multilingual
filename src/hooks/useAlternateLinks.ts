@@ -10,10 +10,10 @@ interface AlternateLink {
   hrefLang: string;
 }
 
-export const useAlternateLinks = (currentLocale: string): AlterNateLinks[] => {
+export const useAlternateLinks = (currentLocale: string): AlternateLink[] => {
   const { basePath, pathname, locales } = useRouter();
   const rewrites = useRewrites();
-  const [alternateLinks, setAlternateLinks] = useState<AlterNateLinks[]>([]);
+  const [alternateLinks, setAlternateLinks] = useState<AlternateLink[]>([]);
 
   useEffect(() => {
     const origin = getOrigin();
