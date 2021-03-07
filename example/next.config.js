@@ -1,17 +1,14 @@
 const IntlRouter = require('next-intl-router').default;
 
-const locales = ['en-CA', 'fr-CA', 'catchAll'];
-const intlRouter = new IntlRouter(
-  'pages',
-  locales.filter((l) => l !== 'catchAll')
-);
+const locales = ['en-CA', 'fr-CA'];
+const intlRouter = new IntlRouter('pages', locales);
 
 module.exports = {
   i18n: {
     locales,
-    defaultLocale: 'catchAll'
+    defaultLocale: 'en-CA'
   },
-  // basePath: '/folder',
+  basePath: '/folder',
   publicRuntimeConfig: {
     origin: process.env.NEXT_PUBLIC_DOMAIN_URL
   },
@@ -30,20 +27,7 @@ module.exports = {
   },
   async redirects() {
     const redirects = await intlRouter.getRedirects();
-    return [
-      {
-        source: '/catchAll',
-        destination: '/en-CA',
-        locale: false,
-        permanent: false
-      },
-      {
-        source: '/catchAll/:slug*',
-        destination: '/en-CA/:slug*',
-        locale: false,
-        permanent: false
-      },
-      ...redirects
-    ];
+    //console.dir({ redirects }, { depth: null });
+    return redirects;
   }
 };
