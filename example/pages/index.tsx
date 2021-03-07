@@ -1,3 +1,5 @@
+import accept from '@hapi/accept';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import { IntlLink } from '../../lib/intl-link';
@@ -20,3 +22,17 @@ export default function IndexPage({ language }): ReactElement {
     </Layout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  locales,
+  locale
+}: GetServerSidePropsContext) => {
+  const language = accept.language(req.headers['accept-language'], locales);
+
+  return {
+    props: {
+      language: locale || language
+    }
+  };
+};
