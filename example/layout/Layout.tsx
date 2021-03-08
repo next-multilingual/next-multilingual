@@ -1,5 +1,6 @@
+import { useCanonicalUrl } from '../hooks/useCanonicalUrl';
 import { useRouter } from 'next/router';
-import { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { IntlHead } from '../../lib/intl-head';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 
@@ -12,7 +13,9 @@ interface LayoutProps {
 }
 
 const Layout = ({ title, language, children }: LayoutProps): ReactElement => {
-  const { locales } = useRouter();
+  const { locale } = useRouter();
+  const canonicalUrl = useCanonicalUrl(language ?? locale);
+
   return (
     <div className={styles.container}>
       <IntlHead language={language}>
@@ -21,10 +24,11 @@ const Layout = ({ title, language, children }: LayoutProps): ReactElement => {
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         />
+        <link rel="canonical" href={canonicalUrl} />
       </IntlHead>
       <header className={styles.headerContainer}>
         <link rel="alternate" href="/" hrefLang="pt" />
-        <LanguageSwitcher locales={locales} />
+        <LanguageSwitcher />
       </header>
       <main>{children}</main>
     </div>

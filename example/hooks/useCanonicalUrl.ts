@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
-import { getBasePath } from '../helpers/getBasePath';
-import { getOrigin } from '../helpers/getOrigin';
+import { getBasePath } from '../../lib/helpers/getBasePath';
+import { getOrigin } from '../../lib/helpers/getOrigin';
 
 export const useCanonicalUrl = (locale: string): string | null => {
   const { asPath, basePath } = useRouter();
