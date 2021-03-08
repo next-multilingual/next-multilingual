@@ -5,18 +5,23 @@ import { ReactElement } from 'react';
 import { IntlLink } from '../../lib/intl-link';
 import Layout from '../layout/Layout';
 
-export default function IndexPage({ language }): ReactElement {
+export default function IndexPage({
+  currentLocale
+}: {
+  currentLocale: string;
+}): ReactElement {
   const router = useRouter();
-  const { locale, locales, defaultLocale } = router;
+  const { locales, defaultLocale, locale } = router;
 
   return (
-    <Layout title="Home Page" language={language}>
+    <Layout title="Home Page" language={currentLocale}>
       <h1>Homepage</h1>
-      <p>Current locale: {locale}</p>
+      <p>Router locale: {locale}</p>
+      <p>Current locale: {currentLocale}</p>
       <p>Default locale: {defaultLocale}</p>
       <p>Configured locales: {JSON.stringify(locales)}</p>
       <br />
-      <IntlLink href="/about-us" locale={locale}>
+      <IntlLink href="/about-us">
         <a>About us page</a>
       </IntlLink>
     </Layout>
@@ -26,13 +31,14 @@ export default function IndexPage({ language }): ReactElement {
 export const getServerSideProps: GetServerSideProps = async ({
   req,
   locales,
-  locale
+  defaultLocale
 }: GetServerSidePropsContext) => {
   const language = accept.language(req.headers['accept-language'], locales);
+  const currentLocale = language.length ? language : defaultLocale;
 
   return {
     props: {
-      language: locale || language
+      currentLocale
     }
   };
 };
