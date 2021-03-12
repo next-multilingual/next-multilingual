@@ -1,4 +1,3 @@
-import cookie from 'cookie';
 import accept from '@hapi/accept';
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
@@ -6,12 +5,16 @@ import { ReactElement } from 'react';
 import { IntlLink } from '../../lib/intl-link';
 import Layout from '../layout/Layout';
 
-export default function IndexPage({ currentLocale }): ReactElement {
+export default function IndexPage({
+  currentLocale
+}: {
+  currentLocale: string;
+}): ReactElement {
   const router = useRouter();
   const { locales, defaultLocale, locale } = router;
 
   return (
-    <Layout title="Home Page" currentLocale={currentLocale}>
+    <Layout title="Home Page" language={currentLocale}>
       <h1>Homepage</h1>
       <p>Router locale: {locale}</p>
       <p>Current locale: {currentLocale}</p>
@@ -28,7 +31,6 @@ export default function IndexPage({ currentLocale }): ReactElement {
 export const getServerSideProps: GetServerSideProps = async ({
   req,
   locales,
-  locale,
   defaultLocale
 }: GetServerSidePropsContext) => {
   const language = accept.language(req.headers['accept-language'], locales);

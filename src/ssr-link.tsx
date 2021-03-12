@@ -37,6 +37,7 @@ export function IntlLink({
   ...props
 }: LinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
-  const _href = useRewriteSource(href, locale || router.locale);
+  const source = useRewriteSource(href, locale || router.locale);
+  const _href = locale === router.defaultLocale ? `/${locale}${source}` : source;
   return <Link href={_href} locale={locale} {...props} />;
 }
