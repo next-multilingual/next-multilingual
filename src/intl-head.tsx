@@ -5,11 +5,12 @@ import { useAlternateLinks } from './hooks/useAlternateLinks';
 
 interface IntlHeadProps {
   children?: ReactNode;
+  currentLocale?: string;
 }
 
-export function IntlHead({ children }: IntlHeadProps): ReactElement {
+export function IntlHead({ children, currentLocale }: IntlHeadProps): ReactElement {
   const { locale } = useRouter();
-  const alternateLinks = useAlternateLinks(locale);
+  const alternateLinks = useAlternateLinks(currentLocale ?? locale);
 
   return (
     <Head>

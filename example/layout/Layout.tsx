@@ -9,15 +9,17 @@ import styles from './Layout.module.css';
 interface LayoutProps {
   title: string;
   children: ReactNode;
+  currentLocale?: string;
 }
 
-const Layout = ({ title, children }: LayoutProps): ReactElement => {
+const Layout = ({ title, children, currentLocale }: LayoutProps): ReactElement => {
   const { locales, locale } = useRouter();
   const canonicalUrl = useCanonicalUrl(locale);
 
+
   return (
     <div className={styles.container}>
-      <IntlHead>
+      <IntlHead currentLocale={currentLocale}>
         <title>{title}</title>
         <meta
           name="viewport"
@@ -26,7 +28,6 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
         <link rel="canonical" href={canonicalUrl} />
       </IntlHead>
       <header className={styles.headerContainer}>
-        <link rel="alternate" href="/" hrefLang="pt" />
         <LanguageSwitcher locales={locales} />
       </header>
       <main>{children}</main>
