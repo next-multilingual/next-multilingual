@@ -19,7 +19,12 @@ const locales = ['en', 'fr'];
 const intlRouter = new IntlRouter('pages', locales);
 
 module.exports = {
-  i18n: { locales, defaultLocale: 'en' },
+  i18n: {
+    locales,
+    defaultLocale: 'en-CA',
+    // In order to avoid redirects in home page we disable locale detection
+    localeDetection: false,
+  },
   async rewrites() {
     const rewrites = await intlRouter.getRewrites();
     return rewrites;
@@ -47,7 +52,7 @@ Once such are provided, visitors to `/fr/contact-us` will be automatically redir
 
 ### IntlRouter
 
-```js
+```ts
 const intlRouter = new IntlRouter(
   directory: string, // The base directory used to browser localizable assets
   locales: string[], // The locales
@@ -63,7 +68,7 @@ const redirects = await intlRouter.getRedirects();
 
 An `IntlLink` component is provided to use the existing build manifest to allow you to give a link `href` that uses the page's file directory path, and have that rendered as e.g. `<a href="/fr/nous/joindre/message-envoy%C3%A9">` in the French locale:
 
-```js
+```tsx
 import { IntlLink } from 'next-intl-router/lib/link';
 
 export default function ContactUs() {
@@ -90,4 +95,47 @@ module.exports = {
     return config;
   }
 };
+```
+### IntlHead
+An `IntHead` component is a wrapper around **Next.js**
+`<Head />` component. It injects the necessary alternate links.
+
+For the following locales `['en-CA', 'fr-CA']` it will produce the following alternate links at `/`:
+
+```html
+<link rel="alternate" href="http://localhost:3000/en-CA/" hreflang="en-CA">
+<link rel="alternate" href="http://localhost:3000/fr-CA/" hreflang="fr-CA">
+<link rel="alternate" href="http://localhost:3000/" hreflang="x-default">
+```
+
+```tsx
+import { useRouter } from 'next/router';
+import { IntlHead, useCanonicalUrl } from 'next-intl-router';
+const { locale } = useRouter();
+const canonicalUrl = useCanonicalUrl(locale);
+
+<IntlHead>
+  <title>My awesome website</title>
+  {/* You can add whatever links you wish here */}
+</IntlHead>
+
+```
+
+## UseCanonicalUrl
+A `useCanonicalUrl` hook is provided to help with the canonical link
+```tsx
+import { useRouter } from 'next/router';
+import { IntlHead, useCanonicalUrl } from 'next-intl-router';
+const { locale } = useRouter();
+const canonicalUrl = useCanonicalUrl(locale);
+
+<IntlHead>
+  <title>My awesome website</title>
+  <link rel="canonical" href={canonicalUrl} />
+</IntlHead>
+
+```
+At the following URL `http://localhost:3000/fr-CA/%C3%A0-propos-de-nous` This will produce the following link
+```html
+<link rel="canonical" href="http://localhost:3000/fr-CA/%C3%A0-propos-de-nous">
 ```
