@@ -8,9 +8,9 @@
     "start": "cross-env ../node_modules/.bin/next start"
   },
   "dependencies": {
-    "@hapi/accept": "^5.0.2",
     "cross-env": "^7.0.3",
-    "next-intl-router": "file:.."
+    "next-intl-router": "file:..",
+    "resolve-accept-language": "^1.0.4"
   },
   "prettier": {
     "singleQuote": true,
