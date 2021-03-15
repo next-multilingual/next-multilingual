@@ -1,40 +1,43 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import { getBasePath } from '../helpers/getBasePath';
 import { getOrigin } from '../helpers/getOrigin';
 import { getSourceUrl } from '../helpers/getSourceUrl';
 import { useRewrites } from './useRewrites';
-import { removeFirstSlash } from '../helpers/paths';
 
 interface AlternateLink {
   href: string;
   hrefLang: string;
 }
 
-export const useAlternateLinks = (locale: string): AlternateLink[] => {
-  const { basePath, pathname, locales, defaultLocale } = useRouter();
+/**
+ * A hook to build the alternate links based on the locales defined
+ * in next.config.js file
+ */
+export function useAlternateLinks(): AlternateLink[] {
+  const { basePath, pathname, locales } = useRouter();
   const rewrites = useRewrites();
-  const [alternateLinks, setAlternateLinks] = useState<AlternateLink[]>([]);
 
-  useEffect(() => {
-    const origin = getOrigin();
-    const alternateLinks = locales
-      .map((lang) => {
-        const alternateLink = getSourceUrl({ rewrites, locale: lang, path: pathname });
-        return {
-          href: `${origin}${getBasePath(basePath)}${removeFirstSlash(alternateLink)}`,
-          hrefLang: lang,
-        };
-      });
+  const origin = getOrigin();
+  const alternateLinks = locales.map((lang) => {
+    const alternateLink = getSourceUrl({ rewrites, locale: lang, path: pathname });
 
-    const withPathname = pathname !== '/'
-      ? removeFirstSlash(pathname)
-      : ''
+    return {
+      href: `${origin}${getBasePath(basePath)}${removeInitialSlash(alternateLink)}`,
+      hrefLang: lang,
+    };
+  });
 
-    const _href = `${origin}${getBasePath(basePath)}${withPathname}`
-    setAlternateLinks([...alternateLinks, { href: _href, hrefLang: 'x-default' }]
-    );
-  }, [basePath, locales, pathname, rewrites]);
+  const withPathname = pathname !== '/' ? removeInitialSlash(pathname) : '';
 
-  return alternateLinks;
-};
+  const _href = `${origin}${getBasePath(basePath)}${withPathname}`;
+
+  return [...alternateLinks, { href: _href, hrefLang: 'x-default' }];
+}
+
+/**
+ * Removes the first slash from the path
+ * @param path { string } - the path to be handled
+ */
+function removeInitialSlash(path: string): string {
+  return path.startsWith('/') ? path.substr(1, path.length) : path;
+}

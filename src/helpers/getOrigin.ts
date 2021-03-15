@@ -1,6 +1,6 @@
 import getConfig from 'next/config';
 
-export const getOrigin = (): string | Error => {
+export function getOrigin(): string | Error {
   const {
     publicRuntimeConfig: { origin },
   } = getConfig();
@@ -18,4 +18,4 @@ export const getOrigin = (): string | Error => {
     throw new Error('Please add a valid (http / https) protocol to your domain');
   }
   return originURL.toString();
-};
+}
