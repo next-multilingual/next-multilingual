@@ -1,16 +1,13 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import React, { ReactElement, ReactNode } from 'react';
 import { useAlternateLinks } from './hooks/useAlternateLinks';
 
 interface IntlHeadProps {
   children?: ReactNode;
-  currentLocale?: string;
 }
 
-export function IntlHead({ children, currentLocale }: IntlHeadProps): ReactElement {
-  const { locale } = useRouter();
-  const alternateLinks = useAlternateLinks(currentLocale ?? locale);
+export function IntlHead({ children }: IntlHeadProps): ReactElement {
+  const alternateLinks = useAlternateLinks();
 
   return (
     <Head>
