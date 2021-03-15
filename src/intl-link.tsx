@@ -21,6 +21,6 @@ export function IntlLink({
     path: href,
     locale: locale || router.locale,
   });
-  const _href = locale === router.defaultLocale ? `/${locale}${source}` : source;
-  return <Link href={_href} locale={locale} {...props} />;
+
+  return <Link href={source} locale={locale} {...props} />;
 }
