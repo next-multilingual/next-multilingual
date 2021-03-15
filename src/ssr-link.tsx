@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { resolve } from 'path';
 
 import React, { ReactElement } from 'react';
+import { getSourceUrl } from './helpers/getSourceUrl';
 
 let __rewrites: Rewrite[] = null;
 
@@ -24,11 +25,7 @@ function getRewrites(): Rewrite[] {
 
 function useRewriteSource(path: string, locale: string): string {
   const rewrites = getRewrites();
-  const lcPath = `/${locale}${path}`;
-  const match = rewrites.find(
-    ({ destination, locale }) => locale === false && destination === lcPath
-  );
-  return match ? match.source : path;
+  return getSourceUrl({ rewrites, locale, path });
 }
 
 export function IntlLink({
@@ -37,7 +34,6 @@ export function IntlLink({
   ...props
 }: LinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
-  const source = useRewriteSource(href, locale || router.locale);
-  const _href = locale === router.defaultLocale ? `/${locale}${source}` : source;
+  const _href = useRewriteSource(href, locale || router.locale);
   return <Link href={_href} locale={locale} {...props} />;
 }
