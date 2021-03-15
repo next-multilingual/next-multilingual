@@ -7,9 +7,8 @@ module.exports = {
   i18n: {
     locales,
     defaultLocale: 'en-CA',
-    localeDetection: false,
+    localeDetection: false
   },
-  // basePath: '/folder',
   publicRuntimeConfig: {
     origin: 'http://localhost:3000'
   },
