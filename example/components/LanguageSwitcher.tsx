@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
-import { IntlLink } from '../../lib/intl-link';
+import { IntlLink } from 'next-intl-router/lib/intl-link';
 
 import styles from './LanguageSwitcher.module.css';
 

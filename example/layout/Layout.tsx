@@ -1,8 +1,8 @@
+import { useCanonicalUrl } from 'next-intl-router/lib/hooks/useCanonicalUrl';
+import { IntlHead } from 'next-intl-router/lib/intl-head';
 import { useRouter } from 'next/router';
 import { ReactElement, ReactNode } from 'react';
-import { IntlHead } from '../../lib/intl-head';
 import LanguageSwitcher from '../components/LanguageSwitcher';
-import { useCanonicalUrl } from '../../lib/hooks/useCanonicalUrl';
 
 import styles from './Layout.module.css';
 
