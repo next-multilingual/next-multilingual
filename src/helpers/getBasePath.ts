@@ -3,6 +3,5 @@
  * @param basePath { string? } - the basePath
  */
 export function getBasePath(basePath?: string): string {
-  console.warn('basePath in getBasePath', basePath);
   return basePath ? basePath.replace('/', '') + '/' : '';
 }
