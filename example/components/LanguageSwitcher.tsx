@@ -15,7 +15,7 @@ const LanguageSwitcher = (): ReactElement => {
               href={locale === defaultLocale ? pathname : asPath}
               locale={locale}
             >
-              {locale}
+              <a suppressHydrationWarning={true}>{locale}</a>
             </IntlLink>
           </li>
         );
