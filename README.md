@@ -98,7 +98,9 @@ module.exports = {
 ```
 ### IntlHead
 An `IntHead` component is a wrapper around **Next.js**
-`<Head />` component. It injects the necessary alternate links.
+`<Head />` component. It injects the necessary alternate links. 
+At the moment of writing this package, Next.js has either a bug or an undocumented feature around `<Head />` 
+component. Because of it, it isn't possible to use our hook `useAlternateLinks()`.
 
 For the following locales `['en-CA', 'fr-CA']` it will produce the following alternate links at `/`:
 
@@ -110,9 +112,7 @@ For the following locales `['en-CA', 'fr-CA']` it will produce the following alt
 
 ```tsx
 import { useRouter } from 'next/router';
-import { IntlHead, useCanonicalUrl } from 'next-intl-router';
-const { locale } = useRouter();
-const canonicalUrl = useCanonicalUrl(locale);
+import { IntlHead } from 'next-intl-router';
 
 <IntlHead>
   <title>My awesome website</title>
@@ -121,7 +121,7 @@ const canonicalUrl = useCanonicalUrl(locale);
 
 ```
 
-## UseCanonicalUrl
+### UseCanonicalUrl
 A `useCanonicalUrl` hook is provided to help with the canonical link
 ```tsx
 import { useRouter } from 'next/router';
@@ -135,7 +135,7 @@ const canonicalUrl = useCanonicalUrl(locale);
 </IntlHead>
 
 ```
-At the following URL `http://localhost:3000/fr-CA/%C3%A0-propos-de-nous` This will produce the following link
+At the following URL `http://localhost:3000/fr-CA/à-propos-de-nous` This will produce the following link
 ```html
 <link rel="canonical" href="http://localhost:3000/fr-CA/%C3%A0-propos-de-nous">
 ```
