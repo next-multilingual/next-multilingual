@@ -9,9 +9,10 @@
   },
   "dependencies": {
     "cross-env": "^7.0.3",
+    "messageformat-properties-loader": "^0.4.0",
     "messageformat-runtime": "^3.0.0-beta.1",
     "next-intl-router": "file:..",
-    "resolve-accept-language": "^1.0.4"
+    "resolve-accept-language": "^1.0.11"
   },
   "prettier": {
     "singleQuote": true,
