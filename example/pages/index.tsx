@@ -1,40 +1,47 @@
-import { IntlLink } from '../../lib/intl-link';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
+import { ReactElement } from 'react';
+import resolveAcceptLanguage from 'resolve-accept-language';
+import { IntlLink } from 'next-intl-router/lib/intl-link';
+import Layout from '../layout/Layout';
 
-export default function IndexPage() {
+export default function IndexPage({
+  currentLocale
+}: {
+  currentLocale: string;
+}): ReactElement {
   const router = useRouter();
-  const { locale, locales, defaultLocale } = router;
+  const { locales, defaultLocale, locale } = router;
 
   return (
-    <div>
+    <Layout title="Home Page">
       <h1>Homepage</h1>
-      <p>Current locale: {locale}</p>
+      <p>Router locale: {locale}</p>
+      <p>Current locale: {currentLocale}</p>
       <p>Default locale: {defaultLocale}</p>
       <p>Configured locales: {JSON.stringify(locales)}</p>
-      <LanguageSwitcher locales={locales} locale={locale}></LanguageSwitcher>
       <br />
-      <br />
-      <IntlLink href="/about-us" locale={locale}>
+      <IntlLink href="/about-us">
         <a>About us page</a>
       </IntlLink>
-    </div>
+    </Layout>
   );
 }
 
-type LanguageSwitcherProps = {
-  locale: string;
-  locales: string[];
-};
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  locales,
+  defaultLocale
+}: GetServerSidePropsContext) => {
+  const currentLocale = resolveAcceptLanguage(
+    req.headers['accept-language'],
+    locales,
+    defaultLocale
+  );
 
-function LanguageSwitcher(props: LanguageSwitcherProps) {
-  const { locale, locales } = props;
-  for (let supportedLocale of locales) {
-    if (locale !== supportedLocale) {
-      return (
-        <IntlLink href="/" locale={supportedLocale}>
-          <a>Switch language</a>
-        </IntlLink>
-      );
+  return {
+    props: {
+      currentLocale
     }
-  }
-}
+  };
+};

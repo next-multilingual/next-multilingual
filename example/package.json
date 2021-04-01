@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "cross-env": "^7.0.3",
-    "next-intl-router": "file:.."
+    "next-intl-router": "file:..",
+    "resolve-accept-language": "^1.0.4"
   },
   "prettier": {
     "singleQuote": true,

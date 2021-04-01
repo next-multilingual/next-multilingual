@@ -6,9 +6,12 @@ const intlRouter = new IntlRouter('pages', locales);
 module.exports = {
   i18n: {
     locales,
-    defaultLocale: 'en-CA'
+    defaultLocale: 'en-CA',
+    localeDetection: false
   },
-  origin: process.env.NEXT_PUBLIC_DOMAIN_URL,
+  publicRuntimeConfig: {
+    origin: 'http://localhost:3000'
+  },
   poweredByHeader: false,
   webpack(config, { dev, isServer }) {
     if (isServer && !dev)

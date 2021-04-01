@@ -40,7 +40,8 @@ export default class IntlRouter {
   }
 
   /**
-   * Get routes.
+   *
+   * @private
    */
   private async getRoutes(): Promise<Record<string, string>[]> {
     if (!this._routes) {
@@ -50,10 +51,11 @@ export default class IntlRouter {
   }
 
   /**
-   * Normalize a URL path.
-   *
-   * @param locale The locale.
-   * @param path The URL path.
+   * Normalizes the path based on the locale
+   * @param locale { string } - the locale to normalize the path
+   * @param path { string } - the path to normalize
+   * @private
+   * @returns {string} - the normalized path with the locale
    */
   private normalisePath(locale: string, path: string): string {
     const part = this.useCasesInUrls ? path : path.toLocaleLowerCase(locale);

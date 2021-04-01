@@ -2,7 +2,7 @@ import { getClientBuildManifest } from 'next/dist/client/route-loader';
 import { Rewrite } from 'next/dist/lib/load-custom-routes';
 import { useEffect, useState } from 'react';
 
-export const useRewrites = (): Rewrite[] => {
+export function useRewrites(): Rewrite[] {
   const [rewrites, setRewrites] = useState<Rewrite[]>([]);
 
   useEffect(() => {
@@ -15,4 +15,4 @@ export const useRewrites = (): Rewrite[] => {
   }, []);
 
   return rewrites;
-};
+}

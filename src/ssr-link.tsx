@@ -1,14 +1,16 @@
 import { readFileSync } from 'fs';
+
+import type { Rewrite } from 'next/dist/lib/load-custom-routes';
+import Link, { LinkProps } from 'next/link';
+import { useRouter } from 'next/router';
 import { resolve } from 'path';
 
 import React, { ReactElement } from 'react';
-import Link, { LinkProps } from 'next/link';
-import { useRouter } from 'next/router';
-
-import type { Rewrite } from 'next/dist/lib/load-custom-routes';
+import { getSourceUrl } from './helpers/getSourceUrl';
 
 let __rewrites: Rewrite[] = null;
-function getRewrites(): Rewrite[] | null {
+
+function getRewrites(): Rewrite[] {
   if (__rewrites) return __rewrites;
   const bmPath = resolve('.next', 'build-manifest.json');
   const bmSrc = readFileSync(bmPath, 'utf8');
@@ -23,11 +25,7 @@ function getRewrites(): Rewrite[] | null {
 
 function useRewriteSource(path: string, locale: string): string {
   const rewrites = getRewrites();
-  const lcPath = `/${locale}${path}`;
-  const match = rewrites.find(
-    ({ destination, locale }) => locale === false && destination === lcPath
-  );
-  return match ? match.source : path;
+  return getSourceUrl({ rewrites, locale, path });
 }
 
 export function IntlLink({
