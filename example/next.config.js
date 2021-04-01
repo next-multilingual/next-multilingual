@@ -18,6 +18,14 @@ module.exports = {
       config.resolve.alias['next-intl-router/lib/link$'] = require.resolve(
         'next-intl-router/lib/ssr-link'
       );
+    config.module.rules.push({
+      test: /\.properties$/,
+      loader: 'messageformat-properties-loader',
+      options: {
+        keyPath: true
+      }
+    });
+    console.warn('config', config.module);
     return config;
   },
   async rewrites() {

@@ -1,4 +1,3 @@
-import { useCanonicalUrl } from 'next-intl-router/lib/hooks/useCanonicalUrl';
 import { IntlHead } from 'next-intl-router/lib/intl-head';
 import { useRouter } from 'next/router';
 import { ReactElement, ReactNode } from 'react';
@@ -13,7 +12,6 @@ interface LayoutProps {
 
 const Layout = ({ title, children }: LayoutProps): ReactElement => {
   const { locale } = useRouter();
-  const canonicalUrl = useCanonicalUrl(locale);
 
   return (
     <div className={styles.container}>
@@ -23,7 +21,6 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         />
-        <link rel="canonical" href={canonicalUrl} />
       </IntlHead>
       <header className={styles.headerContainer}>
         <LanguageSwitcher />
