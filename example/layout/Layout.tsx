@@ -1,8 +1,7 @@
 import { IntlHead } from 'next-intl-router/lib/intl-head';
 import { useRouter } from 'next/router';
-import { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
-
 import styles from './Layout.module.css';
 
 interface LayoutProps {
@@ -12,6 +11,7 @@ interface LayoutProps {
 
 const Layout = ({ title, children }: LayoutProps): ReactElement => {
   const { locale } = useRouter();
+  const messages = require(`./layout.${locale}.properties`).default;
 
   return (
     <div className={styles.container}>
@@ -23,6 +23,7 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
         />
       </IntlHead>
       <header className={styles.headerContainer}>
+        <div className={styles.headerMessage}>{messages.header}</div>
         <LanguageSwitcher />
       </header>
       <main>{children}</main>

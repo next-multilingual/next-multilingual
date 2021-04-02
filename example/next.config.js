@@ -20,12 +20,11 @@ module.exports = {
       );
     config.module.rules.push({
       test: /\.properties$/,
-      loader: 'messageformat-properties-loader',
+      loader: 'properties-json-loader',
       options: {
-        keyPath: true
+        namespaces: false
       }
     });
-    console.warn('config', config.module);
     return config;
   },
   async rewrites() {

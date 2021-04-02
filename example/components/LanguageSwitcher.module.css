@@ -4,4 +4,6 @@
   gap: 1rem;
   margin: 0;
   padding: 0;
+  width: 100%;
+  flex-direction: row-reverse;
 }
