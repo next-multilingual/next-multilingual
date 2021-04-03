@@ -9,6 +9,7 @@ module.exports = {
     defaultLocale: 'en-CA',
     localeDetection: false
   },
+  future: { webpack5: true },
   publicRuntimeConfig: {
     origin: 'http://localhost:3000'
   },
