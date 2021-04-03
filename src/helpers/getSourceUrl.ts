@@ -1,8 +1,11 @@
+import type { Rewrite } from 'next/dist/lib/load-custom-routes';
+
 interface GetSourceUrlProps {
-  rewrites;
+  rewrites: Rewrite[];
   locale: string;
   path: string;
 }
+
 export function getSourceUrl({ rewrites, locale, path }: GetSourceUrlProps): string {
   const lcPath = `/${locale}${path}`;
   const match = rewrites.find(
