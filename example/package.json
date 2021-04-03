@@ -11,7 +11,7 @@
     "cross-env": "^7.0.3",
     "next-intl-router": "file:..",
     "properties-json-loader": "^2.3.0",
-    "resolve-accept-language": "^1.0.11"
+    "resolve-accept-language": "^1.0.12"
   },
   "prettier": {
     "singleQuote": true,
