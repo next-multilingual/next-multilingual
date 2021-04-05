@@ -15,4 +15,5 @@
 
 .headerMessage {
   font-size: 2rem;
+  white-space: nowrap;
 }

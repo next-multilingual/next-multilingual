@@ -2,6 +2,7 @@ import { IntlHead } from 'next-intl-router/lib/intl-head';
 import { useRouter } from 'next/router';
 import type { ReactElement, ReactNode } from 'react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import Footer from './Footer';
 import styles from './Layout.module.css';
 
 interface LayoutProps {
@@ -27,6 +28,7 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
         <LanguageSwitcher />
       </header>
       <main>{children}</main>
+      <Footer />
     </div>
   );
 };
