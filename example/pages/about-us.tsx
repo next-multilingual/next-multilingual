@@ -22,9 +22,7 @@ type Props = {
 export const getStaticProps: GetStaticProps = async ({
   locale
 }: GetServerSidePropsContext) => {
-  // const messages = (
-  //   await import(`./${__filename.replace('.tsx', `${locale}.properties`)}`)
-  // ).default as Messages;
+  // TODO: check if there is a way to find the file name automatically - e.g. import(`./${__filename.replace('.tsx', `${locale}.properties`)}`)
   const messages = (await import(`./about-us.${locale}.properties`))
     .default as Messages;
 
