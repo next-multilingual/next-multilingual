@@ -34,7 +34,7 @@ const LanguagePicker = (): ReactElement => {
         <i></i>
       </button>
       <div>
-        {supportedLocales.map((locale) => {
+        {supportedLocales.filter((locale) => {
           if (locale !== currentLocale) {
             return (
               <IntlLink
