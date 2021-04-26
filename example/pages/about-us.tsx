@@ -1,8 +1,11 @@
 import type { GetServerSidePropsContext, GetStaticProps } from 'next';
 import type { ReactElement } from 'react';
 import Layout from '../layout/Layout';
+import type { Messages, StaticMessagesProps } from '../types/MessagesTypes';
 
-export default function AboutUs({ messages }: Props): ReactElement {
+export default function AboutUs({
+  messages
+}: StaticMessagesProps): ReactElement {
   return (
     <Layout title={messages.title}>
       <h1>{messages.title}</h1>
@@ -10,14 +13,6 @@ export default function AboutUs({ messages }: Props): ReactElement {
     </Layout>
   );
 }
-
-type Messages = {
-  [key: string]: string;
-};
-
-type Props = {
-  messages: Messages;
-};
 
 export const getStaticProps: GetStaticProps = async ({
   locale

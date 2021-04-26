@@ -1,9 +1,9 @@
 import { IntlHead } from 'next-intl-router/lib/intl-head';
 import { useRouter } from 'next/router';
 import type { ReactElement, ReactNode } from 'react';
-import LanguageSwitcher from '../components/LanguageSwitcher';
-import Footer from './Footer';
+import LanguagePicker from '../components/LanguagePicker';
 import styles from './Layout.module.css';
+import { IntlLink } from 'next-intl-router/lib/intl-link';
 
 interface LayoutProps {
   title: string;
@@ -15,7 +15,7 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
   const messages = require(`./layout.${locale}.properties`).default;
 
   return (
-    <div className={styles.container}>
+    <>
       <IntlHead>
         <title>{title}</title>
         <meta
@@ -23,13 +23,25 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         />
       </IntlHead>
-      <header className={styles.headerContainer}>
-        <div className={styles.headerMessage}>{messages.header}</div>
-        <LanguageSwitcher />
+      <header className={styles.header}>
+        <div>
+          <a href="/">{messages.header}</a>
+        </div>
+        <LanguagePicker />
+        <nav className={styles.nav}>
+          <IntlLink href="/">
+            <a>{messages.home}</a>
+          </IntlLink>
+          <IntlLink href="/about-us">
+            <a>{messages.aboutUs}</a>
+          </IntlLink>
+          <IntlLink href="/contact-us">
+            <a>{messages.contactUs}</a>
+          </IntlLink>
+        </nav>
       </header>
-      <main>{children}</main>
-      <Footer />
-    </div>
+      <main className={styles.main}>{children}</main>
+    </>
   );
 };
 

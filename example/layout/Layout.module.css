@@ -1,19 +1,42 @@
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+
+.header {
+  border-bottom: 0.0625rem solid #ccc;
+  box-shadow: 0 0.3125rem 0.5rem 0 rgba(168, 168, 168, 0.5);
+  padding: 2rem 1rem;
+  width: 100%;
+  display: inline-block;
 }
 
-.headerContainer {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  border-bottom: 1px solid #ccc;
-  box-shadow: 0 5px 8px 0 rgba(168, 168, 168, 0.5);
-  height: 75px;
-  padding: 0 1rem;
-}
-
-.headerMessage {
+.header > div:first-of-type > a {
+  float: left;
   font-size: 2rem;
   white-space: nowrap;
+  margin-top: 0.3rem;
+  text-decoration: none;
+  color: black;
+}
+
+.main {
+  margin: 2rem 1rem;
+}
+
+.nav {
+  float: right;
+  margin: 1rem;
+}
+
+.nav a {
+  text-decoration: none;
+  color: grey;
+  font-weight: 600;
+  margin: 1rem;
+}
+
+.nav a:visited {
+  color: inherit;
+}
+
+.nav a:hover {
+  opacity: 0.8;
+  border-bottom: green 0.2rem solid;
 }

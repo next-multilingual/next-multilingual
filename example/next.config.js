@@ -1,12 +1,19 @@
 const IntlRouter = require('next-intl-router').default;
+const {
+  getSupportedLocales
+} = require('next-intl-router/lib/helpers/getLocalesDetails');
 
-const locales = ['en-CA', 'fr-CA'];
-const intlRouter = new IntlRouter('pages', locales);
+// This required for dynamic locale resolution for requests on `/`.
+const defaultLocale = 'mul';
+// The (real) default locale used by `getLocalesDetails` will be the first non-default locale in the configuration.
+const locales = [defaultLocale, 'en-CA', 'fr-CA'];
+const supportedLocales = getSupportedLocales(locales, defaultLocale);
+const intlRouter = new IntlRouter('pages', supportedLocales);
 
 module.exports = {
   i18n: {
     locales,
-    defaultLocale: 'en-CA',
+    defaultLocale,
     localeDetection: false
   },
   future: { webpack5: true },
@@ -30,12 +37,14 @@ module.exports = {
   },
   async rewrites() {
     const rewrites = await intlRouter.getRewrites();
-    //console.dir({ rewrites }, { depth: null });
+    // console.dir('rewrites');
+    // console.dir({ rewrites }, { depth: null });
     return rewrites;
   },
   async redirects() {
     const redirects = await intlRouter.getRedirects();
-    //console.dir({ redirects }, { depth: null });
+    // console.dir('redirects');
+    // console.dir({ redirects }, { depth: null });
     return redirects;
   }
 };
