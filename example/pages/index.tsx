@@ -1,46 +1,73 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import Cookies from 'nookies';
+import {
+  getActualLocales,
+  getActualDefaultLocale
+} from 'next-intl-router/lib/helpers/getLocalesDetails';
+import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import resolveAcceptLanguage from 'resolve-accept-language';
-import { IntlLink } from 'next-intl-router/lib/intl-link';
 import Layout from '../layout/Layout';
+import type { Messages, ServerSideMessagesProps } from '../types/MessagesTypes';
 
 export default function IndexPage({
+  messages,
   currentLocale
-}: {
-  currentLocale: string;
-}): ReactElement {
+}: ServerSideMessagesProps): ReactElement {
   const router = useRouter();
+  router.locale = currentLocale; // Overwrite locale with the resolved locale.
   const { locales, defaultLocale, locale } = router;
 
   return (
-    <Layout title="Home Page">
-      <h1>Homepage</h1>
+    <Layout title={messages.title}>
+      <h1>{messages.headline}</h1>
       <p>Router locale: {locale}</p>
-      <p>Current locale: {currentLocale}</p>
       <p>Default locale: {defaultLocale}</p>
       <p>Configured locales: {JSON.stringify(locales)}</p>
       <br />
-      <IntlLink href="/about-us">
-        <a>About us page</a>
-      </IntlLink>
     </Layout>
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async ({
-  req,
-  locales,
-  defaultLocale
-}: GetServerSidePropsContext) => {
-  const currentLocale = resolveAcceptLanguage(
-    req.headers['accept-language'],
+export const getServerSideProps: GetServerSideProps = async (
+  getServerSidePropsContext: GetServerSidePropsContext
+) => {
+  const {
+    req,
+    locale,
     locales,
-    defaultLocale
-  );
+    defaultLocale: multilingual
+  } = getServerSidePropsContext;
+
+  const actualLocales = getActualLocales(locales, multilingual);
+  const actualDefaultLocale = getActualDefaultLocale(locales, multilingual);
+  const cookies = Cookies.get(getServerSidePropsContext);
+  let currentLocale = locale;
+
+  if (locale === multilingual) {
+    // TODO: add a script that sets NEXT_LOCALE on initial page load (client-side)
+    let cookieLocale = cookies['NEXT_LOCALE'];
+    if (cookieLocale && !actualLocales.includes(cookieLocale)) {
+      // Delete the cookie if the value is invalid (e.g. been tampered with).
+      Cookies.destroy(getServerSidePropsContext, 'NEXT_LOCALE');
+      cookieLocale = undefined;
+    }
+
+    currentLocale = cookieLocale
+      ? cookieLocale
+      : resolveAcceptLanguage(
+          req.headers['accept-language'],
+          actualLocales,
+          actualDefaultLocale
+        );
+  }
+
+  const messages = (await import(`./index.${currentLocale}.properties`))
+    .default as Messages;
 
   return {
     props: {
+      messages,
       currentLocale
     }
   };

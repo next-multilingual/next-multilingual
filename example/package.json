@@ -10,7 +10,9 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "next-intl-router": "file:..",
-    "resolve-accept-language": "^1.0.4"
+    "nookies": "^2.5.2",
+    "properties-json-loader": "^2.3.0",
+    "resolve-accept-language": "^1.0.12"
   },
   "prettier": {
     "singleQuote": true,
