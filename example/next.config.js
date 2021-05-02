@@ -1,14 +1,14 @@
 const IntlRouter = require('next-intl-router').default;
 const {
-  getSupportedLocales
+  getActualLocales
 } = require('next-intl-router/lib/helpers/getLocalesDetails');
 
 // This required for dynamic locale resolution for requests on `/`.
 const defaultLocale = 'mul';
 // The (real) default locale used by `getLocalesDetails` will be the first non-default locale in the configuration.
 const locales = [defaultLocale, 'en-CA', 'fr-CA'];
-const supportedLocales = getSupportedLocales(locales, defaultLocale);
-const intlRouter = new IntlRouter('pages', supportedLocales);
+const actualLocales = getActualLocales(locales, defaultLocale);
+const intlRouter = new IntlRouter('pages', actualLocales);
 
 module.exports = {
   i18n: {

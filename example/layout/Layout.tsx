@@ -1,7 +1,9 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import { IntlHead } from 'next-intl-router/lib/intl-head';
 import { useRouter } from 'next/router';
 import type { ReactElement, ReactNode } from 'react';
 import LanguagePicker from '../components/LanguagePicker';
+import Footer from '../components/Footer';
 import styles from './Layout.module.css';
 import { IntlLink } from 'next-intl-router/lib/intl-link';
 
@@ -12,7 +14,7 @@ interface LayoutProps {
 
 const Layout = ({ title, children }: LayoutProps): ReactElement => {
   const { locale } = useRouter();
-  const messages = require(`./layout.${locale}.properties`).default;
+  const messages = require(`./Layout.${locale}.properties`).default;
 
   return (
     <>
@@ -41,6 +43,7 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
         </nav>
       </header>
       <main className={styles.main}>{children}</main>
+      <Footer />
     </>
   );
 };

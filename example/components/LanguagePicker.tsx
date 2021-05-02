@@ -1,9 +1,10 @@
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import {
-  getSupportedLocales,
-  getDefaultLocale
+  getActualLocales,
+  getActualDefaultLocale
 } from 'next-intl-router/lib/helpers/getLocalesDetails';
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { IntlLink } from 'next-intl-router/lib/intl-link';
 import localeStrings from './localeStrings.json';
 import styles from './LanguagePicker.module.css';
@@ -21,11 +22,11 @@ const LanguagePicker = (): ReactElement => {
     pathname,
     locale: currentLocale,
     locales,
-    defaultLocale: multilingual
+    defaultLocale
   } = useRouter();
 
-  const supportedLocales = getSupportedLocales(locales, multilingual);
-  const defaultLocale = getDefaultLocale(supportedLocales);
+  const actualLocales = getActualLocales(locales, defaultLocale);
+  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
 
   return (
     <div className={styles.languagePicker}>
@@ -34,13 +35,13 @@ const LanguagePicker = (): ReactElement => {
         <i></i>
       </button>
       <div>
-        {supportedLocales
+        {actualLocales
           .filter((locale) => locale !== currentLocale)
           .map((locale) => {
             return (
               <IntlLink
                 key={locale}
-                href={locale === defaultLocale ? pathname : asPath}
+                href={locale === actualDefaultLocale ? pathname : asPath}
                 locale={locale}
               >
                 <a

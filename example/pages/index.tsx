@@ -1,7 +1,7 @@
 import Cookies from 'nookies';
 import {
-  getSupportedLocales,
-  getDefaultLocale
+  getActualLocales,
+  getActualDefaultLocale
 } from 'next-intl-router/lib/helpers/getLocalesDetails';
 import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
@@ -39,15 +39,15 @@ export const getServerSideProps: GetServerSideProps = async (
     defaultLocale: multilingual
   } = getServerSidePropsContext;
 
-  const supportedLocales = getSupportedLocales(locales, multilingual);
-  const defaultLocale = getDefaultLocale(supportedLocales);
+  const actualLocales = getActualLocales(locales, multilingual);
+  const actualDefaultLocale = getActualDefaultLocale(locales, multilingual);
   const cookies = Cookies.get(getServerSidePropsContext);
   let currentLocale = locale;
 
   if (locale === multilingual) {
     // TODO: add a script that sets NEXT_LOCALE on initial page load (client-side)
     let cookieLocale = cookies['NEXT_LOCALE'];
-    if (cookieLocale && !supportedLocales.includes(cookieLocale)) {
+    if (cookieLocale && !actualLocales.includes(cookieLocale)) {
       // Delete the cookie if the value is invalid (e.g. been tampered with).
       Cookies.destroy(getServerSidePropsContext, 'NEXT_LOCALE');
       cookieLocale = undefined;
@@ -57,8 +57,8 @@ export const getServerSideProps: GetServerSideProps = async (
       ? cookieLocale
       : resolveAcceptLanguage(
           req.headers['accept-language'],
-          supportedLocales,
-          defaultLocale
+          actualLocales,
+          actualDefaultLocale
         );
   }
 
