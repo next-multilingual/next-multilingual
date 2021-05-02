@@ -13,10 +13,7 @@ export function useRewrites(): Rewrite[] {
     getClientBuildManifest()
       .then((manifest) => {
         // Next.js needs to add types https://github.com/vercel/next.js/blob/d130f63c416b21adc67dc3c755ad6e1a707e2cc8/packages/next/build/webpack/plugins/build-manifest-plugin.ts#L41
-        if (typeof manifest.__rewrites !== undefined) {
-          const manifestRewrites = (manifest.__rewrites as unknown) as ManifestRewrites;
-          setRewrites(manifestRewrites.afterFiles);
-        }
+        setRewrites(((manifest.__rewrites as unknown) as ManifestRewrites).afterFiles as Rewrite[]);
       })
       .catch(console.error);
   }, []);
