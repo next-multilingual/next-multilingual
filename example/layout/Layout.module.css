@@ -25,15 +25,11 @@
   margin: 1rem;
 }
 
-.nav a {
+.nav a, .nav a:visited {
   text-decoration: none;
   color: grey;
   font-weight: 600;
   margin: 1rem;
-}
-
-.nav a:visited {
-  color: inherit;
 }
 
 .nav a:hover {

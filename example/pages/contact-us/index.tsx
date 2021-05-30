@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { IntlLink } from 'next-intl-router/lib/intl-link';
+import { IntlLink } from 'next-multilingual/lib/intl-link';
 import Layout from '../../layout/Layout';
 
 export default function ContactUs(): ReactElement {

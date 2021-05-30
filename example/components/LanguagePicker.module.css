@@ -6,14 +6,14 @@
 
 .languagePicker > button > i {
   box-sizing: border-box;
-  position: relative;
+  position: absolute;
   display: inline;
+  right: 1.5rem;
   transform: scale(var(--ggs, 1));
   width: 1.375rem;
   height: 1.375rem;
   border: 0.125rem solid transparent;
   border-radius: 100px;
-  margin: 0 0.625rem;
 }
 
 .languagePicker > button > i::after {
@@ -31,11 +31,11 @@
 }
 
 .languagePicker > button {
-  width: 11.875rem;
+  width: 13.875rem;
 }
 
 .languagePicker > button + div a {
-  width: 9.875rem;
+  width: 11.875rem;
 }
 
 .languagePicker > button {

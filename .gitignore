@@ -1,7 +1,13 @@
-# IDE
+# IDE config
 .idea
 .vscode
 
-node_modules
+# Node dependencies
+node_modules/
 
-lib
+# Compiled Javascript package
+/lib/
+
+# Next.js files
+.next/
+.env.local

@@ -1,15 +1,16 @@
 {
-  "name": "next-intl-router-example",
+  "name": "next-multilingual-example",
   "private": true,
   "license": "MIT",
   "scripts": {
     "dev": "cross-env ../node_modules/.bin/next dev",
     "build": "cross-env ../node_modules/.bin/next build",
-    "start": "cross-env ../node_modules/.bin/next start"
+    "start": "cross-env ../node_modules/.bin/next start",
+    "reset": "rm -Rf ./node_module && rm -Rf ./next && npm install"
   },
   "dependencies": {
     "cross-env": "^7.0.3",
-    "next-intl-router": "file:..",
+    "next-multilingual": "file:..",
     "nookies": "^2.5.2",
     "properties-json-loader": "^2.3.0",
     "resolve-accept-language": "^1.0.12"

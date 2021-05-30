@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { resolve } from 'path';
 
 import React, { ReactElement } from 'react';
-import { getSourceUrl } from './helpers/getSourceUrl';
+import { getSourceUrl } from '../helpers/getSourceUrl';
 
 let __rewrites: Rewrite[] = null;
 
@@ -28,7 +28,7 @@ function useRewriteSource(path: string, locale: string): string {
   return getSourceUrl({ rewrites, locale, path });
 }
 
-export function IntlLink({
+export function MulLink({
   href,
   locale,
   ...props

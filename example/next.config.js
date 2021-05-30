@@ -1,19 +1,13 @@
-const IntlRouter = require('next-intl-router').default;
-const {
-  getActualLocales
-} = require('next-intl-router/lib/helpers/getLocalesDetails');
+const { MulRouter } = require('next-multilingual/router');
 
-// This required for dynamic locale resolution for requests on `/`.
-const defaultLocale = 'mul';
-// The (real) default locale used by `getLocalesDetails` will be the first non-default locale in the configuration.
-const locales = [defaultLocale, 'en-CA', 'fr-CA'];
-const actualLocales = getActualLocales(locales, defaultLocale);
-const intlRouter = new IntlRouter('pages', actualLocales);
+// The `mul` (multilingual) default locale is required for dynamic locale resolution for requests on `/`.
+const locales = ['mul', 'en-US', 'fr-CA'];
+const mulRouter = new MulRouter(locales);
 
 module.exports = {
   i18n: {
-    locales,
-    defaultLocale,
+    locales: mulRouter.getUrlLocalePrefixes(),
+    defaultLocale: mulRouter.getDefaultUrlLocalePrefix(),
     localeDetection: false
   },
   future: { webpack5: true },
@@ -23,9 +17,9 @@ module.exports = {
   poweredByHeader: false,
   webpack(config, { dev, isServer }) {
     if (isServer && !dev)
-      config.resolve.alias['next-intl-router/lib/link$'] = require.resolve(
-        'next-intl-router/lib/ssr-link'
-      );
+      config.resolve.alias[
+        'next-multilingual/lib/link/index$'
+      ] = require.resolve('next-multilingual/lib/link/ssr');
     config.module.rules.push({
       test: /\.properties$/,
       loader: 'properties-json-loader',
@@ -36,13 +30,13 @@ module.exports = {
     return config;
   },
   async rewrites() {
-    const rewrites = await intlRouter.getRewrites();
+    const rewrites = mulRouter.getRewrites();
     // console.dir('rewrites');
     // console.dir({ rewrites }, { depth: null });
     return rewrites;
   },
   async redirects() {
-    const redirects = await intlRouter.getRedirects();
+    const redirects = mulRouter.getRedirects();
     // console.dir('redirects');
     // console.dir({ redirects }, { depth: null });
     return redirects;

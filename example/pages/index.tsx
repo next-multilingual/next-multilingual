@@ -1,8 +1,9 @@
 import Cookies from 'nookies';
 import {
   getActualLocales,
-  getActualDefaultLocale
-} from 'next-intl-router/lib/helpers/getLocalesDetails';
+  getActualDefaultLocale,
+  normalizeLocale
+} from 'next-multilingual';
 import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
@@ -17,6 +18,7 @@ export default function IndexPage({
   const router = useRouter();
   router.locale = currentLocale; // Overwrite locale with the resolved locale.
   const { locales, defaultLocale, locale } = router;
+  console.dir(router, { depth: null });
 
   return (
     <Layout title={messages.title}>
@@ -59,11 +61,12 @@ export const getServerSideProps: GetServerSideProps = async (
           req.headers['accept-language'],
           actualLocales,
           actualDefaultLocale
-        );
+        ).toLowerCase();
   }
 
-  const messages = (await import(`./index.${currentLocale}.properties`))
-    .default as Messages;
+  const messages = (
+    await import(`./index.${normalizeLocale(currentLocale)}.properties`)
+  ).default as Messages;
 
   return {
     props: {

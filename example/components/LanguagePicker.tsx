@@ -1,11 +1,12 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
 import {
+  normalizeLocale,
   getActualLocales,
   getActualDefaultLocale
-} from 'next-intl-router/lib/helpers/getLocalesDetails';
+} from 'next-multilingual';
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
-import { IntlLink } from 'next-intl-router/lib/intl-link';
+import { MulLink } from 'next-multilingual/link';
 import localeStrings from './localeStrings.json';
 import styles from './LanguagePicker.module.css';
 import { setCookie } from 'nookies';
@@ -31,7 +32,7 @@ const LanguagePicker = (): ReactElement => {
   return (
     <div className={styles.languagePicker}>
       <button>
-        {localeStrings[currentLocale]}
+        {localeStrings[normalizeLocale(currentLocale)]}
         <i></i>
       </button>
       <div>
@@ -39,7 +40,7 @@ const LanguagePicker = (): ReactElement => {
           .filter((locale) => locale !== currentLocale)
           .map((locale) => {
             return (
-              <IntlLink
+              <MulLink
                 key={locale}
                 href={locale === actualDefaultLocale ? pathname : asPath}
                 locale={locale}
@@ -50,9 +51,9 @@ const LanguagePicker = (): ReactElement => {
                   }}
                   suppressHydrationWarning={true}
                 >
-                  {localeStrings[locale]}
+                  {localeStrings[normalizeLocale(locale)]}
                 </a>
-              </IntlLink>
+              </MulLink>
             );
           })}
       </div>

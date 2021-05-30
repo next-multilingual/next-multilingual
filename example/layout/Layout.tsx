@@ -1,11 +1,12 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
-import { IntlHead } from 'next-intl-router/lib/intl-head';
+import { MulHead } from 'next-multilingual/head';
 import { useRouter } from 'next/router';
 import type { ReactElement, ReactNode } from 'react';
 import LanguagePicker from '../components/LanguagePicker';
 import Footer from '../components/Footer';
 import styles from './Layout.module.css';
-import { IntlLink } from 'next-intl-router/lib/intl-link';
+import { MulLink } from 'next-multilingual/link';
+import { getStringsFileSuffix, normalizeLocale } from 'next-multilingual';
 
 interface LayoutProps {
   title: string;
@@ -14,32 +15,33 @@ interface LayoutProps {
 
 const Layout = ({ title, children }: LayoutProps): ReactElement => {
   const { locale } = useRouter();
-  const messages = require(`./Layout.${locale}.properties`).default;
+  const messages = require(`./Layout.${normalizeLocale(locale)}.properties`)
+    .default;
 
   return (
     <>
-      <IntlHead>
+      <MulHead>
         <title>{title}</title>
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         />
-      </IntlHead>
+      </MulHead>
       <header className={styles.header}>
         <div>
           <a href="/">{messages.header}</a>
         </div>
         <LanguagePicker />
         <nav className={styles.nav}>
-          <IntlLink href="/">
+          <MulLink href="/">
             <a>{messages.home}</a>
-          </IntlLink>
-          <IntlLink href="/about-us">
+          </MulLink>
+          <MulLink href="/about-us">
             <a>{messages.aboutUs}</a>
-          </IntlLink>
-          <IntlLink href="/contact-us">
+          </MulLink>
+          <MulLink href="/contact-us">
             <a>{messages.contactUs}</a>
-          </IntlLink>
+          </MulLink>
         </nav>
       </header>
       <main className={styles.main}>{children}</main>

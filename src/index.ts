@@ -35,4 +35,21 @@ export function getActualDefaultLocale(locales: string[], defaultLocale: string)
   return getActualLocales(locales, defaultLocale).shift();
 }
 
-export default { getActualLocales, getActualDefaultLocale };
+/**
+ * Get a normalized locale identifier.
+ *
+ * `next-multilingual` only uses locale identifiers following the `language`-`country` format. Locale identifiers
+ * are case insensitive and can be lowercase, however it is recommended by ISO 3166 convention that language codes
+ * are lowercase and country codes are uppercase.
+ *
+ * @param locales - A locale identifier.
+ *
+ * @returns The normalized locale identifier following the ISO 3166 convention.
+ */
+export function normalizeLocale(locale: string): string {
+  if (!locale.includes('-')) {
+    throw new Error('invalid locale identifier (expecting `language`-`country` format)');
+  }
+  const [languageCode, countryCode] = locale.split('-');
+  return `${languageCode.toLowerCase()}-${countryCode.toUpperCase()}`;
+}

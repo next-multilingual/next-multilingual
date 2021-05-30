@@ -1,17 +1,17 @@
 import React, { ReactElement } from 'react';
-
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { useRewriteSource } from './hooks/useRewriteSource';
+import { useRewriteSource } from '../hooks/useRewriteSource';
 
 /**
- * IntlLink is a wrapper around Link what will grab the localized path based on the locale
+ * MulLink is a wrapper around Link what provide localized URLs.
+ *
  * @param href - a localized path
  * @param locale - the locale to grab the correct localized path
  * @param props - { LinkProps }
  * @returns { ReactElement } - returns the Link component where the href will point to the  localized path
  */
-export function IntlLink({
+export function MulLink({
   href,
   locale,
   ...props

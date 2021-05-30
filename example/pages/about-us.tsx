@@ -1,3 +1,4 @@
+import { normalizeLocale } from 'next-multilingual';
 import type { GetServerSidePropsContext, GetStaticProps } from 'next';
 import type { ReactElement } from 'react';
 import Layout from '../layout/Layout';
@@ -17,9 +18,9 @@ export default function AboutUs({
 export const getStaticProps: GetStaticProps = async ({
   locale
 }: GetServerSidePropsContext) => {
-  // TODO: check if there is a way to find the file name automatically - e.g. import(`./${__filename.replace('.tsx', `${locale}.properties`)}`)
-  const messages = (await import(`./about-us.${locale}.properties`))
-    .default as Messages;
+  const messages = (
+    await import(`./about-us.${normalizeLocale(locale)}.properties`)
+  ).default as Messages;
 
   return {
     props: {

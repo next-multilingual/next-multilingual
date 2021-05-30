@@ -1,8 +1,32 @@
 {
-  "name": "next-intl-router",
+  "name": "next-multilingual",
+  "description": "An opinionated end-to-end multilingual solution for Next.js.",
   "version": "0.0.1",
   "license": "MIT",
-  "main": "./lib/intl-router.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./router": "./lib/router/index.js",
+    "./link": "./lib/link/index.js",
+    "./head": "./lib/head/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "router": [
+        "lib/router/index.d.ts"
+      ],
+      "link": [
+        "lib/link/index.d.ts"
+      ],
+      "head": [
+        "lib/head/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "lib"
+  ],
   "type": "commonjs",
   "engines": {
     "node": ">=13"
@@ -16,7 +40,7 @@
   },
   "scripts": {
     "build_watch": "npm-watch",
-    "build": "tsc",
+    "build": "rm -Rf ./lib && tsc",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "lint": "eslint --ext js,jsx,ts,tsx --fix"
   },
