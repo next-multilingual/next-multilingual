@@ -13,7 +13,7 @@
     "next-multilingual": "file:..",
     "nookies": "^2.5.2",
     "properties-json-loader": "^2.3.0",
-    "resolve-accept-language": "^1.0.12"
+    "resolve-accept-language": "^1.0.19"
   },
   "prettier": {
     "singleQuote": true,
