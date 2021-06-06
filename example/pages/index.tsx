@@ -9,12 +9,15 @@ import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import resolveAcceptLanguage from 'resolve-accept-language';
 import Layout from '../layout/Layout';
-import type { Messages, ServerSideMessagesProps } from '../types/MessagesTypes';
+import type {
+  MulMessages,
+  MulMessagesServerSideProps
+} from 'next-multilingual/messages';
 
 export default function IndexPage({
   messages,
   currentLocale
-}: ServerSideMessagesProps): ReactElement {
+}: MulMessagesServerSideProps): ReactElement {
   const router = useRouter();
   router.locale = currentLocale; // Overwrite locale with the resolved locale.
   const { locales, defaultLocale, locale } = router;
@@ -66,7 +69,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
   const messages = (
     await import(`./index.${normalizeLocale(currentLocale)}.properties`)
-  ).default as Messages;
+  ).default as MulMessages;
 
   return {
     props: {

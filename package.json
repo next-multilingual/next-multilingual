@@ -9,7 +9,8 @@
     ".": "./lib/index.js",
     "./router": "./lib/router/index.js",
     "./link": "./lib/link/index.js",
-    "./head": "./lib/head/index.js"
+    "./head": "./lib/head/index.js",
+    "./messages": "./lib/messages/index.js"
   },
   "typesVersions": {
     "*": {
@@ -21,6 +22,9 @@
       ],
       "head": [
         "lib/head/index.d.ts"
+      ],
+      "messages": [
+        "lib/messages/index.d.ts"
       ]
     }
   },

@@ -4,18 +4,19 @@ import { useRouter } from 'next/router';
 import { useRewriteSource } from '../hooks/useRewriteSource';
 
 /**
- * MulLink is a wrapper around Link what provide localized URLs.
+ * MulLink is a wrapper around Next.js' `Link` that provides localized URLs.
  *
  * @param href - a localized path
  * @param locale - the locale to grab the correct localized path
- * @param props - { LinkProps }
- * @returns { ReactElement } - returns the Link component where the href will point to the  localized path
+ * @param props - Any property available on the `LinkProps` (properties of the Next.js' `Link` component)
+ *
+ * @returns The `Link` component with the correct localized URLs.
  */
 export function MulLink({
   href,
   locale,
   ...props
-}: LinkProps & { href: string; locale?: string }): ReactElement {
+}: React.PropsWithChildren<LinkProps> & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
   const source = useRewriteSource({
     path: href,

@@ -24,4 +24,6 @@ Look in the `example` directory to see a complete implementation in action.
 TODO:
 
 - understand/document links
+- link titles?
 - understand/document head
+- add strings key prefix support

@@ -197,23 +197,6 @@ export class MulRouter {
     title = parseProperties(stringsFileContent).title as string;
     title = title.replace(/[ /-]+/g, '-');
     return title;
-
-    // const isPagesDirectoryPath = this.pagesDirectoryPath === directoryPath;
-    // try {
-    //   const stringsFileContent = readFileSync(stringsFilePath, 'utf8');
-    //   title = parseProperties(stringsFileContent).title as string;
-    // } catch (error) {
-    //   if (error.code !== 'ENOENT') {
-    //     console.error(error);
-    //   }
-    // }
-    // if (title === undefined) {
-    //   return identifier && (isPagesDirectoryPath || identifier !== 'index')
-    //     ? identifier
-    //     : basename(directoryPath);
-    // }
-
-    // return title.replace(/[ /-]+/g, '-');
   }
 
   /**

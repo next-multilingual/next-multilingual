@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { IntlLink } from 'next-multilingual/lib/intl-link';
+import { MulLink } from 'next-multilingual/link';
 import Layout from '../../layout/Layout';
 
 export default function ContactUs(): ReactElement {
@@ -13,9 +13,9 @@ export default function ContactUs(): ReactElement {
       </label>
       <button type="submit">Send</button>
       <br />
-      <IntlLink href="/contact-us/message-sent">
+      <MulLink href="/contact-us/message-sent">
         <a>IntlLink with page id</a>
-      </IntlLink>
+      </MulLink>
     </Layout>
   );
 }

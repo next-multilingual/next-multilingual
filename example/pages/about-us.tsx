@@ -2,11 +2,14 @@ import { normalizeLocale } from 'next-multilingual';
 import type { GetServerSidePropsContext, GetStaticProps } from 'next';
 import type { ReactElement } from 'react';
 import Layout from '../layout/Layout';
-import type { Messages, StaticMessagesProps } from '../types/MessagesTypes';
+import type {
+  MulMessages,
+  MulMessagesStaticProps
+} from 'next-multilingual/messages';
 
 export default function AboutUs({
   messages
-}: StaticMessagesProps): ReactElement {
+}: MulMessagesStaticProps): ReactElement {
   return (
     <Layout title={messages.title}>
       <h1>{messages.title}</h1>
@@ -20,7 +23,7 @@ export const getStaticProps: GetStaticProps = async ({
 }: GetServerSidePropsContext) => {
   const messages = (
     await import(`./about-us.${normalizeLocale(locale)}.properties`)
-  ).default as Messages;
+  ).default as MulMessages;
 
   return {
     props: {
