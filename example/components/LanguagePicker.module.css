@@ -1,14 +1,14 @@
 .languagePicker {
-  float: right;
-  margin: 0 2rem 0 0;
+  margin: 0 0.5rem 0 0;
   padding: 0;
+  order: 42;
 }
 
 .languagePicker > button > i {
   box-sizing: border-box;
   position: absolute;
   display: inline;
-  right: 1.5rem;
+  right: 2rem;
   transform: scale(var(--ggs, 1));
   width: 1.375rem;
   height: 1.375rem;

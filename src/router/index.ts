@@ -96,7 +96,7 @@ export class MulRouter {
   }
 
   /**
-   * Get the URL's locale prefixes.
+   * Get the URL locale prefixes.
    *
    * @return The locales prefixes, all in lowercase.
    */
@@ -105,7 +105,7 @@ export class MulRouter {
   }
 
   /**
-   * Get the URL's default locale prefix.
+   * Get the URL default locale prefix.
    *
    * @return The default locale prefix, in lowercase.
    */
