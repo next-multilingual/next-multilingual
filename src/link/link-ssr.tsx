@@ -33,14 +33,8 @@ function getRewrites(): Rewrite[] {
   console.log(`cmSrc: ${bmSrc}`);
   const self = {} as { __BUILD_MANIFEST: { __rewrites: ManifestRewrites } };
   new Function('self', cmSrc)(self);
-  return (__rewrites = self.__BUILD_MANIFEST.__rewrites.afterFiles);
-}
 
-function useLocalizedUrl(locale: string, path: string): string {
-  const rewrites = getRewrites();
-  console.log(`rewrites:`);
-  console.dir(rewrites);
-  return getLocalizedUrl(rewrites, locale, path);
+  return (__rewrites = self.__BUILD_MANIFEST.__rewrites.afterFiles);
 }
 
 export function MulLink({
@@ -50,6 +44,6 @@ export function MulLink({
 }: LinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
   locale = locale ? locale : router.locale;
-  const sourceUrl = useLocalizedUrl(locale, href);
+  const sourceUrl = getLocalizedUrl(getRewrites(), locale, href);
   return <Link href={sourceUrl} locale={locale} {...props} />;
 }
