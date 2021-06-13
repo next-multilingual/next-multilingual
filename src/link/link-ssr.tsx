@@ -6,7 +6,8 @@ import { useRouter } from 'next/router';
 import { resolve } from 'path';
 
 import React, { ReactElement } from 'react';
-import { getSourceUrl } from '../helpers/getSourceUrl';
+
+import { getLocalizedUrl } from '../helpers/getLocalizedUrl';
 
 console.log('!!!! SSSR !!!!');
 
@@ -35,11 +36,11 @@ function getRewrites(): Rewrite[] {
   return (__rewrites = self.__BUILD_MANIFEST.__rewrites.afterFiles);
 }
 
-function useRewriteSource(path: string, locale: string): string {
+function useLocalizedUrl(locale: string, path: string): string {
   const rewrites = getRewrites();
   console.log(`rewrites:`);
   console.dir(rewrites);
-  return getSourceUrl({ rewrites, locale, path });
+  return getLocalizedUrl(rewrites, locale, path);
 }
 
 export function MulLink({
@@ -48,6 +49,7 @@ export function MulLink({
   ...props
 }: LinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
-  const _href = useRewriteSource(href, locale || router.locale);
-  return <Link href={_href} locale={locale} {...props} />;
+  locale = locale ? locale : router.locale;
+  const sourceUrl = useLocalizedUrl(locale, href);
+  return <Link href={sourceUrl} locale={locale} {...props} />;
 }

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { getBasePath } from '../helpers/getBasePath';
 import { getOrigin } from '../helpers/getOrigin';
-import { getSourceUrl } from '../helpers/getSourceUrl';
+import { getLocalizedUrl } from '../helpers/getLocalizedUrl';
 import { useRewrites } from './useRewrites';
 
 interface AlternateLink {
@@ -14,20 +14,20 @@ interface AlternateLink {
  * in next.config.js file
  */
 export function useAlternateLinks(): AlternateLink[] {
-  const { basePath, pathname, locales } = useRouter();
+  const { basePath, pathname: urlPath, locales } = useRouter();
   const rewrites = useRewrites();
 
   const origin = getOrigin();
-  const alternateLinks = locales.map((lang) => {
-    const alternateLink = getSourceUrl({ rewrites, locale: lang, path: pathname });
+  const alternateLinks = locales.map((locale) => {
+    const alternateLink = getLocalizedUrl(rewrites, locale, urlPath);
 
     return {
       href: `${origin}${getBasePath(basePath)}${removeInitialSlash(alternateLink)}`,
-      hrefLang: lang,
+      hrefLang: locale,
     };
   });
 
-  const withPathname = pathname !== '/' ? removeInitialSlash(pathname) : '';
+  const withPathname = urlPath !== '/' ? removeInitialSlash(urlPath) : '';
 
   const _href = `${origin}${getBasePath(basePath)}${withPathname}`;
 

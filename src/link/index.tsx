@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { useRewriteSource } from '../hooks/useRewriteSource';
+import { useLocalizedUrl } from '../hooks/useLocalizedUrl';
 
 const isServer = typeof window === 'undefined';
 
@@ -24,10 +24,8 @@ export function MulLink({
   ...props
 }: React.PropsWithChildren<LinkProps> & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
-  const source = useRewriteSource({
-    path: href,
-    locale: locale || router.locale,
-  });
+  locale = locale ? locale : router.locale;
+  const sourceUrl = useLocalizedUrl(locale, href);
 
-  return <Link href={source} locale={locale} {...props} />;
+  return <Link href={sourceUrl} locale={locale} {...props} />;
 }

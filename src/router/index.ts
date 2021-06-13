@@ -202,7 +202,7 @@ export class MulRouter {
   /**
    * Encode a URL path.
    *
-   * @param urlPath - the URL path.
+   * @param urlPath - The URL path.
    *
    * @returns The encoded URL path.
    */
