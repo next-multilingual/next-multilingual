@@ -1,7 +1,7 @@
 import { normalizeLocale } from 'next-multilingual';
 import type { GetServerSidePropsContext, GetStaticProps } from 'next';
 import type { ReactElement } from 'react';
-import Layout from '../layout/Layout';
+import Layout from '@/layout';
 import type {
   MulMessages,
   MulMessagesStaticProps

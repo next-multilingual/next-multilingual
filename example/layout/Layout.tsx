@@ -1,8 +1,8 @@
 import { MulHead } from 'next-multilingual/head';
 import { useRouter } from 'next/router';
 import type { ReactElement, ReactNode } from 'react';
-import LanguagePicker from '../components/LanguagePicker';
-import Footer from '../components/Footer';
+import LanguagePicker from '@/components/LanguagePicker';
+import Footer from '@/components/Footer';
 import styles from './Layout.module.css';
 import { MulLink } from 'next-multilingual/link';
 import { normalizeLocale } from 'next-multilingual';

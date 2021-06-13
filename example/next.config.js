@@ -15,11 +15,16 @@ module.exports = {
     origin: 'http://localhost:3000'
   },
   poweredByHeader: false,
-  webpack(config, { dev, isServer }) {
-    if (isServer && !dev)
-      config.resolve.alias[
-        'next-multilingual/lib/link/index$'
-      ] = require.resolve('next-multilingual/lib/link/ssr');
+  webpack(config, { isServer }) {
+    // console.dir(config, { depth: null });
+    if (isServer) {
+      console.dir(config.resolve.alias);
+      config.resolve.alias['next-multilingual/link'] = require.resolve(
+        'next-multilingual/link-ssr'
+      );
+      console.dir(config.resolve.alias);
+    }
+
     config.module.rules.push({
       test: /\.properties$/,
       loader: 'properties-json-loader',

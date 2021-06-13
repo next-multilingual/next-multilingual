@@ -8,7 +8,7 @@ import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import resolveAcceptLanguage from 'resolve-accept-language';
-import Layout from '../layout/Layout';
+import Layout from '@/layout';
 import type {
   MulMessages,
   MulMessagesServerSideProps

@@ -24,6 +24,7 @@ Look in the `example` directory to see a complete implementation in action.
 TODO:
 
 - understand/document links
-- link titles?
+- link titles? (not supported by Next.js?)
+- fix example `npm run build`
 - understand/document head
 - add strings key prefix support

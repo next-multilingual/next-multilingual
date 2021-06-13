@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { MulLink } from 'next-multilingual/link';
-import Layout from '../../layout/Layout';
+import Layout from '@/layout';
 
 export default function ContactUs(): ReactElement {
   return (

@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import Layout from '../../layout/Layout';
+import Layout from '@/layout';
 
 export default function MessageSent(): ReactElement {
   return (

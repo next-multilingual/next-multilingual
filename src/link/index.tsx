@@ -3,6 +3,12 @@ import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { useRewriteSource } from '../hooks/useRewriteSource';
 
+const isServer = typeof window === 'undefined';
+
+if (isServer) {
+  console.log('this is the server');
+}
+
 /**
  * MulLink is a wrapper around Next.js' `Link` that provides localized URLs.
  *
