@@ -9,7 +9,7 @@
     ".": "./lib/index.js",
     "./router": "./lib/router/index.js",
     "./link": "./lib/link/index.js",
-    "./link-ssr": "./lib/link/link-ssr.js",
+    "./link-ssr": "./lib/link/ssr.js",
     "./head": "./lib/head/index.js",
     "./messages": "./lib/messages/index.js"
   },
@@ -22,7 +22,7 @@
         "lib/link/index.d.ts"
       ],
       "link-ssr": [
-        "lib/link/link-ssr.d.ts"
+        "lib/link/ssr.d.ts"
       ],
       "head": [
         "lib/head/index.d.ts"
