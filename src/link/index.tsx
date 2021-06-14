@@ -19,6 +19,6 @@ export function MulLink({
 }: React.PropsWithChildren<LinkProps> & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
   locale = locale ? locale : router.locale;
-  const sourceUrl = useLocalizedUrl(locale, href);
-  return <Link href={sourceUrl} locale={locale} {...props} />;
+  const localizedUrl = useLocalizedUrl(locale, href);
+  return <Link href={localizedUrl} locale={locale} {...props} />;
 }
