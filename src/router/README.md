@@ -6,7 +6,7 @@ What this means concretely is that instead of having (it also supports UTF-8 cha
 
 ```
 English: https://somesite.com/en-us/about-us
-French: https://somesite.com/fr-fr/contact-us
+French: https://somesite.com/fr-ca/contact-us
 ```
 
 You can now have the following localized URLs:
@@ -24,7 +24,57 @@ The hypothesis by having localized URLs:
 
 ## Usage
 
-Look in `example/next.config.js` to see a complete implementation in action.
+Look in the `example` directory to see a complete implementation in action.
+
+Here are the step by step actions that were applied on the example:
+
+1) Add the following configuration in `next.config.js`
+
+```js
+const { MulRouter } = require('next-multilingual/router');
+
+// The `mul` (multilingual) default locale is required for dynamic locale resolution for requests on `/`.
+const locales = ['mul', 'en-US', 'fr-CA'];
+const mulRouter = new MulRouter(locales);
+
+module.exports = {
+  i18n: {
+    locales: mulRouter.getUrlLocalePrefixes(),
+    defaultLocale: mulRouter.getDefaultUrlLocalePrefix(),
+    localeDetection: false
+  },
+  future: { webpack5: true },
+  publicRuntimeConfig: {
+    origin: 'http://localhost:3000'
+  },
+  poweredByHeader: false,
+  webpack(config, { isServer }) {
+    if (isServer) {
+      config.resolve.alias['next-multilingual/link$'] = require.resolve(
+        'next-multilingual/link-ssr'
+      );
+    }
+
+    config.module.rules.push({
+      test: /\.properties$/,
+      loader: 'properties-json-loader',
+      options: {
+        namespaces: false
+      }
+    });
+
+    return config;
+  },
+  async rewrites() {
+    return mulRouter.getRewrites();
+  },
+  async redirects() {
+    return mulRouter.getRedirects();
+  }
+};
+```
+
+2) Add pages in the `pages` directory and for each page, add a `<Page-Name>.<locale>.properties` for all locales - localized routes will use the `title` key of the file to use in the localized URLs.
 
 ## How does it work?
 
