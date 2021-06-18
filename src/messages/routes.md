@@ -22,14 +22,14 @@ One feature that seems to lack on many website is localized URLs. We can see man
 use this today. So what does a good localized URL look like?
 
 - the homepage (/) will detect the best supported locale and show this content (its the only URL without a locale)
-- all other URLs are prefixed by standard BCP47 codes (languade codes are not sufficient to cover date, numbers and
+- all other URLs are prefixed by standard BCP47 codes (language codes are not sufficient to cover date, numbers and
   other format)
 - all URLs should use UTF-8 characters (depending on the targeted user) in the segments following the BCP47 codes
   (https://support.google.com/webmasters/thread/13540685)
-- all spaces should be replaced by hypens (https://developers.google.com/search/docs/advanced/guidelines/url-structure)
+- all spaces should be replaced by hyphens (https://developers.google.com/search/docs/advanced/guidelines/url-structure)
 - all URLs are kept lowercase for stylistic reasons (other than potential variables that would contain an identifier)
 - all URLs should be treated as cases sensitive to avoid SEO penalties of having duplicate content
-- no indexable URL should have dupicate content used by another URL to avoid negative SEO impact
+- no indexable URL should have duplicate content used by another URL to avoid negative SEO impact
 - no URL should end with a slash
 - URL segment variables should be used instead of query parameters
 - there should be a link between localized URLs pointing to the same page to enable the use of a smart language switcher
@@ -41,19 +41,19 @@ localization process works. On top of that, languages are inherently complex. Su
 standard and many countries (like the U.S.) will think twice before doing that, mainly because of their local market.
 And what happens is when the need arise, implementing this correctly can be disruptive and a lot of implementations will
 end up requiring manual steps on top of being fragile. Even supporting two languages is easy to get wrong when you add
-more languages if details like plural rules, date, number formating and text direction is not considered from the
+more languages if details like plural rules, date, number formatting and text direction is not considered from the
 beginning. Now if we want to start good i18n with URLs, we are adding one more layer of complexity.
 
 ## How does this fit into the development cycle?
 
-As we automate everything, most companies want to merge to the `master` branch and automaticaly deploy their
+As we automate everything, most companies want to merge to the `master` branch and automatically deploy their
 applications. What about localization? Traditionally most big companies had their own translation management system
 (TMS) and doing localization was a complex and costly process that would require custom development to automate.
 Recently most commercial TMS have started supporting automation using standard development data repository such as Git.
 On top of that, a lot of smaller players are offering continuous localization as a service today.
 
 What does this mean? This means that if we find a good way to both support URL and string localization that fits into
-continous locaization solutions, we no longer need custom development or manual steps.
+continuous localization solutions, we no longer need custom development or manual steps.
 
 ## How does continuous localization work today?
 
@@ -69,8 +69,8 @@ and merge them back to `master` once the localization has been returned back int
   code and can become complex/fragile when trying to automate the process.
 - Using the right file format: a lot of solutions out there use JSON to store strings. While this can be convenient for
   developers, there is no way to provide context (comments) with the strings. This is why it's better to use a widely
-  supported format like the Java Bundle `.propeties` files to make sure that linguists will have all the information
-  they need when translating a string. Other benefits of using `.propeties` files is that they only support key and
+  supported format like the Java Bundle `.properties` files to make sure that linguists will have all the information
+  they need when translating a string. Other benefits of using `.properties` files is that they only support key and
   values unlike JSON for example. They are also well integrated with IDEs which can often bundle the files together and
   compare strings across languages.
 - Using unique keys: developers do not like repetition in code and reusability is always the preferred approach. This

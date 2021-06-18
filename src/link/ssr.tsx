@@ -1,8 +1,15 @@
 import React, { ReactElement } from 'react';
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { getLocalizedUrl } from '../helpers/getLocalizedUrl';
-import { getRewrites } from '../helpers/getRewrites';
+import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { getRewrites } from '../helpers/get-rewrites';
+
+// Throw a clear error is this is included by mistake on the client side.
+if (typeof window !== 'undefined') {
+  throw new Error(
+    'please use the `next-multilingual/link` on the client side, not `next-multilingual/link-ssr`'
+  );
+}
 
 /**
  * MulLink is a wrapper around Next.js' `Link` that provides localized URLs.

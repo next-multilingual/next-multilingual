@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { useLocalizedUrl } from '../hooks/useLocalizedUrl';
+import { useLocalizedUrl } from '../hooks/use-localized-url';
 
 /**
  * MulLink is a wrapper around Next.js' `Link` that provides localized URLs.

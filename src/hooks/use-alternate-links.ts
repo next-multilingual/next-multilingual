@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
-import { getBasePath } from '../helpers/getBasePath';
-import { getOrigin } from '../helpers/getOrigin';
-import { getLocalizedUrl } from '../helpers/getLocalizedUrl';
-import { useRewrites } from './useRewrites';
+import { getBasePath } from '../helpers/get-base-path';
+import { getOrigin } from '../helpers/get-origin';
+import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { useRewrites } from './use-rewrites';
 
 interface AlternateLink {
   href: string;

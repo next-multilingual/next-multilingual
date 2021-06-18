@@ -1,10 +1,7 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
-
-type ManifestRewrites = {
-  afterFiles: Rewrite[];
-};
+import type { ManifestRewrites } from '../types';
 
 /** Local rewrite cache to avoid non-required file system operations. */
 let rewritesCache: Rewrite[];

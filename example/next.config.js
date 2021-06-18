@@ -19,7 +19,7 @@ module.exports = {
     // console.dir(config, { depth: null });
     if (isServer) {
       console.dir(config.resolve.alias);
-      config.resolve.alias['next-multilingual/link'] = require.resolve(
+      config.resolve.alias['next-multilingual/link$'] = require.resolve(
         'next-multilingual/link-ssr'
       );
       console.dir(config.resolve.alias);

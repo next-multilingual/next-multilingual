@@ -1,5 +1,5 @@
-import { getLocalizedUrl } from '../helpers/getLocalizedUrl';
-import { useRewrites } from './useRewrites';
+import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { useRewrites } from './use-rewrites';
 
 /**
  * Hook to get the localized URL from a standard non-localized Next.js URL.

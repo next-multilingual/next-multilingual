@@ -21,6 +21,16 @@ What does this package include?
 
 Look in the `example` directory to see a complete implementation in action.
 
+## Why `next-multilingual`?
+
+Why did we put so much efforts with these details? Because our hypothesis is that it can have a major impact on:
+
+- SEO;
+- boosting customer trust with more locally relevant content;
+- making string management easier and more modular.
+
+More details an be found on the implementation and design decision in the readme files of each API. 
+
 TODO:
 
 - understand/document links

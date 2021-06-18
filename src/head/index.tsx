@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import React, { ReactElement, ReactNode } from 'react';
-import { useAlternateLinks } from '../hooks/useAlternateLinks';
+import { useAlternateLinks } from '../hooks/use-alternate-links';
 
 interface MulHeadProps {
   children?: ReactNode;
