@@ -20,7 +20,7 @@ if (typeof window !== 'undefined') {
  * @param locale - the locale to grab the correct localized path
  * @param props - Any property available on the `LinkProps` (properties of the Next.js' `Link` component)
  *
- * @returns The `Link` component with the correct localized URLs.
+ * @returns The Next.js `Link` component with the correct localized URLs.
  */
 export function MulLink({
   href,
