@@ -33,8 +33,7 @@ More details an be found on the implementation and design decision in the readme
 
 TODO:
 
-- understand/document links
-- fix Router (Rewrite) /en-us/homepage -> /en-us (or remove - it might not be used?)
+- --> title suffix instead?? fix Router (Rewrite) /en-us/homepage -> /en-us (or remove - it might not be used?)
 - link titles? (not supported by Next.js?)
 - fix example `npm run build`
 - understand/document head

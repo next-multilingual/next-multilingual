@@ -92,7 +92,6 @@ export class MulRouter {
     }
     this.excludedPages = excludedPages;
     this.routeCache = this.getRoutes();
-    console.dir(this.routeCache, { depth: null });
   }
 
   /**
@@ -121,12 +120,9 @@ export class MulRouter {
    * @return The Next.js routes.
    */
   private getRoutes(directoryPath = this.pagesDirectoryPath): MultilingualRoute[] {
-    console.log(`Called 'getRoutes' on with ${directoryPath}`);
-
     const routes: MultilingualRoute[] = [];
 
     readdirSync(directoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
-      console.log(directoryEntry.name);
       const directoryEntryPath = resolve(directoryPath, directoryEntry.name);
       if (!directoryEntry.isDirectory()) {
         // Create new routes for matching files.
