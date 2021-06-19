@@ -9,8 +9,6 @@
     "outDir": "lib/",
     "strict": false,
     "declaration": true,
-    "sourceMap": true,
-    "declarationMap": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
