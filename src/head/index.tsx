@@ -1,12 +1,8 @@
 import Head from 'next/head';
-import React, { ReactElement, ReactNode } from 'react';
+import React from 'react';
 import { useAlternateLinks } from '../hooks/use-alternate-links';
 
-interface MulHeadProps {
-  children?: ReactNode;
-}
-
-export function MulHead({ children }: MulHeadProps): ReactElement {
+export function MulHead({ children }: { children: React.ReactNode }): JSX.Element {
   const alternateLinks = useAlternateLinks();
 
   return (
