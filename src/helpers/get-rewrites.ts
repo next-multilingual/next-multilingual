@@ -29,7 +29,7 @@ export function getRewrites(): Rewrite[] {
     'utf8'
   );
 
-  // Transform the client build-manifest back into a function.
+  // Transform the client build-manifest file content back into a usable object.
   const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: ManifestRewrites } };
   new Function('self', clientBuildManifestContent)(clientBuildManifest);
 

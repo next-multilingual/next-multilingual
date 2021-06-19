@@ -10,7 +10,6 @@ module.exports = {
     defaultLocale: mulRouter.getDefaultUrlLocalePrefix(),
     localeDetection: false
   },
-  future: { webpack5: true },
   publicRuntimeConfig: {
     origin: 'http://localhost:3000'
   },
