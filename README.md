@@ -12,9 +12,9 @@ npm install next-multilingual
 
 What does this package include?
 
-- A [multilingual router](/src/router/README.md) `MulRouter` that supports routing on localized URL.
-- [Multilingual links](/src/link/README.md) `<MulLink>` to get URLs in the current locale.
-- A [multilingual `Head` component](/src/head/README.md) `<MulHead>` that generates the correct alternative links for search engines.
+- A [multilingual router](/src/router/README.md) `MulRouter` that supports localized URL routing.
+- [Multilingual links](/src/link/README.md) `<MulLink>`, an extension of Next.js' `<Link>` for localized URLs.
+- A [multilingual `Head` component](/src/head/README.md) `<MulHead>` to generate alternative links (for SEO) in the HTML `<head>`.
 - Modular localized string configuration support that works just like CSS (no more files containing shared strings).
 
 `next-multilingual` has been tested as a whole, and individual components have not been tested separately. It is meant to be a holistic solution to meet all localization needs for Next.js.

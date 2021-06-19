@@ -16,7 +16,7 @@ export default function ContactUs() {
 }
 ```
 
-The browser will show the following link:
+In English the link will show just like in Next.js. But in when another locale is selected, you will get the localized URLs. See the example below for when `fr-ca` is selected:
 
 ```html
 <a href="/fr-ca/nous-joindre">
