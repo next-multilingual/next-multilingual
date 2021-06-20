@@ -42,13 +42,13 @@ export function getActualDefaultLocale(locales: string[], defaultLocale: string)
  * are case insensitive and can be lowercase, however it is recommended by ISO 3166 convention that language codes
  * are lowercase and country codes are uppercase.
  *
- * @param locales - A locale identifier.
+ * @param locale - A locale identifier.
  *
  * @returns The normalized locale identifier following the ISO 3166 convention.
  */
 export function normalizeLocale(locale: string): string {
-  if (!locale.includes('-')) {
-    throw new Error('invalid locale identifier (expecting `language`-`country` format)');
+  if (!/^[a-z]{2}-[A-Z]{2}$/i.test(locale)) {
+    return locale;
   }
   const [languageCode, countryCode] = locale.split('-');
   return `${languageCode.toLowerCase()}-${countryCode.toUpperCase()}`;

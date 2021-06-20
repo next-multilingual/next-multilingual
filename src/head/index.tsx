@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import React from 'react';
+import { normalizeLocale } from '..';
 import { useAlternateLinks } from '../hooks/use-alternate-links';
 
 /**
@@ -16,7 +17,12 @@ export function MulHead({ children }: { children: React.ReactNode }): JSX.Elemen
   return (
     <Head>
       {alternateLinks.map(({ href, hrefLang }) => (
-        <link rel="alternate" href={`${href}`} hrefLang={hrefLang} key={hrefLang} />
+        <link
+          rel="alternate"
+          href={`${href}`}
+          hrefLang={normalizeLocale(hrefLang)}
+          key={hrefLang}
+        />
       ))}
       {children}
     </Head>
