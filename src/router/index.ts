@@ -80,7 +80,7 @@ export class MulRouter {
     locales: string[],
     pagesDirectoryPath = 'pages',
     pagesExtensions = ['.tsx'],
-    excludedPages = ['_app', '_error', '404']
+    excludedPages = ['_app', '_document', '_error', '404']
   ) {
     this.defaultLocale = locales[0];
     this.actualLocales = getActualLocales(locales, this.defaultLocale);
