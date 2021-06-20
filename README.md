@@ -30,11 +30,3 @@ Why did we put so much efforts with these details? Because our hypothesis is tha
 - making string management easier and more modular.
 
 More details an be found on the implementation and design decision in the readme files of each API. 
-
-TODO:
-
-- --> title suffix instead?? fix Router (Rewrite) /en-us/homepage -> /en-us (or remove - it might not be used?)
-- link titles? (not supported by Next.js?)
-- fix example `npm run build`
-- understand/document head
-- add strings key prefix support
