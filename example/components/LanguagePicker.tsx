@@ -18,17 +18,11 @@ function handleClick(value: string): void {
 }
 
 const LanguagePicker = (): ReactElement => {
-  const {
-    asPath,
-    pathname,
-    locale,
-    locales,
-    defaultLocale: multilingual
-  } = useRouter();
+  const { asPath, pathname, locale, locales, defaultLocale } = useRouter();
 
-  const actualLocale = getActualLocale(locale, multilingual, locales);
-  const actualLocales = getActualLocales(locales, multilingual);
-  const actualDefaultLocale = getActualDefaultLocale(locales, multilingual);
+  const actualLocale = getActualLocale(locale, defaultLocale, locales);
+  const actualLocales = getActualLocales(locales, defaultLocale);
+  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
 
   return (
     <div className={styles.languagePicker}>
