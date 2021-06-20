@@ -7,6 +7,7 @@ import styles from './Layout.module.css';
 import { MulLink } from 'next-multilingual/link';
 import { normalizeLocale } from 'next-multilingual';
 import { MulMessages } from 'next-multilingual/messages';
+import { getActualLocale } from '../../lib';
 
 interface LayoutProps {
   title: string;
@@ -14,10 +15,13 @@ interface LayoutProps {
 }
 
 const Layout = ({ title, children }: LayoutProps): ReactElement => {
-  const { locale } = useRouter();
+  const { locale, locales, defaultLocale } = useRouter();
+  const actualLocale = getActualLocale(locale, defaultLocale, locales);
+
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const messages = require(`./Layout.${normalizeLocale(locale)}.properties`)
-    .default as MulMessages;
+  const messages = require(`./Layout.${normalizeLocale(
+    actualLocale
+  )}.properties`).default as MulMessages;
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { normalizeLocale } from 'next-multilingual';
+import { getActualLocale, normalizeLocale } from 'next-multilingual';
 import type { GetServerSidePropsContext, GetStaticProps } from 'next';
 import type { ReactElement } from 'react';
 import Layout from '@/layout';
@@ -19,10 +19,13 @@ export default function AboutUs({
 }
 
 export const getStaticProps: GetStaticProps = async ({
-  locale
+  locale,
+  locales,
+  defaultLocale
 }: GetServerSidePropsContext) => {
+  const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const messages = (
-    await import(`./about-us.${normalizeLocale(locale)}.properties`)
+    await import(`./about-us.${normalizeLocale(actualLocale)}.properties`)
   ).default as MulMessages;
 
   return {

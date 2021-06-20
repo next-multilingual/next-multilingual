@@ -1,8 +1,8 @@
-/* eslint @typescript-eslint/no-var-requires: "off" */
 import {
   normalizeLocale,
   getActualLocales,
-  getActualDefaultLocale
+  getActualDefaultLocale,
+  getActualLocale
 } from 'next-multilingual';
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
@@ -21,23 +21,24 @@ const LanguagePicker = (): ReactElement => {
   const {
     asPath,
     pathname,
-    locale: currentLocale,
+    locale,
     locales,
-    defaultLocale
+    defaultLocale: multilingual
   } = useRouter();
 
-  const actualLocales = getActualLocales(locales, defaultLocale);
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
+  const actualLocale = getActualLocale(locale, multilingual, locales);
+  const actualLocales = getActualLocales(locales, multilingual);
+  const actualDefaultLocale = getActualDefaultLocale(locales, multilingual);
 
   return (
     <div className={styles.languagePicker}>
       <button>
-        {localeStrings[normalizeLocale(currentLocale)]}
+        {localeStrings[normalizeLocale(actualLocale)]}
         <i></i>
       </button>
       <div>
         {actualLocales
-          .filter((locale) => locale !== currentLocale)
+          .filter((locale) => locale !== actualLocale)
           .map((locale) => {
             return (
               <MulLink

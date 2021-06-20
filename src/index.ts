@@ -1,4 +1,24 @@
 /**
+ * Get the actual locale based on the current locale from Next.js.
+ *
+ * To get a dynamic locale resolution on `/` without redirection, we need to add a "multilingual" locale as the
+ * default locale so that we can identify when the homepage is requested without a locale. With this setup it
+ * also means that we can no longer easily know what is the current locale. This function is meant to return the
+ * actual current of locale by replacing the "multilingual" default locale by the actual default locale.
+ *
+ * @param locale - The current locale from Next.js.
+ * @param defaultLocale - The configured i18n default locale from Next.js. We recommend simply using "mul"
+ * (to represent "multilingual") since it is BCP 47 compliant.
+ * @param locales - The configured i18n locales from Next.js.
+ *
+ * @returns The list of actual locales.
+ */
+export function getActualLocale(locale: string, defaultLocale: string, locales: string[]): string {
+  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
+  return locale === defaultLocale ? actualDefaultLocale : locale;
+}
+
+/**
  * Get the actual locales based on the Next.js i18n locale configuration.
  *
  * To get a dynamic locale resolution on `/` without redirection, we need to add a "multilingual" locale as the

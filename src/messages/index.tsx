@@ -19,5 +19,5 @@ export type MulMessagesStaticProps = {
  */
 export type MulMessagesServerSideProps = {
   messages: MulMessages;
-  currentLocale: string;
+  actualLocale: string;
 };

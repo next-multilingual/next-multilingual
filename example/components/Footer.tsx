@@ -1,14 +1,17 @@
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
-import { normalizeLocale } from 'next-multilingual';
+import { getActualLocale, normalizeLocale } from 'next-multilingual';
 import { MulMessages } from 'next-multilingual/messages';
 import styles from './Footer.module.css';
 
 const Footer = (): ReactElement => {
-  const { locale } = useRouter();
+  const { locale, locales, defaultLocale } = useRouter();
+  const actualLocale = getActualLocale(locale, defaultLocale, locales);
+
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const messages = require(`./Footer.${normalizeLocale(locale)}.properties`)
-    .default as MulMessages;
+  const messages = require(`./Footer.${normalizeLocale(
+    actualLocale
+  )}.properties`).default as MulMessages;
 
   return <footer className={styles.footer}>{messages.footer}</footer>;
 };
