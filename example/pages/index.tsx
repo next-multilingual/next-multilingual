@@ -21,7 +21,6 @@ export default function IndexPage({
   const router = useRouter();
   router.locale = currentLocale; // Overwrite locale with the resolved locale.
   const { locales, defaultLocale, locale } = router;
-  console.dir(router, { depth: null });
 
   return (
     <Layout title={messages.title}>
