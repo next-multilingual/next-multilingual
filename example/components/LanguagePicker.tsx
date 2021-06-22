@@ -44,7 +44,6 @@ const LanguagePicker = (): ReactElement => {
                   onClick={() => {
                     handleClick(locale);
                   }}
-                  suppressHydrationWarning={true}
                 >
                   {localeStrings[normalizeLocale(locale)]}
                 </a>
