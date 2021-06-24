@@ -16,9 +16,9 @@ if (typeof window !== 'undefined') {
  *
  * This is meant to be used on the server only. Using it on the client side will result in compilation errors.
  *
- * @param href - a localized path
- * @param locale - the locale to grab the correct localized path
- * @param props - Any property available on the `LinkProps` (properties of the Next.js' `Link` component)
+ * @param href - A non-localized Next.js `href` without a locale prefix (e.g. `/contact-us`)
+ * @param locale - The locale to grab the correct localized path.
+ * @param props - Any property available on the `LinkProps` (properties of the Next.js' `Link` component).
  *
  * @returns The Next.js `Link` component with the correct localized URLs.
  */
