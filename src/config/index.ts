@@ -2,7 +2,7 @@ import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
 import { readdirSync, readFileSync } from 'fs';
 import { basename, extname, posix, resolve, parse as parsePath } from 'path';
 import { parse as parseProperties } from 'dot-properties';
-import { getActualLocales } from '..';
+import { isLocale, normalizeLocale } from '..';
 
 export class MultilingualRoute {
   /** A unique multilingual route identifier. */
@@ -44,13 +44,15 @@ export type LocalizedUrlPath = {
   urlPath: string;
 };
 
-export class MulRouter {
-  /** The locales. */
-  private readonly locales: string[];
-  /** The actual locales used by the router. */
+export class MulConfig {
+  /** The actual desired locales of the multilingual application. */
   private readonly actualLocales: string[];
-  /** The default locale. */
-  private readonly defaultLocale: string;
+
+  /** The locales used by the Next.js configuration. */
+  private readonly nextLocales: string[];
+  /** The default locale used by the Next.js configuration. */
+  private readonly nextDefaultLocale: string;
+
   /** The directory path where the Next.js pages can be found. */
   private readonly pagesDirectoryPath: string;
   /** The file extensions of the Next.js pages. */
@@ -62,29 +64,38 @@ export class MulRouter {
   private routeCache?: MultilingualRoute[];
 
   /**
-   * A multilingual router.
+   * A multilingual configuration handler.
    *
-   * All URLs will be transformed to their lowercase form, including Next.js' i18n locales. In general, it is recommended
-   * to keep consistency across URLs since they are case sensitive. Having only a single resource pointing to a case-insensitive
-   * URL is considered a good practice as long as a canonical form is provided. In this case the lowercase form will be used
-   * as canonical since Next.js is case-insensitive.
+   * @param locales - The actual desired locales of the multilingual application.
+   * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.
+   * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
+   * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
    *
-   * @param locales - The locales configured for Next.js.
-   * @param pagesDirectoryPath - The router looks for files in the `pages` directory by default but can be overwritten.
-   * @param pagesExtensions - The router looks for `.tsx` files by default but can be overwritten.
-   * @param excludedPages - Exclude "special" Next.js pages (e.g. _app.tsx) by default but can be overwritten.
-   *
-   * @throws Error when the default locale is not included in the locales.
+   * @throws Error when the locale identifier is invalid.
    */
   constructor(
     locales: string[],
     pagesDirectoryPath = 'pages',
-    pagesExtensions = ['.tsx'],
+    pagesExtensions = ['.tsx', '.jsx'],
     excludedPages = ['_app', '_document', '_error', '404']
   ) {
-    this.defaultLocale = locales[0];
-    this.actualLocales = getActualLocales(locales, this.defaultLocale);
-    this.locales = locales;
+    // Verify if the locale identifiers are using the right format.
+    locales.forEach((locale) => {
+      if (!isLocale(locale)) {
+        throw new Error(
+          "Invalid locale '" +
+            locale +
+            "' . `next-multilingual` only uses locale identifiers following the `language`-`country` format."
+        );
+      }
+    });
+
+    // Set the actual desired locales of the multilingual application.
+    this.actualLocales = locales.map((locale) => normalizeLocale(locale));
+    // The `mul` (multilingual) default locale is required for dynamic locale resolution for requests on `/`.
+    this.nextDefaultLocale = 'mul';
+    // By convention, the first locale configured in Next.js will be the default locale.
+    this.nextLocales = [this.nextDefaultLocale, ...this.actualLocales];
 
     this.pagesDirectoryPath = pagesDirectoryPath;
     if (pagesExtensions?.length) {
@@ -100,7 +111,7 @@ export class MulRouter {
    * @return The locales prefixes, all in lowercase.
    */
   public getUrlLocalePrefixes(): string[] {
-    return this.locales.map((locale) => locale.toLowerCase());
+    return this.nextLocales.map((locale) => locale.toLowerCase());
   }
 
   /**
@@ -109,7 +120,7 @@ export class MulRouter {
    * @return The default locale prefix, in lowercase.
    */
   public getDefaultUrlLocalePrefix(): string {
-    return this.defaultLocale.toLowerCase();
+    return this.nextDefaultLocale.toLowerCase();
   }
 
   /**
@@ -283,4 +294,80 @@ export class MulRouter {
     }
     return redirects;
   }
+}
+
+/**
+ * Returns the Next.js multilingual config.
+ *
+ * @param locales - The actual desired locales of the multilingual application.
+ * @param options - Next.js configuration options.
+ * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.
+ * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
+ * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
+ *
+ * @return The Next.js routes.
+ *
+ * @throws Error when the locale identifier or config is invalid.
+ */
+export function getMulConfig(
+  locales: string[],
+  options:
+    | Record<string, unknown>
+    | ((phase: string, defaultConfig: Record<string, unknown>) => void),
+  pagesDirectoryPath?: string,
+  pagesExtensions?: string[],
+  excludedPages?: string[]
+): Record<string, unknown> {
+  // todo: implement `next.config.js` functions
+  if (options instanceof Function) {
+    throw new Error(
+      'Function config is not supported yet. Please use the `MulConfig` object instead'
+    );
+  }
+  const config = options ? options : {};
+  const mulConfig = new MulConfig(locales, pagesDirectoryPath, pagesExtensions, excludedPages);
+
+  // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
+  config.i18n = {
+    locales: mulConfig.getUrlLocalePrefixes(),
+    defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),
+    localeDetection: false,
+  };
+
+  // todo: check how we can avoid this config
+  config.publicRuntimeConfig = {
+    origin: 'http://localhost:3000',
+  };
+
+  // Set Webpack config.
+  config.webpack = (config, { isServer }) => {
+    // Overwrite the `link` component for SSR.
+    if (isServer) {
+      config.resolve.alias['next-multilingual/link$'] = require.resolve(
+        'next-multilingual/link-ssr'
+      );
+    }
+
+    // Enable `.properties` files import for string messages.
+    config.module.rules.push({
+      test: /\.properties$/,
+      loader: 'properties-json-loader',
+      options: {
+        namespaces: false,
+      },
+    });
+    return config;
+  };
+
+  // Sets localized URLs as rewrites rules.
+  config.rewrites = async () => {
+    return mulConfig.getRewrites();
+  };
+
+  // Sets redirect rules to normalize URL encoding.
+  config.redirects = async () => {
+    return mulConfig.getRedirects();
+  };
+
+  return config;
 }

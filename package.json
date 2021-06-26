@@ -7,7 +7,7 @@
   "types": "lib/index.d.ts",
   "exports": {
     ".": "./lib/index.js",
-    "./router": "./lib/router/index.js",
+    "./config": "./lib/config/index.js",
     "./link": "./lib/link/index.js",
     "./link-ssr": "./lib/link/ssr.js",
     "./head": "./lib/head/index.js",
@@ -15,8 +15,8 @@
   },
   "typesVersions": {
     "*": {
-      "router": [
-        "lib/router/index.d.ts"
+      "config": [
+        "lib/config/index.d.ts"
       ],
       "link": [
         "lib/link/index.d.ts"

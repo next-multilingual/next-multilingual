@@ -5,9 +5,8 @@ import LanguagePicker from '@/components/LanguagePicker';
 import Footer from '@/components/Footer';
 import styles from './Layout.module.css';
 import { MulLink } from 'next-multilingual/link';
-import { normalizeLocale } from 'next-multilingual';
+import { normalizeLocale, getActualLocale } from 'next-multilingual';
 import { MulMessages } from 'next-multilingual/messages';
-import { getActualLocale } from '../../lib';
 
 interface LayoutProps {
   title: string;

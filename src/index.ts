@@ -56,6 +56,19 @@ export function getActualDefaultLocale(locales: string[], defaultLocale: string)
 }
 
 /**
+ * Is a given string a locale identifier following the `language`-`country` format?
+ *
+ * @param locale - A locale identifier.
+ * @param checkNormalizedCase - Test is the provided locale follows the ISO 3166 case convention (language code lowercase, country code uppercase).
+ *
+ * @returns `true` if the string is a locale identifier following the `language`-`country`, otherwise `false`.
+ */
+export function isLocale(locale: string, checkNormalizedCase = false): boolean {
+  const regexp = new RegExp(/^[a-z]{2}-[A-Z]{2}$/, !checkNormalizedCase ? 'i' : '');
+  return regexp.test(locale);
+}
+
+/**
  * Get a normalized locale identifier.
  *
  * `next-multilingual` only uses locale identifiers following the `language`-`country` format. Locale identifiers
@@ -67,7 +80,7 @@ export function getActualDefaultLocale(locales: string[], defaultLocale: string)
  * @returns The normalized locale identifier following the ISO 3166 convention.
  */
 export function normalizeLocale(locale: string): string {
-  if (!/^[a-z]{2}-[A-Z]{2}$/i.test(locale)) {
+  if (!isLocale(locale)) {
     return locale;
   }
   const [languageCode, countryCode] = locale.split('-');

@@ -39,7 +39,7 @@ export default function IndexPage({
           </thead>
           <tbody>
             <tr>
-              <td>{messages.rowLocale}</td>
+              <td>{messages.rowCurrentLocale}</td>
               <td>{normalizeLocale(locale)}</td>
               <td>{normalizeLocale(actualLocale)}</td>
             </tr>
