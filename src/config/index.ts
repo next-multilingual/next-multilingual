@@ -331,7 +331,7 @@ export function getMulConfig(
   config.i18n = {
     locales: mulConfig.getUrlLocalePrefixes(),
     defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),
-    localeDetection: false,
+    localeDetection: false, // This is important to use the improved language detection feature.
   };
 
   // todo: check how we can avoid this config

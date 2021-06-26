@@ -11,8 +11,8 @@ npm install next-multilingual
 ## What's in it for me?
 
 - The enforcement of i18n best practices across your entire application.
-- All URLs will use a language prefix - this is currently a limitation of Next.js where the default locale does not use a prefix.
-- A smart language detection that dynamically renders the homepage, without using redirections.
+- All URLs will use a locale prefix - this is currently a limitation of Next.js where the default locale does not use a prefix.
+- Smart language detection that dynamically renders the homepage, without using redirections.
 - The ability to use localized URLs (e.g. `/en-us/contact-us` for U.S. English and `/fr-ca/nous-joindre` for Canadian French).
 - Automatically generated alternative links for SEO, using localized URLs.
 - Modular localized string configuration support that works just like CSS (no more files containing shared strings).
