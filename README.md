@@ -93,4 +93,4 @@ Why did we put so much efforts with these details? Because our hypothesis is tha
 - boosting customer trust with more locally relevant content;
 - making string management easier and more modular.
 
-More details an be found on the implementation and design decision in the readme files of each API. 
+More details an be found on the implementation and design decision in the individual README files of each API. 
