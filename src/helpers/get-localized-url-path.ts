@@ -9,7 +9,7 @@ import { normalizeUrlPath } from './normalize-url-path';
  *
  * @param rewrites - An array of Next.js rewrite objects.
  * @param locale - The locale of the localized URL.
- * @param urlPath - a standard non-localized Next.js URL path without the locale prefix (e.g. `/contact-us`).
+ * @param urlPath - A standard non-localized Next.js URL path without the locale prefix (e.g. `/contact-us`).
  *
  * @returns The localized URL.
  */
