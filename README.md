@@ -14,19 +14,19 @@ npm install next-multilingual
 - All URLs will use a locale prefix - this is currently a limitation of Next.js where the default locale does not use a prefix.
 - Smart language detection that dynamically renders the homepage, without using redirections.
 - The ability to use localized URLs (e.g. `/en-us/contact-us` for U.S. English and `/fr-ca/nous-joindre` for Canadian French).
-- Automatically generated alternative links for SEO, using localized URLs.
+- Automatically generate canonical and alternate links optimized for SEO.
 - Modular localized string configuration support that works just like CSS (no more files containing shared strings).
 
 ## Usage
 
-If you prefer to see a complete implementation, look in the `example` directory, otherwise the section below will provide a
-step-by-step configuration guide.
+For those who prefer to jump right into the action, look in the `example` directory for an end-to-end implementation of `next-multilingual`. For the rest, the section below will provide a complete configuration guide in 3 simple steps.
 
-### Step 1: Configure Next.js
+### ✔️ Step 1️: Configure Next.js
 
 There are many options to configure in Next.js to achieve our goals. We offer two APIs to simplify this step:
 
-1) The `getMulConfig` function.
+
+#### 〰️ `getMulConfig` (simple config)
 
 Short for "get multilingual configuration", this function will generate a Next.js config that will meet most use cases. Simply add the following code in your application's `next.config.js`:
 
@@ -35,7 +35,9 @@ const { getMulConfig } = require('next-multilingual/config');
 module.exports = getMulConfig(['en-US', 'fr-CA'], { poweredByHeader: false });
 ```
 
-2) If you have more advanced needs, you can use the `MulConfig` object:
+#### 〰️ `MulConfig` (advanced config)
+
+If you have more advanced needs, you can use the `MulConfig` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`:
 
 ```js
 const { MulConfig } = require('next-multilingual/config');
@@ -78,12 +80,21 @@ module.exports = {
 
 For more details on the `next-multilingual/config` API, check its [README](./src/config/README.md) file.
 
-### Step 2: Create Pages
+### ✔️ Step 2: Create Pages
 
 Add pages in your `pages` directory and for each page, add a `<Page-Name>.<locale>.properties` for all locales - localized routes will use the `title` key of the file to use in the localized URLs.
 
-### Step 3: Add alternative links (SEO-friendly HTML markup)
+### ✔️ Step 3: Add SEO friendly HTML markup for your URLs
 
+As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URLs is used at build time, we need to configure them for each environment:
+
+Create an `.env.development` file with the following variable (adjust based on your setup):
+
+```properties
+NEXT_PUBLIC_ORIGIN="http://localhost:3000"
+```
+
+Regardless of the environment, `next-multilingual` will look for a variables called `NEXT_PUBLIC_ORIGIN` to generate fully-qualified URLs. If you are using Next.js' [`basePath`](https://nextjs.org/docs/api-reference/next.config.js/basepath), it will be added automatically to the base URL.
 
 ## Why `next-multilingual`?
 

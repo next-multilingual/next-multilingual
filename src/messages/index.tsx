@@ -9,6 +9,7 @@ export type MulMessages = {
  * Generic properties for multilingual messages when using `getStaticProps`.
  */
 export type MulMessagesStaticProps = {
+  /** A list of strings (messages) identified by unique keys. */
   messages: MulMessages;
 };
 
@@ -18,6 +19,8 @@ export type MulMessagesStaticProps = {
  * Typically `getServerSideProps` is only used on `/` for locale detection, otherwise `getStaticProps` is recommended.
  */
 export type MulMessagesServerSideProps = {
+  /** A list of strings (messages) identified by unique keys. */
   messages: MulMessages;
-  actualLocale: string;
+  /** The locale resolved by the server side detection (typically only used on the homepage). */
+  resolvedLocale: string;
 };

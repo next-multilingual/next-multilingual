@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router';
-import { getBasePath } from '../helpers/get-base-path';
+import { normalizeUrlPath } from '../helpers/normalize-url-path';
 import { getOrigin } from '../helpers/get-origin';
-import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { getLocalizedUrlPath } from '../helpers/get-localized-url-path';
 import { useRewrites } from './use-rewrites';
+import { getActualLocales } from '..';
 
 interface AlternateLink {
   href: string;
@@ -10,34 +11,38 @@ interface AlternateLink {
 }
 
 /**
- * A hook to build the alternate links based on the locales defined
- * in next.config.js file
+ * A hook to get the alternate links of your current page.
+ *
+ * Alternative links provide information to search engines that a given page is available in other languages.
+ *
+ * @returns A list of alternate links for your current page.
  */
 export function useAlternateLinks(): AlternateLink[] {
-  const { basePath, pathname: urlPath, locales } = useRouter();
+  const { basePath, pathname: urlPath, defaultLocale, locales, route } = useRouter();
   const rewrites = useRewrites();
-
   const origin = getOrigin();
-  const alternateLinks = locales.map((locale) => {
-    const alternateLink = getLocalizedUrl(rewrites, locale, urlPath);
+  const normalizedBasePath = normalizeUrlPath(basePath);
+
+  const alternateLinks = getActualLocales(locales, defaultLocale).map((locale) => {
+    const localizedUrlPath = getLocalizedUrlPath(rewrites, locale, urlPath);
 
     return {
-      href: `${origin}${getBasePath(basePath)}${removeInitialSlash(alternateLink)}`,
+      href: `${origin}${normalizedBasePath}${localizedUrlPath}`,
       hrefLang: locale,
     };
   });
 
-  const withPathname = urlPath !== '/' ? removeInitialSlash(urlPath) : '';
+  /**
+   * `x-default` is meant to be used for pages that have "dynamic" locales. The only valid use case for most websites is
+   * the home page where the language detection can happen. After this initial locale resolution, all other URLs should use
+   * prefixes and the `x-default` link should not be required.
+   */
+  if (route === '/') {
+    alternateLinks.push({
+      href: `${origin}${normalizedBasePath}`,
+      hrefLang: 'x-default',
+    });
+  }
 
-  const _href = `${origin}${getBasePath(basePath)}${withPathname}`;
-
-  return [...alternateLinks, { href: _href, hrefLang: 'x-default' }];
-}
-
-/**
- * Removes the first slash from the path
- * @param path { string } - the path to be handled
- */
-function removeInitialSlash(path: string): string {
-  return path.startsWith('/') ? path.substr(1, path.length) : path;
+  return alternateLinks;
 }

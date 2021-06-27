@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { getLocalizedUrlPath } from '../helpers/get-localized-url-path';
 import { getRewrites } from '../helpers/get-rewrites';
 
 // Throw a clear error is this is included by mistake on the client side.
@@ -29,6 +29,6 @@ export function MulLink({
 }: LinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
   locale = locale ? locale : router.locale;
-  const localizedUrl = getLocalizedUrl(getRewrites(), locale, href);
+  const localizedUrl = getLocalizedUrlPath(getRewrites(), locale, href);
   return <Link href={localizedUrl} locale={locale} {...props} />;
 }

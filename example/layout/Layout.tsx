@@ -5,22 +5,26 @@ import LanguagePicker from '@/components/LanguagePicker';
 import Footer from '@/components/Footer';
 import styles from './Layout.module.css';
 import { MulLink } from 'next-multilingual/link';
-import { normalizeLocale, getActualLocale } from 'next-multilingual';
+import { normalizeLocale } from 'next-multilingual';
 import { MulMessages } from 'next-multilingual/messages';
 
 interface LayoutProps {
+  /** The title of the page. */
   title: string;
   children: ReactNode;
 }
 
+/**
+ * Component used for the general layout of a page.
+ *
+ * @param title - The title of the page.
+ */
 const Layout = ({ title, children }: LayoutProps): ReactElement => {
-  const { locale, locales, defaultLocale } = useRouter();
-  const actualLocale = getActualLocale(locale, defaultLocale, locales);
+  const { locale } = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const messages = require(`./Layout.${normalizeLocale(
-    actualLocale
-  )}.properties`).default as MulMessages;
+  const messages = require(`./Layout.${normalizeLocale(locale)}.properties`)
+    .default as MulMessages;
 
   return (
     <>

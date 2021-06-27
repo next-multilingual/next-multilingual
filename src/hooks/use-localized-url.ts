@@ -1,4 +1,4 @@
-import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { getLocalizedUrlPath } from '../helpers/get-localized-url-path';
 import { useRewrites } from './use-rewrites';
 
 /**
@@ -11,5 +11,5 @@ import { useRewrites } from './use-rewrites';
  */
 export function useLocalizedUrl(locale: string, urlPath: string): string {
   const rewrites = useRewrites();
-  return getLocalizedUrl(rewrites, locale, urlPath);
+  return getLocalizedUrlPath(rewrites, locale, urlPath);
 }

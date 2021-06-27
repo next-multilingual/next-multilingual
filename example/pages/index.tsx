@@ -18,11 +18,11 @@ import styles from './index.module.css';
 
 export default function IndexPage({
   messages,
-  actualLocale
+  resolvedLocale
 }: MulMessagesServerSideProps): ReactElement {
   const router = useRouter();
-  const { locales, defaultLocale, locale } = router;
-  router.locale = actualLocale; // Overwrite the router's locale with the actual locale for components to work.
+  const { locales, defaultLocale } = router;
+  router.locale = resolvedLocale; // Overwrite the router's locale with the resolved locale.
 
   return (
     <Layout title={messages.title}>
@@ -38,11 +38,6 @@ export default function IndexPage({
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>{messages.rowCurrentLocale}</td>
-              <td>{normalizeLocale(locale)}</td>
-              <td>{normalizeLocale(actualLocale)}</td>
-            </tr>
             <tr>
               <td>{messages.rowDefaultLocale}</td>
               <td>{normalizeLocale(defaultLocale)}</td>
@@ -78,11 +73,11 @@ export const getServerSideProps: GetServerSideProps = async (
   const actualLocales = getActualLocales(locales, defaultLocale);
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
   const cookies = Cookies.get(getServerSidePropsContext);
-  let actualLocale = getActualLocale(locale, defaultLocale, locales);
+  let resolvedLocale = getActualLocale(locale, defaultLocale, locales);
 
   // When Next.js tries to use the default locale, try to find a better one.
   if (locale === defaultLocale) {
-    // TODO: add a script that sets NEXT_LOCALE on initial page load (client-side)
+    // TODO: add a script that sets the NEXT_LOCALE cookie on initial page load (client-side)
     let cookieLocale = cookies['NEXT_LOCALE'];
     if (cookieLocale && !actualLocales.includes(cookieLocale)) {
       // Delete the cookie if the value is invalid (e.g. been tampered with).
@@ -90,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (
       cookieLocale = undefined;
     }
 
-    actualLocale = cookieLocale
+    resolvedLocale = cookieLocale
       ? cookieLocale
       : resolveAcceptLanguage(
           req.headers['accept-language'],
@@ -100,13 +95,13 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 
   const messages = (
-    await import(`./index.${normalizeLocale(actualLocale)}.properties`)
+    await import(`./index.${normalizeLocale(resolvedLocale)}.properties`)
   ).default as MulMessages;
 
   return {
     props: {
       messages,
-      actualLocale
+      resolvedLocale
     }
   };
 };

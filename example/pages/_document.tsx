@@ -5,7 +5,7 @@ import { getActualLocale, normalizeLocale } from 'next-multilingual';
 class MyDocument extends Document {
   render(): ReactElement {
     const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__;
-    const pagePropsActualLocale = props?.pageProps?.actualLocale;
+    const pagePropsActualLocale = props?.pageProps?.resolvedLocale;
     const actualLocale = pagePropsActualLocale
       ? pagePropsActualLocale
       : getActualLocale(locale, defaultLocale, locales);
