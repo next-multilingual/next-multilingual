@@ -86,7 +86,7 @@ Add pages in your `pages` directory and for each page, add a `<Page-Name>.<local
 
 ### ✔️ Step 3: Add SEO friendly HTML markup for your URLs
 
-As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URLs is used at build time, we need to configure them for each environment:
+As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to configure them for each environment:
 
 Create an `.env.development` file with the following variable (adjust based on your setup):
 
