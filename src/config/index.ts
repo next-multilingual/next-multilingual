@@ -49,9 +49,9 @@ export class MulConfig {
   private readonly actualLocales: string[];
 
   /** The locales used by the Next.js configuration. */
-  private readonly nextLocales: string[];
+  private readonly locales: string[];
   /** The default locale used by the Next.js configuration. */
-  private readonly nextDefaultLocale: string;
+  private readonly defaultLocale: string;
 
   /** The directory path where the Next.js pages can be found. */
   private readonly pagesDirectoryPath: string;
@@ -93,9 +93,9 @@ export class MulConfig {
     // Set the actual desired locales of the multilingual application.
     this.actualLocales = locales.map((locale) => normalizeLocale(locale));
     // The `mul` (multilingual) default locale is required for dynamic locale resolution for requests on `/`.
-    this.nextDefaultLocale = 'mul';
+    this.defaultLocale = 'mul';
     // By convention, the first locale configured in Next.js will be the default locale.
-    this.nextLocales = [this.nextDefaultLocale, ...this.actualLocales];
+    this.locales = [this.defaultLocale, ...this.actualLocales];
 
     this.pagesDirectoryPath = pagesDirectoryPath;
     if (pagesExtensions?.length) {
@@ -111,7 +111,7 @@ export class MulConfig {
    * @return The locales prefixes, all in lowercase.
    */
   public getUrlLocalePrefixes(): string[] {
-    return this.nextLocales.map((locale) => locale.toLowerCase());
+    return this.locales.map((locale) => locale.toLowerCase());
   }
 
   /**
@@ -120,7 +120,7 @@ export class MulConfig {
    * @return The default locale prefix, in lowercase.
    */
   public getDefaultUrlLocalePrefix(): string {
-    return this.nextDefaultLocale.toLowerCase();
+    return this.defaultLocale.toLowerCase();
   }
 
   /**
