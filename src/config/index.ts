@@ -305,6 +305,9 @@ export class MulConfig {
  * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
  * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
  *
+ * Note that conflicting options required by `next-multilingual` will be overwritten. For advanced configuration, please
+ * user the `MulConfig`.
+ *
  * @return The Next.js routes.
  *
  * @throws Error when the locale identifier or config is invalid.
@@ -318,7 +321,6 @@ export function getMulConfig(
   pagesExtensions?: string[],
   excludedPages?: string[]
 ): Record<string, unknown> {
-  // todo: implement `next.config.js` functions
   if (options instanceof Function) {
     throw new Error(
       'Function config is not supported yet. Please use the `MulConfig` object instead'
@@ -332,11 +334,6 @@ export function getMulConfig(
     locales: mulConfig.getUrlLocalePrefixes(),
     defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),
     localeDetection: false, // This is important to use the improved language detection feature.
-  };
-
-  // todo: check how we can avoid this config
-  config.publicRuntimeConfig = {
-    origin: 'http://localhost:3000',
   };
 
   // Set Webpack config.

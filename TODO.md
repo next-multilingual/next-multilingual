@@ -18,7 +18,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
   - [ ] Test for: http://localhost:3000/mul/about-us
   - [ ] Test for: http://localhost:3000/about-us
   - [ ] Test with a 3rd language (language switch hydration issues?)
-
+- [ ] In the `config` API, gracefully merge options passed in argument as an object instead of overwriting
+- [ ] In the `config` API, support options passed functions (see Next.js doc)
 
 ### In Progress
 
