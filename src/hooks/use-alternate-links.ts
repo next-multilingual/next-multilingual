@@ -5,8 +5,13 @@ import { getLocalizedUrlPath } from '../helpers/get-localized-url-path';
 import { useRewrites } from './use-rewrites';
 import { getActualLocales } from '..';
 
+/**
+ * Alternate links tell search engines which localized version of a page exists.
+ */
 interface AlternateLink {
+  /** A fully-qualified URL of a page in a specific locale. */
   href: string;
+  /** The target locale, or `x-default` for pages that can dynamically resolve different locales. */
   hrefLang: string;
 }
 
