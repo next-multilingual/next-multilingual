@@ -24,7 +24,7 @@ export type AlternateLink = {
  * be added to alternate links regardless if they are valid or not, but they will be removed from canonical links to avoid
  * content duplication issues.
  *
- * @returns An array of alternate links objects for your current page.
+ * @returns An array of alternate links objects for the current page.
  */
 export function useAlternateLinks(): AlternateLink[] {
   const { basePath, asPath, defaultLocale, locales, route } = useRouter();

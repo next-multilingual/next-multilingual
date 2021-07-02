@@ -22,7 +22,7 @@ export type CanonicalLink = {
  * with Next.js as URLs casing is not always sensitive which could cause problems when indexing. URL queries are ignore by
  * design to avoid duplicate content penalties with search engines.
  *
- * @returns A string containing the HTML markup of the required canonical link of the current page.
+ * @returns A canonical link object for the current page.
  */
 export function useCanonicalLink(): CanonicalLink {
   const { basePath, pathname, defaultLocale, locale, locales, route } = useRouter();
