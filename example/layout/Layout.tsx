@@ -8,11 +8,11 @@ import { MulLink } from 'next-multilingual/link';
 import { normalizeLocale } from 'next-multilingual';
 import { MulMessages } from 'next-multilingual/messages';
 
-interface LayoutProps {
+type LayoutProps = {
   /** The title of the page. */
   title: string;
   children: ReactNode;
-}
+};
 
 /**
  * Component used for the general layout of a page.
