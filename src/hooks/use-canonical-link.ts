@@ -34,7 +34,7 @@ export function useCanonicalLink(): CanonicalLink {
   const key = 'canonical-link';
 
   if (route === '/') {
-    const localePrefix = `/${actualLocale.toLowerCase()}`;
+    const localePrefix = normalizeUrlPath(actualLocale.toLowerCase());
     const href = `${origin}${normalizedBasePath}${localePrefix}`;
     return {
       href,
