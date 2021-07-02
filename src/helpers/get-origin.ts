@@ -31,5 +31,5 @@ export function getOrigin(): string {
     );
   }
 
-  return (origin.endsWith('/') ? origin.slice(0, 1) : origin).toLocaleLowerCase();
+  return (origin.endsWith('/') ? origin.slice(0, 1) : origin).toLowerCase();
 }
