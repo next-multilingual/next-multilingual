@@ -4,7 +4,7 @@ import { useAlternateLinks, AlternateLink } from '../hooks/use-alternate-links';
 import { useCanonicalLink } from '../hooks/use-canonical-link';
 
 /**
- * MulHead is a wrapper around Next.js' `Head` that provides alternate links with localized URLs.
+ * MulHead is a wrapper around Next.js' `Head` that provides alternate links with localized URLs and a canonical link.
  *
  * @returns The Next.js `Head` component, including alternative links for SEO.
  */
