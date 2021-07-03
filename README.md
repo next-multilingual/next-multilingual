@@ -50,9 +50,6 @@ module.exports = {
         defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),
         localeDetection: false
     },
-    publicRuntimeConfig: {
-        origin: 'http://localhost:3000'
-    },
     poweredByHeader: false,
     webpack(config, { isServer }) {
         if (isServer) {
@@ -90,11 +87,23 @@ As per [Google](https://developers.google.com/search/docs/advanced/crawling/loca
 
 Create an `.env.development` file with the following variable (adjust based on your setup):
 
-```properties
+```ini
 NEXT_PUBLIC_ORIGIN="http://localhost:3000"
 ```
 
 Regardless of the environment, `next-multilingual` will look for a variables called `NEXT_PUBLIC_ORIGIN` to generate fully-qualified URLs. If you are using Next.js' [`basePath`](https://nextjs.org/docs/api-reference/next.config.js/basepath), it will be added automatically to the base URL.
+
+#### 〰️ `MulHead`
+
+Now all that you need to do is add the `MulHead` component to your pages. We recommend to use it on all pages, and if you are
+using a [`Layout`](./example/layout/Layout.tsx) component like in the example, the following code will do the trick:
+
+```html
+<MulHead>
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</MulHead>
+```
 
 ## Why `next-multilingual`?
 
@@ -104,4 +113,4 @@ Why did we put so much efforts with these details? Because our hypothesis is tha
 - boosting customer trust with more locally relevant content;
 - making string management easier and more modular.
 
-More details an be found on the implementation and design decision in the individual README files of each API. 
+More details an be found on the implementation and design decision in the individual README files of each API and in the [documentation](./doc) directory. 

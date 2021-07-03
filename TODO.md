@@ -23,13 +23,16 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress
 
+- [ ] Add other docs: license, contribution, design doc, etc.
+- [ ] English titles are not use in routes (e.g. contact-us2)
 - [ ] Redo an easier readme based on an end-to-end configuration
 - [ ] Fix contact-us pages (add localized strings and CSS)
-- [ ] Understand/tweak/document `MulHead`
-    - [ ] Canonical links?
+
 
 ### Done ✓
 
+- [x] Understand/tweak/document `MulHead`
+  - [x] Canonical links?
 - [x] Test/learn/refactor alternate links
     - [x] Cleanup extra `x-default` links?
 - [x] Test browsing of non-localized URLs

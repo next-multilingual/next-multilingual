@@ -1,46 +1,12 @@
-### IntlHead
+# next-multilingual/head
 
-An `IntHead` component is a wrapper around **Next.js**
-`<Head />` component. It injects the necessary alternate links.
-At the moment of writing this package, Next.js has either a bug or an undocumented feature around `<Head />`
-component. Because of it, it isn't possible to use our hook `useAlternateLinks()`.
+`next-multilingual` comes with its own solution to fill a gap not currently supported by Next.js: SEO-friendly HTML markup.
 
-For the following locales `['en-CA', 'fr-CA']` it will produce the following alternate links at `/`:
+## How does it work?
 
-```html
-<link rel="alternate" href="http://localhost:3000/en-CA/" hreflang="en-CA" />
-<link rel="alternate" href="http://localhost:3000/fr-CA/" hreflang="fr-CA" />
-<link rel="alternate" href="http://localhost:3000/" hreflang="x-default" />
-```
+`next-multilingual/head` does 2 things leveraging Next.js' current routing capability:
 
-```tsx
-import { useRouter } from 'next/router';
-import { IntlHead } from 'next-multilingual';
+1. Add [Rewrites](https://nextjs.org/docs/api-reference/next.config.js/rewrites) to link localized URLs to the default language URLs.
+2. Add [Redirects](https://nextjs.org/docs/api-reference/next.config.js/redirects) to redirect all possible encoded URL [forms](https://unicode.org/reports/tr15/) to the normalized NFC URL.
 
-<IntlHead>
-  <title>My awesome website</title>
-  {/* You can add whatever links you wish here */}
-</IntlHead>;
-```
-
-### UseCanonicalUrl
-
-A `useCanonicalUrl` hook is provided to help with the canonical link
-
-```tsx
-import { useRouter } from 'next/router';
-import { IntlHead, useCanonicalUrl } from 'next-multilingual';
-const { locale } = useRouter();
-const canonicalUrl = useCanonicalUrl(locale);
-
-<IntlHead>
-  <title>My awesome website</title>
-  <link rel="canonical" href={canonicalUrl} />
-</IntlHead>;
-```
-
-At the following URL `http://localhost:3000/fr-CA/à-propos-de-nous` This will produce the following link
-
-```html
-<link rel="canonical" href="http://localhost:3000/fr-CA/%C3%A0-propos-de-nous" />
-```
+For more details on how its used, refer back to the [main readme file](../../README.md). You can also look in the [`example`](../../example) directory to see a complete implementation using `MulHead` in action. And for more details on why we implemented `MulHead` this way, refer to the [design decisions](../../docs/design-decisions.md) document.

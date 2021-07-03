@@ -1,6 +1,6 @@
 # next-multilingual/link
 
-To use localized URLs, we provide a `MulLink` component that that extends Next.js' `Link` component:
+To use localized URLs, `next-multilingual/link` provides a `MulLink` component that that extends Next.js' `Link` component:
 
 ```tsx
 import { MulLink } from 'next-multilingual/link';
@@ -22,17 +22,6 @@ In English the link will show just like in Next.js. But in when another locale i
 <a href="/fr-ca/nous-joindre">
 ```
 
-As the data for this mapping is not immediately available during rendering, make sure that the following configuration is present in your application's `next.config.js` to correctly prerender (SSR) links:
+As the data for this mapping is not immediately available during rendering, `next-multilingual/link-ssr` will take care of the server side rendering (SSR). By using `next-multilingual/config`, the Webpack configuration will be added automatically for you, so you should not need to ever directly use `next-multilingual/link-ssr`.
 
-```js
-module.exports = {
-  webpack(config, { isServer }) {
-    if (isServer) {
-      config.resolve.alias['next-multilingual/link$'] = require.resolve('next-multilingual/link-ssr');
-    }
-    return config;
-  }
-};
-```
-
-Look in the `example` directory to see a complete implementation in action.
+Look in the [`example`](../../example) directory to see a complete implementation using `MulLink` in action.
