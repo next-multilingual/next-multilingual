@@ -12,8 +12,8 @@ export function MulHead({ children }: { children: React.ReactNode }): JSX.Elemen
   /**
    * Next.js' `<Head>` does not allow components, so we are using hooks. Details here:
    *
-   * - Closed issue: https://github.com/vercel/next.js/issues/17721
-   * - Next.js documentation: https://nextjs.org/docs/api-reference/next/head
+   * @see https://github.com/vercel/next.js/issues/17721 (closed issue)
+   * @see https://nextjs.org/docs/api-reference/next/head (Next.js documentation)
    *
    * | title, meta or any other elements (e.g. script) need to be contained as direct children of the Head
    * | element, or wrapped into maximum one level of <React.Fragment> or arrays—otherwise the tags won't
@@ -25,10 +25,10 @@ export function MulHead({ children }: { children: React.ReactNode }): JSX.Elemen
 
   return (
     <Head>
+      <link rel="canonical" href={canonicalLink.href} key={canonicalLink.key} />
       {alternateLinks.map(({ href, hrefLang, key }: AlternateLink) => {
         return <link rel="alternate" href={href} hrefLang={hrefLang} key={key} />;
       })}
-      <link rel="canonical" href={canonicalLink.href} key={canonicalLink.key} />
       {children}
     </Head>
   );
