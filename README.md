@@ -96,7 +96,7 @@ Regardless of the environment, `next-multilingual` will look for a variables cal
 #### 〰️ `MulHead`
 
 Now all that you need to do is add the `MulHead` component to your pages. We recommend to use it on all pages, and if you are
-using a [`Layout`](./example/layout/Layout.tsx) component like in the example, the following code will do the trick:
+using a [`Layout`](./example/layout/Layout.tsx) component like in the [example](./example), the following code will do the trick:
 
 ```html
 <MulHead>
