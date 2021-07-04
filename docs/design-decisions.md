@@ -15,7 +15,7 @@ What this means concretely is that instead of having:
 
 ```
 English: https://somesite.com/en-us/about-us
-French: https://somesite.com/fr-ca/contact-us
+French: https://somesite.com/fr-ca/about-us
 ```
 
 You can now have the following localized URLs:
@@ -28,11 +28,11 @@ French: https://somesite.com/fr-ca/à-propos-de-nous
 The hypothesis by having localized URLs:
 
 - Better SEO searching for localized keywords that would be present in the URLs.
-- Increased trust: if a user can related to the URL (is more locally relevant).
+- Increased trust: localized URLs are more natural (locally relevant) to users.
 
 ### Design decisions
 
-The following design decision have been considered for its **localized URLs**:
+The following design decision have been considered when implementing **localized URLs**:
 
 1. All URLs are lowercase (excluding dynamic route parameters):
    1. It's the recommended pattern by SEO professionals - [SEJ, 2020](https://www.searchenginejournal.com/url-capitalization-seo/)

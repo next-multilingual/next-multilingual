@@ -19,7 +19,7 @@ npm install next-multilingual
 
 ## Usage
 
-For those who prefer to jump right into the action, look in the `example` directory for an end-to-end implementation of `next-multilingual`. For the rest, the section below will provide a complete configuration guide in 3 simple steps.
+For those who prefer to jump right into the action, look in the [`example`](./example) directory for an end-to-end implementation of `next-multilingual`. For the rest, the section below will provide a complete configuration guide in 3 simple steps.
 
 ### ✔️ Step 1️: Configure Next.js
 
@@ -79,13 +79,17 @@ For more details on the `next-multilingual/config` API, check its [README](./src
 
 ### ✔️ Step 2: Create Pages
 
+Before creating the first page, we need to make sure that your application can support dynamic locale resolution.
+
+TODO...
+
+propertiesloader.. etc
+
 Add pages in your `pages` directory and for each page, add a `<Page-Name>.<locale>.properties` for all locales - localized routes will use the `title` key of the file to use in the localized URLs.
 
 ### ✔️ Step 3: Add SEO friendly HTML markup for your URLs
 
-As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to configure them for each environment:
-
-Create an `.env.development` file with the following variable (adjust based on your setup):
+As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to specify the absolute URLs that will be used, in an [environment variable](https://nextjs.org/docs/basic-features/environment-variables). For example, for the development environment, create an `.env.development` file at the root of your app with the following variable (adjust based on your setup):
 
 ```ini
 NEXT_PUBLIC_ORIGIN="http://localhost:3000"

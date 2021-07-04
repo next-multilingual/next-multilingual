@@ -8,7 +8,7 @@
 - Try to avoid acronyms (understanding quickly what a variable represents drastically increase code readability)
 - Keep variable names within a reasonable length - variable names that are too long impacts readability negatively
 - Typescript! Yes, Typescript can be more verbose but it helps to speed up development with better integration with IDEs, in terms of autocompletion and error detection.
-- Use Jsdoc! Not a lot of code out there uses Jsdoc, but the integration with IDEs can also speed up development speed. If you know what is expected for a given a argument or what is returned from a function, you don't need to go read the code!
+- Use Jsdoc! Not a lot of code out there uses Jsdoc, but the integration with IDEs can also speed up development. If you know what is expected for a given a argument or what is returned from a function, you don't need to go read the code!
 
 ## Git
 
