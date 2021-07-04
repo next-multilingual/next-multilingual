@@ -1,8 +1,8 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
-import { readdirSync, readFileSync } from 'fs';
+import { readdirSync } from 'fs';
 import { basename, extname, posix, resolve, parse as parsePath } from 'path';
-import { parse as parseProperties } from 'dot-properties';
 import { isLocale, normalizeLocale } from '..';
+import { parsePropertiesFile } from '../properties';
 
 export class MultilingualRoute {
   /** A unique multilingual route identifier. */
@@ -196,14 +196,8 @@ export class MulConfig {
    */
   private getLocalizedUrlPathSegment(filePath: string, locale: string): string {
     const { dir: directoryPath, name: identifier } = parsePath(filePath);
-
-    const stringsFilePath = resolve(directoryPath, `${identifier}.${locale}.properties`);
-
-    let title: string;
-    const stringsFileContent = readFileSync(stringsFilePath, 'utf8');
-    title = parseProperties(stringsFileContent).title as string;
-    title = title.replace(/[ /-]+/g, '-');
-    return title;
+    const propertiesFilePath = resolve(directoryPath, `${identifier}.${locale}.properties`);
+    return parsePropertiesFile(propertiesFilePath).title.replace(/[ /-]+/g, '-');
   }
 
   /**
@@ -348,10 +342,7 @@ export function getMulConfig(
     // Enable `.properties` files import for string messages.
     config.module.rules.push({
       test: /\.properties$/,
-      loader: 'properties-json-loader',
-      options: {
-        namespaces: false,
-      },
+      loader: 'next-multilingual/properties',
     });
     return config;
   };

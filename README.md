@@ -58,10 +58,7 @@ module.exports = {
 
         config.module.rules.push({
             test: /\.properties$/,
-            loader: 'properties-json-loader',
-            options: {
-                namespaces: false
-            }
+            loader: 'next-multilingual/properties',
         });
         return config;
     },
@@ -76,6 +73,15 @@ module.exports = {
 ```
 
 For more details on the `next-multilingual/config` API, check its [README](./src/config/README.md) file.
+
+Optionally, if you want better type completion for your IDE, you can add a `declarations.d.ts` at the root of your application with the following content:
+
+```js
+declare module '*.properties' {
+  const messages: { readonly [key: string]: string };
+  export default messages;
+}
+```
 
 ### ✔️ Step 2: Create Pages
 

@@ -23,7 +23,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress
 
-- [ ] add `next-multilingual/properties-loader`
 - [ ] add `next-multilingual/resolve` -> `mulResolve`
 - [ ] Add other docs: license, contribution, design doc, etc.
 - [ ] English titles are not use in routes (e.g. contact-us2)
@@ -33,6 +32,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### Done ✓
 
+- [x] add `next-multilingual/properties` to avoid the extra Webpack loader dependency
 - [x] Understand/tweak/document `MulHead`
   - [x] Canonical links?
 - [x] Test/learn/refactor alternate links
