@@ -1,3 +1,5 @@
+import resolveAcceptLanguage from 'resolve-accept-language';
+
 /**
  * Get the actual locale based on the current locale from Next.js.
  *
@@ -85,4 +87,21 @@ export function normalizeLocale(locale: string): string {
   }
   const [languageCode, countryCode] = locale.split('-');
   return `${languageCode.toLowerCase()}-${countryCode.toUpperCase()}`;
+}
+
+/**
+ * Resolve the preferred locale from an HTTP `Accept-Language` header.
+ *
+ * @param acceptLanguageHeader - The value of an HTTP request `Accept-Language` header.
+ * @param locales - The list of actual locales used by `next-multilingual`.
+ * @param defaultLocale - The actual default locale used by `next-multilingual`.
+ *
+ * @returns The preferred locale identifier.
+ */
+export function getPreferredLocale(
+  acceptLanguageHeader: string,
+  actualLocales: string[],
+  actualDefaultLocale: string
+): string {
+  return resolveAcceptLanguage(acceptLanguageHeader, actualLocales, actualDefaultLocale);
 }

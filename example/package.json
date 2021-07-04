@@ -11,8 +11,7 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "next-multilingual": "file:..",
-    "nookies": "^2.5.2",
-    "resolve-accept-language": "^1.0.22"
+    "nookies": "^2.5.2"
   },
   "prettier": {
     "singleQuote": true,

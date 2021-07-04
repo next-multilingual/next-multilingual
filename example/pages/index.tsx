@@ -3,12 +3,12 @@ import {
   getActualLocales,
   getActualDefaultLocale,
   normalizeLocale,
-  getActualLocale
+  getActualLocale,
+  getPreferredLocale
 } from 'next-multilingual';
 import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
-import resolveAcceptLanguage from 'resolve-accept-language';
 import Layout from '@/layout';
 import type {
   MulMessages,
@@ -65,9 +65,9 @@ export default function IndexPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (
+export async function getServerSideProps(
   getServerSidePropsContext: GetServerSidePropsContext
-) => {
+): Promise<{ props: MulMessagesServerSideProps }> {
   const { req, locale, locales, defaultLocale } = getServerSidePropsContext;
 
   const actualLocales = getActualLocales(locales, defaultLocale);
@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async (
 
     resolvedLocale = cookieLocale
       ? cookieLocale
-      : resolveAcceptLanguage(
+      : getPreferredLocale(
           req.headers['accept-language'],
           actualLocales,
           actualDefaultLocale
@@ -104,4 +104,4 @@ export const getServerSideProps: GetServerSideProps = async (
       resolvedLocale
     }
   };
-};
+}
