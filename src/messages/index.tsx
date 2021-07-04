@@ -2,7 +2,7 @@
  * Multilingual messages consist consist of unique keys and their localized strings.
  */
 export type MulMessages = {
-  [key: string]: string;
+  readonly [key: string]: string;
 };
 
 /**
@@ -10,7 +10,7 @@ export type MulMessages = {
  */
 export type MulMessagesStaticProps = {
   /** A list of strings (messages) identified by unique keys. */
-  messages: MulMessages;
+  readonly messages: MulMessages;
 };
 
 /**
@@ -20,7 +20,7 @@ export type MulMessagesStaticProps = {
  */
 export type MulMessagesServerSideProps = {
   /** A list of strings (messages) identified by unique keys. */
-  messages: MulMessages;
+  readonly messages: MulMessages;
   /** The locale resolved by the server side detection (typically only used on the homepage). */
-  resolvedLocale: string;
+  readonly resolvedLocale: string;
 };
