@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
-import { getActualDefaultLocale } from '../../lib';
+import { getActualDefaultLocale, setCookieLocale } from 'next-multilingual';
 import './_app.css';
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
@@ -13,5 +13,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   if (locale === defaultLocale) {
     router.locale = getActualDefaultLocale(locales, defaultLocale);
   }
+  setCookieLocale(router.locale);
+
   return <Component {...pageProps} />;
 }

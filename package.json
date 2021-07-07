@@ -57,7 +57,9 @@
     "lint": "eslint --ext js,jsx,ts,tsx --fix"
   },
   "dependencies": {
-    "dot-properties": "^1.0.1"
+    "dot-properties": "^1.0.1",
+    "nookies": "^2.5.2",
+    "resolve-accept-language": "^1.0.23"
   },
   "devDependencies": {
     "@types/node": "^15.12.4",
@@ -70,6 +72,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "express": "^4.17.1",
     "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
     "next": "^11.0.1",

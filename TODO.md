@@ -4,11 +4,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do
 
-- [ ] Add strings key prefix support (`next-multilingual/properties-loader` ?)
-- [ ] Add built-in cookie manager to make integration easier (`next-multilingual/cookie` ?)
 - [ ] Check if we need this route: /en-us/homepage -> /en-us
 - [ ] Check if we can add `title` attributes on `Link` components (not supported by Next.js?)
-- [ ] Add browser side cookie to persist selected locale on initial page load
 - [ ] Localized error pages
 - [ ] Add automated test:
   - [ ] Test when a string file changes, the page is updated (developer experience?)
@@ -31,6 +28,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### Done ✓
 
+- [x] Add browser side cookie to persist selected locale on initial page load
+- [x] move `nookies` to  `next-multilingual` -> `getCookieLocale`
 - [x] move `resolve-accept-language` to  `next-multilingual` -> `getPreferredLocale`
 - [x] add `next-multilingual/properties` to avoid the extra Webpack loader dependency
 - [x] Understand/tweak/document `MulHead`

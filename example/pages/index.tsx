@@ -1,12 +1,12 @@
-import Cookies from 'nookies';
 import {
   getActualLocales,
   getActualDefaultLocale,
   normalizeLocale,
   getActualLocale,
-  getPreferredLocale
+  getPreferredLocale,
+  getCookieLocale
 } from 'next-multilingual';
-import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import Layout from '@/layout';
@@ -66,25 +66,17 @@ export default function IndexPage({
 }
 
 export async function getServerSideProps(
-  getServerSidePropsContext: GetServerSidePropsContext
+  nextPageContext: NextPageContext
 ): Promise<{ props: MulMessagesServerSideProps }> {
-  const { req, locale, locales, defaultLocale } = getServerSidePropsContext;
+  const { req, locale, locales, defaultLocale } = nextPageContext;
 
   const actualLocales = getActualLocales(locales, defaultLocale);
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
-  const cookies = Cookies.get(getServerSidePropsContext);
+  const cookieLocale = getCookieLocale(nextPageContext, actualLocales);
   let resolvedLocale = getActualLocale(locale, defaultLocale, locales);
 
   // When Next.js tries to use the default locale, try to find a better one.
   if (locale === defaultLocale) {
-    // TODO: add a script that sets the NEXT_LOCALE cookie on initial page load (client-side)
-    let cookieLocale = cookies['NEXT_LOCALE'];
-    if (cookieLocale && !actualLocales.includes(cookieLocale)) {
-      // Delete the cookie if the value is invalid (e.g. been tampered with).
-      Cookies.destroy(getServerSidePropsContext, 'NEXT_LOCALE');
-      cookieLocale = undefined;
-    }
-
     resolvedLocale = cookieLocale
       ? cookieLocale
       : getPreferredLocale(

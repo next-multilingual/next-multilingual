@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "cross-env": "^7.0.3",
-    "next-multilingual": "file:..",
-    "nookies": "^2.5.2"
+    "next-multilingual": "file:.."
   },
   "prettier": {
     "singleQuote": true,

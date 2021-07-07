@@ -1,4 +1,6 @@
 import resolveAcceptLanguage from 'resolve-accept-language';
+import type { NextPageContext } from 'next';
+import Cookies from 'nookies';
 
 /**
  * Get the actual locale based on the current locale from Next.js.
@@ -93,8 +95,8 @@ export function normalizeLocale(locale: string): string {
  * Resolve the preferred locale from an HTTP `Accept-Language` header.
  *
  * @param acceptLanguageHeader - The value of an HTTP request `Accept-Language` header.
- * @param locales - The list of actual locales used by `next-multilingual`.
- * @param defaultLocale - The actual default locale used by `next-multilingual`.
+ * @param actualLocales - The list of actual locales used by `next-multilingual`.
+ * @param actualDefaultLocale - The actual default locale used by `next-multilingual`.
  *
  * @returns The preferred locale identifier.
  */
@@ -104,4 +106,51 @@ export function getPreferredLocale(
   actualDefaultLocale: string
 ): string {
   return resolveAcceptLanguage(acceptLanguageHeader, actualLocales, actualDefaultLocale);
+}
+
+// The name of the cookie used to store the user locale, can be overwritten in an `.env` file.
+const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME
+  ? process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME
+  : 'L';
+
+// The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
+const LOCALE_COOKIE_LIFETIME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
+  ? process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
+  : 60 * 60 * 24 * 365 * 10;
+
+/**
+ * Save the current user's locale to the locale cookie.
+ *
+ * @param locale - A locale identifier.
+ */
+export function setCookieLocale(locale: string): void {
+  Cookies.set(null, LOCALE_COOKIE_NAME, locale, {
+    maxAge: LOCALE_COOKIE_LIFETIME,
+    path: '/',
+  });
+}
+
+/**
+ * Get the locale that was saved to the locale cookie.
+ *
+ * @param nextPageContext Next.js page context.
+ * @param actualLocales - The list of actual locales used by `next-multilingual`.
+ *
+ * @returns The locale that was saved to the locale cookie.
+ */
+export function getCookieLocale(nextPageContext: NextPageContext, actualLocales: string[]): string {
+  const cookies = Cookies.get(nextPageContext);
+
+  if (!Object.keys(cookies).includes(LOCALE_COOKIE_NAME)) {
+    return undefined;
+  }
+  const cookieLocale = cookies[LOCALE_COOKIE_NAME];
+
+  if (!actualLocales.includes(cookieLocale)) {
+    // Delete the cookie if the value is invalid (e.g. been tampered with).
+    Cookies.destroy(nextPageContext, LOCALE_COOKIE_NAME);
+    return undefined;
+  }
+
+  return cookieLocale;
 }

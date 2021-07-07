@@ -2,20 +2,14 @@ import {
   normalizeLocale,
   getActualLocales,
   getActualDefaultLocale,
-  getActualLocale
+  getActualLocale,
+  setCookieLocale
 } from 'next-multilingual';
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
 import { MulLink } from 'next-multilingual/link';
 import localeStrings from './localeStrings.json';
 import styles from './LanguagePicker.module.css';
-import { setCookie } from 'nookies';
-
-function handleClick(value: string): void {
-  setCookie(null, 'NEXT_LOCALE', value, {
-    maxAge: 60 * 60 * 24 * 365 * 10
-  });
-}
 
 const LanguagePicker = (): ReactElement => {
   const { asPath, pathname, locale, locales, defaultLocale } = useRouter();
@@ -41,7 +35,7 @@ const LanguagePicker = (): ReactElement => {
               >
                 <a
                   onClick={() => {
-                    handleClick(locale);
+                    setCookieLocale(locale);
                   }}
                 >
                   {localeStrings[normalizeLocale(locale)]}
