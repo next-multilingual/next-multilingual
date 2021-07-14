@@ -1,3 +1,5 @@
+import { useRouter } from 'next/router';
+
 /**
  * Multilingual messages consist consist of unique keys and their localized strings.
  */
@@ -24,3 +26,11 @@ export type MulMessagesServerSideProps = {
   /** The locale resolved by the server side detection (typically only used on the homepage). */
   readonly resolvedLocale: string;
 };
+
+export function useMessages(): MulMessages;
+export function useMessages(data?: Record<string, MulMessages>): MulMessages {
+  const { locale } = useRouter();
+  if (!data)
+    throw new Error("useMessages() requires the 'next-multilingual/babel-plugin' Babel plugin");
+  return data[locale] || {};
+}
