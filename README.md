@@ -74,12 +74,12 @@ module.exports = {
 
 For more details on the `next-multilingual/config` API, check its [README](./src/config/README.md) file.
 
-Optionally, if you want better type completion for your IDE, you can add a `declarations.d.ts` at the root of your application with the following content:
+We also need to add a custom [Babel](https://babeljs.io/) plugin to use the `useMessages()` hook. The [recommended way](https://nextjs.org/docs/advanced-features/customizing-babel-config) to do that is to include a `.babelrc` at the base of your application:
 
-```js
-declare module '*.properties' {
-  const messages: { readonly [key: string]: string };
-  export default messages;
+```json
+{
+  "presets": ["next/babel"],
+  "plugins": ["next-multilingual/babel-plugin"]
 }
 ```
 
