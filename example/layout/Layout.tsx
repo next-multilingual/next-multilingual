@@ -17,7 +17,7 @@ type LayoutProps = {
  *
  * @param title - The title of the page.
  */
-const Layout = ({ title, children }: LayoutProps): ReactElement => {
+export default function Layout({ title, children }: LayoutProps): ReactElement {
   const messages = useMessages();
   return (
     <>
@@ -49,6 +49,4 @@ const Layout = ({ title, children }: LayoutProps): ReactElement => {
       <Footer />
     </>
   );
-};
-
-export default Layout;
+}

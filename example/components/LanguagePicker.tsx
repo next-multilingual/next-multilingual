@@ -11,7 +11,7 @@ import { MulLink } from 'next-multilingual/link';
 import localeStrings from './localeStrings.json';
 import styles from './LanguagePicker.module.css';
 
-const LanguagePicker = (): ReactElement => {
+export default function LanguagePicker(): ReactElement {
   const { asPath, pathname, locale, locales, defaultLocale } = useRouter();
   const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);
@@ -46,6 +46,4 @@ const LanguagePicker = (): ReactElement => {
       </div>
     </div>
   );
-};
-
-export default LanguagePicker;
+}
