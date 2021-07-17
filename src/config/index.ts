@@ -1,8 +1,9 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
-import { readdirSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { basename, extname, posix, resolve, parse as parsePath } from 'path';
 import { isLocale, normalizeLocale } from '..';
-import { parsePropertiesFile } from '../properties';
+import { parse as parseProperties } from 'dot-properties';
+import { MulMessages } from '../messages';
 
 export class MultilingualRoute {
   /** A unique multilingual route identifier. */
@@ -197,7 +198,8 @@ export class MulConfig {
   private getLocalizedUrlPathSegment(filePath: string, locale: string): string {
     const { dir: directoryPath, name: identifier } = parsePath(filePath);
     const propertiesFilePath = resolve(directoryPath, `${identifier}.${locale}.properties`);
-    return parsePropertiesFile(propertiesFilePath).title.replace(/[ /-]+/g, '-');
+    const fileContent = readFileSync(propertiesFilePath, 'utf8');
+    return (parseProperties(fileContent) as MulMessages).title.replace(/[ /-]+/g, '-');
   }
 
   /**

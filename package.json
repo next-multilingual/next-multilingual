@@ -9,7 +9,6 @@
     ".": "./lib/index.js",
     "./babel-plugin": "./lib/messages/babel-plugin.js",
     "./config": "./lib/config/index.js",
-    "./properties": "./lib/properties/index.js",
     "./link": "./lib/link/index.js",
     "./link-ssr": "./lib/link/ssr.js",
     "./head": "./lib/head/index.js",
@@ -19,9 +18,6 @@
     "*": {
       "config": [
         "lib/config/index.d.ts"
-      ],
-      "properties": [
-        "lib/properties/index.d.ts"
       ],
       "link": [
         "lib/link/index.d.ts"
