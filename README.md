@@ -87,6 +87,70 @@ declare module '*.properties' {
 
 Before creating the first page, we need to make sure that your application can support dynamic locale resolution.
 
+#### 〰️ Custom `App` (`_app.tsx`)
+
+We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/custom-app) by adding [`_app.tsx`](./example/pages/_app.tsx) in the `pages` directory: 
+
+```ts
+import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
+import { getActualDefaultLocale, setCookieLocale } from 'next-multilingual';
+
+export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+    const router = useRouter();
+    const { locales, defaultLocale, locale } = router;
+    /**
+     * Next.js always expose the default locale with URLs without prefixes. If anyone use these URLs, we want to overwrite them
+     * with the actual (default) locale.
+     */
+    if (locale === defaultLocale) {
+        router.locale = getActualDefaultLocale(locales, defaultLocale);
+    }
+    setCookieLocale(router.locale); // Persist locale on page load (will be re-used when hitting `/`).
+
+    return <Component {...pageProps} />;
+}
+```
+
+This basically does two things, as mentioned in the comments:
+
+1) Inject the actual locale in Next.js' router since we need to use a "fake default locale".
+2) Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
+
+We also need to create a [custom `Document`](https://nextjs.org/docs/advanced-features/custom-document
+) by adding [`_document.tsx`](./example/pages/_document.tsx) in the `pages` directory:
+
+```ts
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+import { ReactElement } from 'react';
+import { getActualLocale, normalizeLocale } from 'next-multilingual';
+
+class MyDocument extends Document {
+render(): ReactElement {
+const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__;
+const pagePropsActualLocale = props?.pageProps?.resolvedLocale;
+const actualLocale = pagePropsActualLocale
+? pagePropsActualLocale
+: getActualLocale(locale, defaultLocale, locales);
+
+    return (
+      <Html lang={normalizeLocale(actualLocale)}>
+        <Head />
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+
+}
+}
+
+export default MyDocument;
+```
+
+This serves only 1 purpose: display the correct server-side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`. The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URLs prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
+
 TODO...
 
 propertiesloader.. etc
@@ -97,7 +161,7 @@ Add pages in your `pages` directory and for each page, add a `<Page-Name>.<local
 
 As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to specify the absolute URLs that will be used, in an [environment variable](https://nextjs.org/docs/basic-features/environment-variables). For example, for the development environment, create an `.env.development` file at the root of your app with the following variable (adjust based on your setup):
 
-```ini
+```conf
 NEXT_PUBLIC_ORIGIN="http://localhost:3000"
 ```
 
@@ -108,7 +172,7 @@ Regardless of the environment, `next-multilingual` will look for a variables cal
 Now all that you need to do is add the `MulHead` component to your pages. We recommend to use it on all pages, and if you are
 using a [`Layout`](./example/layout/Layout.tsx) component like in the [example](./example), the following code will do the trick:
 
-```html
+```jsx
 <MulHead>
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

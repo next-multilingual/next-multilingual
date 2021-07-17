@@ -13,7 +13,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   if (locale === defaultLocale) {
     router.locale = getActualDefaultLocale(locales, defaultLocale);
   }
-  setCookieLocale(router.locale);
+  setCookieLocale(router.locale); // Persist locale on page load (will be re-used when hitting `/`).
 
   return <Component {...pageProps} />;
 }

@@ -4,6 +4,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do
 
+- [ ] English (en-US) titles are not use in routes (e.g. contact-us2) -> need to implement this if we want non-english default locale
+- [ ] Fix contact-us pages (add localized strings and CSS)
 - [ ] Check if we need this route: /en-us/homepage -> /en-us
 - [ ] Check if we can add `title` attributes on `Link` components (not supported by Next.js?)
 - [ ] Localized error pages
@@ -17,17 +19,20 @@ To make tracking of to-dos easier, this file can be used to track progress on th
   - [ ] Test with a 3rd language (language switch hydration issues?)
 - [ ] In the `config` API, gracefully merge options passed in argument as an object instead of overwriting
 - [ ] In the `config` API, support options passed functions (see Next.js doc)
+- [ ] Try strict mode
+- [ ] sitemap
+- [ ] Add other docs: contribution, design doc, etc.
+
 
 ### In Progress
 
-- [ ] Add other docs: license, contribution, design doc, etc.
-- [ ] English titles are not use in routes (e.g. contact-us2)
+- [ ] Test new Babel plugin modular string loader
 - [ ] Redo an easier readme based on an end-to-end configuration
-- [ ] Fix contact-us pages (add localized strings and CSS)
 
 
 ### Done ✓
 
+- [x] Add license doc
 - [x] Add browser side cookie to persist selected locale on initial page load
 - [x] move `nookies` to  `next-multilingual` -> `getCookieLocale`
 - [x] move `resolve-accept-language` to  `next-multilingual` -> `getPreferredLocale`
