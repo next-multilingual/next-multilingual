@@ -4,8 +4,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do
 
-- [ ] English (en-US) titles are not use in routes (e.g. contact-us2) -> need to implement this if we want non-english default locale
-- [ ] Fix contact-us pages (add localized strings and CSS)
+- [ ] Automatically rebuild when modifying a properties file?
+- [ ] English (en-US) titles are not used in routes (e.g. contact-us2) -> need to implement this if we want non-english default locale
 - [ ] Check if we need this route: /en-us/homepage -> /en-us
 - [ ] Check if we can add `title` attributes on `Link` components (not supported by Next.js?)
 - [ ] Localized error pages
@@ -32,6 +32,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### Done ✓
 
+- [x] Fix contact-us pages (add localized strings and CSS)
 - [x] Add license doc
 - [x] Add browser side cookie to persist selected locale on initial page load
 - [x] move `nookies` to  `next-multilingual` -> `getCookieLocale`
