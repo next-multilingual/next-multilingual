@@ -7,12 +7,13 @@
   "types": "lib/index.d.ts",
   "exports": {
     ".": "./lib/index.js",
-    "./babel-plugin": "./lib/messages/babel-plugin.js",
     "./config": "./lib/config/index.js",
     "./link": "./lib/link/index.js",
     "./link-ssr": "./lib/link/ssr.js",
     "./head": "./lib/head/index.js",
-    "./messages": "./lib/messages/index.js"
+    "./messages": "./lib/messages/index.js",
+    "./messages/babel-plugin": "./lib/messages/babel-plugin.js",
+    "./messages/properties": "./lib/messages/properties.js"
   },
   "typesVersions": {
     "*": {
@@ -29,7 +30,9 @@
         "lib/head/index.d.ts"
       ],
       "messages": [
-        "lib/messages/index.d.ts"
+        "lib/messages/index.d.ts",
+        "lib/messages/babel-plugin.d.ts",
+        "lib/messages/properties.d.ts"
       ]
     }
   },

@@ -1,4 +1,4 @@
 {
   "presets": ["next/babel"],
-  "plugins": ["next-multilingual/babel-plugin"]
+  "plugins": ["next-multilingual/messages/babel-plugin"]
 }

@@ -8,16 +8,18 @@ export type MulMessages = {
 };
 
 /**
- * Multilingual messages for all locales, where the base keys are locale identifiers.
+ * Multilingual messages collection for all locales.
  */
-export type MulMessagesAllLocales = {
+export type MulMessagesCollection = {
   [key: string]: MulMessages;
 };
 
 export function useMessages(): MulMessages;
-export function useMessages(mulMessagesAllLocales?: MulMessagesAllLocales): MulMessages {
+export function useMessages(mulMessagesCollection?: MulMessagesCollection): MulMessages {
   const { locale } = useRouter();
-  if (!mulMessagesAllLocales)
-    throw new Error("useMessages() requires the 'next-multilingual/babel-plugin' Babel plugin");
-  return mulMessagesAllLocales[locale] || {};
+  if (!mulMessagesCollection)
+    throw new Error(
+      "useMessages() requires the 'next-multilingual/messages/babel-plugin' Babel plugin"
+    );
+  return mulMessagesCollection[locale] || {};
 }

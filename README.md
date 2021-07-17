@@ -25,7 +25,6 @@ For those who prefer to jump right into the action, look in the [`example`](./ex
 
 There are many options to configure in Next.js to achieve our goals. We offer two APIs to simplify this step:
 
-
 #### 〰️ `getMulConfig` (simple config)
 
 Short for "get multilingual configuration", this function will generate a Next.js config that will meet most use cases. Simply add the following code in your application's `next.config.js`:
@@ -55,11 +54,6 @@ module.exports = {
         if (isServer) {
             config.resolve.alias['next-multilingual/link$'] = require.resolve('next-multilingual/link-ssr');
         }
-
-        config.module.rules.push({
-            test: /\.properties$/,
-            loader: 'next-multilingual/properties',
-        });
         return config;
     },
     async rewrites() {
@@ -79,7 +73,7 @@ We also need to add a custom [Babel](https://babeljs.io/) plugin to use the `use
 ```json
 {
   "presets": ["next/babel"],
-  "plugins": ["next-multilingual/babel-plugin"]
+  "plugins": ["next-multilingual/messages/babel-plugin"]
 }
 ```
 
