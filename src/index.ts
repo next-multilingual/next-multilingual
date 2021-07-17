@@ -92,6 +92,14 @@ export function normalizeLocale(locale: string): string {
 }
 
 /**
+ * Generic properties for multilingual messages when using `getServerSideProps` on `/`.
+ */
+export type ResolvedLocaleServerSideProps = {
+  /** The locale resolved by the server side detection. */
+  readonly resolvedLocale: string;
+};
+
+/**
  * Resolve the preferred locale from an HTTP `Accept-Language` header.
  *
  * @param acceptLanguageHeader - The value of an HTTP request `Accept-Language` header.

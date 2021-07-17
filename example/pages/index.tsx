@@ -10,19 +10,25 @@ import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import Layout from '@/layout';
-import type {
-  MulMessages,
-  MulMessagesServerSideProps
-} from 'next-multilingual/messages';
+import { useMessages } from 'next-multilingual/messages';
 import styles from './index.module.css';
+import {
+  ResolvedLocaleServerSideProps,
+  setCookieLocale
+} from 'next-multilingual';
 
 export default function IndexPage({
-  messages,
   resolvedLocale
-}: MulMessagesServerSideProps): ReactElement {
+}: ResolvedLocaleServerSideProps): ReactElement {
   const router = useRouter();
   const { locales, defaultLocale } = router;
-  router.locale = resolvedLocale; // Overwrite the router's locale with the resolved locale.
+
+  // Overwrite the locale with the resolved locale.
+  router.locale = resolvedLocale;
+  setCookieLocale(router.locale);
+
+  // Load the messages in the correct locale.
+  const messages = useMessages();
 
   return (
     <Layout title={messages.title}>
@@ -67,7 +73,7 @@ export default function IndexPage({
 
 export async function getServerSideProps(
   nextPageContext: NextPageContext
-): Promise<{ props: MulMessagesServerSideProps }> {
+): Promise<{ props: ResolvedLocaleServerSideProps }> {
   const { req, locale, locales, defaultLocale } = nextPageContext;
 
   const actualLocales = getActualLocales(locales, defaultLocale);
@@ -86,13 +92,8 @@ export async function getServerSideProps(
         ).toLowerCase();
   }
 
-  const messages = (
-    await import(`./index.${normalizeLocale(resolvedLocale)}.properties`)
-  ).default as MulMessages;
-
   return {
     props: {
-      messages,
       resolvedLocale
     }
   };
