@@ -1,25 +1,29 @@
-import type { NodePath, Visitor } from '@babel/traverse';
+import type * as babel from '@babel/core';
+import { PluginObj, PluginPass } from '@babel/core';
+import type { NodePath } from '@babel/traverse';
 import type * as Types from '@babel/types';
+import { ImportDeclaration } from '@babel/types';
 import { parse as parseProperties } from 'dot-properties';
 import { readdirSync, readFileSync } from 'fs';
 import { parse, resolve } from 'path';
+import { MulMessages, MulMessagesAllLocales } from '.';
 
-function readMessageFiles(filename: string) {
+function readMessageFiles(filename: string): MulMessagesAllLocales {
   if (!filename) return {};
   const path = parse(filename);
 
   // TODO: parameterise, allow other file formats & name patterns
-  const re = new RegExp(`^${path.name}\.([\\w-]+)\.properties$`);
-  const res: Record<string, Record<string, string>> = {};
-  for (const fn of readdirSync(path.dir)) {
-    const match = fn.match(re);
+  const fileRegexp = new RegExp(`^${path.name}\.([\\w-]+)\.properties$`);
+  const mulMessagesAllLocales: MulMessagesAllLocales = {};
+  for (const filename of readdirSync(path.dir)) {
+    const match = filename.match(fileRegexp);
     if (match) {
-      const src = readFileSync(resolve(path.dir, fn), 'utf8');
-      res[match[1].toLowerCase()] = parseProperties(src) as Record<string, string>;
+      const src = readFileSync(resolve(path.dir, filename), 'utf8');
+      mulMessagesAllLocales[match[1].toLowerCase()] = parseProperties(src) as MulMessages;
     }
   }
 
-  return res;
+  return mulMessagesAllLocales;
 }
 
 function createObjectExpression(
@@ -43,25 +47,24 @@ function createObjectExpression(
   return t.objectExpression(props);
 }
 
-export default function messagePlugin({ types: t }: { types: typeof Types }): {
-  visitor: Visitor<{ file: any }>;
-} {
+export default function messagePlugin({ types: t }: typeof babel): PluginObj {
   return {
+    name: 'next-multilingual messages',
     visitor: {
-      ImportDeclaration(path, state) {
-        const { source, specifiers } = path.node;
+      ImportDeclaration(nodePath: NodePath<ImportDeclaration>, pluginPass: PluginPass) {
+        const { source, specifiers } = nodePath.node;
         if (source.value !== 'next-multilingual/messages') return;
-        for (const spec of specifiers) {
-          switch (spec.type) {
+        for (const specifier of specifiers) {
+          switch (specifier.type) {
             case 'ImportNamespaceSpecifier':
-              throw path.buildCodeFrameError(
+              throw nodePath.buildCodeFrameError(
                 'Namespace imports ("* as foo") are not supported for message functions'
               );
             case 'ImportSpecifier':
-              if (spec.imported.name === 'useMessages') {
-                const binding = path.scope.getBinding(spec.local.name);
+              if (specifier.imported.name === 'useMessages') {
+                const binding = nodePath.scope.getBinding(specifier.local.name);
                 // TODO: Assign this to a variable in the root scope, rather than recreating in each call expression
-                const messages = readMessageFiles(state.file.opts.filename);
+                const messages = readMessageFiles(pluginPass.file.opts.filename);
                 for (const path of binding.referencePaths) {
                   if (path.parent.type === 'CallExpression') {
                     path.parent.arguments.push(createObjectExpression(t, path, messages));
