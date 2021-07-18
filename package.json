@@ -9,7 +9,7 @@
     ".": "./lib/index.js",
     "./config": "./lib/config/index.js",
     "./link": "./lib/link/index.js",
-    "./link-ssr": "./lib/link/ssr.js",
+    "./link/ssr": "./lib/link/ssr.js",
     "./head": "./lib/head/index.js",
     "./messages": "./lib/messages/index.js",
     "./messages/babel-plugin": "./lib/messages/babel-plugin.js",
@@ -21,9 +21,7 @@
         "lib/config/index.d.ts"
       ],
       "link": [
-        "lib/link/index.d.ts"
-      ],
-      "link-ssr": [
+        "lib/link/index.d.ts",
         "lib/link/ssr.d.ts"
       ],
       "head": [

@@ -52,7 +52,7 @@ module.exports = {
     poweredByHeader: false,
     webpack(config, { isServer }) {
         if (isServer) {
-            config.resolve.alias['next-multilingual/link$'] = require.resolve('next-multilingual/link-ssr');
+            config.resolve.alias['next-multilingual/link$'] = require.resolve('next-multilingual/link/ssr');
         }
         return config;
     },

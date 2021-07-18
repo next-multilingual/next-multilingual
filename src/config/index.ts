@@ -335,7 +335,7 @@ export function getMulConfig(
     // Overwrite the `link` component for SSR.
     if (isServer) {
       config.resolve.alias['next-multilingual/link$'] = require.resolve(
-        'next-multilingual/link-ssr'
+        'next-multilingual/link/ssr'
       );
     }
     return config;
