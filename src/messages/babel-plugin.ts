@@ -74,8 +74,8 @@ function createObjectExpression(
       );
     props.push(babelTypes.objectProperty(babelTypes.stringLiteral(key), pv));
   }
-  const objectExpression = babelTypes.objectExpression(props);
-  return objectExpression;
+
+  return babelTypes.objectExpression(props);
 }
 
 /**
