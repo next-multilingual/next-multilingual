@@ -1,19 +1,27 @@
-import type * as babel from '@babel/core';
+import type * as BabelCoreNamespace from '@babel/core';
+import type * as BabelTypesNamespace from '@babel/types';
 import type { PluginObj, PluginPass } from '@babel/core';
+import type {
+  ImportDeclaration,
+  ObjectProperty,
+  ObjectExpression,
+  StringLiteral,
+} from '@babel/types';
 import type { NodePath } from '@babel/traverse';
-import type * as Types from '@babel/types';
-import { ImportDeclaration } from '@babel/types';
 import { readdirSync } from 'fs';
 import { parse, resolve } from 'path';
-import { MulMessages, MulMessagesCollection } from '.';
+import type { MulMessages, MulMessagesCollection } from '.';
 import { parsePropertiesFile } from './properties';
+
+export type Babel = typeof BabelCoreNamespace;
+export type BabelTypes = typeof BabelTypesNamespace;
 
 /**
  * Get the multilingual message collection associated with a source file invoking `useMessages`.
  *
- * @param sourceFilePath The path of the source file that is invoking `useMessages`.
+ * @param sourceFilePath - The path of the source file that is invoking `useMessages`.
  *
- * @returns The multilingual collection in all locales available for the associated source file.
+ * @returns The multilingual messages collection in all locales available for the associated source file.
  */
 function getMulMessagesCollection(sourceFilePath: string): MulMessagesCollection {
   if (!sourceFilePath) return {};
@@ -39,57 +47,90 @@ function getMulMessagesCollection(sourceFilePath: string): MulMessagesCollection
   return mulMessagesCollection;
 }
 
+/**
+ * Create a Babel `ObjectExpression` object.
+ *
+ * @param babelTypes - A Babel Types object.
+ * @param nodePath - A Babel `NodePath` object from which to create.
+ * @param mulMessagesCollection - A multilingual messages collection.
+ *
+ * @returns A Babel `ObjectExpression` object.
+ */
 function createObjectExpression(
-  t: typeof Types,
-  path: NodePath,
+  babelTypes: BabelTypes,
+  nodePath: NodePath,
   mulMessagesCollection: MulMessagesCollection | MulMessages
-): Types.ObjectExpression {
-  const props: Types.ObjectProperty[] = [];
+): ObjectExpression {
+  const props: ObjectProperty[] = [];
   for (const [key, value] of Object.entries(mulMessagesCollection)) {
-    let pv: Types.StringLiteral | Types.ObjectExpression;
+    let pv: StringLiteral | ObjectExpression;
     if (typeof value === 'string') {
-      pv = t.stringLiteral(value);
+      pv = babelTypes.stringLiteral(value);
     } else if (value && typeof value === 'object') {
-      pv = createObjectExpression(t, path, value);
+      pv = createObjectExpression(babelTypes, nodePath, value);
     } else
-      throw path.buildCodeFrameError(
+      throw nodePath.buildCodeFrameError(
         `Expected a string or object value, but found ${value && typeof value}`
       );
-    props.push(t.objectProperty(t.stringLiteral(key), pv));
+    props.push(babelTypes.objectProperty(babelTypes.stringLiteral(key), pv));
   }
-  return t.objectExpression(props);
+  const objectExpression = babelTypes.objectExpression(props);
+  return objectExpression;
 }
 
-export default function messagePlugin({ types: t }: typeof babel): PluginObj {
+/**
+ * Todo: Add proper description...
+ *
+ * @param babel - Todo: Add proper description...
+ *
+ * @returns A plugin object to be used by Babel.
+ */
+export default function plugin(babel: Babel): PluginObj {
   return {
-    name: 'next-multilingual messages',
+    name: 'next-multilingual/messages',
     visitor: {
       ImportDeclaration(nodePath: NodePath<ImportDeclaration>, pluginPass: PluginPass) {
-        const { source, specifiers } = nodePath.node;
-        if (source.value !== 'next-multilingual/messages') return;
-        for (const specifier of specifiers) {
-          switch (specifier.type) {
-            case 'ImportNamespaceSpecifier':
-              throw nodePath.buildCodeFrameError(
-                'Namespace imports ("* as foo") are not supported for message functions'
+        const moduleName = nodePath.node.source.value;
+        const specifiers = nodePath.node.specifiers;
+
+        // Skip if the module name does not match.
+        if (moduleName !== 'next-multilingual/messages') return;
+
+        // If the module name matches, but it's using a namespace import, throw an error (there is no reason to do this).
+        specifiers.forEach((specifier) => {
+          if (specifier.type === 'ImportNamespaceSpecifier') {
+            throw nodePath.buildCodeFrameError(
+              'Namespace imports ("* as foo") are not supported by `next-multilingual/messages`'
+            );
+          }
+        });
+
+        // Try to find at least one named import of `useMessages`.
+        const specifier = specifiers.find(
+          (specifier) =>
+            specifier.type === 'ImportSpecifier' && specifier.imported.name === 'useMessages'
+        );
+
+        // If found, then inject the multilingual messages collection.
+        if (specifier) {
+          console.log(pluginPass.file.opts.filename);
+          const binding = nodePath.scope.getBinding(specifier.local.name); // Also works when renaming imports!
+          const mulMessagesCollection = getMulMessagesCollection(pluginPass.file.opts.filename);
+
+          // if (
+          //   pluginPass.file.opts.filename ===
+          //   'C:\\Projects\\next-multilingual\\example\\pages\\contact-us\\index.tsx'
+          // ) {
+          //   console.dir(binding.referencePaths, { depth: null });
+          // }
+
+          for (const referencePath of binding.referencePaths) {
+            if (referencePath.parent.type === 'CallExpression') {
+              referencePath.parent.arguments.push(
+                createObjectExpression(babel.types, referencePath, mulMessagesCollection)
               );
-            case 'ImportSpecifier':
-              if (specifier.imported.name === 'useMessages') {
-                const binding = nodePath.scope.getBinding(specifier.local.name);
-                // TODO: Assign this to a variable in the root scope, rather than recreating in each call expression
-                const mulMessagesCollection = getMulMessagesCollection(
-                  pluginPass.file.opts.filename
-                );
-                console.dir(binding);
-                for (const referencePath of binding.referencePaths) {
-                  if (referencePath.parent.type === 'CallExpression') {
-                    referencePath.parent.arguments.push(
-                      createObjectExpression(t, referencePath, mulMessagesCollection)
-                    );
-                  }
-                }
-              }
               break;
+            }
           }
         }
       },
