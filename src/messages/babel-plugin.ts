@@ -1,20 +1,17 @@
-import type * as BabelCoreNamespace from '@babel/core';
-import type * as BabelTypesNamespace from '@babel/types';
-import type { PluginObj, PluginPass } from '@babel/core';
-import type {
-  ImportDeclaration,
-  ObjectProperty,
-  ObjectExpression,
-  StringLiteral,
-} from '@babel/types';
-import type { NodePath } from '@babel/traverse';
+import * as BabelNamespace from '@babel/core';
+import type { PluginObj, PluginPass, NodePath } from '@babel/core';
 import { readdirSync } from 'fs';
 import { parse, resolve } from 'path';
 import type { MulMessages, MulMessagesCollection } from '.';
 import { parsePropertiesFile } from './properties';
 
-export type Babel = typeof BabelCoreNamespace;
-export type BabelTypes = typeof BabelTypesNamespace;
+export type Babel = typeof BabelNamespace;
+export type BabelTypes = typeof BabelNamespace.types;
+
+type ImportDeclaration = BabelNamespace.types.ImportDeclaration;
+type ObjectProperty = BabelNamespace.types.ObjectProperty;
+type ObjectExpression = BabelNamespace.types.ObjectExpression;
+type StringLiteral = BabelNamespace.types.StringLiteral;
 
 /**
  * Get the multilingual message collection associated with a source file invoking `useMessages`.
@@ -113,7 +110,6 @@ export default function plugin(babel: Babel): PluginObj {
 
         // If found, then inject the multilingual messages collection.
         if (specifier) {
-          console.log(pluginPass.file.opts.filename);
           const binding = nodePath.scope.getBinding(specifier.local.name); // Also works when renaming imports!
           const mulMessagesCollection = getMulMessagesCollection(pluginPass.file.opts.filename);
 
