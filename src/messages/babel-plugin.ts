@@ -1,33 +1,50 @@
-import * as BabelNamespace from '@babel/core';
-import type { PluginObj, PluginPass, NodePath } from '@babel/core';
 import { readdirSync } from 'fs';
 import { parse, resolve } from 'path';
-import type { MulMessages, MulMessagesCollection } from '.';
+import type { MulMessagesCollection } from '.';
 import { parsePropertiesFile } from './properties';
 
-export type Babel = typeof BabelNamespace;
-export type BabelTypes = typeof BabelNamespace.types;
+import * as BabelCoreNamespace from '@babel/core';
+import * as BabelTypesNamespace from '@babel/types';
+import { cloneNode } from '@babel/types';
+import type { PluginObj, PluginPass, NodePath } from '@babel/core';
+import { parse as babelParse } from '@babel/parser';
 
-type ImportDeclaration = BabelNamespace.types.ImportDeclaration;
-type ObjectProperty = BabelNamespace.types.ObjectProperty;
-type ObjectExpression = BabelNamespace.types.ObjectExpression;
-type StringLiteral = BabelNamespace.types.StringLiteral;
+export type Babel = typeof BabelCoreNamespace;
+export type BabelTypes = typeof BabelTypesNamespace;
+export type ImportDeclaration = BabelTypesNamespace.ImportDeclaration;
+export type ImportSpecifier = BabelTypesNamespace.ImportSpecifier;
+export type ImportNamespaceSpecifier = BabelTypesNamespace.ImportNamespaceSpecifier;
+export type Identifier = BabelTypesNamespace.Identifier;
+const isImportNamespaceSpecifier = BabelTypesNamespace.isImportNamespaceSpecifier;
+const isImportSpecifier = BabelTypesNamespace.isImportSpecifier;
+const importDeclaration = BabelTypesNamespace.importDeclaration;
+
+// TODO: re-inject messages before imports (top of program)
+// TODO: re-inject variables right after first import
+// TODO: check if we can support dynamic `import()`
 
 /**
- * Get the multilingual message collection associated with a source file invoking `useMessages`.
+ * Class used to inject localized messages using Babel (a.k.a "babelified" messages).
+ */
+export class BabelifiedMessages {
+  readonly babelified = true;
+  messages: MulMessagesCollection = {};
+}
+
+/**
+ * Get the "babelified" multilingual message collection associated with a source file invoking `useMessages`.
  *
  * @param sourceFilePath - The path of the source file that is invoking `useMessages`.
  *
- * @returns The multilingual messages collection in all locales available for the associated source file.
+ * @returns The "babelified" multilingual messages collection in string format.
  */
-function getMulMessagesCollection(sourceFilePath: string): MulMessagesCollection {
-  if (!sourceFilePath) return {};
+function getBabelifiedMessages(sourceFilePath: string): string {
   const parsedSourceFile = parse(sourceFilePath);
   const sourceFileDirectoryPath = parsedSourceFile.dir;
   const sourceFilename = parsedSourceFile.name;
+  const babelifiedMessages = new BabelifiedMessages();
 
   const fileRegExp = new RegExp(`^${sourceFilename}.(?<locale>[\\w-]+).properties$`);
-  const mulMessagesCollection: MulMessagesCollection = {};
 
   readdirSync(sourceFileDirectoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
     if (directoryEntry.isFile()) {
@@ -36,99 +53,132 @@ function getMulMessagesCollection(sourceFilePath: string): MulMessagesCollection
       if (regExpMatch) {
         const locale = regExpMatch.groups.locale;
         const propertiesFilePath = resolve(sourceFileDirectoryPath, directoryEntryFilename);
-        mulMessagesCollection[locale.toLowerCase()] = parsePropertiesFile(propertiesFilePath);
+        babelifiedMessages.messages[locale.toLowerCase()] = parsePropertiesFile(propertiesFilePath);
       }
     }
   });
 
-  return mulMessagesCollection;
+  return JSON.stringify(babelifiedMessages);
 }
 
-/**
- * Create a Babel `ObjectExpression` object.
- *
- * @param babelTypes - A Babel Types object.
- * @param nodePath - A Babel `NodePath` object from which to create.
- * @param mulMessagesCollection - A multilingual messages collection.
- *
- * @returns A Babel `ObjectExpression` object.
- */
-function createObjectExpression(
-  babelTypes: BabelTypes,
-  nodePath: NodePath,
-  mulMessagesCollection: MulMessagesCollection | MulMessages
-): ObjectExpression {
-  const props: ObjectProperty[] = [];
-  for (const [key, value] of Object.entries(mulMessagesCollection)) {
-    let pv: StringLiteral | ObjectExpression;
-    if (typeof value === 'string') {
-      pv = babelTypes.stringLiteral(value);
-    } else if (value && typeof value === 'object') {
-      pv = createObjectExpression(babelTypes, nodePath, value);
-    } else
-      throw nodePath.buildCodeFrameError(
-        `Expected a string or object value, but found ${value && typeof value}`
-      );
-    props.push(babelTypes.objectProperty(babelTypes.stringLiteral(key), pv));
-  }
-
-  return babelTypes.objectExpression(props);
-}
+// Name of the target module to "babelify".
+const MODULE_NAME = 'next-multilingual/messages';
+// Import name of the target module to "babelify".
+const MODULE_IMPORT_NAME = 'useMessages';
+// Name of the injected variable that will contain the messages.
+const INJECTED_VARIABLE_NAME = 'messages';
 
 /**
- * Todo: Add proper description...
- *
- * @param babel - Todo: Add proper description...
+ * Babel plugin to inject multilingual messages into Next.js pages or components.
  *
  * @returns A plugin object to be used by Babel.
  */
-export default function plugin(babel: Babel): PluginObj {
+export default function plugin(): PluginObj {
   return {
-    name: 'next-multilingual/messages',
     visitor: {
-      ImportDeclaration(nodePath: NodePath<ImportDeclaration>, pluginPass: PluginPass) {
-        const moduleName = nodePath.node.source.value;
-        const specifiers = nodePath.node.specifiers;
+      Program(nodePath: NodePath, pluginPass: PluginPass) {
+        // Name of the variables referencing matching namespace imports (e.g. "import * as messages").
+        const namespaceImports: string[] = [];
+        // Name of the variables referencing matching named imports (e.g. "import { useMessage }").
+        const namedImports: string[] = [];
 
-        // Skip if the module name does not match.
-        if (moduleName !== 'next-multilingual/messages') return;
+        // Get all import declarations.
+        const importDeclarationNodePaths = (nodePath.get('body') as NodePath[]).filter((node) =>
+          node.isImportDeclaration()
+        ) as NodePath<ImportDeclaration>[];
 
-        // If the module name matches, but it's using a namespace import, throw an error (there is no reason to do this).
-        specifiers.forEach((specifier) => {
-          if (specifier.type === 'ImportNamespaceSpecifier') {
-            throw nodePath.buildCodeFrameError(
-              'Namespace imports ("* as foo") are not supported by `next-multilingual/messages`'
-            );
-          }
+        // Make a copy of the node so we can restore it later after we rename all matching variables.
+        const originalImportDeclarationNodes = importDeclarationNodePaths.map((nodePath) => {
+          return cloneNode(nodePath.node, true);
+        }) as ImportDeclaration[];
+
+        // Check for all matching namespace an name imports and track them.
+        importDeclarationNodePaths.forEach((importDeclarationNodePath) => {
+          const importDeclarationNode = importDeclarationNodePath.node;
+          const specifiers = importDeclarationNode.specifiers as ImportSpecifier[];
+          const importedModuleName = importDeclarationNode.source.value;
+          if (importedModuleName !== MODULE_NAME) return;
+
+          specifiers.forEach((specifier) => {
+            if (isImportNamespaceSpecifier(specifier)) {
+              // Add the alias (variable name) of all matching namespace imports.
+              namespaceImports.push((specifier as ImportNamespaceSpecifier).local.name);
+            } else if (isImportSpecifier(specifier)) {
+              const importName = (specifier.imported as Identifier).name;
+              const importNameAlias = specifier.local.name;
+              if (importName === MODULE_IMPORT_NAME) {
+                // Add the alias (variable name) of all matching named imports.
+                namedImports.push(importNameAlias);
+              }
+            }
+          });
         });
 
-        // Try to find at least one named import of `useMessages`.
-        const specifier = specifiers.find(
-          (specifier) =>
-            specifier.type === 'ImportSpecifier' && specifier.imported.name === 'useMessages'
-        );
-
-        // If found, then inject the multilingual messages collection.
-        if (specifier) {
-          const binding = nodePath.scope.getBinding(specifier.local.name); // Also works when renaming imports!
-          const mulMessagesCollection = getMulMessagesCollection(pluginPass.file.opts.filename);
-
-          // if (
-          //   pluginPass.file.opts.filename ===
-          //   'C:\\Projects\\next-multilingual\\example\\pages\\contact-us\\index.tsx'
-          // ) {
-          //   console.dir(binding.referencePaths, { depth: null });
-          // }
-
-          for (const referencePath of binding.referencePaths) {
-            if (referencePath.parent.type === 'CallExpression') {
-              referencePath.parent.arguments.push(
-                createObjectExpression(babel.types, referencePath, mulMessagesCollection)
-              );
-              break;
-            }
-          }
+        // Stop if no matching imports.
+        if (!namespaceImports.length && !namedImports.length) {
+          return;
         }
+
+        // This is the scope-unique variable name that will contain all messages.
+        const messagesVariable = nodePath.scope.generateUidIdentifier(INJECTED_VARIABLE_NAME);
+
+        // Create the code to inject, starting with the localized messages.
+        let codeToInject = `const ${messagesVariable.name} = ${getBabelifiedMessages(
+          pluginPass.file.opts.filename
+        )};`;
+
+        // If there are matching namespace imports, hijack the namespace variable.
+        if (namespaceImports.length) {
+          // This is the scope-unique variable name that will replace all matching namespace bindings.
+          const hijackedNamespace = nodePath.scope.generateUidIdentifier(
+            `${MODULE_IMPORT_NAME}Namespace`
+          );
+
+          // Copy the namespace to another variable first since its readonly.
+          codeToInject += `const ${hijackedNamespace.name} = ${namespaceImports[0]};`;
+          // Overwrite the function with the correct binding.
+          codeToInject += `${hijackedNamespace.name}.${MODULE_IMPORT_NAME} = ${namespaceImports[0]}.${MODULE_IMPORT_NAME}.bind(${messagesVariable.name});`;
+
+          // Rename all matching namespace imports variables reference in the global scope with the new hijacked namespace.
+          namespaceImports.forEach((namespaceImport) => {
+            // This will also rename the import declarations, so we will have to restore their original value.
+            nodePath.scope.rename(namespaceImport, hijackedNamespace.name);
+          });
+        }
+
+        // If there are matching named imports, hijack the named variable.
+        if (namedImports.length) {
+          // This is the scope-unique variable name that will replace all matching function bindings.
+          const hijackedFunction = nodePath.scope.generateUidIdentifier(
+            `${MODULE_IMPORT_NAME}Function`
+          );
+
+          // Hijack named imports with a copy of the function with the correct binding.
+          codeToInject += `const ${hijackedFunction.name} = ${namedImports[0]}.bind(${messagesVariable.name});`;
+
+          // Rename all matching named imports variables reference in the global scope with the new hijacked function.
+          namedImports.forEach((namedImport) => {
+            // This will also rename the import declarations, so we will have to restore their original value.
+            nodePath.scope.rename(namedImport, hijackedFunction.name);
+          });
+        }
+
+        // Because of the global scope rename, we need to set back original import declarations.
+        for (const importPosition in importDeclarationNodePaths) {
+          const hijackedImportDeclarationNodePath = importDeclarationNodePaths[importPosition];
+          const originalImportDeclarationNode = originalImportDeclarationNodes[importPosition];
+
+          // Replace the specifiers of the hijacked import declaration with its original value.
+          hijackedImportDeclarationNodePath.replaceWith(
+            importDeclaration(
+              originalImportDeclarationNode.specifiers,
+              hijackedImportDeclarationNodePath.node.source
+            )
+          );
+        }
+
+        // Inject the code directly after the last import.
+        importDeclarationNodePaths.pop().insertAfter(babelParse(codeToInject));
       },
     },
   };

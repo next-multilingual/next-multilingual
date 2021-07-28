@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { BabelifiedMessages } from './babel-plugin';
 
 /**
  * Multilingual messages consist of unique keys and their localized strings.
@@ -17,12 +18,12 @@ export type MulMessagesCollection = {
 /**
  * Hook to get the localized messages specific to a Next.js component or page.
  */
-export function useMessages(): MulMessages;
-export function useMessages(mulMessagesCollection?: MulMessagesCollection): MulMessages {
-  const { locale } = useRouter();
-  if (!mulMessagesCollection)
+export function useMessages(): MulMessages {
+  if (!this || !(this as BabelifiedMessages).babelified) {
     throw new Error(
       "useMessages() requires the 'next-multilingual/messages/babel-plugin' Babel plugin"
     );
-  return mulMessagesCollection[locale] || {};
+  }
+  const { locale } = useRouter();
+  return (this as BabelifiedMessages).messages[locale] || {};
 }
