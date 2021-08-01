@@ -1,5 +1,3 @@
-![](./assets/next-multilingual-banner.svg)
-
 # next-intl-router
 
 Locale-specific Unicode routes for Next.js
