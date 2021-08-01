@@ -13,8 +13,8 @@ export type ImportDeclaration = BabelTypes.ImportDeclaration;
 export type ImportSpecifier = BabelTypes.ImportSpecifier;
 export type ImportNamespaceSpecifier = BabelTypes.ImportNamespaceSpecifier;
 export type ImportDefaultSpecifier = BabelTypes.ImportDefaultSpecifier;
-
 export type Identifier = BabelTypes.Identifier;
+
 const isImportNamespaceSpecifier = BabelTypes.isImportNamespaceSpecifier;
 const isImportSpecifier = BabelTypes.isImportSpecifier;
 
