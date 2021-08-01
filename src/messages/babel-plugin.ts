@@ -27,7 +27,9 @@ const TARGET_FUNCTION = 'useMessages';
  * Class used to inject localized messages using Babel (a.k.a "babelified" messages).
  */
 export class BabelifiedMessages {
+  /** This property is used to confirm that the messages have been "babelified". */
   readonly babelified = true;
+  /** The multilingual messages collection for all locales. */
   messages: MulMessagesCollection = {};
 }
 
@@ -119,7 +121,7 @@ function isMatchingNamespaceImport(nodePath: NodePath): boolean {
   );
 }
 /**
- * Class used to inject babelified messages.
+ * Class used to inject "babelified" messages.
  */
 class Messages {
   /** The program node path associated with the class. */
@@ -132,7 +134,7 @@ class Messages {
   private variableName: string;
 
   /**
-   * Constructor.
+   * Object used to inject "babelified" messages.
    *
    * @param programNodePath The program node path associated with the class.
    * @param pluginPass The `PluginPass` object associated with the class.
