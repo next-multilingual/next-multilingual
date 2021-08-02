@@ -6,6 +6,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 - [ ] Automatically rebuild when modifying a properties file?
 - [ ] English (en-US) titles are not used in routes (e.g. contact-us2) -> need to implement this if we want non-english default locale
+- [ ] Add key suffix to all file and exclude them in `useMessages`
+- [ ] Add ICU support in `useMessage`
 - [ ] Check if we need this route: /en-us/homepage -> /en-us
 - [ ] Check if we can add `title` attributes on `Link` components (not supported by Next.js?)
 - [ ] Localized error pages
@@ -23,15 +25,13 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - [ ] sitemap
 - [ ] Add other docs: contribution, design doc, etc.
 
-
 ### In Progress
 
-- [ ] Test new Babel plugin modular string loader
 - [ ] Redo an easier readme based on an end-to-end configuration
-
 
 ### Done ✓
 
+- [x] Test new Babel plugin modular string loader
 - [x] Fix contact-us pages (add localized strings and CSS)
 - [x] Add license doc
 - [x] Add browser side cookie to persist selected locale on initial page load

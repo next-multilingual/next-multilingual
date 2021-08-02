@@ -1,14 +1,14 @@
-# ![](./assets/next-multilingual-banner.svg)
+# ![next-multilingual](./assets/next-multilingual-banner.svg)
 
 `next-multilingual` is an opinionated end-to-end solution for Next.js for applications that requires multiple languages.
 
-## Installation
+## Installation 💻
 
 ```
 npm install next-multilingual
 ```
 
-## What's in it for me?
+## What's in it for me? 🤔
 
 - The enforcement of i18n best practices across your entire application.
 - All URLs will use a locale prefix - this is currently a limitation of Next.js where the default locale does not use a prefix.
@@ -17,11 +17,13 @@ npm install next-multilingual
 - Automatically generate canonical and alternate links optimized for SEO.
 - Modular localized string configuration support that works just like CSS (no more files containing shared strings).
 
-## Usage
+## Getting Started 💨
 
 For those who prefer to jump right into the action, look in the [`example`](./example) directory for an end-to-end implementation of `next-multilingual`. For the rest, the section below will provide a complete configuration guide in 3 simple steps.
 
-### ✔️ Step 1️: Configure Next.js
+## Step by step configuration ⚙️
+
+### Configure Next.js
 
 There are many options to configure in Next.js to achieve our goals. We offer two APIs to simplify this step:
 
@@ -29,7 +31,7 @@ There are many options to configure in Next.js to achieve our goals. We offer tw
 
 Short for "get multilingual configuration", this function will generate a Next.js config that will meet most use cases. Simply add the following code in your application's `next.config.js`:
 
-```js
+```ts
 const { getMulConfig } = require('next-multilingual/config');
 module.exports = getMulConfig(['en-US', 'fr-CA'], { poweredByHeader: false });
 ```
@@ -38,7 +40,7 @@ module.exports = getMulConfig(['en-US', 'fr-CA'], { poweredByHeader: false });
 
 If you have more advanced needs, you can use the `MulConfig` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`:
 
-```js
+```ts
 const { MulConfig } = require('next-multilingual/config');
 
 const mulConfig = new MulConfig(['en-US', 'fr-CA']);
@@ -68,7 +70,11 @@ module.exports = {
 
 For more details on the `next-multilingual/config` API, check its [README](./src/config/README.md) file.
 
-We also need to add a custom [Babel](https://babeljs.io/) plugin to use the `useMessages()` hook. The [recommended way](https://nextjs.org/docs/advanced-features/customizing-babel-config) to do that is to include a `.babelrc` at the base of your application:
+### Configure our Babel plugin
+
+#### 〰️ `next-multilingual/messages/babel-plugin`
+
+To display localized messages with the `useMessages()` hook, we need to configure our custom [Babel](https://babeljs.io/) plugin that will automatically inject strings into pages and components. The [recommended way](https://nextjs.org/docs/advanced-features/customizing-babel-config) to do this is to include a `.babelrc` at the base of your application:
 
 ```json
 {
@@ -77,13 +83,9 @@ We also need to add a custom [Babel](https://babeljs.io/) plugin to use the `use
 }
 ```
 
-### ✔️ Step 2: Create Pages
+### Create a custom `App` (`_app.tsx`)
 
-Before creating the first page, we need to make sure that your application can support dynamic locale resolution.
-
-#### 〰️ Custom `App` (`_app.tsx`)
-
-We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/custom-app) by adding [`_app.tsx`](./example/pages/_app.tsx) in the `pages` directory: 
+We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/custom-app) by adding [`_app.tsx`](./example/pages/_app.tsx) in the `pages` directory:
 
 ```ts
 import type { AppProps } from 'next/app';
@@ -91,28 +93,29 @@ import { useRouter } from 'next/router';
 import { getActualDefaultLocale, setCookieLocale } from 'next-multilingual';
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-    const router = useRouter();
-    const { locales, defaultLocale, locale } = router;
-    /**
-     * Next.js always expose the default locale with URLs without prefixes. If anyone use these URLs, we want to overwrite them
-     * with the actual (default) locale.
-     */
-    if (locale === defaultLocale) {
-        router.locale = getActualDefaultLocale(locales, defaultLocale);
-    }
-    setCookieLocale(router.locale); // Persist locale on page load (will be re-used when hitting `/`).
+  const router = useRouter();
+  const { locales, defaultLocale, locale } = router;
+  /**
+   * Next.js always expose the default locale with URLs without prefixes. If anyone use these URLs, we want to overwrite them
+   * with the actual (default) locale.
+   */
+  if (locale === defaultLocale) {
+    router.locale = getActualDefaultLocale(locales, defaultLocale);
+  }
+  setCookieLocale(router.locale); // Persist locale on page load (will be re-used when hitting `/`).
 
-    return <Component {...pageProps} />;
+  return <Component {...pageProps} />;
 }
 ```
 
 This basically does two things, as mentioned in the comments:
 
-1) Inject the actual locale in Next.js' router since we need to use a "fake default locale".
-2) Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
+1. Inject the actual locale in Next.js' router since we need to use a "fake default locale".
+2. Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
 
-We also need to create a [custom `Document`](https://nextjs.org/docs/advanced-features/custom-document
-) by adding [`_document.tsx`](./example/pages/_document.tsx) in the `pages` directory:
+### Create a custom `Document` (`_document.tsx`)
+
+We also need to create a [custom `Document`](https://nextjs.org/docs/advanced-features/custom-document) by adding [`_document.tsx`](./example/pages/_document.tsx) in the `pages` directory:
 
 ```ts
 import Document, { Html, Head, Main, NextScript } from 'next/document';
@@ -120,12 +123,12 @@ import { ReactElement } from 'react';
 import { getActualLocale, normalizeLocale } from 'next-multilingual';
 
 class MyDocument extends Document {
-render(): ReactElement {
-const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__;
-const pagePropsActualLocale = props?.pageProps?.resolvedLocale;
-const actualLocale = pagePropsActualLocale
-? pagePropsActualLocale
-: getActualLocale(locale, defaultLocale, locales);
+  render(): ReactElement {
+    const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__;
+    const pagePropsActualLocale = props?.pageProps?.resolvedLocale;
+    const actualLocale = pagePropsActualLocale
+      ? pagePropsActualLocale
+      : getActualLocale(locale, defaultLocale, locales);
 
     return (
       <Html lang={normalizeLocale(actualLocale)}>
@@ -136,8 +139,7 @@ const actualLocale = pagePropsActualLocale
         </body>
       </Html>
     );
-
-}
+  }
 }
 
 export default MyDocument;
@@ -145,13 +147,11 @@ export default MyDocument;
 
 This serves only 1 purpose: display the correct server-side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`. The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URLs prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
 
-TODO...
+### Configure all your pages to use SEO friendly markup
 
-propertiesloader.. etc
+`next-multilingual/head` provides a `<MulHead>` component will automatically creates a canonical link and alternate links in the header. This is something that is not provided out of the box by Next.js.
 
-Add pages in your `pages` directory and for each page, add a `<Page-Name>.<locale>.properties` for all locales - localized routes will use the `title` key of the file to use in the localized URLs.
-
-### ✔️ Step 3: Add SEO friendly HTML markup for your URLs
+#### Add a `NEXT_PUBLIC_ORIGIN` environment variable
 
 As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to specify the absolute URLs that will be used, in an [environment variable](https://nextjs.org/docs/basic-features/environment-variables). For example, for the development environment, create an `.env.development` file at the root of your app with the following variable (adjust based on your setup):
 
@@ -161,19 +161,29 @@ NEXT_PUBLIC_ORIGIN="http://localhost:3000"
 
 Regardless of the environment, `next-multilingual` will look for a variables called `NEXT_PUBLIC_ORIGIN` to generate fully-qualified URLs. If you are using Next.js' [`basePath`](https://nextjs.org/docs/api-reference/next.config.js/basepath), it will be added automatically to the base URL.
 
-#### 〰️ `MulHead`
+#### 〰️ `<MulHead>`
 
-Now all that you need to do is add the `MulHead` component to your pages. We recommend to use it on all pages, and if you are
-using a [`Layout`](./example/layout/Layout.tsx) component like in the [example](./example), the following code will do the trick:
+To benefit from the SEO markup, we need to include `<MulHead>` on all pages. There are multiple ways to achieve this, but in the example, we created a `<Layout>` [component](./example/layout/Layout.tsx) that uses our `<MulHead>` component. The following code will do the trick:
 
 ```jsx
 <MulHead>
-    <title>{title}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </MulHead>
 ```
 
-## Why `next-multilingual`?
+For more details on the `next-multilingual/head` API, check its [README](./src/head/README.md) file.
+
+## Create pages and components 📄
+
+Now that everything has been configured, we can focus on creating pages or components
+
+TODO...
+
+Add pages in your `pages` directory and for each page, add a `<Page-Name>.<locale>.properties` for all locales - localized routes will use the `title` key of the file to use in the localized URLs.
+
+
+## Why `next-multilingual`? 🗳️
 
 Why did we put so much efforts with these details? Because our hypothesis is that it can have a major impact on:
 
