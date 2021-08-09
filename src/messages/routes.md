@@ -109,7 +109,7 @@ Based on the [2021 research](https://backlinko.com/google-ranking-factors) from 
 
 1. The shorter the URL the better.
 2. Keep URL depth as low as possible (the less segments, the better)
-3. Readable - the URL must be readable (stop words like a, an, or can be ommited to save length if readability is
+3. Readable - the URL must be readable (stop words like a, an, or can be omitted to save length if readability is
    preserved)
 4. URL strings - it's possible to add human readable strings that will show directly in Google search results using
    schema.org breadcrumbs for example.

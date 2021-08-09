@@ -1,15 +1,14 @@
 # Design Decisions
 
 `next-multilingual` is an opinionated package, and the main reason behind that is research to back its decisions. This document
-is meant to document that research and helpfully help other open source package to avid some of the common pitfalls that a lot
+is meant to document that research and helpfully help other open source package to avoid some of the common pitfalls that a lot
 of i18n solutions fell into.
 
 ## Localized URLs
 
 Localized URLs is uncommon today, probably due to the fact that a functioning implementation can be quite tricky. The other challenge is that to do this correctly there has to be synergy between what are often 2 completely independent functionalities: the router (which points URLs to web resources) and the string/message parser.
 
-A lot of URL routers today use special configuration files to predetermine the available routes. Those files can be `JSON` or `YAML` and often contain their own configuration schema. The problem with this, is that these file mix localizable strings with non-localizable data. To localize these files would you either need a custom file parser, an import/export script or a human manually replacing the import/export script. This is not ideal and adds a lot of complexity and fragility around the localization process. This is why our solution leverages the current Next.js routing functionality using the file system, and adds custom routes
-on top using the same modular string (messages) files that can easily be localized.
+A lot of URL routers today use special configuration files to predetermine the available routes. Those files can be `JSON` or `YAML` and often contain their own configuration schema. The problem with this, is that these file mix localizable strings with non-localizable data. To localize these files would you either need a custom file parser, an import/export script or a human manually replacing the import/export script. This is not ideal and adds a lot of complexity and fragility around the localization process. This is why our solution leverages the current Next.js routing functionality using the file system, and adds custom routes on top using the same modular string (messages) files that can easily be localized.
 
 What this means concretely is that instead of having:
 
@@ -48,6 +47,19 @@ The following design decision have been considered when implementing **localized
    3. Some markets (e.g. Japan, Russia) just expect non-latin characters in URLs - [SEJ, 2021](https://www.searchenginejournal.com/how-to-align-international-roadmap-with-google/)
 5. Hyphens (`-`) are used to separate words, since it is the recommended standard - [Google, 2018](https://www.youtube.com/watch?v=74FiBesPkI4), [Backlinkto, 2020](https://backlinko.com/hub/seo/urls)
 
+### What are good SEO practices in terms of URLs?
+
+Based on the [2021 research](https://backlinko.com/google-ranking-factors) from Backlinkto:
+
+1. The shorter the URL the better.
+2. Keep URL depth as low as possible (the less segments, the better)
+3. Readable - the URL must be readable (stop words like a, an, or can be omitted to save length if readability is
+   preserved)
+4. URL strings - it's possible to add human readable strings that will show directly in Google search results using
+   schema.org breadcrumbs for example.
+5. Every URL should have a `title` attribute when using them in `<a>` tags
+
+
 ## Messages
 
 TODO
@@ -58,6 +70,15 @@ TODO
 - keys
     - unique
     - prefix
+
+We enforce the use of prefix for keys, because:
+
+- All key must be unique, across an application, and when in big companies, ideally across the entire business:
+  - When strings are translated, linguist most often uses [Translation Management Systems](https://en.wikipedia.org/wiki/Translation_management_system) (TMS)
+  - All TMSes use a translation cache, called "translation memory" (TM)
+  - TMs store translated string and the "key" of a string can play a big role in the matching strategy when re-using previously translated strings
+  - When using non-unique keys, this prevents more accurate matches and and can both increase translation cost or reduce translation quality
+
 
 ## SEO-friendly HTML markup
 

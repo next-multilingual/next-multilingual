@@ -8,8 +8,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - [ ] English (en-US) titles are not used in routes (e.g. contact-us2) -> need to implement this if we want non-english default locale
 - [ ] Add key suffix to all file and exclude them in `useMessages`
 - [ ] Add ICU support in `useMessage`
-- [ ] Update readme (in messages) for `properties` files, unique keys, etc.
 - [ ] Check if we need this route: /en-us/homepage -> /en-us
+- [ ] Test `useMessages` with APIs
 - [ ] Check if we can add `title` attributes on `Link` components (not supported by Next.js?)
 - [ ] Localized error pages
 - [ ] Add automated test:
@@ -28,6 +28,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress
 
+- [ ] Update readme (in messages) for `properties` files, unique keys, etc.
 - [ ] Redo an easier readme based on an end-to-end configuration
 
 ### Done ✓
