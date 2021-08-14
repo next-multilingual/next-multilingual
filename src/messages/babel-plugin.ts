@@ -3,8 +3,6 @@ import { parse, resolve } from 'path';
 import type { MulMessagesCollection } from '.';
 import { parsePropertiesFile } from './properties';
 
-import getConfig from 'next/config';
-
 import * as BabelTypes from '@babel/types';
 import type { PluginObj, PluginPass, NodePath } from '@babel/core';
 import template from '@babel/template';
