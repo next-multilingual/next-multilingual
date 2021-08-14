@@ -30,18 +30,18 @@ export default function Layout({ title, children }: LayoutProps): ReactElement {
       </MulHead>
       <header className={styles.header}>
         <div>
-          <a href="/">{messages.header}</a>
+          <a href="/">{messages.format('header')}</a>
         </div>
         <LanguagePicker />
         <nav className={styles.nav}>
           <MulLink href="/">
-            <a>{messages.home}</a>
+            <a>{messages.format('home')}</a>
           </MulLink>
           <MulLink href="/about-us">
-            <a>{messages.aboutUs}</a>
+            <a>{messages.format('aboutUs')}</a>
           </MulLink>
           <MulLink href="/contact-us">
-            <a>{messages.contactUs}</a>
+            <a>{messages.format('contactUs')}</a>
           </MulLink>
         </nav>
       </header>

@@ -14,21 +14,21 @@ export default function ContactUs(): ReactElement {
   }
 
   return (
-    <Layout title={messages.title}>
-      <h1 className={styles.headline}>{messages.title}</h1>
-      <h2 className={styles.subHeader}>{messages.subHeader}</h2>
+    <Layout title={messages.format('title')}>
+      <h1 className={styles.headline}>{messages.format('title')}</h1>
+      <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>
       <form onSubmit={handleSubmit}>
         <label className={styles.messageLabel} htmlFor="message">
-          {messages.messageLabel}
+          {messages.format('messageLabel')}
         </label>
         <textarea
           className={styles.messageInput}
           id="message"
           name="message"
-          placeholder={messages.messagePlaceholder}
+          placeholder={messages.format('messagePlaceholder')}
         />
         <button className={styles.submitButton} type="submit">
-          {messages.submitButton}
+          {messages.format('submitButton')}
         </button>
       </form>
     </Layout>

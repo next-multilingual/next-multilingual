@@ -6,8 +6,8 @@ export default function MessageSent(): ReactElement {
   const messages = useMessages();
 
   return (
-    <Layout title={messages.title}>
-      <h1>{messages.header}</h1>
+    <Layout title={messages.format('title')}>
+      <h1>{messages.format('header')}</h1>
     </Layout>
   );
 }

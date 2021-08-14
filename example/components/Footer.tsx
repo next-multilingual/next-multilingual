@@ -4,5 +4,9 @@ import styles from './Footer.module.css';
 
 export default function Footer(): ReactElement {
   const messages = useMessages();
-  return <footer className={styles.footer}>{messages.footer}</footer>;
+  return (
+    <footer className={styles.footer}>
+      {messages.format('footerMessage')}
+    </footer>
+  );
 }

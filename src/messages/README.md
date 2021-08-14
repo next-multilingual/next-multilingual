@@ -18,7 +18,7 @@ Inside the `properties` files, you have 3 actions you can do:
 
 ```ini
 # This is the message in the footer at the bottom of pages
-my-app.footer-component.footer = © Footer
+exampleApp.footerComponent.footerMessage = © Footer
 ```
 
 And now to use it:
@@ -29,7 +29,7 @@ import { useMessages } from 'next-multilingual/messages';
 
 export default function Footer(): ReactElement {
   const messages = useMessages();
-  return <footer>{messages.footer}</footer>;
+  return <footer>{messages.footerMessage}</footer>;
 }
 ```
 
@@ -40,8 +40,7 @@ Looking at this, you might have questions such as:
 - Why `.properties` files?
 - Why is the key so long and doesn't even seem to be used by `useMessages`
 - Why use ICU?
-- Why use named variables?
 - Etc.
 
-No problem, all the answers an be found in the `messages` section in the [design decisions](../../docs/design-decisions.md) document.
+No problem, all the answers can be found in the `messages` section in the [design decisions](../../docs/design-decisions.md) document.
 

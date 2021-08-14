@@ -62,6 +62,39 @@ Based on the [2021 research](https://backlinko.com/google-ranking-factors) from 
 
 ## Messages
 
+Ideas:
+
+- history around modes of localization:
+   - central string repo
+   - large datasets
+   - decentralized model (what we recommend)
+- localization process explained
+- importance of unique keys
+- ecc.
+
+--- to review ->
+
+### Configure your application identifier
+
+`next-multilingual/messages` comes with the `useMessage` hook that provides easy access to messages (also known as localized strings). Each message is identified with a key and most i18n libraries out there seem to encourage both using short keys and/or sharing keys within the same application. `next-multilingual` enforces the use of unique keys, not only within the same application but across multiple applications. To help enforce this, you need to configure an application identifier in an `.env.local` file at the root of your application:
+
+```ini
+# This is the `next-multilingual` application identifier that will be used as a messages keys prefix.
+NEXT_MULTILINGUAL_APPID=exampleApp
+```
+
+This application identifier will need to be used in all your message keys, as a prefix following the `next-multilingual` key format: `<appId>.<context>.<id>` where:
+
+- **appId** (application identifier) must use the same value as configured in `NEXT_MULTILINGUAL_APPID`
+- **context** must represent the context associated with the message file, for example `aboutUsPage` or `footerComponent` could be good example of context. Each file can only contain 1 context and context should not be used across many files as this could cause "key collision" (non-unique keys).
+- **id** is the unique identifier in a given context (or message file).
+- Each "segment" of a key must be separated by a `.` and can only contain alphanumerical characters - we recommend using camel case for readability.
+
+More details around why unique keys are important can be found in the `messages` section in the [design decisions](./docs/design-decisions.md) document.
+
+
+----
+
 TODO
 
 - properties file

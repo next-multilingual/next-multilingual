@@ -3,6 +3,8 @@ import { parse, resolve } from 'path';
 import type { MulMessagesCollection } from '.';
 import { parsePropertiesFile } from './properties';
 
+import getConfig from 'next/config';
+
 import * as BabelTypes from '@babel/types';
 import type { PluginObj, PluginPass, NodePath } from '@babel/core';
 import template from '@babel/template';
@@ -18,6 +20,13 @@ export type Identifier = BabelTypes.Identifier;
 const isImportNamespaceSpecifier = BabelTypes.isImportNamespaceSpecifier;
 const isImportSpecifier = BabelTypes.isImportSpecifier;
 
+const applicationIdentifier =
+  getConfig()?.serverRuntimeConfig?.nextMultilingual?.applicationIdentifier;
+
+if (applicationIdentifier === undefined) {
+  throw new Error(`next-multilingual requires you to define your application identifier`);
+}
+
 /** Target module to "babelify". */
 const TARGET_MODULE = 'next-multilingual/messages';
 /** Target function (of the target module) to "babelify". */
@@ -29,9 +38,17 @@ const TARGET_FUNCTION = 'useMessages';
 export class BabelifiedMessages {
   /** This property is used to confirm that the messages have been "babelified". */
   readonly babelified = true;
+  /** The path of the source file that is invoking `useMessages`. */
+  readonly sourceFilePath: string;
   /** The multilingual messages collection for all locales. */
-  messages: MulMessagesCollection = {};
+  messagesCollection: MulMessagesCollection = {};
+
+  constructor(sourceFilePath: string) {
+    this.sourceFilePath = sourceFilePath;
+  }
 }
+
+// function getMessages(propertiesFilePath: string) {}
 
 /**
  * Get the "babelified" multilingual message collection associated with a source file invoking `useMessages`.
@@ -44,7 +61,7 @@ function getBabelifiedMessages(sourceFilePath: string): string {
   const parsedSourceFile = parse(sourceFilePath);
   const sourceFileDirectoryPath = parsedSourceFile.dir;
   const sourceFilename = parsedSourceFile.name;
-  const babelifiedMessages = new BabelifiedMessages();
+  const babelifiedMessages = new BabelifiedMessages(sourceFilePath);
 
   const fileRegExp = new RegExp(`^${sourceFilename}.(?<locale>[\\w-]+).properties$`);
 
@@ -55,7 +72,8 @@ function getBabelifiedMessages(sourceFilePath: string): string {
       if (regExpMatch) {
         const locale = regExpMatch.groups.locale;
         const propertiesFilePath = resolve(sourceFileDirectoryPath, directoryEntryFilename);
-        babelifiedMessages.messages[locale.toLowerCase()] = parsePropertiesFile(propertiesFilePath);
+        babelifiedMessages.messagesCollection[locale.toLowerCase()] =
+          parsePropertiesFile(propertiesFilePath);
       }
     }
   });

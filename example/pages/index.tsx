@@ -31,21 +31,21 @@ export default function IndexPage({
   const messages = useMessages();
 
   return (
-    <Layout title={messages.title}>
-      <h1 className={styles.headline}>{messages.headline}</h1>
+    <Layout title={messages.format('title')}>
+      <h1 className={styles.headline}>{messages.format('headline')}</h1>
       <div>
-        <h2 className={styles.subHeader}>{messages.subHeader}</h2>
+        <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>{messages.columnInformation}</th>
-              <th>{messages.columnNextJs}</th>
-              <th>{messages.columnActual}</th>
+              <th>{messages.format('columnInformation')}</th>
+              <th>{messages.format('columnNextJs')}</th>
+              <th>{messages.format('columnActual')}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>{messages.rowDefaultLocale}</td>
+              <td>{messages.format('rowDefaultLocale')}</td>
               <td>{normalizeLocale(defaultLocale)}</td>
               <td>
                 {normalizeLocale(
@@ -54,7 +54,7 @@ export default function IndexPage({
               </td>
             </tr>
             <tr>
-              <td>{messages.rowConfiguredLocales}</td>
+              <td>{messages.format('rowConfiguredLocales')}</td>
               <td>
                 {locales.map((locale) => normalizeLocale(locale)).join(', ')}
               </td>

@@ -6,9 +6,9 @@ import styles from './index.module.css';
 export default function AboutUs(): ReactElement {
   const messages = useMessages();
   return (
-    <Layout title={messages.title}>
-      <h1 className={styles.headline}>{messages.title}</h1>
-      <p>{messages.details}</p>
+    <Layout title={messages.format('title')}>
+      <h1 className={styles.headline}>{messages.format('title')}</h1>
+      <p>{messages.format('details')}</p>
     </Layout>
   );
 }

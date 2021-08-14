@@ -45,6 +45,8 @@ export type LocalizedUrlPath = {
 };
 
 export class MulConfig {
+  /** The unique application identifier that will be used as a messages key prefix. */
+  readonly applicationIdentifier: string;
   /** The actual desired locales of the multilingual application. */
   private readonly actualLocales: string[];
 
@@ -66,6 +68,7 @@ export class MulConfig {
   /**
    * A multilingual configuration handler.
    *
+   * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
    * @param locales - The actual desired locales of the multilingual application.
    * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.
    * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
@@ -74,16 +77,25 @@ export class MulConfig {
    * @throws Error when the locale identifier is invalid.
    */
   constructor(
+    applicationIdentifier: string,
     locales: string[],
     pagesDirectoryPath = 'pages',
     pagesExtensions = ['.tsx', '.jsx'],
     excludedPages = ['_app', '_document', '_error', '404']
   ) {
+    // Set the application identifier if valid.
+    if (!/^[a-z\d]+$/i.test(applicationIdentifier)) {
+      throw new Error(
+        `invalid application identifier '${applicationIdentifier}'. Only alphanumeric characters are allowed.`
+      );
+    }
+    this.applicationIdentifier = applicationIdentifier;
+
     // Verify if the locale identifiers are using the right format.
     locales.forEach((locale) => {
       if (!isLocale(locale)) {
         throw new Error(
-          "Invalid locale '" +
+          "invalid locale '" +
             locale +
             "' . `next-multilingual` only uses locale identifiers following the `language`-`country` format."
         );
@@ -293,6 +305,7 @@ export class MulConfig {
 /**
  * Returns the Next.js multilingual config.
  *
+ * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
  * @param locales - The actual desired locales of the multilingual application.
  * @param options - Next.js configuration options.
  * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.
@@ -307,6 +320,7 @@ export class MulConfig {
  * @throws Error when the locale identifier or config is invalid.
  */
 export function getMulConfig(
+  applicationIdentifier: string,
   locales: string[],
   options:
     | Record<string, unknown>
@@ -316,12 +330,32 @@ export function getMulConfig(
   excludedPages?: string[]
 ): Record<string, unknown> {
   if (options instanceof Function) {
-    throw new Error(
-      'Function config is not supported yet. Please use the `MulConfig` object instead'
-    );
+    throw new Error('Function config is not supported. Please use the `MulConfig` object instead');
   }
+
+  ['serverRuntimeConfig', 'i18n', 'webpack', 'rewrites', 'redirects'].forEach((option) => {
+    if (options[option] !== undefined) {
+      throw new Error(
+        `the \`${option}\` option is not supported by \`getMulConfig\`. Please use the \`MulConfig\` object instead`
+      );
+    }
+  });
+
   const config = options ? options : {};
-  const mulConfig = new MulConfig(locales, pagesDirectoryPath, pagesExtensions, excludedPages);
+  const mulConfig = new MulConfig(
+    applicationIdentifier,
+    locales,
+    pagesDirectoryPath,
+    pagesExtensions,
+    excludedPages
+  );
+
+  // Sets the unique application identifier.
+  config.serverRuntimeConfig = {
+    nextMultilingual: {
+      applicationIdentifier: mulConfig.applicationIdentifier,
+    },
+  };
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
   config.i18n = {

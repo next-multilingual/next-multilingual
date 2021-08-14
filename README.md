@@ -17,6 +17,12 @@ npm install next-multilingual
 - Automatically generate canonical and alternate links optimized for SEO.
 - Modular localized string configuration support that works just like CSS (no more files containing shared strings).
 
+## Before we start 💎
+
+`next-multilingual` has put a lot of effort to add [JSDoc](https://jsdoc.app/) to all its APIs. Please check directly in your IDE if you are unsure how to use certain APIs provided in our examples.
+
+Also, having an opinion on "best practices" is not an easy task. This is why we documented our design decisions in a special document that can be consulted [here](./docs/design-decisions.md). If you feel that some of our APIs don't offer what you would expect, make sure to take a peek at this document before opening an issue.
+
 ## Getting Started 💨
 
 For those who prefer to jump right into the action, look in the [`example`](./example) directory for an end-to-end implementation of `next-multilingual`. For the rest, the section below will provide a complete configuration guide in 3 simple steps.
@@ -25,7 +31,12 @@ For those who prefer to jump right into the action, look in the [`example`](./ex
 
 ### Configure Next.js
 
-There are many options to configure in Next.js to achieve our goals. We offer two APIs to simplify this step:
+There are many options to configure in Next.js to achieve our goals. `next-multilingual` mostly cares about:
+
+- Your unique application identifier: this will be used tto ensure that your messages (localized strings) have unique identifiers.
+- Your locales: we only support BCP47 language tags that contains both a country and language code.
+
+We offer two APIs to simplify this step:
 
 #### 〰️ `getMulConfig` (simple config)
 
@@ -33,8 +44,10 @@ Short for "get multilingual configuration", this function will generate a Next.j
 
 ```ts
 const { getMulConfig } = require('next-multilingual/config');
-module.exports = getMulConfig(['en-US', 'fr-CA'], { poweredByHeader: false });
+module.exports = getMulConfig('exampleApp', ['en-US', 'fr-CA'], { poweredByHeader: false });
 ```
+
+Some options are not supported by `getMulConfig`. If you try to use one, the error message should point you directly to the next section: advanced config.
 
 #### 〰️ `MulConfig` (advanced config)
 
@@ -43,9 +56,14 @@ If you have more advanced needs, you can use the `MulConfig` object directly and
 ```ts
 const { MulConfig } = require('next-multilingual/config');
 
-const mulConfig = new MulConfig(['en-US', 'fr-CA']);
+const mulConfig = new MulConfig('exampleApp', ['en-US', 'fr-CA']);
 
 module.exports = {
+    serverRuntimeConfig = {
+      nextMultilingual: {
+        applicationIdentifier: mulConfig.applicationIdentifier,
+      },
+    }
     i18n: {
         locales: mulConfig.getUrlLocalePrefixes(),
         defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),
@@ -65,7 +83,6 @@ module.exports = {
         return mulConfig.getRedirects();
     }
 };
-
 ```
 
 For more details on the `next-multilingual/config` API, check its [README](./src/config/README.md) file.
@@ -82,6 +99,9 @@ To display localized messages with the `useMessages()` hook, we need to configur
   "plugins": ["next-multilingual/messages/babel-plugin"]
 }
 ```
+
+For more details on `next-multilingual/messages/babel-plugin`, check its [README](./src/messages/README.md) file.
+
 
 ### Create a custom `App` (`_app.tsx`)
 
@@ -153,10 +173,10 @@ This serves only 1 purpose: display the correct server-side locale in the `<html
 
 #### Add a `NEXT_PUBLIC_ORIGIN` environment variable
 
-As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to specify the absolute URLs that will be used, in an [environment variable](https://nextjs.org/docs/basic-features/environment-variables). For example, for the development environment, create an `.env.development` file at the root of your app with the following variable (adjust based on your setup):
+As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to specify the absolute URLs that will be used, in an [environment variable](https://nextjs.org/docs/basic-features/environment-variables). For example, for the development environment, create an `.env.development` file at the root of your application with the following variable (adjust based on your setup):
 
-```conf
-NEXT_PUBLIC_ORIGIN="http://localhost:3000"
+```ini
+NEXT_PUBLIC_ORIGIN=http://localhost:3000
 ```
 
 Regardless of the environment, `next-multilingual` will look for a variables called `NEXT_PUBLIC_ORIGIN` to generate fully-qualified URLs. If you are using Next.js' [`basePath`](https://nextjs.org/docs/api-reference/next.config.js/basepath), it will be added automatically to the base URL.
