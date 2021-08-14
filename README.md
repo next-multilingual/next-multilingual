@@ -59,11 +59,6 @@ const { MulConfig } = require('next-multilingual/config');
 const mulConfig = new MulConfig('exampleApp', ['en-US', 'fr-CA']);
 
 module.exports = {
-    serverRuntimeConfig = {
-      nextMultilingual: {
-        applicationIdentifier: mulConfig.applicationIdentifier,
-      },
-    }
     i18n: {
         locales: mulConfig.getUrlLocalePrefixes(),
         defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),

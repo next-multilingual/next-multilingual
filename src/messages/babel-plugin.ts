@@ -20,8 +20,7 @@ export type Identifier = BabelTypes.Identifier;
 const isImportNamespaceSpecifier = BabelTypes.isImportNamespaceSpecifier;
 const isImportSpecifier = BabelTypes.isImportSpecifier;
 
-const applicationIdentifier =
-  getConfig()?.serverRuntimeConfig?.nextMultilingual?.applicationIdentifier;
+const applicationIdentifier = process?.env?.nextMultilingualApplicationIdentifier;
 
 if (applicationIdentifier === undefined) {
   throw new Error(`next-multilingual requires you to define your application identifier`);

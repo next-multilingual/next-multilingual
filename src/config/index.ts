@@ -90,6 +90,8 @@ export class MulConfig {
       );
     }
     this.applicationIdentifier = applicationIdentifier;
+    // Manually add to environment variables so that it is available at build time, without extra config.
+    process.env.nextMultilingualApplicationIdentifier = this.applicationIdentifier;
 
     // Verify if the locale identifiers are using the right format.
     locales.forEach((locale) => {
@@ -333,7 +335,7 @@ export function getMulConfig(
     throw new Error('Function config is not supported. Please use the `MulConfig` object instead');
   }
 
-  ['serverRuntimeConfig', 'i18n', 'webpack', 'rewrites', 'redirects'].forEach((option) => {
+  ['env', 'i18n', 'webpack', 'rewrites', 'redirects'].forEach((option) => {
     if (options[option] !== undefined) {
       throw new Error(
         `the \`${option}\` option is not supported by \`getMulConfig\`. Please use the \`MulConfig\` object instead`
@@ -349,13 +351,6 @@ export function getMulConfig(
     pagesExtensions,
     excludedPages
   );
-
-  // Sets the unique application identifier.
-  config.serverRuntimeConfig = {
-    nextMultilingual: {
-      applicationIdentifier: mulConfig.applicationIdentifier,
-    },
-  };
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
   config.i18n = {
