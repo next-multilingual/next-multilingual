@@ -1,6 +1,6 @@
 import { readdirSync } from 'fs';
 import { parse, resolve } from 'path';
-import type { MulMessagesCollection } from '.';
+import type { MulMessages, MulMessagesCollection } from '.';
 import { parsePropertiesFile } from './properties';
 
 import * as BabelTypes from '@babel/types';
@@ -45,7 +45,58 @@ export class BabelifiedMessages {
   }
 }
 
-// function getMessages(propertiesFilePath: string) {}
+/**
+ * Get messages from properties file.
+ *
+ * @param propertiesFilePath - The path of the .properties file from which to read the messages.
+ *
+ * @returns Validated and size-optimized messages.
+ */
+export function getMessages(propertiesFilePath: string): MulMessages {
+  const parsedPropertiesFile = parsePropertiesFile(propertiesFilePath);
+  let context: string;
+  const messages = {};
+  for (const key in parsedPropertiesFile) {
+    const keySegments = key.split('.');
+    if (keySegments.length !== 3) {
+      throw new Error(
+        `invalid key \`${key}\` in file \`${propertiesFilePath}\`. Keys must follow the \`<application identifier>.<context>.<id>\` format.`
+      );
+    }
+    const [appIdSegment, contextSegment, idSegment] = keySegments;
+
+    // Verify the key's unique application identifier.
+    if (appIdSegment !== applicationIdentifier) {
+      throw new Error(
+        `invalid application identifier \`${appIdSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Expected value: \`${applicationIdentifier}\`.`
+      );
+    }
+
+    // Verify the key's context.
+    if (context === undefined) {
+      if (!/^[a-z\d]+$/i.test(contextSegment)) {
+        throw new Error(
+          `invalid context \`${contextSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key context can only contain alphanumerical characters.`
+        );
+      }
+      context = contextSegment;
+    } else if (contextSegment !== context) {
+      throw new Error(
+        `invalid context \`${contextSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Only one key context is allowed per file. Expected value: \`${context}\`.`
+      );
+    }
+
+    // Verify the key's identifier.
+    if (!/^[a-z\d]+$/i.test(idSegment)) {
+      throw new Error(
+        `invalid identifier \`${idSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key context can only contain alphanumerical characters.`
+      );
+    }
+    // If validation passes, keep only the identifier part of the key to reduce file sizes.
+    messages[idSegment] = parsedPropertiesFile[key];
+  }
+  return messages;
+}
 
 /**
  * Get the "babelified" multilingual message collection associated with a source file invoking `useMessages`.
@@ -70,7 +121,7 @@ function getBabelifiedMessages(sourceFilePath: string): string {
         const locale = regExpMatch.groups.locale;
         const propertiesFilePath = resolve(sourceFileDirectoryPath, directoryEntryFilename);
         babelifiedMessages.messagesCollection[locale.toLowerCase()] =
-          parsePropertiesFile(propertiesFilePath);
+          getMessages(propertiesFilePath);
       }
     }
   });

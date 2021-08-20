@@ -29,7 +29,7 @@ import { useMessages } from 'next-multilingual/messages';
 
 export default function Footer(): ReactElement {
   const messages = useMessages();
-  return <footer>{messages.footerMessage}</footer>;
+  return <footer>{messages.format('footerMessage')}</footer>;
 }
 ```
 
@@ -38,8 +38,8 @@ export default function Footer(): ReactElement {
 Looking at this, you might have questions such as:
 
 - Why `.properties` files?
-- Why is the key so long and doesn't even seem to be used by `useMessages`
-- Why use ICU?
+- Why is the key so long and doesn't even seem to be used by `useMessages`?
+- What about more advanced use cases (e.g. variables and plurals)?
 - Etc.
 
 No problem, all the answers can be found in the `messages` section in the [design decisions](../../docs/design-decisions.md) document.

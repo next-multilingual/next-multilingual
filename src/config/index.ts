@@ -209,9 +209,18 @@ export class MulConfig {
    * @return The localized URL path segment.
    */
   private getLocalizedUrlPathSegment(filePath: string, locale: string): string {
-    const { dir: directoryPath, name: identifier } = parsePath(filePath);
-    const propertiesFilePath = resolve(directoryPath, `${identifier}.${locale}.properties`);
-    return parsePropertiesFile(propertiesFilePath).title.replace(/[ /-]+/g, '-');
+    const { dir: directoryPath, name: filename } = parsePath(filePath);
+    const propertiesFilePath = resolve(directoryPath, `${filename}.${locale}.properties`);
+    const parsedPropertiesFile = parsePropertiesFile(propertiesFilePath);
+    const pageTitleKey = Object.keys(parsedPropertiesFile).find((key) =>
+      key.endsWith('.pageTitle')
+    );
+    if (!pageTitleKey) {
+      throw new Error(
+        `next-multilingual requires page's .properties file to include a key ending with \`.pageTitle\``
+      );
+    }
+    return parsedPropertiesFile[pageTitleKey].replace(/[ /-]+/g, '-');
   }
 
   /**
