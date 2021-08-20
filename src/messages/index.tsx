@@ -17,13 +17,26 @@ export type MulMessagesCollection = {
   [key: string]: MulMessages;
 };
 
+/**
+ * The values (e.g. placeholders) used to format a message.
+ */
 export type MessageValues = {
   readonly [key: string]: string | number;
 };
 
+/**
+ * Object used to format localized messages of a local scope.
+ */
 export class Messages {
+  /** Localized messages of a local scope. */
   private messages: MulMessages = {};
 
+  /**
+   * Create an object used to format localized messages of a local scope.
+   *
+   * @param babelifiedMessages - Localized messages created by the Babel plugin.
+   * @param locale - The locale of the messages.
+   */
   constructor(babelifiedMessages: BabelifiedMessages, locale: string) {
     if (!babelifiedMessages.messagesCollection[locale]) {
       const parsedSourceFile = parse(babelifiedMessages.sourceFilePath);
@@ -36,14 +49,26 @@ export class Messages {
     this.messages = babelifiedMessages.messagesCollection[locale];
   }
 
-  // public format(key: string, values: MessageValues): string {
-  public format(key: string): string {
+  /**
+   * Format a message identified by a key in a local scope.
+   *
+   * @param key - The local scope key identifying the message.
+   * @param values - The values (e.g. placeholders) used to format the message, if any.
+   *
+   * @returns The formatted message as a string.
+   */
+  public format(key: string, values?: MessageValues): string {
+    if (values) {
+      // todo: implement value
+    }
     return this.messages[key];
   }
 }
 
 /**
- * Hook to get the localized messages specific to a Next.js component or page.
+ * Hook to get the localized messages specific to a Next.js context.
+ *
+ * @returns An object containing the messages of the local scope.
  */
 export function useMessages(): Messages {
   if (!this || !(this as BabelifiedMessages).babelified) {
