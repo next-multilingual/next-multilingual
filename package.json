@@ -55,6 +55,7 @@
     "lint": "eslint --ext js,jsx,ts,tsx --fix"
   },
   "dependencies": {
+    "chokidar": "^3.5.1",
     "dot-properties": "^1.0.1",
     "nookies": "^2.5.2",
     "resolve-accept-language": "^1.0.25"

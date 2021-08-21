@@ -209,6 +209,8 @@ There is one special key for `pages`, where the `id` is `pageTitle`. This messag
 
 For example `About us` will become `about-us`.
 
+Note that if you change `pageTitle`, this means that the URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
+
 ## Why `next-multilingual`? 🗳️
 
 Why did we put so much efforts with these details? Because our hypothesis is that it can have a major impact on:

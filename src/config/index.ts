@@ -1,8 +1,9 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
-import { readdirSync } from 'fs';
+import { existsSync, readdirSync, utimesSync } from 'fs';
 import { basename, extname, posix, resolve, parse as parsePath } from 'path';
 import { isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
+import chokidar from 'chokidar';
 
 export class MultilingualRoute {
   /** A unique multilingual route identifier. */
@@ -117,6 +118,31 @@ export class MulConfig {
     }
     this.excludedPages = excludedPages;
     this.routeCache = this.getRoutes();
+
+    // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
+    if (process.env.NODE_ENV === 'development') {
+      chokidar
+        .watch('./**/*.properties', {
+          ignored: ['node_modules', '.next'],
+          ignoreInitial: true,
+        })
+        .on('all', (event, path) => {
+          const propertiesFile = parsePath(resolve(process.cwd(), path));
+          const relatedFilename = propertiesFile.name.split('.').slice(0, -1).join('.');
+
+          for (const relatedFileExtension of ['tsx', 'ts', 'jsx', 'js']) {
+            const relatedFilePath = resolve(
+              propertiesFile.dir,
+              `${relatedFilename}.${relatedFileExtension}`
+            );
+            if (existsSync(relatedFilePath)) {
+              // "touch" the file without any changes to trigger recompile.
+              utimesSync(relatedFilePath, new Date(), new Date());
+              break;
+            }
+          }
+        });
+    }
   }
 
   /**
