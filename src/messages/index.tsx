@@ -3,6 +3,9 @@ import { BabelifiedMessages } from './babel-plugin';
 import { parse, resolve } from 'path';
 import { normalizeLocale } from '..';
 
+/** This is the regular expression to validate message key segments. */
+export const keySegmentRegExp = /^[a-z\d]{3,50}$/i;
+
 /**
  * Multilingual messages consist of unique keys and their localized strings.
  */

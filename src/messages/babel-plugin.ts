@@ -1,6 +1,6 @@
 import { readdirSync } from 'fs';
 import { parse, resolve } from 'path';
-import type { MulMessages, MulMessagesCollection } from '.';
+import { keySegmentRegExp, MulMessages, MulMessagesCollection } from '.';
 import { parsePropertiesFile } from './properties';
 
 import * as BabelTypes from '@babel/types';
@@ -20,8 +20,8 @@ const isImportSpecifier = BabelTypes.isImportSpecifier;
 
 const applicationIdentifier = process?.env?.nextMultilingualApplicationIdentifier;
 
-if (applicationIdentifier === undefined) {
-  throw new Error(`next-multilingual requires you to define your application identifier`);
+if (applicationIdentifier === undefined || !keySegmentRegExp.test(applicationIdentifier)) {
+  throw new Error(`you must define your application identifier using \`next-multilingual/config\``);
 }
 
 /** Target module to "babelify". */
@@ -74,9 +74,9 @@ export function getMessages(propertiesFilePath: string): MulMessages {
 
     // Verify the key's context.
     if (context === undefined) {
-      if (!/^[a-z\d]+$/i.test(contextSegment)) {
+      if (!keySegmentRegExp.test(contextSegment)) {
         throw new Error(
-          `invalid context \`${contextSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key context can only contain alphanumerical characters.`
+          `invalid context \`${contextSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key context must be between 3 and 50 alphanumerical character.`
         );
       }
       context = contextSegment;
@@ -87,9 +87,9 @@ export function getMessages(propertiesFilePath: string): MulMessages {
     }
 
     // Verify the key's identifier.
-    if (!/^[a-z\d]+$/i.test(idSegment)) {
+    if (!keySegmentRegExp.test(idSegment)) {
       throw new Error(
-        `invalid identifier \`${idSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key context can only contain alphanumerical characters.`
+        `invalid identifier \`${idSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key identifiers must be between 3 and 50 alphanumerical character.`
       );
     }
     // If validation passes, keep only the identifier part of the key to reduce file sizes.

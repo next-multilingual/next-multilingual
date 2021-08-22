@@ -209,7 +209,7 @@ Add pages in your `pages` directory and for each page, add a `<Page-Name>.<local
 - **application identifier** must use the same value as set in `next-multilingual/config`
 - **context** must represent the context associated with the message file, for example `aboutUsPage` or `footerComponent` could be good examples of context. Each file can only contain 1 context and context should not be used across many files as this could cause "key collision" (non-unique keys).
 - **id** is the unique identifier in a given context (or message file).
-- Each "segment" of a key must be separated by a `.` and can only contain alphanumerical characters - we recommend using camel case for readability.
+- Each "segment" of a key must be separated by a `.` and can only contain between 3 to 50 alphanumerical characters - we recommend using camel case for readability.
 
 There is one special key for `pages`, where the `id` is `pageTitle`. This message will be used both as a page title, but also as the localized URL segment of that page. Basically the "page title" is the human readable "short description" of your pages, and also represents a segment (contained between slashes) of a URL. When used as a UR segment, following changes are applied:
 

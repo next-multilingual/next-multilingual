@@ -3,6 +3,8 @@ import { existsSync, readdirSync, utimesSync } from 'fs';
 import { basename, extname, posix, resolve, parse as parsePath } from 'path';
 import { isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
+import { keySegmentRegExp } from '../messages';
+
 import type { NextConfig } from 'next';
 import chokidar from 'chokidar';
 
@@ -86,9 +88,9 @@ export class MulConfig {
     excludedPages = ['_app', '_document', '_error', '404']
   ) {
     // Set the application identifier if valid.
-    if (!/^[a-z\d]+$/i.test(applicationIdentifier)) {
+    if (!keySegmentRegExp.test(applicationIdentifier)) {
       throw new Error(
-        `invalid application identifier '${applicationIdentifier}'. Only alphanumeric characters are allowed.`
+        `invalid application identifier '${applicationIdentifier}'. Application identifiers must be between 3 and 50 alphanumerical character.`
       );
     }
     this.applicationIdentifier = applicationIdentifier;
