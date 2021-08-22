@@ -3,6 +3,7 @@ import { existsSync, readdirSync, utimesSync } from 'fs';
 import { basename, extname, posix, resolve, parse as parsePath } from 'path';
 import { isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
+import type { NextConfig } from 'next';
 import chokidar from 'chokidar';
 
 export class MultilingualRoute {
@@ -349,23 +350,19 @@ export class MulConfig {
  * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
  * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
  *
- * Note that conflicting options required by `next-multilingual` will be overwritten. For advanced configuration, please
- * user the `MulConfig`.
+ * @return The Next.js configuration.
  *
- * @return The Next.js routes.
- *
- * @throws Error when the locale identifier or config is invalid.
+ * @throws Error when the locale identifier or config is invalid or if there are conflicting options. For advanced
+ * configuration, please use the `MulConfig`.
  */
 export function getMulConfig(
   applicationIdentifier: string,
   locales: string[],
-  options:
-    | Record<string, unknown>
-    | ((phase: string, defaultConfig: Record<string, unknown>) => void),
+  options: NextConfig | ((phase: string, defaultConfig: NextConfig) => void),
   pagesDirectoryPath?: string,
   pagesExtensions?: string[],
   excludedPages?: string[]
-): Record<string, unknown> {
+): NextConfig {
   if (options instanceof Function) {
     throw new Error('Function config is not supported. Please use the `MulConfig` object instead');
   }
@@ -378,7 +375,7 @@ export function getMulConfig(
     }
   });
 
-  const config = options ? options : {};
+  const config: NextConfig = options ? options : {};
   const mulConfig = new MulConfig(
     applicationIdentifier,
     locales,

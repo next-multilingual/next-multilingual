@@ -40,7 +40,16 @@ We offer two APIs to simplify this step:
 
 #### 〰️ `getMulConfig` (simple config)
 
-Short for "get multilingual configuration", this function will generate a Next.js config that will meet most use cases. Simply add the following code in your application's `next.config.js`:
+Short for "get multilingual configuration", this function will generate a Next.js config that will meet most use cases. `getMulConfig` takes the following arguments:
+
+- `applicationIdentifier` — The unique application identifier that will be used as a messages key prefix.
+- `locales` — The actual desired locales of the multilingual application. Only BCP47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](../../docs/design-decisions.md) document.
+- `options` (optional) — Options part of a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
+- Also a few other arguments you probably will never need to use - check in your IDE (JSDoc) for more details.
+
+`getMulConfig` will return a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
+
+To use it, simply add the following code in your application's `next.config.js`:
 
 ```ts
 const { getMulConfig } = require('next-multilingual/config');
@@ -51,7 +60,7 @@ Some options are not supported by `getMulConfig`. If you try to use one, the err
 
 #### 〰️ `MulConfig` (advanced config)
 
-If you have more advanced needs, you can use the `MulConfig` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`:
+If you have more advanced needs, you can use the `MulConfig` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`. The argument of `MulConfig` are almost identical to `getMulConfig` (minus the `options`) - check in your IDE (JSDoc) for details. Here is an example of how it can be used:
 
 ```ts
 const { MulConfig } = require('next-multilingual/config');
@@ -209,7 +218,7 @@ There is one special key for `pages`, where the `id` is `pageTitle`. This messag
 
 For example `About us` will become `about-us`.
 
-Note that if you change `pageTitle`, this means that the URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
+> ⚠️ Note that if you change `pageTitle`, this means that the URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
 
 ## Why `next-multilingual`? 🗳️
 

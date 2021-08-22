@@ -173,6 +173,7 @@ On top of everything we covered, there are still best practices that need to be 
 - Try to avoid hardcoding values where the format can vary on the locale, such as dates, numbers and currencies. Many libraries an handle this and ensure that the format is consistent across your application.
 - Use MessageFormat for messages tha have plural forms. There are 6 plural forms in Arabic - do not try to handle this logic yourself as you will most likely end up creating problems.
 - Add inline context to help linguist do their job. Some words have more than one meaning and without context you could end up with the wrong translation.
+- If you are using inline HTML markup in your message and you have links with URLs, try to parametrize your URLs as they can often vary based on the language. Translators cannot translate URLs and it unless you provide context about why they are in the markup, they will most likely create confusion or send your users to the wrong link. 
 - Use unique keys to lower your cost and improve your translation quality.
 
 ### Conclusion
