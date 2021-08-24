@@ -1,12 +1,35 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
 import { existsSync, readdirSync, utimesSync } from 'fs';
-import { basename, extname, posix, resolve, parse as parsePath } from 'path';
+import { extname, resolve, parse as parsePath, sep as pathSeparator } from 'path';
 import { isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
 import { keySegmentRegExp } from '../messages';
 
 import type { NextConfig } from 'next';
 import chokidar from 'chokidar';
+
+/**
+ * Escapes a regular expression string.
+ *
+ * @param regexp - The regular expression string.
+ *
+ * @returns An escaped regular expression.
+ */
+function escapeRegExp(regexp: string): string {
+  return regexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+/**
+ * Transforms a file system path to a URL path, regardless of the operating system.
+ *
+ * @param path - The file path coming from Node's `fs` API.
+ *
+ * @returns A URL path.
+ */
+function fileSystemPathToUrlPath(path: string): string {
+  const regexp = new RegExp(`[${escapeRegExp(pathSeparator)}]`, 'g');
+  return path.replace(regexp, '/');
+}
 
 export class MultilingualRoute {
   /** A unique multilingual route identifier. */
@@ -72,8 +95,8 @@ export class MulConfig {
   /**
    * A multilingual configuration handler.
    *
-   * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
-   * @param locales - The actual desired locales of the multilingual application.
+   * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix. Must be between 3 to 50 alphanumerical characters.
+   * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
    * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.
    * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
    * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
@@ -115,11 +138,16 @@ export class MulConfig {
     // By convention, the first locale configured in Next.js will be the default locale.
     this.locales = [this.defaultLocale, ...this.actualLocales];
 
-    this.pagesDirectoryPath = pagesDirectoryPath;
+    this.pagesDirectoryPath = resolve(pagesDirectoryPath);
     if (pagesExtensions?.length) {
-      this.pagesExtensions = pagesExtensions.map((ext) => (ext.startsWith('.') ? ext : `.${ext}`));
+      this.pagesExtensions = pagesExtensions.map((extension) =>
+        extension.startsWith('.') ? extension : `.${extension}`
+      );
     }
-    this.excludedPages = excludedPages;
+    this.excludedPages = excludedPages.map((excludedPage) =>
+      resolve(this.pagesDirectoryPath, excludedPage)
+    );
+
     this.routeCache = this.getRoutes();
 
     // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
@@ -167,62 +195,120 @@ export class MulConfig {
   }
 
   /**
+   * Check if a given directory contains pages.
+   *
+   * @param directoryPath - The path of the directory.
+   *
+   * @returns True if there is at least one page, otherwise false.
+   */
+  private directoryContainsPages(directoryPath: string): boolean {
+    let pagesFound = 0;
+    readdirSync(directoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
+      if (directoryEntry.isFile()) {
+        const directoryEntryPath = resolve(directoryPath, directoryEntry.name);
+        const directoryEntryExtension = extname(directoryEntryPath);
+
+        if (!this.pagesExtensions.includes(directoryEntryExtension)) {
+          return; // Skip this file if the extension is not in scope.
+        }
+
+        const pageFile = parsePath(directoryEntryPath);
+        const pagePathWithoutExtension = resolve(pageFile.dir, pageFile.name);
+
+        if (this.excludedPages.includes(pagePathWithoutExtension)) {
+          return; // Skip this file if it's excluded.
+        }
+
+        pagesFound++;
+      }
+    });
+    return !!pagesFound;
+  }
+
+  /**
    * Returns the Next.js routes from a specific directory.
    *
-   * @param directoryPath - The directory to read the files from.
+   * @param baseDirectoryPath - The base directory to read the files from (this should be the `pages` directory).
+   * @param currentDirectoryPath - The directory being currently inspected for route.
    *
    * @return The Next.js routes.
    */
-  private getRoutes(directoryPath = this.pagesDirectoryPath): MultilingualRoute[] {
-    const routes: MultilingualRoute[] = [];
+  private getRoutes(
+    baseDirectoryPath = this.pagesDirectoryPath,
+    currentDirectoryPath = this.pagesDirectoryPath,
+    routes: MultilingualRoute[] = []
+  ): MultilingualRoute[] {
+    if (!this.directoryContainsPages(currentDirectoryPath)) {
+      throw new Error(`directories without pages are not supported: ${currentDirectoryPath}`);
+    }
 
-    readdirSync(directoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
-      const directoryEntryPath = resolve(directoryPath, directoryEntry.name);
-      if (!directoryEntry.isDirectory()) {
+    readdirSync(currentDirectoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
+      const directoryEntryPath = resolve(currentDirectoryPath, directoryEntry.name);
+      if (directoryEntry.isFile()) {
         // Create new routes for matching files.
         const directoryEntryExtension = extname(directoryEntryPath);
 
-        if (this.pagesExtensions.includes(directoryEntryExtension)) {
-          const identifier = basename(directoryEntryPath, directoryEntryExtension);
-
-          if (!this.excludedPages.includes(identifier)) {
-            const route = new MultilingualRoute(identifier);
-
-            this.actualLocales.forEach((locale) => {
-              const urlPath = this.getLocalizedUrlPathSegment(directoryEntryPath, locale);
-              route.localizedUrlPaths.push({
-                locale,
-                urlPath,
-              });
-            });
-
-            if (route.localizedUrlPaths.length) routes.push(route);
-          }
+        if (!this.pagesExtensions.includes(directoryEntryExtension)) {
+          return; // Skip this file if the extension is not in scope.
         }
-      } else {
-        // Get child routes recursively when on directories.
-        const childRoutes = this.getRoutes(directoryEntryPath);
-        const childIndexRoute = childRoutes.find((route) => route.identifier === 'index');
 
-        childRoutes.forEach((childRoute) => {
-          if (childRoute === childIndexRoute) {
-            childIndexRoute.identifier = directoryEntry.name; // Replace `index` with the proper route name.
-          } else {
-            // Add parent directory entry name to the unique route identifier.
-            childRoute.identifier = posix.join(directoryEntry.name, childRoute.identifier);
+        const pageFile = parsePath(directoryEntryPath);
+        const pagePathWithoutExtension = resolve(pageFile.dir, pageFile.name);
 
-            childRoute.localizedUrlPaths.forEach((localizedUrlPath) => {
-              // Find the localized URL path of the index if present, otherwise use the parent directory entry name.
-              const indexRouteUrlPath = childIndexRoute?.getLocalizedUrlPath(
-                localizedUrlPath.locale
-              );
+        if (this.excludedPages.includes(pagePathWithoutExtension)) {
+          return; // Skip this file if it's excluded.
+        }
 
-              const routeDirectory = indexRouteUrlPath || directoryEntry.name;
-              localizedUrlPath.urlPath = posix.join(routeDirectory, localizedUrlPath.urlPath);
-            });
-          }
-          routes.push(childRoute);
+        const identifier = fileSystemPathToUrlPath(
+          (pageFile.name === 'index' ? pageFile.dir : pagePathWithoutExtension).replace(
+            baseDirectoryPath,
+            ''
+          )
+        );
+
+        if (identifier === '') {
+          return; // Skip routes for the homepage since it uses '/'.
+        }
+
+        if (routes.find((route) => route.identifier === identifier) !== undefined) {
+          // Instead of silently ignoring duplicate pages (current Next.js behavior), we will throw an error.
+          throw new Error(
+            `duplicate pages found between ${identifier} and ${identifier}/index. Please remove/rename one of the two.`
+          );
+        }
+
+        const route = new MultilingualRoute(identifier);
+
+        const parentIdentifier = identifier.includes('/')
+          ? identifier.split('/').slice(0, -1).join('/')
+          : undefined;
+
+        const parentRoute =
+          parentIdentifier !== undefined
+            ? routes.find((route) => route.identifier === parentIdentifier)
+            : undefined;
+
+        this.actualLocales.forEach((locale) => {
+          const urlSegment = this.getLocalizedUrlPathSegment(directoryEntryPath, locale);
+          const urlPath =
+            (parentRoute !== undefined
+              ? parentRoute.localizedUrlPaths.find(
+                  (localizedUrlPath) => localizedUrlPath.locale === locale
+                ).urlPath
+              : '') +
+            '/' +
+            urlSegment;
+
+          route.localizedUrlPaths.push({
+            locale,
+            urlPath,
+          });
         });
+
+        routes.push(route);
+      } else if (directoryEntry.isDirectory()) {
+        // If the entry is a directory, call recursively to build child routes.
+        this.getRoutes(baseDirectoryPath, directoryEntryPath, routes);
       }
     });
 
@@ -249,7 +335,7 @@ export class MulConfig {
         `next-multilingual requires page's .properties file to include a key ending with \`.pageTitle\``
       );
     }
-    return parsedPropertiesFile[pageTitleKey].replace(/[ /-]+/g, '-');
+    return parsedPropertiesFile[pageTitleKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
   }
 
   /**
@@ -273,7 +359,7 @@ export class MulConfig {
    * @returns The normalized path with the locale.
    */
   private normalizeUrlPath(locale: string, urlPath: string, encode = false): string {
-    const normalizedUrlPath = `/${locale}/${urlPath}`.toLocaleLowerCase(locale);
+    const normalizedUrlPath = `/${locale}${urlPath}`.toLocaleLowerCase(locale);
 
     if (encode) {
       // Normalize to NFC as per https://tools.ietf.org/html/rfc3987#section-3.1
@@ -345,8 +431,8 @@ export class MulConfig {
 /**
  * Returns the Next.js multilingual config.
  *
- * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
- * @param locales - The actual desired locales of the multilingual application.
+ * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix. Must be between 3 to 50 alphanumerical characters.
+ * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
  * @param options - Next.js configuration options.
  * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.
  * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
