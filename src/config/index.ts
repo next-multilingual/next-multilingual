@@ -161,10 +161,12 @@ export class MulConfig {
           const propertiesFile = parsePath(resolve(process.cwd(), path));
           const relatedFilename = propertiesFile.name.split('.').slice(0, -1).join('.');
 
-          for (const relatedFileExtension of ['tsx', 'ts', 'jsx', 'js']) {
+          for (const relatedFileExtension of [
+            ...new Set([...this.pagesExtensions, '.tsx', '.ts', '.jsx', '.js']),
+          ]) {
             const relatedFilePath = resolve(
               propertiesFile.dir,
-              `${relatedFilename}.${relatedFileExtension}`
+              `${relatedFilename}${relatedFileExtension}`
             );
             if (existsSync(relatedFilePath)) {
               // "touch" the file without any changes to trigger recompile.
