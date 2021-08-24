@@ -31,7 +31,7 @@ export default function IndexPage({
   const messages = useMessages();
 
   return (
-    <Layout title={messages.format('title')}>
+    <Layout title={messages.format('pageTitle')}>
       <h1 className={styles.headline}>{messages.format('headline')}</h1>
       <div>
         <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>

@@ -243,7 +243,7 @@ export default function IndexPage({
   const messages = useMessages();
 
   return (
-    <Layout title={messages.format('title')}>
+    <Layout title={messages.format('pageTitle')}>
       <h1>{messages.format('headline')}</h1>
     </Layout>
   );
@@ -350,8 +350,8 @@ import Layout from '@/layout';
 export default function AboutUs(): ReactElement {
   const messages = useMessages();
   return (
-    <Layout title={messages.format('title')}>
-      <h1>{messages.format('title')}</h1>
+    <Layout title={messages.format('pageTitle')}>
+      <h1>{messages.format('pageTitle')}</h1>
       <p>{messages.format('details')}</p>
     </Layout>
   );
