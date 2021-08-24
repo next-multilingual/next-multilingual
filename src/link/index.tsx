@@ -25,7 +25,7 @@ export function MulLink({
   try {
     if (Children.only(children) && typeof children === 'object' && 'type' in children) {
       /**
-       * On the client, on first render useLocalizedUrl doesn't have access to the rewrites data,
+       * On the client, on first render `useLocalizedUrl` doesn't have access to the rewrites data,
        * and therefore uses the non-localized URL. We suppress React's warning about the difference
        * with the data provided by the server, as a proper resolution to this would require either
        * including the rewrite data twice, or deeply refactoring how Next.js works.
