@@ -132,7 +132,7 @@ function getBabelifiedMessages(sourceFilePath: string): string {
 /**
  * Verify if an import declaration node matches the target module.
  *
- * @param nodePath A node path object.
+ * @param nodePath - A node path object.
  *
  * @returns True is the node matches, otherwise false.
  */
@@ -145,7 +145,7 @@ function isMatchingModule(nodePath: NodePath): boolean {
 /**
  * Verify if a specifier matches the target function.
  *
- * @param nodePath A node path object.
+ * @param nodePath - A node path object.
  *
  * @returns True is the specifier matches, otherwise false.
  */
@@ -160,7 +160,7 @@ function isMatchingModuleImportName(
 /**
  * Verify if an import declaration node matches the target module and function.
  *
- * @param nodePath A node path object.
+ * @param nodePath - A node path object.
  *
  * @returns True is the node matches, otherwise false.
  */
@@ -176,7 +176,7 @@ function isMatchingNamedImport(nodePath: NodePath): boolean {
 /**
  * Verify if a namespace import declaration node matches the target module and function.
  *
- * @param nodePath A node path object.
+ * @param nodePath = A node path object.
  *
  * @returns True is the node matches, otherwise false.
  */
@@ -202,8 +202,8 @@ class Messages {
   /**
    * Object used to inject "babelified" messages.
    *
-   * @param programNodePath The program node path associated with the class.
-   * @param pluginPass The `PluginPass` object associated with the class.
+   * @param programNodePath - The program node path associated with the class.
+   * @param pluginPass - The `PluginPass` object associated with the class.
    */
   constructor(programNodePath: NodePath<Program>, pluginPass: PluginPass) {
     this.programNodePath = programNodePath;
@@ -237,8 +237,8 @@ class Messages {
 /**
  * Get a variable name to hijack either a named import or a namespace import.
  *
- * @param nodePath The node path from which to get the unique variable name.
- * @param suffix The suffix of the variable name.
+ * @param nodePath - The node path from which to get the unique variable name.
+ * @param suffix - The suffix of the variable name.
  *
  * @returns A unique variable name in the node path's scope.
  */
@@ -253,8 +253,8 @@ function getVariableName(nodePath: NodePath, suffix: string): string {
  * target function with the babelified messages. All bindings of the original namespace will be replaced by the
  * hijacked namespace.
  *
- * @param nodePath The node path being hijacked.
- * @param messages The object used to conditionally inject babelified messages.
+ * @param nodePath - The node path being hijacked.
+ * @param messages - The object used to conditionally inject babelified messages.
  */
 function hijackNamespaceImport(nodePath: NodePath<ImportDeclaration>, messages: Messages): void {
   const node = nodePath.node;
@@ -286,8 +286,8 @@ function hijackNamespaceImport(nodePath: NodePath<ImportDeclaration>, messages: 
  * This will simply bind the named import to the babelified messages, on a new function name. All bindings
  * of the original function will replaced by the hijacked function.
  *
- * @param nodePath The node path being hijacked.
- * @param messages The object used to conditionally inject babelified messages.
+ * @param nodePath - The node path being hijacked.
+ * @param messages - The object used to conditionally inject babelified messages.
  */
 function hijackNamedImport(nodePath: NodePath<ImportDeclaration>, messages: Messages): void {
   const node = nodePath.node;

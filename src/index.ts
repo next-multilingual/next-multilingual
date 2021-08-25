@@ -2,6 +2,26 @@ import resolveAcceptLanguage from 'resolve-accept-language';
 import type { NextPageContext } from 'next';
 import Cookies from 'nookies';
 
+import * as nextLog from 'next/dist/build/output/log';
+
+/**
+ * Wrapper in front of Next.js' log to only show messages in non-production environments.
+ *
+ * To avoid exposing sensitive data (e.g. server paths) to the clients, we only display logs in non-production environments.
+ */
+export class log {
+  /**
+   * Log a warning message in the console(s) to non-production environments.
+   *
+   * @param message - The warning message to log.
+   */
+  static warn(message: string): void {
+    if (process.env.NODE_ENV !== 'production') {
+      nextLog.warn(message);
+    }
+  }
+}
+
 /**
  * Get the actual locale based on the current locale from Next.js.
  *
@@ -11,8 +31,7 @@ import Cookies from 'nookies';
  * actual current of locale by replacing the "multilingual" default locale by the actual default locale.
  *
  * @param locale - The current locale from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js. We recommend simply using "mul"
- * (to represent "multilingual") since it is BCP 47 compliant.
+ * @param defaultLocale - The configured i18n default locale from Next.js.
  * @param locales - The configured i18n locales from Next.js.
  *
  * @returns The list of actual locales.
@@ -31,8 +50,7 @@ export function getActualLocale(locale: string, defaultLocale: string, locales: 
  * by removing the "multilingual" default locale.
  *
  * @param locales - The configured i18n locales from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js. We recommend simply using "mul"
- * (to represent "multilingual") since it is BCP 47 compliant.
+ * @param defaultLocale - The configured i18n default locale from Next.js.
  *
  * @returns The list of actual locales.
  */
@@ -50,8 +68,7 @@ export function getActualLocales(locales: string[], defaultLocale: string): stri
  * `actualLocales` will be used as the actual default locale.
  *
  * @param locales - The configured i18n locales from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js. We recommend simply using "mul"
- * (to represent "multilingual") since it is BCP 47 compliant.
+ * @param defaultLocale - The configured i18n default locale from Next.js.
  *
  * @returns The actual default locale.
  */
@@ -141,7 +158,7 @@ export function setCookieLocale(locale: string): void {
 /**
  * Get the locale that was saved to the locale cookie.
  *
- * @param nextPageContext Next.js page context.
+ * @param nextPageContext - The Next.js page context.
  * @param actualLocales - The list of actual locales used by `next-multilingual`.
  *
  * @returns The locale that was saved to the locale cookie.

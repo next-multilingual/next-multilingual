@@ -309,6 +309,8 @@ Creating and managing those files are as simple as creating a style sheet, but h
   - **id** is the unique identifier in a given context (or message file).
   - Each "segment" of a key must be separated by a `.` and can only contain between 3 to 50 alphanumerical characters - we recommend using camel case for readability.
 
+Also, make sur to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it really easy to detect and fix problems. Note that those logs will only show in non-production environments.
+
 #### Using messages for localized URLs
 
 Also, as mentioned previously, there is one special key for `pages`, where the `id` is `pageTitle`. This message will be used both as a page title, but also as the localized URL segment of that page. Basically the "page title" is the human readable "short description" of your pages, and also represents a segment (contained between slashes) of a URL. When used as a URL segment, following changes are applied:
@@ -320,13 +322,7 @@ For example `About us` will become `about-us`. For the homepage, the URL will al
 
 > ⚠️ Note that if you change `pageTitle`, this means that the URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
 
-#### What is different compared to Next.js?
-
-There are a few differences with how Next.js support pages today:
-
-- You will need to restart Next.js when making changes that impacts URLs since they are stored in `next.config.js`.
-- We decided not to support "empty directories". Having empty directories goes against SEO best practices to keep URLs shorts. There are always other options that does not involve having a directory with no pages.
-- We will throw an exception if you have duplicate pages (e.g. /about-us and /about-us/index). Next.js ignores duplicate routes but we didn't think there was any reasons to do so.
+If you want to have a directory without any pages, you can still localize it by creating an `index.<locale>.properties` files (where `locale` are the locales you support). We don't really recommend this as this will make URL paths longer which goes against SEO best practice. But the option remains in case it is necessary.
 
 #### What do messages file look like?
 

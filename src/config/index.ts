@@ -3,7 +3,13 @@ import { existsSync, readdirSync, utimesSync } from 'fs';
 import { extname, resolve, parse as parsePath, sep as pathSeparator } from 'path';
 import { isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
-import { keySegmentRegExp } from '../messages';
+import {
+  getMessagesFilePath,
+  getSourceFilePath,
+  keySegmentRegExp,
+  urlSegmentKeyId,
+} from '../messages';
+import { log } from '..';
 
 import type { NextConfig } from 'next';
 import chokidar from 'chokidar';
@@ -101,7 +107,7 @@ export class MulConfig {
    * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
    * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
    *
-   * @throws Error when the locale identifier is invalid.
+   * @throws Error when one of the arguments is invalid.
    */
   constructor(
     applicationIdentifier: string,
@@ -158,19 +164,16 @@ export class MulConfig {
           ignoreInitial: true,
         })
         .on('all', (event, path) => {
-          const propertiesFile = parsePath(resolve(process.cwd(), path));
-          const relatedFilename = propertiesFile.name.split('.').slice(0, -1).join('.');
+          const messagesFile = resolve(process.cwd(), path);
 
-          for (const relatedFileExtension of [
+          for (const sourceFileExtension of [
             ...new Set([...this.pagesExtensions, '.tsx', '.ts', '.jsx', '.js']),
           ]) {
-            const relatedFilePath = resolve(
-              propertiesFile.dir,
-              `${relatedFilename}${relatedFileExtension}`
-            );
-            if (existsSync(relatedFilePath)) {
+            const sourceFilePath = getSourceFilePath(messagesFile, sourceFileExtension);
+
+            if (existsSync(sourceFilePath)) {
               // "touch" the file without any changes to trigger recompile.
-              utimesSync(relatedFilePath, new Date(), new Date());
+              utimesSync(sourceFilePath, new Date(), new Date());
               break;
             }
           }
@@ -228,10 +231,72 @@ export class MulConfig {
   }
 
   /**
+   * Add a route into a routes array.
+   *
+   * @param directoryEntryPath - The directory from where to get the route.
+   * @param identifier - The unique route identifier.
+   * @param routes - The routes array in which to add the new route.
+   */
+  private addRoute(
+    directoryEntryPath: string,
+    identifier: string,
+    routes: MultilingualRoute[]
+  ): void {
+    if (routes.find((route) => route.identifier === identifier) !== undefined) {
+      // Next.js silently ignores duplicate pages but we will at least show a warning when it occurs.
+
+      const { dir: currentDirectoryPath } = parsePath(directoryEntryPath);
+      const { dir: parentDirectoryPath } = parsePath(currentDirectoryPath);
+
+      this.actualLocales.forEach((locale) => {
+        const messagesFilePath = getMessagesFilePath(directoryEntryPath, locale);
+        if (existsSync(messagesFilePath)) {
+          log.warn(
+            `\`${messagesFilePath}\` will be ignored since the \`${identifier}\` was already defined in \`${parentDirectoryPath}\`. If you prefer to use this directory, you can move the files associated with \`${identifier}\` to \`${currentDirectoryPath}\` using an \`index\` file.`
+          );
+        }
+      });
+      return;
+    }
+
+    const route = new MultilingualRoute(identifier);
+
+    const parentIdentifier = identifier.includes('/')
+      ? identifier.split('/').slice(0, -1).join('/')
+      : undefined;
+
+    const parentRoute =
+      parentIdentifier !== undefined
+        ? routes.find((route) => route.identifier === parentIdentifier)
+        : undefined;
+
+    this.actualLocales.forEach((locale) => {
+      const localizedUrlSegment = this.getLocalizedUrlPathSegment(directoryEntryPath, locale);
+      const urlSegment =
+        localizedUrlSegment !== '' ? localizedUrlSegment : identifier.split('/').pop();
+      const urlPath =
+        (parentRoute !== undefined
+          ? parentRoute.localizedUrlPaths.find(
+              (localizedUrlPath) => localizedUrlPath.locale === locale
+            ).urlPath
+          : '') +
+        '/' +
+        urlSegment;
+
+      route.localizedUrlPaths.push({
+        locale,
+        urlPath,
+      });
+    });
+
+    routes.push(route);
+  }
+
+  /**
    * Returns the Next.js routes from a specific directory.
    *
    * @param baseDirectoryPath - The base directory to read the files from (this should be the `pages` directory).
-   * @param currentDirectoryPath - The directory being currently inspected for route.
+   * @param currentDirectoryPath - The directory being currently inspected for routes.
    *
    * @return The Next.js routes.
    */
@@ -240,14 +305,21 @@ export class MulConfig {
     currentDirectoryPath = this.pagesDirectoryPath,
     routes: MultilingualRoute[] = []
   ): MultilingualRoute[] {
+    // When there is a directory without pages, we can localized it using "index" messages files.
     if (!this.directoryContainsPages(currentDirectoryPath)) {
-      throw new Error(`directories without pages are not supported: ${currentDirectoryPath}`);
+      const directoryEntryPath = resolve(currentDirectoryPath, 'index');
+
+      const identifier = fileSystemPathToUrlPath(
+        currentDirectoryPath.replace(baseDirectoryPath, '')
+      );
+
+      this.addRoute(directoryEntryPath, identifier, routes);
     }
 
+    // Read through all the files of the current directory and look for pages or sub-directories.
     readdirSync(currentDirectoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
       const directoryEntryPath = resolve(currentDirectoryPath, directoryEntry.name);
       if (directoryEntry.isFile()) {
-        // Create new routes for matching files.
         const directoryEntryExtension = extname(directoryEntryPath);
 
         if (!this.pagesExtensions.includes(directoryEntryExtension)) {
@@ -272,42 +344,7 @@ export class MulConfig {
           return; // Skip routes for the homepage since it uses '/'.
         }
 
-        if (routes.find((route) => route.identifier === identifier) !== undefined) {
-          // Instead of silently ignoring duplicate pages (current Next.js behavior), we will throw an error.
-          throw new Error(
-            `duplicate pages found between ${identifier} and ${identifier}/index. Please remove/rename one of the two.`
-          );
-        }
-
-        const route = new MultilingualRoute(identifier);
-
-        const parentIdentifier = identifier.includes('/')
-          ? identifier.split('/').slice(0, -1).join('/')
-          : undefined;
-
-        const parentRoute =
-          parentIdentifier !== undefined
-            ? routes.find((route) => route.identifier === parentIdentifier)
-            : undefined;
-
-        this.actualLocales.forEach((locale) => {
-          const urlSegment = this.getLocalizedUrlPathSegment(directoryEntryPath, locale);
-          const urlPath =
-            (parentRoute !== undefined
-              ? parentRoute.localizedUrlPaths.find(
-                  (localizedUrlPath) => localizedUrlPath.locale === locale
-                ).urlPath
-              : '') +
-            '/' +
-            urlSegment;
-
-          route.localizedUrlPaths.push({
-            locale,
-            urlPath,
-          });
-        });
-
-        routes.push(route);
+        this.addRoute(directoryEntryPath, identifier, routes);
       } else if (directoryEntry.isDirectory()) {
         // If the entry is a directory, call recursively to build child routes.
         this.getRoutes(baseDirectoryPath, directoryEntryPath, routes);
@@ -320,24 +357,34 @@ export class MulConfig {
   /**
    * Get a localized URL path segment.
    *
-   * @param filePath - The file path from where to get the segment.
+   * @param sourceFilePath - The path of the source file that is calling `useMessages()`.
    * @param locale - The locale of the URL segment.
    *
    * @return The localized URL path segment.
    */
-  private getLocalizedUrlPathSegment(filePath: string, locale: string): string {
-    const { dir: directoryPath, name: filename } = parsePath(filePath);
-    const propertiesFilePath = resolve(directoryPath, `${filename}.${locale}.properties`);
-    const parsedPropertiesFile = parsePropertiesFile(propertiesFilePath);
-    const pageTitleKey = Object.keys(parsedPropertiesFile).find((key) =>
-      key.endsWith('.pageTitle')
-    );
-    if (!pageTitleKey) {
-      throw new Error(
-        `next-multilingual requires page's .properties file to include a key ending with \`.pageTitle\``
+  private getLocalizedUrlPathSegment(sourceFilePath: string, locale: string): string {
+    const messagesFilePath = getMessagesFilePath(sourceFilePath, locale);
+
+    if (!existsSync(messagesFilePath)) {
+      log.warn(
+        `unable to use the \`${normalizeLocale(
+          locale
+        )}\` URL segment for \`${sourceFilePath}\`. The message file \`${messagesFilePath}\` does not exist.`
       );
+      return '';
     }
-    return parsedPropertiesFile[pageTitleKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
+
+    const messages = parsePropertiesFile(messagesFilePath);
+    const urlSegmentKey = Object.keys(messages).find((key) => key.endsWith(`.${urlSegmentKeyId}`));
+    if (!urlSegmentKey) {
+      log.warn(
+        `unable to use the \`${normalizeLocale(
+          locale
+        )}\` URL segment for \`${sourceFilePath}\`. The message file \`${messagesFilePath}\` must include a key with the \`${urlSegmentKeyId}\` identifier.`
+      );
+      return '';
+    }
+    return messages[urlSegmentKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
   }
 
   /**
@@ -442,8 +489,7 @@ export class MulConfig {
  *
  * @return The Next.js configuration.
  *
- * @throws Error when the locale identifier or config is invalid or if there are conflicting options. For advanced
- * configuration, please use the `MulConfig`.
+ * @throws Error when one of the arguments is invalid.
  */
 export function getMulConfig(
   applicationIdentifier: string,
