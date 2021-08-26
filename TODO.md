@@ -4,7 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Automatically restart Next.js if `pageTitle` changes
 - Add ICU support in `useMessage`
 - Localized error pages
 - Test in Vercel prod
@@ -24,6 +23,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - In the `config` API, gracefully merge options passed in argument as an object instead of overwriting
 - In the `config` API, support options passed functions (see Next.js doc)
 - Try Javascript support?
+- Automatically restart Next.js routes changes (e.g. use `forever`)
 - Default locale fallback
 - Lorem ipsum generator?
 - Try strict mode
@@ -32,11 +32,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Update readme (in messages) for `properties` files, unique keys, etc.
-- Redo an easier readme based on an end-to-end configuration
+- Shared message
 
 ### Done ✔️
 
+- Redo an easier readme based on an end-to-end configuration
+- Log warnings when a route changes (warn about restart)
 - Log easy to fix warnings when messages are missing
 - English (en-US) titles are not used in routes (e.g. contact-us2) -> need to implement this if we want non-english default locale
 - Check if we need this route: /en-us/homepage -> /en-us

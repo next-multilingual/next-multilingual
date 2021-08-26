@@ -95,15 +95,15 @@ export class MulConfig {
   /** The files to exclude within the pages directory path. */
   private readonly excludedPages: string[];
 
-  /** A cache of multilingual routes. */
-  private routeCache?: MultilingualRoute[];
+  /** The Next.js application's multilingual routes. */
+  private routes: MultilingualRoute[];
 
   /**
    * A multilingual configuration handler.
    *
    * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix. Must be between 3 to 50 alphanumerical characters.
    * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
-   * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.
+   * @param pagesDirectoryPath - Specify where your `pages` directory is, when not using the Next.js default location.
    * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
    * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
    *
@@ -145,6 +145,7 @@ export class MulConfig {
     this.locales = [this.defaultLocale, ...this.actualLocales];
 
     this.pagesDirectoryPath = resolve(pagesDirectoryPath);
+
     if (pagesExtensions?.length) {
       this.pagesExtensions = pagesExtensions.map((extension) =>
         extension.startsWith('.') ? extension : `.${extension}`
@@ -154,18 +155,17 @@ export class MulConfig {
       resolve(this.pagesDirectoryPath, excludedPage)
     );
 
-    this.routeCache = this.getRoutes();
+    this.routes = this.getRoutes();
 
     // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
     if (process.env.NODE_ENV === 'development') {
+      let routesSnapshot = this.routes;
       chokidar
         .watch('./**/*.properties', {
           ignored: ['node_modules', '.next'],
           ignoreInitial: true,
         })
-        .on('all', (event, path) => {
-          const messagesFile = resolve(process.cwd(), path);
-
+        .on('all', (event, messagesFile) => {
           for (const sourceFileExtension of [
             ...new Set([...this.pagesExtensions, '.tsx', '.ts', '.jsx', '.js']),
           ]) {
@@ -174,6 +174,13 @@ export class MulConfig {
             if (existsSync(sourceFilePath)) {
               // "touch" the file without any changes to trigger recompile.
               utimesSync(sourceFilePath, new Date(), new Date());
+              const currentRoutes = this.getRoutes();
+              if (JSON.stringify(currentRoutes) !== JSON.stringify(routesSnapshot)) {
+                log.warn(
+                  `Found a change impacting localized URLs. Restart the server to see the changes in effect.`
+                );
+                routesSnapshot = currentRoutes; // Update snapshot to avoid logging all subsequent changes.
+              }
               break;
             }
           }
@@ -425,7 +432,7 @@ export class MulConfig {
    */
   public getRewrites(): Rewrite[] {
     const rewrites = [];
-    for (const route of this.routeCache) {
+    for (const route of this.routes) {
       for (const locale of this.actualLocales) {
         const source = this.normalizeUrlPath(locale, route.getLocalizedUrlPath(locale), true);
         const destination = this.normalizeUrlPath(locale, route.identifier);
@@ -449,7 +456,7 @@ export class MulConfig {
    */
   public getRedirects(): Redirect[] {
     const redirects = [];
-    for (const route of this.routeCache) {
+    for (const route of this.routes) {
       for (const locale of this.actualLocales) {
         const source = this.normalizeUrlPath(locale, route.getLocalizedUrlPath(locale));
         const canonical = source.normalize('NFC');
