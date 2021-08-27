@@ -1,15 +1,28 @@
 import { readFileSync } from 'fs';
 import { parse as parseProperties } from 'dot-properties';
-import { MulMessages } from '.';
+
+/**
+ * A simple "key/value" object used to store messages.
+ */
+export type KeyValueObject = {
+  readonly [key: string]: string;
+};
+
+/**
+ * A collection of "key/value" objects for for all locales.
+ */
+export type KeyValueObjectCollection = {
+  [key: string]: KeyValueObject;
+};
 
 /**
  * Parse a `.properties` file and return it back as a "key/value" object.
  *
  * @param filePath - The file path of the `.properties` file to parse.
  *
- * @returns A "key/value" object to easily access the `.properties` file's content.
+ * @returns The "raw" representation of a `.properties` fille in a simple "key/value" object.
  */
-export function parsePropertiesFile(filePath: string): MulMessages {
+export function parsePropertiesFile(filePath: string): KeyValueObject {
   const fileContent = readFileSync(filePath, 'utf8');
-  return parseProperties(fileContent) as MulMessages;
+  return parseProperties(fileContent) as KeyValueObject;
 }

@@ -3,6 +3,7 @@ import { BabelifiedMessages } from './babel-plugin';
 import { parse as parsePath, resolve } from 'path';
 import { normalizeLocale } from '..';
 import { log } from '..';
+import { KeyValueObject } from './properties';
 
 /** This is the regular expression to validate message key segments. */
 export const keySegmentRegExp = /^[a-z\d]{3,50}$/i;
@@ -36,20 +37,6 @@ export function getSourceFilePath(messageFilePath: string, sourceFileExtension: 
 }
 
 /**
- * Multilingual messages consist of unique keys and their localized strings.
- */
-export type MulMessages = {
-  readonly [key: string]: string;
-};
-
-/**
- * Multilingual messages collection for all locales.
- */
-export type MulMessagesCollection = {
-  [key: string]: MulMessages;
-};
-
-/**
  * The values (e.g. placeholders) used to format a message.
  */
 export type MessageValues = {
@@ -57,25 +44,71 @@ export type MessageValues = {
 };
 
 /**
- * Object used to format localized messages of a local scope.
+ * Object used to format individual localized messages of a local scope.
  */
-export class Messages {
-  /** Localized messages of a local scope. */
-  private messages: MulMessages;
-  /** The source (the file calling `useMessages`) file path. */
-  private sourceFilePath: string;
-  /** The messages file path. */
-  private messagesFilePath: string;
+export class Message {
+  /** The parent messages object. */
+  private parent: Messages;
+  /** The message key. */
+  readonly key: string;
+  /** The localized message. */
+  private message: string;
 
   /**
    * Create an object used to format localized messages of a local scope.
    *
-   * @param messages - The messages usable in the local scope.
-   * @param sourceFilePath - The file path of the source file associated with the messages.
-   * @param messagesFilePath - The file path
+   * @param parent - The parent messages object.
+   * @param key - The key of the message.
+   * @param message - The localized message.
    */
-  constructor(messages: MulMessages, sourceFilePath: string, messagesFilePath: string) {
-    this.messages = messages;
+  constructor(parent: Messages, key: string, message: string) {
+    this.parent = parent;
+    this.key = key;
+    this.message = message;
+  }
+
+  /**
+   * Format a message identified by a key in a local scope.
+   *
+   * @param key - The local scope key identifying the message.
+   * @param values - The values (e.g. placeholders) used to format the message, if any.
+   *
+   * @returns The formatted message as a string.
+   */
+  public format(values?: MessageValues): string {
+    if (values) {
+      // todo: implement value
+    }
+
+    return this.message;
+  }
+}
+
+/**
+ * Object used to format localized messages of a local scope.
+ */
+export class Messages {
+  /** Localized messages of a local scope. */
+  private messages: Message[] = [];
+  /** The source (the file calling `useMessages`) file path. */
+  readonly sourceFilePath: string;
+  /** The messages file path. */
+  readonly messagesFilePath: string;
+
+  /**
+   * Create an object used to format localized messages of a local scope.
+   *
+   * @param keyValueObject - The "key/value" object coming directly from a `.properties` file.
+   * @param sourceFilePath - The file path of the source file associated with the messages.
+   * @param messagesFilePath - The file path of the messages.
+   */
+  constructor(keyValueObject: KeyValueObject, sourceFilePath: string, messagesFilePath: string) {
+    if (keyValueObject) {
+      Object.keys(keyValueObject).forEach((key) => {
+        this.messages.push(new Message(this, key, keyValueObject[key]));
+      });
+    }
+
     this.sourceFilePath = sourceFilePath;
     this.messagesFilePath = messagesFilePath;
   }
@@ -94,16 +127,24 @@ export class Messages {
       return '';
     }
 
-    if (values) {
-      // todo: implement value
-    }
-    if (Object.keys(this.messages).length && this.messages[key] === undefined) {
+    const message = this.messages.find((message) => message.key === key);
+
+    if (message === undefined) {
       log.warn(
         `unable to format key with identifier \`${key}\` in \`${this.sourceFilePath}\` because it was not found in messages file \`${this.messagesFilePath}\``
       );
     }
 
-    return this.messages[key];
+    return message.format(values);
+  }
+
+  /**
+   * Get all messages contained in a given local scope.
+   *
+   * @returns All messages contained in a given local scope.
+   */
+  public getAll(): Message[] {
+    return this.messages;
   }
 }
 
@@ -128,14 +169,14 @@ export function useMessages(): Messages {
   const messagesFilename = `${parsedSourceFile.name}.${normalizeLocale(locale)}.properties`;
   const messagesFilePath = resolve(sourceFileDirectoryPath, messagesFilename);
 
-  if (!babelifiedMessages.messagesCollection[locale]) {
+  if (!babelifiedMessages.keyValueObjectCollection[locale]) {
     log.warn(
       `unable to use \`useMessages()\` in \`${babelifiedMessages.sourceFilePath}\` because the messages file was not found at \`${messagesFilePath}\``
     );
   }
 
   return new Messages(
-    babelifiedMessages.messagesCollection[locale],
+    babelifiedMessages.keyValueObjectCollection[locale],
     sourceFilePath,
     messagesFilePath
   );

@@ -381,8 +381,10 @@ export class MulConfig {
       return '';
     }
 
-    const messages = parsePropertiesFile(messagesFilePath);
-    const urlSegmentKey = Object.keys(messages).find((key) => key.endsWith(`.${urlSegmentKeyId}`));
+    const keyValueObject = parsePropertiesFile(messagesFilePath);
+    const urlSegmentKey = Object.keys(keyValueObject).find((key) =>
+      key.endsWith(`.${urlSegmentKeyId}`)
+    );
     if (!urlSegmentKey) {
       log.warn(
         `unable to use the \`${normalizeLocale(
@@ -391,7 +393,7 @@ export class MulConfig {
       );
       return '';
     }
-    return messages[urlSegmentKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
+    return keyValueObject[urlSegmentKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
   }
 
   /**

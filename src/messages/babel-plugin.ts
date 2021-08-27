@@ -1,11 +1,12 @@
 import { readdirSync } from 'fs';
 import { parse, resolve } from 'path';
-import { keySegmentRegExp, MulMessages, MulMessagesCollection } from '.';
-import { parsePropertiesFile } from './properties';
+import { keySegmentRegExp } from '.';
+import { KeyValueObject, KeyValueObjectCollection, parsePropertiesFile } from './properties';
 
 import * as BabelTypes from '@babel/types';
 import type { PluginObj, PluginPass, NodePath } from '@babel/core';
 import template from '@babel/template';
+import { log } from '..';
 
 export type Program = BabelTypes.Program;
 export type Statement = BabelTypes.Statement;
@@ -37,8 +38,8 @@ export class BabelifiedMessages {
   readonly babelified = true;
   /** The path of the source file that is invoking `useMessages`. */
   readonly sourceFilePath: string;
-  /** The multilingual messages collection for all locales. */
-  messagesCollection: MulMessagesCollection = {};
+  /** A collection of "key/value" objects for for all locales. */
+  keyValueObjectCollection: KeyValueObjectCollection = {};
 
   constructor(sourceFilePath: string) {
     this.sourceFilePath = sourceFilePath;
@@ -48,54 +49,64 @@ export class BabelifiedMessages {
 /**
  * Get messages from properties file.
  *
+ * Since the key prefix is only used by the translation memory (TM) during the translation process, we
+ * can remove it from the messages to compress their size while making them easier to access. We also need
+ * to validate that the keys are following the expected format.
+ *
  * @param propertiesFilePath - The path of the .properties file from which to read the messages.
  *
- * @returns Validated and size-optimized messages.
+ * @returns A "key/vale" object storing messages where the key only contains the identifier segment of the key.
  */
-export function getMessages(propertiesFilePath: string): MulMessages {
-  const parsedPropertiesFile = parsePropertiesFile(propertiesFilePath);
+export function getMessages(propertiesFilePath: string): KeyValueObject {
+  const keyValueObject = parsePropertiesFile(propertiesFilePath);
   let context: string;
-  const messages = {};
-  for (const key in parsedPropertiesFile) {
+  const compactedKeyValueObject = {};
+  for (const key in keyValueObject) {
     const keySegments = key.split('.');
     if (keySegments.length !== 3) {
-      throw new Error(
-        `invalid key \`${key}\` in file \`${propertiesFilePath}\`. Keys must follow the \`<application identifier>.<context>.<id>\` format.`
+      log.warn(
+        `unable to use messages in \`${propertiesFilePath}\` because the key \`${key}\` is invalid. It must follow the \`<application identifier>.<context>.<id>\` format.`
       );
+      return {};
     }
     const [appIdSegment, contextSegment, idSegment] = keySegments;
 
     // Verify the key's unique application identifier.
     if (appIdSegment !== applicationIdentifier) {
-      throw new Error(
-        `invalid application identifier \`${appIdSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Expected value: \`${applicationIdentifier}\`.`
+      log.warn(
+        `unable to use messages in \`${propertiesFilePath}\` because the application identifier \`${appIdSegment}\` in key \`${key}\` is invalid. Expected value: \`${applicationIdentifier}\`.`
       );
+      return {};
     }
 
     // Verify the key's context.
     if (context === undefined) {
       if (!keySegmentRegExp.test(contextSegment)) {
-        throw new Error(
-          `invalid context \`${contextSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key context must be between 3 and 50 alphanumerical character.`
+        log.warn(
+          `unable to use messages in \`${propertiesFilePath}\` because the context \`${contextSegment}\` in key \`${key}\` is invalid. Key context must be between 3 and 50 alphanumerical character.`
         );
+        return {};
       }
       context = contextSegment;
     } else if (contextSegment !== context) {
-      throw new Error(
-        `invalid context \`${contextSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Only one key context is allowed per file. Expected value: \`${context}\`.`
+      log.warn(
+        `unable to use messages in \`${propertiesFilePath}\` because the context \`${contextSegment}\` in key \`${key}\` is invalid. Only one key context is allowed per file. Expected value: \`${context}\`.`
       );
+      return {};
     }
 
     // Verify the key's identifier.
     if (!keySegmentRegExp.test(idSegment)) {
-      throw new Error(
-        `invalid identifier \`${idSegment}\` in key \`${key}\` in file \`${propertiesFilePath}\`. Key identifiers must be between 3 and 50 alphanumerical character.`
+      log.warn(
+        `unable to use messages in \`${propertiesFilePath}\` because the identifier \`${idSegment}\` in key \`${key}\` is invalid. Key identifiers must be between 3 and 50 alphanumerical character.`
       );
+      return {};
     }
+
     // If validation passes, keep only the identifier part of the key to reduce file sizes.
-    messages[idSegment] = parsedPropertiesFile[key];
+    compactedKeyValueObject[idSegment] = keyValueObject[key];
   }
-  return messages;
+  return compactedKeyValueObject;
 }
 
 /**
@@ -120,7 +131,7 @@ function getBabelifiedMessages(sourceFilePath: string): string {
       if (regExpMatch) {
         const locale = regExpMatch.groups.locale;
         const propertiesFilePath = resolve(sourceFileDirectoryPath, directoryEntryFilename);
-        babelifiedMessages.messagesCollection[locale.toLowerCase()] =
+        babelifiedMessages.keyValueObjectCollection[locale.toLowerCase()] =
           getMessages(propertiesFilePath);
       }
     }

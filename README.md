@@ -147,7 +147,7 @@ This basically does two things, as mentioned in the comments:
 1. Inject the actual locale in Next.js' router since we need to use a "fake default locale".
 2. Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
 
-You might have noticed the `getActualDefaultLocale` API. his API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very important, since we can no longer rely ono the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
+You might have noticed the `getActualDefaultLocale` API. his API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very important, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
 
 ### Create a custom `Document` (`_document.tsx`)
 
@@ -289,10 +289,18 @@ In a nutshell, this is what is happening:
 
 ### Creating messages
 
-Every time we create a page, we also need to create the message files for each locales. These files will have 2 use cases:
+Every time that you create a `tsx`, `ts`, `jsx` or `js` file and that you need localized messages, you can simply create messages file in your supported locales that will only be usable by these files. Just like CSS modules, the idea is that you can have message files associated to another file's local scope. This has the benefit to make messages more modular and also not share messages across different context (more details in the [design decisions document](./docs/design-decisions.md) on why this is bad).
 
-- They will determine what the URL segment (part of a URL in between `/`) of this page is using the `pageTitle` key identifier.
+There are two uses cases for messages files:
+
+- For the messages files in your `pages` directory, they will determine what the URL segment (part of a URL in between `/`) of this page is using the `pageTitle` key identifier. On top of that, they will be used as local scope messages if there are messages required specific to that page.
 - They will store all the localizable strings (messages) used by your application. Note that you should only put the message used in the page directly since components also have their own message files. Those messages will be used by the `useMessages` hook and will only be available in local scopes. Imagine CSS but for localizable stings.
+
+To summarize:
+
+- Messages are associated to a file, and should only be used in that local scope.
+- Messages are used both to localize URLs and to display localized text everywhere in your application.
+- You should only use this method in your application to simplify your localization process.
 
 #### How do these files work?
 
@@ -300,14 +308,14 @@ Creating and managing those files are as simple as creating a style sheet, but h
 
 - The message files are `.properties` file. Yes, you might wonder why, but there are good reasons documented in the [design decision document](./docs/design-decisions.md).
 - To leverage some of the built-in IDE support for `.properties` files, we follow a strict naming convention: `<Page-Name>.<locale>.properties`
-- For pages, you must at minimum create the message files, including the `pageTitle` key, of your default locale or Next.js will not start. Missing locales will trigger warning messages.
-- For components, files are only required if you use the `useMessages` hook. The default locale is also mandatory and missing locales will trigger warning messages.
-- Each message must have unique identifiers (keys) that follow a strict naming convention: `<application identifier>.<context>.<id>` where:
-
+- Each message must have unique keys that follow a strict naming convention: `<application identifier>.<context>.<id>` where:
   - **application identifier** must use the same value as set in `next-multilingual/config`
   - **context** must represent the context associated with the message file, for example `aboutUsPage` or `footerComponent` could be good examples of context. Each file can only contain 1 context and context should not be used across many files as this could cause "key collision" (non-unique keys).
   - **id** is the unique identifier in a given context (or message file).
   - Each "segment" of a key must be separated by a `.` and can only contain between 3 to 50 alphanumerical characters - we recommend using camel case for readability.
+- For pages, if you want to localize your URLs, you must include messages files that include a key with the `pageTitle` identifier.
+- For components, files are only required if you use the `useMessages` hook.
+- For messages shared across multiple components (shared messages), you need to create a "shared message component" (more details no this below)
 
 Also, make sur to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it really easy to detect and fix problems. Note that those logs will only show in non-production environments.
 
@@ -395,10 +403,89 @@ In English the URL path will be `/en-us/contact-us`. But in when another locale 
 
 As the data for this mapping is not immediately available during rendering, `next-multilingual/link/ssr` will take care of the server side rendering (SSR). By using `next-multilingual/config`'s `getMulConfig`, the Webpack configuration will be added automatically. If you are using the advanced `MulConfig` method, this explains on why the special Webpack configuration is required in the example provided prior.
 
-
 ### Creating components
 
-Creating components is exactly the same as pages but they live outside the `pages` folder. Also as mentioned previously you do not need to add the `pageTitle` key. We have a few [example components](./example/components) that should be self explanatory. Also make sure to look at the [language picker component](./example/components/LanguagePicker.tsx) that is a must in all multilingual applications.
+Creating components is exactly the same as pages but they live outside the `pages` folder. Also as mentioned previously you do not need to add the `pageTitle` key. We have a few [example components](./example/components) that should be self explanatory but here is an example of a `Footer.tsx` component:
+
+```tsx
+import type { ReactElement } from 'react';
+import { useMessages } from 'next-multilingual/messages';
+
+export default function Footer(): ReactElement {
+  const messages = useMessages();
+  return (
+    <footer>
+      {messages.format('footerMessage')}
+    </footer>
+  );
+}
+```
+
+And its messages file:
+
+```ini
+# This is the message in the footer at the bottom of pages
+exampleApp.footerComponent.footerMessage = © Footer
+```
+
+Also make sure to look at the [language picker component](./example/components/LanguagePicker.tsx) that is a must in all multilingual applications.
+
+### Creating shared messages
+
+We've been pretty clear that sharing messages is a bad practice from the beginning, so what are we talking about here? In fact, sharing messages by itself is not bad. What can cause problems if when you share messages in different context. For example you might be tempted to create a `Button.ts` shared message file containing `yesButton`, `noButton` keys - but this would be wrong. In many languages simple words as "yes" and "no" can have different spellings depending on the context, even if it's a button.
+
+So when is it good to share messages? For list of items. 
+
+For example, to keep your localization process simple, you want to avoid as much as possible storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). So in your database you would identify the context using unique identifiers and you would store your messages in shared messages files, where your key's identifiers would match the ones from the database.
+
+To illustrate this we created [one example using fruits](./example/messages/Fruits.ts). All you need to do, is create a component that calls `useMessages` like this:
+
+```ts
+import { useMessages } from 'next-multilingual/messages';
+
+export const useFruitsMessages = useMessages;
+```
+
+Of course you will have your messages files in the same directory:
+
+```ini
+exampleApp.fruits.banana = Banana
+exampleApp.fruits.apple = Apple
+exampleApp.fruits.strawberry = Strawberry
+exampleApp.fruits.grape = Grape
+exampleApp.fruits.orange = Orange
+exampleApp.fruits.watermelon = Watermelon
+exampleApp.fruits.blueberry = Blueberry
+exampleApp.fruits.lemon = Lemon
+```
+
+And to use it, simple import this component from anywhere you might need these values:
+
+```tsx
+import type { ReactElement } from 'react';
+import { useFruitsMessages } from '../messages/Fruits';
+
+export default function FruitList(): ReactElement {
+  const fruitsMessages = useFruitsMessages();
+  return (
+    <>
+      {fruitsMessages
+        .getAll()
+        .map((message) => message.format())
+        .join(', ')}
+
+    </>
+  );
+}
+```
+
+You can also call individual messages like this:
+
+```ts
+fruitsMessages.format('banana');
+```
+
+The idea to share those list of items is that you can have a consistent experience across different components. Imagine a dropdown with a list of fruit in one page, and in another page an auto-complete input. But the important part to remember is that the list must always be used in the same context, not to re-use some of the messages in different context.
 
 ### Search Engine Optimization
 

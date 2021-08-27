@@ -7,8 +7,10 @@ import {
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
 import { MulLink } from 'next-multilingual/link';
-import localeStrings from './localeStrings.json';
 import styles from './LanguagePicker.module.css';
+
+// Locales are not localized which is why it uses a JSON file.
+import localeStrings from './localeStrings.json';
 
 export default function LanguagePicker(): ReactElement {
   const { pathname, locale, locales, defaultLocale } = useRouter();
