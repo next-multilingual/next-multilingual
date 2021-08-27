@@ -1,10 +1,13 @@
 import { ReactElement } from 'react';
-import Layout from '../../layout/Layout';
+import { useMessages } from 'next-multilingual/messages';
+import Layout from '@/layout';
 
 export default function MessageSent(): ReactElement {
+  const messages = useMessages();
+
   return (
-    <Layout title="Message sent">
-      <h1>Thank you for contacting us.</h1>
+    <Layout title={messages.format('pageTitle')}>
+      <h1>{messages.format('header')}</h1>
     </Layout>
   );
 }

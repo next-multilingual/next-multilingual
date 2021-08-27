@@ -1,29 +1,22 @@
-import type { GetServerSidePropsContext, GetStaticProps } from 'next';
+import { useMessages } from 'next-multilingual/messages';
 import type { ReactElement } from 'react';
-import Layout from '../layout/Layout';
-import type { Messages, StaticMessagesProps } from '../types/MessagesTypes';
+import Layout from '@/layout';
+import styles from './index.module.css';
+import { useFruitsMessages } from '../messages/Fruits';
 
-export default function AboutUs({
-  messages
-}: StaticMessagesProps): ReactElement {
+export default function AboutUs(): ReactElement {
+  const messages = useMessages();
+  const fruitsMessages = useFruitsMessages();
   return (
-    <Layout title={messages.title}>
-      <h1>{messages.title}</h1>
-      <p>{messages.details}</p>
+    <Layout title={messages.format('pageTitle')}>
+      <h1 className={styles.headline}>{messages.format('pageTitle')}</h1>
+      <p>{messages.format('details')}</p>
+      <p>
+        {fruitsMessages
+          .getAll()
+          .map((message) => message.format())
+          .join(', ')}
+      </p>
     </Layout>
   );
 }
-
-export const getStaticProps: GetStaticProps = async ({
-  locale
-}: GetServerSidePropsContext) => {
-  // TODO: check if there is a way to find the file name automatically - e.g. import(`./${__filename.replace('.tsx', `${locale}.properties`)}`)
-  const messages = (await import(`./about-us.${locale}.properties`))
-    .default as Messages;
-
-  return {
-    props: {
-      messages
-    }
-  };
-};

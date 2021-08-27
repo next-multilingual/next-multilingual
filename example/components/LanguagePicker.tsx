@@ -1,63 +1,45 @@
-/* eslint @typescript-eslint/no-var-requires: "off" */
 import {
+  normalizeLocale,
   getActualLocales,
-  getActualDefaultLocale
-} from 'next-intl-router/lib/helpers/getLocalesDetails';
+  getActualLocale,
+  setCookieLocale
+} from 'next-multilingual';
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
-import { IntlLink } from 'next-intl-router/lib/intl-link';
-import localeStrings from './localeStrings.json';
+import { MulLink } from 'next-multilingual/link';
 import styles from './LanguagePicker.module.css';
-import { setCookie } from 'nookies';
 
-function handleClick(value: string): void {
-  setCookie(null, 'NEXT_LOCALE', value, {
-    maxAge: 60 * 60 * 24 * 365 * 10
-  });
-}
+// Locales are not localized which is why it uses a JSON file.
+import localeStrings from './localeStrings.json';
 
-const LanguagePicker = (): ReactElement => {
-  const {
-    asPath,
-    pathname,
-    locale: currentLocale,
-    locales,
-    defaultLocale
-  } = useRouter();
-
+export default function LanguagePicker(): ReactElement {
+  const { pathname, locale, locales, defaultLocale } = useRouter();
+  const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
 
   return (
     <div className={styles.languagePicker}>
       <button>
-        {localeStrings[currentLocale]}
+        {localeStrings[normalizeLocale(actualLocale)]}
         <i></i>
       </button>
       <div>
         {actualLocales
-          .filter((locale) => locale !== currentLocale)
+          .filter((locale) => locale !== actualLocale)
           .map((locale) => {
             return (
-              <IntlLink
-                key={locale}
-                href={locale === actualDefaultLocale ? pathname : asPath}
-                locale={locale}
-              >
+              <MulLink key={locale} href={pathname} locale={locale}>
                 <a
                   onClick={() => {
-                    handleClick(locale);
+                    setCookieLocale(locale);
                   }}
-                  suppressHydrationWarning={true}
                 >
-                  {localeStrings[locale]}
+                  {localeStrings[normalizeLocale(locale)]}
                 </a>
-              </IntlLink>
+              </MulLink>
             );
           })}
       </div>
     </div>
   );
-};
-
-export default LanguagePicker;
+}

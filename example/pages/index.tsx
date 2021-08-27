@@ -1,74 +1,100 @@
-import Cookies from 'nookies';
 import {
   getActualLocales,
-  getActualDefaultLocale
-} from 'next-intl-router/lib/helpers/getLocalesDetails';
-import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
+  getActualDefaultLocale,
+  normalizeLocale,
+  getActualLocale,
+  getPreferredLocale,
+  getCookieLocale
+} from 'next-multilingual';
+import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
-import resolveAcceptLanguage from 'resolve-accept-language';
-import Layout from '../layout/Layout';
-import type { Messages, ServerSideMessagesProps } from '../types/MessagesTypes';
+import Layout from '@/layout';
+import { useMessages } from 'next-multilingual/messages';
+import styles from './index.module.css';
+import {
+  ResolvedLocaleServerSideProps,
+  setCookieLocale
+} from 'next-multilingual';
 
 export default function IndexPage({
-  messages,
-  currentLocale
-}: ServerSideMessagesProps): ReactElement {
+  resolvedLocale
+}: ResolvedLocaleServerSideProps): ReactElement {
   const router = useRouter();
-  router.locale = currentLocale; // Overwrite locale with the resolved locale.
-  const { locales, defaultLocale, locale } = router;
+  const { locales, defaultLocale } = router;
+
+  // Overwrite the locale with the resolved locale.
+  router.locale = resolvedLocale;
+  setCookieLocale(router.locale);
+
+  // Load the messages in the correct locale.
+  const messages = useMessages();
 
   return (
-    <Layout title={messages.title}>
-      <h1>{messages.headline}</h1>
-      <p>Router locale: {locale}</p>
-      <p>Default locale: {defaultLocale}</p>
-      <p>Configured locales: {JSON.stringify(locales)}</p>
-      <br />
+    <Layout title={messages.format('pageTitle')}>
+      <h1 className={styles.headline}>{messages.format('headline')}</h1>
+      <div>
+        <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>{messages.format('columnInformation')}</th>
+              <th>{messages.format('columnNextJs')}</th>
+              <th>{messages.format('columnActual')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{messages.format('rowDefaultLocale')}</td>
+              <td>{normalizeLocale(defaultLocale)}</td>
+              <td>
+                {normalizeLocale(
+                  getActualDefaultLocale(locales, defaultLocale)
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>{messages.format('rowConfiguredLocales')}</td>
+              <td>
+                {locales.map((locale) => normalizeLocale(locale)).join(', ')}
+              </td>
+              <td>
+                {getActualLocales(locales, defaultLocale)
+                  .map((locale) => normalizeLocale(locale))
+                  .join(', ')}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </Layout>
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (
-  getServerSidePropsContext: GetServerSidePropsContext
-) => {
-  const {
-    req,
-    locale,
-    locales,
-    defaultLocale: multilingual
-  } = getServerSidePropsContext;
+export async function getServerSideProps(
+  nextPageContext: NextPageContext
+): Promise<{ props: ResolvedLocaleServerSideProps }> {
+  const { req, locale, locales, defaultLocale } = nextPageContext;
 
-  const actualLocales = getActualLocales(locales, multilingual);
-  const actualDefaultLocale = getActualDefaultLocale(locales, multilingual);
-  const cookies = Cookies.get(getServerSidePropsContext);
-  let currentLocale = locale;
+  const actualLocales = getActualLocales(locales, defaultLocale);
+  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
+  const cookieLocale = getCookieLocale(nextPageContext, actualLocales);
+  let resolvedLocale = getActualLocale(locale, defaultLocale, locales);
 
-  if (locale === multilingual) {
-    // TODO: add a script that sets NEXT_LOCALE on initial page load (client-side)
-    let cookieLocale = cookies['NEXT_LOCALE'];
-    if (cookieLocale && !actualLocales.includes(cookieLocale)) {
-      // Delete the cookie if the value is invalid (e.g. been tampered with).
-      Cookies.destroy(getServerSidePropsContext, 'NEXT_LOCALE');
-      cookieLocale = undefined;
-    }
-
-    currentLocale = cookieLocale
+  // When Next.js tries to use the default locale, try to find a better one.
+  if (locale === defaultLocale) {
+    resolvedLocale = cookieLocale
       ? cookieLocale
-      : resolveAcceptLanguage(
+      : getPreferredLocale(
           req.headers['accept-language'],
           actualLocales,
           actualDefaultLocale
-        );
+        ).toLowerCase();
   }
-
-  const messages = (await import(`./index.${currentLocale}.properties`))
-    .default as Messages;
 
   return {
     props: {
-      messages,
-      currentLocale
+      resolvedLocale
     }
   };
-};
+}

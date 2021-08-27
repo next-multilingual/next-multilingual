@@ -1,0 +1,25 @@
+.headline {
+  font-size: 2rem;
+  padding-bottom: 1rem;
+}
+
+.subHeader {
+  font-size: 1.5rem;
+}
+
+.messageLabel {
+  display: block;
+}
+
+.messageInput {
+  height: 5rem;
+  width: 100%;
+  max-width: 50%;
+  resize: none;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.submitButton {
+  display: block;
+}
