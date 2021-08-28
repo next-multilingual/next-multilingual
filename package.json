@@ -69,37 +69,37 @@
     "build": "rm -Rf ./lib && tsc",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",
     "lint": "eslint --ext js,jsx,ts,tsx --fix",
-    "release": "dotenv release-it --only-version"
+    "release": "dotenv -- release-it --only-version"
   },
   "dependencies": {
-    "chokidar": "^3.5.1",
+    "chokidar": "^3.5.2",
     "dot-properties": "^1.0.1",
     "nookies": "^2.5.2",
-    "resolve-accept-language": "^1.0.25"
+    "resolve-accept-language": "^1.0.31"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@types/babel__core": "^7.1.15",
-    "@types/node": "^16.6.1",
-    "@types/react": "^17.0.17",
+    "@types/node": "^16.7.4",
+    "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
-    "@typescript-eslint/eslint-plugin": "^4.29.1",
-    "@typescript-eslint/parser": "^4.29.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
     "dotenv-cli": "^4.0.0",
     "eslint": "^7.32.0",
     "eslint-config-next": "^11.1.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^3.4.1",
     "eslint-plugin-react-hooks": "^4.2.0",
     "express": "^4.17.1",
-    "husky": "^7.0.1",
+    "husky": "^7.0.2",
     "lint-staged": "^11.1.2",
     "next": "^11.1.0",
     "npm-watch": "^0.11.0",
     "prettier": "^2.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "typescript": "^4.3.5"
+    "typescript": "^4.4.2"
   },
   "husky": {
     "hooks": {
