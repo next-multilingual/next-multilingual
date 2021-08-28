@@ -32,10 +32,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Shared message
+- Launch our beta npm package
 
 ### Done ✔️
 
+- Shared message
 - Redo an easier readme based on an end-to-end configuration
 - Log warnings when a route changes (warn about restart)
 - Log easy to fix warnings when messages are missing
@@ -47,8 +48,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Fix contact-us pages (add localized strings and CSS)
 - Add license doc
 - Add browser side cookie to persist selected locale on initial page load
-- move `nookies` to  `next-multilingual` -> `getCookieLocale`
-- move `resolve-accept-language` to  `next-multilingual` -> `getPreferredLocale`
+- move `nookies` to `next-multilingual` -> `getCookieLocale`
+- move `resolve-accept-language` to `next-multilingual` -> `getPreferredLocale`
 - add `next-multilingual/properties` to avoid the extra Webpack loader dependency
 - Understand/tweak/document `MulHead`
   - Canonical links?
@@ -60,4 +61,3 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Understand/tweak/document `MulRouter`
 - Fix console error when loading non-english pages: Warning: Prop `href` did not match. Server: "/fr-ca/%C3%A0-propos-de-nous" Client: "/fr-ca/about-us"s
 - Fix `npm run build`
-
