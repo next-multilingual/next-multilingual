@@ -35,6 +35,27 @@
   "files": [
     "lib"
   ],
+  "keywords": [
+    "Next",
+    "Next js",
+    "Next.js",
+    "multilingual",
+    "i18n",
+    "internationalization",
+    "intl",
+    "localization",
+    "l10n",
+    "globalization",
+    "g11n"
+  ],
+  "author": {
+    "name": "Avansai",
+    "url": "https://avansai.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Avansai/next-multilingual"
+  },
   "type": "commonjs",
   "engines": {
     "node": ">=13"
