@@ -4,8 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Add ICU support in `useMessage`
-- Localized error pages
 - Test in Vercel prod
 - Test dynamic routes (with placeholders)
 - Test `useMessages` with APIs
@@ -32,10 +30,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Launch our beta npm package
+- Add ICU support in `useMessage`
 
 ### Done ✔️
 
+- Localized error pages
+- Launch our beta npm package
 - Shared message
 - Redo an easier readme based on an end-to-end configuration
 - Log warnings when a route changes (warn about restart)

@@ -522,6 +522,36 @@ All this does is insert the canonical and alternate links so that search engines
 
 To fully benefit from the SEO markup, `<MulHead>` must be included on all pages. There are multiple ways to achieve this, but in the example, we created a `<Layout>` [component](./example/layout/Layout.tsx) that is used on all pages.
 
+### Custom Error Pages
+
+Like most site, you will want to leverage Next.js' [custom your error pages](https://nextjs.org/docs/advanced-features/custom-error-page) capability. With `useMessages()`, it's just as easy as creating any other pages. For example, for a `404` error, you can create your `404.tsx`:
+
+```tsx
+import { useMessages } from 'next-multilingual/messages';
+import { MulLink } from 'next-multilingual/link';
+import type { ReactElement } from 'react';
+import Layout from '@/layout';
+
+export default function Custom400(): ReactElement {
+  const messages = useMessages();
+  return (
+    <Layout title={messages.format('pageTitle')}>
+      <h1>{messages.format('pageTitle')}</h1>
+      <MulLink href="/">
+        <a>{messages.format('goBack')}</a>
+      </MulLink>
+    </Layout>
+  );
+}
+```
+
+And of course, your messages, for example `404.en-US.properties`:
+
+```ini
+exampleApp.pageNotFoundError.pageTitle = 404 - Page Not Found
+exampleApp.pageNotFoundError.goBack = Go back home
+```
+
 ## Translation process 🈺
 
 Our ideal translation process is one where you send the modified files to your localization vendor (while working in a branch), and get back the translated files, with the correct locale in the filenames. Once you get the files back you basically submit them back in your branch which means localization becomes integral part of the development process. Basically the idea is:
