@@ -133,6 +133,7 @@ export class Messages {
       log.warn(
         `unable to format key with identifier \`${key}\` in \`${this.sourceFilePath}\` because it was not found in messages file \`${this.messagesFilePath}\``
       );
+      return '';
     }
 
     return message.format(values);
