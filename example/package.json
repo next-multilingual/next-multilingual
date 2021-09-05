@@ -9,11 +9,9 @@
     "reset": "rm -Rf ./node_module && rm -Rf ./next && npm install"
   },
   "dependencies": {
-    "cross-env": "^7.0.3",
     "next-multilingual": "file:.."
   },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "none"
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
