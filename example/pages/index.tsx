@@ -76,7 +76,7 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
             {messages.format('sharedDropDown')}
             <select>
               {fruitsMessages.getAll().map((message) => (
-                <option>{message.format()}</option>
+                <option key={message.format()}>{message.format()}</option>
               ))}
             </select>
           </p>
