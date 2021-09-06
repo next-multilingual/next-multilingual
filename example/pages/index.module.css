@@ -39,3 +39,12 @@
 .table tbody tr:last-of-type {
   border-bottom: medium solid #009879;
 }
+
+.mfExample {
+  width: fit-content;
+  background-color:rgba(223, 223, 223, 0.15);
+}
+
+.mfExample legend {
+  font-size: 0.8rem;
+}

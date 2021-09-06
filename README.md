@@ -336,7 +336,7 @@ If you want to have a directory without any pages, you can still localize it by 
 
 You can always look into the [example](./example) too see messages files in action, but here is a sample that could be used on the homepage:
 
-```ini
+```properties
 # Homepage title (will not be used as a URL segment)
 exampleApp.homepage.pageTitle = Homepage
 # Homepage headline
@@ -364,7 +364,7 @@ export default function AboutUs(): ReactElement {
 
 And of course you would have its message file `about-us.en-US.properties`:
 
-```ini
+```properties
 exampleApp.aboutUsPage.pageTitle = About Us
 exampleApp.aboutUsPage.details = This is just some english boilerplate text.
 ```
@@ -423,7 +423,7 @@ export default function Footer(): ReactElement {
 
 And its messages file:
 
-```ini
+```properties
 # This is the message in the footer at the bottom of pages
 exampleApp.footerComponent.footerMessage = © Footer
 ```
@@ -448,7 +448,7 @@ export const useFruitsMessages = useMessages;
 
 Of course you will have your messages files in the same directory:
 
-```ini
+```properties
 exampleApp.fruits.banana = Banana
 exampleApp.fruits.apple = Apple
 exampleApp.fruits.strawberry = Strawberry
@@ -486,6 +486,40 @@ fruitsMessages.format('banana');
 ```
 
 The idea to share those list of items is that you can have a consistent experience across different components. Imagine a dropdown with a list of fruit in one page, and in another page an auto-complete input. But the important part to remember is that the list must always be used in the same context, not to re-use some of the messages in different context.
+
+### Message Variables
+
+Using variables in messages is a critical functionality as not all messages contain static text. `next-multilingual` supports the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) syntax out of the box which means that you can use the following message:
+
+```properties
+exampleApp.homepage.welcome = Hello, {firstName} {lastName}!
+```
+
+And inject back the values using:
+
+```ts
+messages.format('welcome', { firstName: 'John', lastName: 'Doe' })
+```
+
+If you do not provide the values of your variables when formatting the message, it will simply output the message as static text.
+
+#### Plurals
+
+One of the main benefit of ICU MessageFormat is to use Unicode's tools and standards to enable applications to sound fluent in most languages. A lot of engineers might believe that by having 2 messages, one for singular and one for plural is enough to stay fluent in all languages. In fact, Unicode documented the [plural rules](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html) of over 200 languages and some languages like Arabic an have up to 6 plural forms.
+
+To ensure that your sentence will stay fluent in all languages, you can use the following message:
+
+```properties
+exampleApp.homepage.mfPlural = {count, plural, =0 {No candy left.} one {Got # candy left.} other {Got # candies left.}}
+```
+
+And the correct plural form will be picked, using the corret plural categories defined by Unicode:
+
+```ts
+messages.format('mfPlural', { count })
+```
+
+There is a lot to learn on this topic. Make sure to read the Unicode documentation and [try the syntax yourself](https://format-message.github.io/icu-message-format-for-translators/editor.html) to get more familiar with this under-hyped i18n capability.
 
 ### Search Engine Optimization
 
@@ -547,7 +581,7 @@ export default function Custom400(): ReactElement {
 
 And of course, your messages, for example `404.en-US.properties`:
 
-```ini
+```properties
 exampleApp.pageNotFoundError.pageTitle = 404 - Page Not Found
 exampleApp.pageNotFoundError.goBack = Go back home
 ```

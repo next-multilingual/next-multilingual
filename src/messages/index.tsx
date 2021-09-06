@@ -4,6 +4,7 @@ import { parse as parsePath, resolve } from 'path';
 import { normalizeLocale } from '..';
 import { log } from '..';
 import { KeyValueObject } from './properties';
+import IntlMessageFormat from 'intl-messageformat';
 
 /** This is the regular expression to validate message key segments. */
 export const keySegmentRegExp = /^[a-z\d]{3,50}$/i;
@@ -53,6 +54,8 @@ export class Message {
   readonly key: string;
   /** The localized message. */
   private message: string;
+  /** The IntlMessageFormat objet, if required. */
+  private intlMessageFormat: IntlMessageFormat;
 
   /**
    * Create an object used to format localized messages of a local scope.
@@ -77,7 +80,11 @@ export class Message {
    */
   public format(values?: MessageValues): string {
     if (values) {
-      // todo: implement value
+      this.intlMessageFormat = this.intlMessageFormat
+        ? this.intlMessageFormat
+        : new IntlMessageFormat(this.message, this.parent.locale);
+
+      return String(this.intlMessageFormat.format(values));
     }
 
     return this.message;
@@ -90,6 +97,8 @@ export class Message {
 export class Messages {
   /** Localized messages of a local scope. */
   private messages: Message[] = [];
+  /** The current locale from Next.js. */
+  readonly locale: string;
   /** The source (the file calling `useMessages`) file path. */
   readonly sourceFilePath: string;
   /** The messages file path. */
@@ -99,16 +108,22 @@ export class Messages {
    * Create an object used to format localized messages of a local scope.
    *
    * @param keyValueObject - The "key/value" object coming directly from a `.properties` file.
+   * @param locale - The current locale from Next.js.
    * @param sourceFilePath - The file path of the source file associated with the messages.
    * @param messagesFilePath - The file path of the messages.
    */
-  constructor(keyValueObject: KeyValueObject, sourceFilePath: string, messagesFilePath: string) {
+  constructor(
+    keyValueObject: KeyValueObject,
+    locale: string,
+    sourceFilePath: string,
+    messagesFilePath: string
+  ) {
     if (keyValueObject) {
       Object.keys(keyValueObject).forEach((key) => {
         this.messages.push(new Message(this, key, keyValueObject[key]));
       });
     }
-
+    this.locale = normalizeLocale(locale);
     this.sourceFilePath = sourceFilePath;
     this.messagesFilePath = messagesFilePath;
   }
@@ -122,8 +137,9 @@ export class Messages {
    * @returns The formatted message as a string.
    */
   public format(key: string, values?: MessageValues): string {
-    if (this.messages === undefined) {
+    if (!this.messages.length) {
       // No need to log the error since it was caught when calling `useMessage()`.
+      log.warn('uhuh 0 length');
       return '';
     }
 
@@ -172,12 +188,13 @@ export function useMessages(): Messages {
 
   if (!babelifiedMessages.keyValueObjectCollection[locale]) {
     log.warn(
-      `unable to use \`useMessages()\` in \`${babelifiedMessages.sourceFilePath}\` because the messages file was not found at \`${messagesFilePath}\``
+      `unable to use \`useMessages()\` in \`${babelifiedMessages.sourceFilePath}\` because no messagess could be found at \`${messagesFilePath}\``
     );
   }
 
   return new Messages(
     babelifiedMessages.keyValueObjectCollection[locale],
+    locale,
     sourceFilePath,
     messagesFilePath
   );

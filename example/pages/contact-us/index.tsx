@@ -15,7 +15,7 @@ export default function ContactUs(): ReactElement {
 
   return (
     <Layout title={messages.format('pageTitle')}>
-      <h1 className={styles.headline}>{messages.format('title')}</h1>
+      <h1 className={styles.headline}>{messages.format('pageTitle')}</h1>
       <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>
       <form onSubmit={handleSubmit}>
         <label className={styles.messageLabel} htmlFor="message">

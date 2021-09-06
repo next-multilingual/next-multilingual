@@ -8,18 +8,14 @@ import {
 } from 'next-multilingual';
 import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import Layout from '@/layout';
 import { useMessages } from 'next-multilingual/messages';
 import styles from './index.module.css';
-import {
-  ResolvedLocaleServerSideProps,
-  setCookieLocale
-} from 'next-multilingual';
+import { ResolvedLocaleServerSideProps, setCookieLocale } from 'next-multilingual';
+import { useFruitsMessages } from '../messages/Fruits';
 
-export default function IndexPage({
-  resolvedLocale
-}: ResolvedLocaleServerSideProps): ReactElement {
+export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSideProps): ReactElement {
   const router = useRouter();
   const { locales, defaultLocale } = router;
 
@@ -29,6 +25,10 @@ export default function IndexPage({
 
   // Load the messages in the correct locale.
   const messages = useMessages();
+  const fruitsMessages = useFruitsMessages();
+
+  // Counter used for ICU MessageFormat example.
+  const [count, setCount] = useState(0);
 
   return (
     <Layout title={messages.format('pageTitle')}>
@@ -47,17 +47,11 @@ export default function IndexPage({
             <tr>
               <td>{messages.format('rowDefaultLocale')}</td>
               <td>{normalizeLocale(defaultLocale)}</td>
-              <td>
-                {normalizeLocale(
-                  getActualDefaultLocale(locales, defaultLocale)
-                )}
-              </td>
+              <td>{normalizeLocale(getActualDefaultLocale(locales, defaultLocale))}</td>
             </tr>
             <tr>
               <td>{messages.format('rowConfiguredLocales')}</td>
-              <td>
-                {locales.map((locale) => normalizeLocale(locale)).join(', ')}
-              </td>
+              <td>{locales.map((locale) => normalizeLocale(locale)).join(', ')}</td>
               <td>
                 {getActualLocales(locales, defaultLocale)
                   .map((locale) => normalizeLocale(locale))
@@ -66,6 +60,47 @@ export default function IndexPage({
             </tr>
           </tbody>
         </table>
+        <br />
+        <p>
+          <h2>{messages.format('sharedHeader')}</h2>
+          <p>
+            {messages.format('sharedList')}
+            <i>
+              {fruitsMessages
+                .getAll()
+                .map((message) => message.format())
+                .join(', ')}
+            </i>
+          </p>
+          <p>
+            {messages.format('sharedDropDown')}
+            <select>
+              {fruitsMessages.getAll().map((message) => (
+                <option>{message.format()}</option>
+              ))}
+            </select>
+          </p>
+        </p>
+        <br />
+        <p>
+          <h2>{messages.format('mfHeader')}</h2>
+          <fieldset className={styles.mfExample}>
+            <legend>{messages.format('mfUsing')}</legend>
+            {messages.format('mfPlural')}
+          </fieldset>
+          <p>{messages.format('mfPlural', { count })}</p>
+          <button onClick={() => setCount(count + 1)} title={messages.format('mfAddCandy')}>
+            ➕🍭
+          </button>
+          <button
+            onClick={() => {
+              if (count > 0) setCount(count - 1);
+            }}
+            title={messages.format('mfRemoveCandy')}
+          >
+            ➖🍭
+          </button>
+        </p>
       </div>
     </Layout>
   );

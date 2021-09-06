@@ -30,10 +30,10 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Add ICU support in `useMessage`
 
 ### Done ✔️
 
+- Add ICU support in `useMessage`
 - Localized error pages
 - Launch our beta npm package
 - Shared message
