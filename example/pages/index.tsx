@@ -61,9 +61,9 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
           </tbody>
         </table>
         <br />
-        <p>
+        <div>
           <h2>{messages.format('sharedHeader')}</h2>
-          <p>
+          <div>
             {messages.format('sharedList')}
             <i>
               {fruitsMessages
@@ -71,18 +71,18 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
                 .map((message) => message.format())
                 .join(', ')}
             </i>
-          </p>
-          <p>
+          </div>
+          <div>
             {messages.format('sharedDropDown')}
             <select>
               {fruitsMessages.getAll().map((message) => (
                 <option key={message.format()}>{message.format()}</option>
               ))}
             </select>
-          </p>
-        </p>
+          </div>
+        </div>
         <br />
-        <p>
+        <div>
           <h2>{messages.format('mfHeader')}</h2>
           <fieldset className={styles.mfExample}>
             <legend>{messages.format('mfUsing')}</legend>
@@ -100,7 +100,7 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
           >
             ➖🍭
           </button>
-        </p>
+        </div>
       </div>
     </Layout>
   );
