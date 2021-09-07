@@ -4,6 +4,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
+- export/import CLI
+- profiling, package size optimization (e.g. intl-messageformat strip down)
 - Test in Vercel prod
 - Test dynamic routes (with placeholders)
 - Test `useMessages` with APIs
