@@ -6,12 +6,14 @@
     "dev": "cross-env ../node_modules/.bin/next dev",
     "build": "cross-env ../node_modules/.bin/next build",
     "start": "cross-env ../node_modules/.bin/next start",
-    "reset": "rm -Rf ./node_module && rm -Rf ./next && npm install"
+    "reset": "rm -Rf ./node_module && rm -Rf ./next && npm install",
+    "lint": "next lint"
   },
   "dependencies": {
     "next-multilingual": "file:.."
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^11.1.2",
     "cross-env": "^7.0.3",
     "prettier": "^2.3.2"
   }

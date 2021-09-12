@@ -1,0 +1,6 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "@next/next/no-document-import-in-page": "off" // https://github.com/vercel/next.js/issues/29021
+  }
+}
