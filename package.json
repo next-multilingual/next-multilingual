@@ -74,6 +74,7 @@
     "release": "dotenv -- release-it --only-version"
   },
   "dependencies": {
+    "@babel/core": "^7.15.5",
     "chokidar": "^3.5.2",
     "dot-properties": "^1.0.1",
     "intl-messageformat": "^9.9.1",
@@ -81,7 +82,6 @@
     "resolve-accept-language": "^1.0.32"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
     "@release-it/conventional-changelog": "^3.3.0",
     "@types/babel__core": "^7.1.15",
     "@types/node": "^16.7.10",
