@@ -24,6 +24,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - In the `config` API, support options passed functions (see Next.js doc)
 - Try Javascript support?
 - Automatically restart Next.js routes changes (e.g. use `forever`)
+- Make it work with Netlify (looks like their Next.js script does not support our configs)
 - Default locale fallback
 - Lorem ipsum generator?
 - Try strict mode
@@ -32,9 +33,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- Make it work on Vercel (there is an open ticket regarding an issue with / and their serverless functions)
 
 ### Done ✔️
 
+- Demo app is up on
 - Add ICU support in `useMessage`
 - Localized error pages
 - Launch our beta npm package
