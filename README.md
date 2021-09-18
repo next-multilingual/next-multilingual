@@ -2,9 +2,9 @@
 
 `next-multilingual` is an opinionated end-to-end solution for Next.js for applications that requires multiple languages.
 
-Check out our [demo app](https://next-multilingual-example.avansai.com)! 
+Check out our [demo app](https://next-multilingual-example.vercel.app)! 
 
-[![Try me](https://img.shields.io/badge/-Try%20me!-green?style=for-the-badge)](https://next-multilingual-example.avansai.com)
+[![Try me](https://img.shields.io/badge/-Try%20me!-green?style=for-the-badge)](https://next-multilingual-example.vercel.app)
 
 
 ## Installation 💻
