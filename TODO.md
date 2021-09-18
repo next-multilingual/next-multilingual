@@ -33,10 +33,9 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Make it work on Vercel (there is an open ticket regarding an issue with / and their serverless functions)
-
 ### Done ✔️
 
+- Make it work on Vercel (https://github.com/vercel/vercel/discussions/6710)
 - Demo app is up on
 - Add ICU support in `useMessage`
 - Localized error pages
