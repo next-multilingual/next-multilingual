@@ -26,7 +26,7 @@ npm install next-multilingual
 
 `next-multilingual` has put a lot of effort to add [JSDoc](https://jsdoc.app/) to all its APIs. Please check directly in your IDE if you are unsure how to use certain APIs provided in our examples.
 
-Also, having an opinion on "best practices" is not an easy task. This is why we documented our design decisions in a special document that can be consulted [here](./docs/design-decisions.md). If you feel that some of our APIs don't offer what you would expect, make sure to take a peek at this document before opening an issue.
+Also, having an opinion on "best practices" is not an easy task. This is why we documented our design decisions in a special document that can be consulted [here](./docs/design-decisions.md). If you feel that some of our APIs don't offer what you would expect, make sure to consult this document before opening an issue.
 
 ## Getting Started 💨
 
@@ -200,7 +200,7 @@ As per [Google](https://developers.google.com/search/docs/advanced/crawling/loca
 NEXT_PUBLIC_ORIGIN=http://localhost:3000
 ```
 
-Regardless of the environment, `next-multilingual` will look for a variables called `NEXT_PUBLIC_ORIGIN` to generate fully-qualified URLs. If you are using Next.js' [`basePath`](https://nextjs.org/docs/api-reference/next.config.js/basepath), it will be added automatically to the base URL.
+Regardless of the environment, `next-multilingual` will look for a variable called `NEXT_PUBLIC_ORIGIN` to generate fully-qualified URLs. If you are using Next.js' [`basePath`](https://nextjs.org/docs/api-reference/next.config.js/basepath), it will be added automatically to the base URL.
 
 `NEXT_PUBLIC_ORIGIN` will only accept fully qualified domains (e.g. `http://example.com`), without any paths.
 
@@ -212,7 +212,7 @@ Now that everything has been configured, we can focus on using `next-multilingua
 
 The homepage is a bit more complex than other pages, because we need to implement dynamic language detection (and display) for the following reason:
 
-- Redirecting on `/` can have negative SEO impact, and is not the best user experience.
+- Redirecting on `/` can have negative SEO impact and is not the best user experience.
 - `next-multilingual` comes with a `getPreferredLocale` API that offers smarter auto-detection than the default Next.js implementation.
 
 You can find a full implementation in the [example](./example/pages/index.tsx), but here is a stripped down version:
@@ -298,12 +298,12 @@ Every time that you create a `tsx`, `ts`, `jsx` or `js` file and that you need l
 
 There are two uses cases for messages files:
 
-- For the messages files in your `pages` directory, they will determine what the URL segment (part of a URL in between `/`) of this page is using the `pageTitle` key identifier. On top of that, they will be used as local scope messages if there are messages required specific to that page.
+- For the message's files in your `pages` directory, they will determine what the URL segment (part of a URL in between `/`) of this page is using the `pageTitle` key identifier. On top of that, they will be used as local scope messages if there are messages required specific to that page.
 - They will store all the localizable strings (messages) used by your application. Note that you should only put the message used in the page directly since components also have their own message files. Those messages will be used by the `useMessages` hook and will only be available in local scopes. Imagine CSS but for localizable stings.
 
 To summarize:
 
-- Messages are associated to a file, and should only be used in that local scope.
+- Messages are associated to a file and should only be used in that local scope.
 - Messages are used both to localize URLs and to display localized text everywhere in your application.
 - You should only use this method in your application to simplify your localization process.
 
@@ -322,16 +322,16 @@ Creating and managing those files are as simple as creating a style sheet, but h
 - For components, files are only required if you use the `useMessages` hook.
 - For messages shared across multiple components (shared messages), you need to create a "shared message component" (more details no this below)
 
-Also, make sur to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it really easy to detect and fix problems. Note that those logs will only show in non-production environments.
+Also, make sur to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it easy to detect and fix problems. Note that those logs will only show in non-production environments.
 
 #### Using messages for localized URLs
 
-Also, as mentioned previously, there is one special key for `pages`, where the `id` is `pageTitle`. This message will be used both as a page title, but also as the localized URL segment of that page. Basically the "page title" is the human readable "short description" of your pages, and also represents a segment (contained between slashes) of a URL. When used as a URL segment, following changes are applied:
+Also, as mentioned previously, there is one special key for `pages`, where the `id` is `pageTitle`. This message will be used both as a page title, but also as the localized URL segment of that page. Basically the "page title" is the human readable "short description" of your pages, and represents a segment (contained between slashes) of a URL. When used as a URL segment, following changes are applied:
 
 - all characters will be lowercased
 - spaces will be replaced by `-`
 
-For example `About us` will become `about-us`. For the homepage, the URL will always be `/` which means that `pageTitle` will not be used to create URL segments.
+For example, `About us` will become `about-us`. For the homepage, the URL will always be `/` which means that `pageTitle` will not be used to create URL segments.
 
 > ⚠️ Note that if you change `pageTitle`, this means that the URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
 
@@ -410,7 +410,7 @@ As the data for this mapping is not immediately available during rendering, `nex
 
 ### Creating components
 
-Creating components is exactly the same as pages but they live outside the `pages` folder. Also as mentioned previously you do not need to add the `pageTitle` key. We have a few [example components](./example/components) that should be self explanatory but here is an example of a `Footer.tsx` component:
+Creating components is the same as pages but they live outside the `pages` folder. Also as mentioned previously you do not need to add the `pageTitle` key. We have a few [example components](./example/components) that should be self explanatory but here is an example of a `Footer.tsx` component:
 
 ```tsx
 import type { ReactElement } from 'react';
@@ -437,11 +437,11 @@ Also make sure to look at the [language picker component](./example/components/L
 
 ### Creating shared messages
 
-We've been pretty clear that sharing messages is a bad practice from the beginning, so what are we talking about here? In fact, sharing messages by itself is not bad. What can cause problems if when you share messages in different context. For example you might be tempted to create a `Button.ts` shared message file containing `yesButton`, `noButton` keys - but this would be wrong. In many languages simple words as "yes" and "no" can have different spellings depending on the context, even if it's a button.
+We've been clear that sharing messages is a bad practice from the beginning, so what are we talking about here? In fact, sharing messages by itself is not bad. What can cause problems if when you share messages in different context. For example, you might be tempted to create a `Button.ts` shared message file containing `yesButton`, `noButton` keys - but this would be wrong. In many languages simple words as "yes" and "no" can have different spellings depending on the context, even if it's a button.
 
-So when is it good to share messages? For list of items. 
+When is it good to share messages? For list of items. 
 
-For example, to keep your localization process simple, you want to avoid as much as possible storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). So in your database you would identify the context using unique identifiers and you would store your messages in shared messages files, where your key's identifiers would match the ones from the database.
+For example, to keep your localization process simple, you want to avoid as much as possible storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). In your database you would identify the context using unique identifiers and you would store your messages in shared messages files, where your key's identifiers would match the ones from the database.
 
 To illustrate this we created [one example using fruits](./example/messages/Fruits.ts). All you need to do, is create a component that calls `useMessages` like this:
 
@@ -451,7 +451,7 @@ import { useMessages } from 'next-multilingual/messages';
 export const useFruitsMessages = useMessages;
 ```
 
-Of course you will have your messages files in the same directory:
+Of course, you will have your messages files in the same directory:
 
 ```properties
 exampleApp.fruits.banana = Banana
@@ -490,7 +490,7 @@ You can also call individual messages like this:
 fruitsMessages.format('banana');
 ```
 
-The idea to share those list of items is that you can have a consistent experience across different components. Imagine a dropdown with a list of fruit in one page, and in another page an auto-complete input. But the important part to remember is that the list must always be used in the same context, not to re-use some of the messages in different context.
+The idea to share those lists of items is that you can have a consistent experience across different components. Imagine a dropdown with a list of fruit in one page, and in another page an auto-complete input. But the important part to remember is that the list must always be used in the same context, not to re-use some of the messages in different context.
 
 ### Message Variables
 
@@ -510,7 +510,7 @@ If you do not provide the values of your variables when formatting the message, 
 
 #### Plurals
 
-One of the main benefit of ICU MessageFormat is to use Unicode's tools and standards to enable applications to sound fluent in most languages. A lot of engineers might believe that by having 2 messages, one for singular and one for plural is enough to stay fluent in all languages. In fact, Unicode documented the [plural rules](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html) of over 200 languages and some languages like Arabic an have up to 6 plural forms.
+One of the main benefits of ICU MessageFormat is to use Unicode's tools and standards to enable applications to sound fluent in most languages. A lot of engineers might believe that by having 2 messages, one for singular and one for plural is enough to stay fluent in all languages. In fact, Unicode documented the [plural rules](https://unicode-org.github.io/cldr-staging/charts/latest/supplemental/language_plural_rules.html) of over 200 languages and some languages like Arabic an have up to 6 plural forms.
 
 To ensure that your sentence will stay fluent in all languages, you can use the following message:
 
@@ -593,19 +593,19 @@ exampleApp.pageNotFoundError.goBack = Go back home
 
 ## Translation process 🈺
 
-Our ideal translation process is one where you send the modified files to your localization vendor (while working in a branch), and get back the translated files, with the correct locale in the filenames. Once you get the files back you basically submit them back in your branch which means localization becomes integral part of the development process. Basically the idea is:
+Our ideal translation process is one where you send the modified files to your localization vendor (while working in a branch), and get back the translated files, with the correct locale in the filenames. Once you get the files back you basically submit them back in your branch which means localization becomes integral part of the development process. Basically, the idea is:
 
 - Don't modify the files, let the translation management system (TMS) do its job.
-- Add a localization step in you development pipeline and wait for that step to be over before merging back to your main branch.
+- Add a localization step in your development pipeline and wait for that step to be over before merging back to your main branch.
 
 We don't have any "export/import" tool to help as at the time of writing this document.
 
 ## Why `next-multilingual`? 🗳️
 
-Why did we put so much efforts with these details? Because our hypothesis is that it can have a major impact on:
+Why did we put so much effort with these details? Because our hypothesis is that it can have a major impact on:
 
-- SEO;
-- boosting customer trust with more locally relevant content;
-- making string management easier and more modular.
+- SEO
+- Boosting customer trust with more locally relevant content.
+- Making string management easier and more modular.
 
 More details an be found on the implementation and design decision in the individual README files of each API and in the [documentation](./doc) directory. 

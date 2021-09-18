@@ -8,7 +8,7 @@ of i18n solutions fell into.
 
 Localized URLs is uncommon today, probably because a functioning implementation can be quite tricky. The other challenge is that to do this correctly there has to be synergy between what are often 2 completely independent functionalities: the router (which points URLs to web resources) and the string/message parser.
 
-A lot of URL routers today use special configuration files to predetermine the available routes. Those files can be `JSON` or `YAML` and often contain their own configuration schema. The problem with this, is that these file mix localizable strings with non-localizable data. To localize these files would you either need a custom file parser, an import/export script or a human manually replacing the import/export script. This is not ideal and adds a lot of complexity and fragility around the localization process. This is why our solution leverages the current Next.js routing functionality using the file system and adds custom routes on top using the same modular string (messages) files that can easily be localized.
+A lot of URL routers today use special configuration files to predetermine the available routes. Those files can be `JSON` or `YAML` and often contain their own configuration schema. The problem with this, is that these file mix localizable strings with non-localizable data. To localize these files would you either need a custom file parser, an import/export script or a human manually replacing the import/export script. This is not ideal and adds a lot of complexity and fragility around the localization process. Therefore our solution leverages the current Next.js routing functionality using the file system and adds custom routes on top using the same modular string (messages) files that can easily be localized.
 
 What this means concretely is that instead of having:
 
@@ -38,8 +38,8 @@ The following design decision have been considered when implementing **localized
    2. It's important to stay consistent with one pattern to avoid duplicate content issues - [Moz, 2021](https://moz.com/learn/seo/url)
 2. All URLs are prefixed by a locale identifier just like Next.js, but unlike most examples, we do not recommend using a simple language code (see the "other recommendations" section below).
 3. [BCP47 language tags](https://tools.ietf.org/search/bcp47) consisting of both an [ISO 639-1 alpha-2 language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) and an [ISO 3166-1 alpha-2 country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) must be used at all times when setting up your `next.config.js`. Using a simple language code is not recommended because:
-    1. There is no such concept as a "regionsless" variant of a language. Even English might seem like a simple language but there are many nuances between English U.S. and English U.K. By not specifying which variant is used, the content creator or the translator will have to decide and this can lead to inconsistency.
-    2. On top of using different expressions, there are many other differences such as date, currency or number formats. If a site is using none of these, it might sound acceptable to simply use a language code but there are few use cases where this would apply.
+    1. There is no such concept as a "regionsless" variant of a language. Even English might seem like a simple language but there are many nuances between English U.S. and English U.K. By not specifying which variant is used, the content creator or the translator will have to decide, and this can lead to inconsistency.
+    2. On top of using different expressions, there are many other differences such as date, currency, or number formats. If a site is using none of these, it might sound acceptable to simply use a language code but there are few use cases where this would apply.
     3. SEO: by targeting better the language with a country, your results will be more relevant in the search results of those countries - [Moz, 2021](https://moz.com/learn/seo/international-seo)
 4. Encoded UTF-8 characters are used in URLs because:
    1. Google recommends using encoded UTF-8 characters in URLs for non-English sites - [Google, 2018](https://www.youtube.com/watch?v=74FiBesPkI4)
@@ -69,7 +69,7 @@ Most developers are familiar with [design patterns](https://en.wikipedia.org/wik
 
 #### The global string repository
 
-The idea of having a central place to manage all the strings of a business sound like a good idea. In fact, Netflix published an [article](https://netflixtechblog.com/localization-technologies-at-netflix-d033e7b13cf) about their internal solution that they were planning to open source. There has also been a few SaaS startups that appeared over the recent years that provide this type of all inclusive solution. The main benefits to this pattern:
+The idea of having a central place to manage all the strings of a business sound like a good idea. In fact, Netflix published an [article](https://netflixtechblog.com/localization-technologies-at-netflix-d033e7b13cf) about their internal solution that they were planning to open source. There have also been a few SaaS startups that appeared over the recent years that provide this type of all inclusive solution. The main benefits to this pattern:
 
 - Localization is abstracted from developers and can be easier to use in some cases.
 - Localization can be done in parallel of development and prevents from blocking the releases of new features.
@@ -79,7 +79,7 @@ Since the developer experience (DX) in general is great, it seems like a good pa
 
 - When localization is done in parallel, if messages are changed during development, this will incur extra localization cost for unused strings. Cost will be exponential depending on the number of supported locales and to avoid them will promote a development process that will require more upfront preparation (less agile).
 - It's easy to re-use existing messages. Not everyone is aware that where a message is used can have many implications in different languages and can lead to showing the wrong translation in the wrong context, in other words poor user experience. Sharing messages is considered an i18n bad practice and should be avoided.
-- It's hard to track who uses which messages which means that updating or removing keys becomes impossible. This leads to an ever growing repository of messages where no-one is really sure who is using what and where. 
+- It's hard to track who uses which messages which means that updating or removing keys becomes impossible. This leads to an ever growing repository of messages where no-one is sure who is using what and where. 
 - Depending on the governance process, it can be easy to mix concerns and add non-localizable strings (JavaScript, constants, etc.) in the repository. This basically transforms the string repository into a configuration repository and can create extra cost around the localization process.
 - This can cause challenges when adding new locales as you will need to pick and choose only the keys that are used for each application to avoid translating unused messages. This can be time consuming and error prone.
 - Your translation memory (TM) will also grow exponentially with the number of locales you need to support which can lead to extra localization cost. Either vendors will charge you extra to manage this overhead or your in-house translation management system (TMS) infrastructure will cost more.
@@ -92,11 +92,13 @@ On the other hand, if you do have similar needs like Netflix where you have mult
 
 #### The database
 
-Some localization use cases might involve a database. Imagine for example you are a large e-commerce website and you need to localize the products you sell (could be millions of products) that include names and descriptions. This type of content typically is stored in a database and will have APIs to perform CRUD operations but also a high performance distribution service to allow other functionalities like search.
+Some localization use cases might involve a database. Imagine, and you need to localize the products you sell (could be millions of products) that include names and descriptions. This type of content typically is stored in a database and will have APIs to perform CRUD operations but also a high performance distribution service to allow other functionalities like search.
 
-When you need to store your messages in a database, you need to have the right schema to enable tracking of updates on individual strings. This allows to detect when content in some locales is more recent than others and can be used to trigger localization requests. Those requests are typically triggered using a custom middleware layer adapted to the database schema. It's also a good idea to isolate strings in special tables to avoid duplicated content which will also reduce the overall database size and increase performance.
+When you need to store your messages in a database, you need to have the right schema to enable tracking of updates on individual strings. This allows to detect when content in some locales is more recent than others and can be used to trigger localization requests. Those requests are typically triggered using a custom middleware layer adapted to the database schema. It's also a good idea to isolate strings in special tables to avoid duplicated content which will also reduce the overall database size and increase performance. One additional challenge with databases is that if a same piece of content changes multiple times and triggers multiple localization requests, there is no guarantee that the translation will happen in the same order. Making sure not to overwrite content with older translations can be quite tricky and requires extra logic. Not to mention sometimes compaction or delaying requests might be required to optimize cost.
 
-##### Overall database localization can be complex, so when should it be used?
+Overall translating a database is complex and should be considered at its own specialized (domain) pipeline.
+
+##### When should it be used?
 
 - The short answers is: only when you have no choice! It's easy to avoid storing messages in databases in most common use cases, for example:
   - An API with a small dataset that is self-contained. Try storing the messages with the rest of the application and load them in memory to avoid using a database while increasing performance.
@@ -109,7 +111,7 @@ When you need to store your messages in a database, you need to have the right s
 
 #### The decentralized model
 
-The decentralized model is heavily inspired from [CSS Modules](https://github.com/css-modules/css-modules) which is also supported by Next.js. Basically, the whole idea is to make each application responsible to manage their strings which means that adding, updating or removing strings becomes as easy as changing CSS. The main difference of course is that strings can only be changed in their source language and every time they change, they must trigger a localization process. 
+The decentralized model is heavily inspired from [CSS Modules](https://github.com/css-modules/css-modules) which is also supported by Next.js. Basically, the whole idea is to make each application responsible to manage their strings which means that adding, updating, or removing strings becomes as easy as changing CSS. The main difference of course is that strings can only be changed in their source language and every time they change, they must trigger a localization process. 
 
 This model is not sufficient on its own as a lot of i18n libraries today try to implement it but, on the way, breaks a few best practices (more details below) that can cause quality issues. Presuming a good implementation of his model, these are the benefits:
 
@@ -120,18 +122,19 @@ This model is not sufficient on its own as a lot of i18n libraries today try to 
 There are also downsides, when comparing mostly with the global string repository:
 
 - Less transparent for developers. Unlike some global string repository implementations, developers are responsible to manage strings. But this also come with the benefit of better i18n knowledge.
-- Requires deploying applications when changing messages. It might have been more problematic 10 years ago but nowadays, continuos deployment is part of most development pipelines.
+- Requires deploying applications when changing messages. It might have been more problematic 10 years ago but nowadays, continuous deployment is part of most development pipelines.
 
 From out perspective, the upsides outweigh the downsides - we believe that translation quality should be one of the top criteria when it comes to i18n. This means that the solution must be built around best practices and not around what is most convenient for developers. Therefore `next-multilingual` is built around this model.
 
 #### The shared model
 
-As mentioned previously, sharing messages is normally a bad practice. But in some cases, it might actually be required. The main problem around sharing messages is that while in English, it might sound like a good idea to have a `yes = yes` message, in many language `yes` might use different words depending on where it is used in an application (its context). This means, in cases where context is identical, it is OK to share strings. In most case, its hard to guarantee tha the context is identical, but here are scenarios where this could happen:
+As mentioned previously, sharing messages is normally a bad practice. But in some cases, it might be required. The main problem around sharing messages is that while in English, it might sound like a good idea to have a `yes = yes` message, in many language `yes` might use different words depending on where it is used in an application (its context). This means, in cases where context is identical, it is OK to share strings. In most case, its hard to guarantee tha the context is identical, but here are scenarios where this could happen:
 
+- You have concepts (typically list of items) that is used in several places in your application but not tied to a single component or page.
 - You have a web app and native app that use the exact same layout.
 - You have a frontend and backend service that needs to use the same localized messages.
 
-If you need to share messages, we still encourage to try to scope messages locally to avoid out of context sharing. This type of sharing can be done in different ways but having a shared messages repository can be a good way to do this.
+If you need to share messages, we still encourage to try to scope messages locally to avoid out of context sharing. This type of sharing can be done in different ways. `next-multilingual` supports shared messages that have the exact same context in the same application. If you need to extend this across multiple applications, another common solution is having a shared messages repository.
 
 #### The ad-hoc model
 
@@ -143,7 +146,7 @@ It's hard to find a lot of details out there on how businesses handle their loca
 
 Normally once your business grows and you have frequent localization needs, you will hire a Language Service Provider (LSP). Depending on the LSP they will support different languages and you might even need to hire multiple LSPs depending on your needs.
 
-LSPs use Translation Management Systems (TMS). This is the equivalent of an ERP, but for localization. It manages each project, which linguist is it assigned to, and track the cost, either per hour or word depending on the agreement. Most TMSes are commercial (paid) products and can be quite complex to manage. They try to support as many file types as possible so that out of the box, LSPs can focus on their core business: translation. When a file is following i18n best practice, the TMS will also store translations in a cache, called translation memory (TM). This is useful, because if you send the same file multiple time (adding messages during the development cycle), linguists will not have to re-translate messages that have already been translated. The TM help reduce the cost and time of translation. When you send a file to be translated, it will analyse it and check which segment (typically a sentence) can be found in the TM. When there is a perfect match, called "in context exact match" or "ICE match", translation will not be required. TMSes are quite flexible and allow different configurations to determine what is an ICE match, but the most common configuration use the message key. Meaning if the source key and source message is found in the TM, all translations will be ICE matches. Therefore it is critical to have unique keys. If you use simple keys, and have small messages, it would be easy to have duplicate entries in the TM, meaning the same source key and message would have multiple translations. If this happens, it can have negative impact on cost as those TMs entries will no longer be ICE matches and will require linguist intervention.
+LSPs use Translation Management Systems (TMS). This is the equivalent of an ERP, but for localization. It manages each project, which linguist is it assigned to, and track the cost, either per hour or word depending on the agreement. Most TMSes are commercial (paid) products and can be quite complex to manage. They try to support as many file types as possible so that out of the box, LSPs can focus on their core business: translation. When a file is following i18n best practice, the TMS will also store translations in a cache, called translation memory (TM). This is useful, because if you send the same file multiple time (adding messages during the development cycle), linguists will not have to re-translate messages that have already been translated. The TM help reduce the cost and time of translation. When you send a file to be translated, it will analyse it and check which segment (typically a sentence) can be found in the TM. When there is a perfect match, called "in context exact match" or "ICE match", translation will not be required. TMSes are quite flexible and allow different configurations to determine what is an ICE match, but the most common configuration use the message key. Meaning if the source key and source message is found in the TM, all translations will be ICE matches. Therefore, it is critical to have unique keys. If you use simple keys, and have small messages, it would be easy to have duplicate entries in the TM, meaning the same source key and message would have multiple translations. If this happens, it can have negative impact on cost as those TMs entries will no longer be ICE matches and will require linguist intervention.
 
 Most TMSes are document-base (file-based) - on other words they expect a file as a document to translate. Supporting different file types might sound simple, but it's not. Here are scenarios to illustrate this complexity:
 
@@ -161,7 +164,7 @@ As we just learned, file formats can be complex. We compared a few popular file 
 | `JSON`        | No (supports complex structure) | No (would require JSON5) | No             | Depends on the schema
 | `YAML`        | No (supports complex structure) | Yes                      | No             | Depends on the schema
 
-The clear winner for us are `.properties` files. We know this choice might not be popular for all programming languages as this file format was originated from Java. But, it is the format that causes the least i18n problems and is widely supported out of the box. On top of that, some IDEs like JetBrains' (Webstorm, IntelliJ, etc.) come with a [resource bundle editor](https://www.jetbrains.com/help/idea/resource-bundle.html) that can help manage messages in multiple languages.
+The clear winner for us are `.properties` files. We know this choice might not be popular for all programming languages as this file format was originated from Java. But it is the format that causes the least i18n problems and is widely supported out of the box. On top of that, some IDEs like JetBrains' (WebStorm, IntelliJ, etc.) come with a [resource bundle editor](https://www.jetbrains.com/help/idea/resource-bundle.html) that can help manage messages in multiple languages.
 
 ### Best practices
 
@@ -188,8 +191,12 @@ In conclusion `next-multilingual` made the following decisions:
 
 ## SEO-friendly HTML markup
 
-TODO
+Google recommends using two types of links to help SEO and they are even more important when using a multilingual site. There are other Next.js SEO libraries out there but since `next-multilingual` includes localized URL support, it made more sense to include this functionality part of our offering. Out of the box we support:
 
-- canonical url
-- x-default
-- query params
+- Canonical links: this tells Google what is the official URL that should be localize for a given and page and is very important to avoid being penalized for duplicate content. How could duplicate content occur? While URLs are case insensitive, Google indexes them case sensitively. The same could apply if you site is linked from another site using URLs with parameters that are no longer used. Canonical links are for the most part unrelated to localized URLs, other than on the homepage, where depending on the dynamic locale selected, the link will differ. For this reason, we included it in `next-multilingual`.
+- Alternate links: these links basically tell Google which localized versions of a page is available. The benefit of adding these links is to enable Google to crawl better your site. There are other ways to do this, like using HTTP headers or a sitemap but Google recommends using only one way. We decided that alternate links would be the best way to do this as they are easy to examine in a browser. There is also one special use case which is the `x-default` language for pages that can have dynamic detection. In our case, only the homepage will include an `x-default` link since we did not think that having an entire set of URLs that could render dynamic content was useful.
+
+These links can be tricky to implement, as there are many flavours out there. Our implementation is based on:
+
+- https://youtu.be/8ce9jv91beQ - Video from Google explaining the specifications.
+- https://play.google.com/store - One of the rare sites using `x-default`, and owned by Google which hopefully use the standards they define!

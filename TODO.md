@@ -10,7 +10,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Test dynamic routes (with placeholders)
 - Test `useMessages` with APIs
 - HTML inside properties files (as JSX)
-- Check if we can add `title` attributes on `Link` components (not supported by Next.js?)
+- Check if we can add `title` attributes on `Link` components (not supported by Next.js?) (ref: https://backlinko.com/google-ranking-factors)
 - Add automated test:
   - Test when a string file changes, the page is updated (developer experience?)
   - Test language detection
@@ -29,12 +29,13 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Lorem ipsum generator?
 - Try strict mode
 - sitemap
-- Add other docs: contribution, design doc, etc.
+- schema.org markup support (e.g. breadcrumbs)
 
 ### In Progress 🚧
 
 ### Done ✔️
 
+- Add other docs: contribution, design doc, etc.
 - Make it work on Vercel (https://github.com/vercel/vercel/discussions/6710)
 - Demo app is up on
 - Add ICU support in `useMessage`
