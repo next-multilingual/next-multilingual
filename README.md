@@ -152,7 +152,7 @@ This basically does two things, as mentioned in the comments:
 1. Inject the actual locale in Next.js' router since we need to use a "fake default locale".
 2. Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
 
-You might have noticed the `getActualDefaultLocale` API. his API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very important, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
+You might have noticed the `getActualDefaultLocale` API. This API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very important, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
 
 ### Create a custom `Document` (`_document.tsx`)
 
@@ -186,15 +186,15 @@ class MyDocument extends Document {
 export default MyDocument;
 ```
 
-This serves only 1 purpose: display the correct server-side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`. The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URLs prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
+This serves only 1 purpose: display the correct server-side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`. The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URL prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
 
 ### Configure all your pages to use SEO friendly markup
 
-`next-multilingual/head` provides a `<MulHead>` component will automatically creates a canonical link and alternate links in the header. This is something that is not provided out of the box by Next.js.
+`next-multilingual/head` provides a `<MulHead>` component which automatically creates a canonical link and alternate links in the header. This is something that is not provided out of the box by Next.js.
 
 #### Add a `NEXT_PUBLIC_ORIGIN` environment variable
 
-As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to specify the absolute URLs that will be used, in an [environment variable](https://nextjs.org/docs/basic-features/environment-variables). For example, for the development environment, create an `.env.development` file at the root of your application with the following variable (adjust based on your setup):
+As per [Google](https://developers.google.com/search/docs/advanced/crawling/localized-versions), alternate links must be fully-qualified, including the transport method (http/https). Because Next.js does not know which URL is used at build time, we need to specify the absolute URL that will be used, in an [environment variable](https://nextjs.org/docs/basic-features/environment-variables). For example, for the development environment, create an `.env.development` file at the root of your application with the following variable (adjust based on your setup):
 
 ```ini
 NEXT_PUBLIC_ORIGIN=http://localhost:3000
@@ -294,9 +294,9 @@ In a nutshell, this is what is happening:
 
 ### Creating messages
 
-Every time that you create a `tsx`, `ts`, `jsx` or `js` file and that you need localized messages, you can simply create messages file in your supported locales that will only be usable by these files. Just like CSS modules, the idea is that you can have message files associated to another file's local scope. This has the benefit to make messages more modular and also not share messages across different context (more details in the [design decisions document](./docs/design-decisions.md) on why this is bad).
+Every time that you create a `tsx`, `ts`, `jsx` or `js` file and that you need localized messages, you can simply create a message file in your supported locales that will only be usable by these files. Just like CSS modules, the idea is that you can have message files associated to another file's local scope. This has the benefit to make messages more modular and also not share messages across different context (more details in the [design decisions document](./docs/design-decisions.md) on why this is bad).
 
-There are two uses cases for messages files:
+There are two uses cases for message files:
 
 - For the message's files in your `pages` directory, they will determine what the URL segment (part of a URL in between `/`) of this page is using the `pageTitle` key identifier. On top of that, they will be used as local scope messages if there are messages required specific to that page.
 - They will store all the localizable strings (messages) used by your application. Note that you should only put the message used in the page directly since components also have their own message files. Those messages will be used by the `useMessages` hook and will only be available in local scopes. Imagine CSS but for localizable stings.
@@ -309,24 +309,24 @@ To summarize:
 
 #### How do these files work?
 
-Creating and managing those files are as simple as creating a style sheet, but here are the important details:
+Creating and managing those files is as simple as creating a style sheet, but here are the important details:
 
-- The message files are `.properties` file. Yes, you might wonder why, but there are good reasons documented in the [design decision document](./docs/design-decisions.md).
+- The message files are `.properties` files. Yes, you might wonder why, but there are good reasons documented in the [design decision document](./docs/design-decisions.md).
 - To leverage some of the built-in IDE support for `.properties` files, we follow a strict naming convention: `<Page-Name>.<locale>.properties`
 - Each message must have unique keys that follow a strict naming convention: `<application identifier>.<context>.<id>` where:
   - **application identifier** must use the same value as set in `next-multilingual/config`
   - **context** must represent the context associated with the message file, for example `aboutUsPage` or `footerComponent` could be good examples of context. Each file can only contain 1 context and context should not be used across many files as this could cause "key collision" (non-unique keys).
   - **id** is the unique identifier in a given context (or message file).
   - Each "segment" of a key must be separated by a `.` and can only contain between 3 to 50 alphanumerical characters - we recommend using camel case for readability.
-- For pages, if you want to localize your URLs, you must include messages files that include a key with the `pageTitle` identifier.
+- For pages, if you want to localize your URLs, you must include message files that include a key with the `pageTitle` identifier.
 - For components, files are only required if you use the `useMessages` hook.
-- For messages shared across multiple components (shared messages), you need to create a "shared message component" (more details no this below)
+- For messages shared across multiple components (shared messages), you need to create a "shared message component" (more details on this below)
 
-Also, make sur to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it easy to detect and fix problems. Note that those logs will only show in non-production environments.
+Also, make sure to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it easy to detect and fix problems. Note that those logs will only show in non-production environments.
 
 #### Using messages for localized URLs
 
-Also, as mentioned previously, there is one special key for `pages`, where the `id` is `pageTitle`. This message will be used both as a page title, but also as the localized URL segment of that page. Basically the "page title" is the human readable "short description" of your pages, and represents a segment (contained between slashes) of a URL. When used as a URL segment, following changes are applied:
+Also, as mentioned previously, there is one special key for `pages`, where the `id` is `pageTitle`. This message will be used both as a page title, but also as the localized URL segment of that page. Basically the "page title" is the human readable "short description" of your page, and represents a segment (contained between slashes) of a URL. When used as a URL segment, following changes are applied:
 
 - all characters will be lowercased
 - spaces will be replaced by `-`
@@ -335,11 +335,11 @@ For example, `About us` will become `about-us`. For the homepage, the URL will a
 
 > ⚠️ Note that if you change `pageTitle`, this means that the URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
 
-If you want to have a directory without any pages, you can still localize it by creating an `index.<locale>.properties` files (where `locale` are the locales you support). We don't really recommend this as this will make URL paths longer which goes against SEO best practice. But the option remains in case it is necessary.
+If you want to have a directory without any pages, you can still localize it by creating an `index.<locale>.properties` file (where `locale` are the locales you support). We don't really recommend this as this will make URL paths longer which goes against SEO best practice. But the option remains in case it is necessary.
 
-#### What do messages file look like?
+#### What do message files look like?
 
-You can always look into the [example](./example) too see messages files in action, but here is a sample that could be used on the homepage:
+You can always look into the [example](./example) to see message files in action, but here is a sample that could be used on the homepage:
 
 ```properties
 # Homepage title (will not be used as a URL segment)
@@ -349,7 +349,7 @@ exampleApp.homepage.headline = Welcome to the homepage
 ```
 ### Creating other pages
 
-Now that we learned how to create the homepage and some the details around how things work, we can easily create other pages. We create many pages in the [example](./example) , but here is a sample of what `about-us.jsx` could look like:
+Now that we learned how to create the homepage and some of the details around how things work, we can easily create other pages. We create many pages in the [example](./example), but here is a sample of what `about-us.jsx` could look like:
 
 ```jsx
 import { useMessages } from 'next-multilingual/messages';
@@ -367,7 +367,7 @@ export default function AboutUs(): ReactElement {
 }
 ```
 
-And of course you would have its message file `about-us.en-US.properties`:
+And of course you would have this message file `about-us.en-US.properties`:
 
 ```properties
 exampleApp.aboutUsPage.pageTitle = About Us
@@ -376,7 +376,7 @@ exampleApp.aboutUsPage.details = This is just some english boilerplate text.
 
 ### Adding links
 
-`next-multilingual` comes with its own `<MulLink>` component that allow for client side and server side rendering of localized URL. It's usage is simple, it works exactly like Next.js' [`<Link>`](https://nextjs.org/docs/api-reference/next/link).
+`next-multilingual` comes with its own `<MulLink>` component that allows for client side and server side rendering of localized URL. It's usage is simple, it works exactly like Next.js' [`<Link>`](https://nextjs.org/docs/api-reference/next/link).
 
 The only important thing to remember is that the `href` attribute should always contain the Next.js URL. Meaning, the file structure under the `pages` folder should be what is used and not the localized versions.
 
@@ -398,7 +398,7 @@ export default function ContactUs() {
 }
 ```
 
-In English the URL path will be `/en-us/contact-us`. But in when another locale is selected, you will get the localized URLs paths. See the example below for when `fr-ca` is selected:
+In English the URL path will be `/en-us/contact-us`. But when another locale is selected, you will get the localized URLs path. See the example below for when `fr-ca` is selected:
 
 ```html
 <a href="/fr-ca/nous-joindre"></a>
@@ -437,11 +437,11 @@ Also make sure to look at the [language picker component](./example/components/L
 
 ### Creating shared messages
 
-We've been clear that sharing messages is a bad practice from the beginning, so what are we talking about here? In fact, sharing messages by itself is not bad. What can cause problems if when you share messages in different context. For example, you might be tempted to create a `Button.ts` shared message file containing `yesButton`, `noButton` keys - but this would be wrong. In many languages simple words as "yes" and "no" can have different spellings depending on the context, even if it's a button.
+We've been clear that sharing messages is a bad practice from the beginning, so what are we talking about here? In fact, sharing messages by itself is not bad. What can cause problems is when you share messages in different contexts. For example, you might be tempted to create a `Button.ts` shared message file containing `yesButton`, `noButton` keys - but this would be wrong. In many languages simple words as "yes" and "no" can have different spellings depending on the context, even if it's a button.
 
 When is it good to share messages? For list of items. 
 
-For example, to keep your localization process simple, you want to avoid as much as possible storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). In your database you would identify the context using unique identifiers and you would store your messages in shared messages files, where your key's identifiers would match the ones from the database.
+For example, to keep your localization process simple, you want to avoid as much as possible storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). In your database you would identify the context using unique identifiers and you would store your messages in shared message files, where your key's identifiers would match the ones from the database.
 
 To illustrate this we created [one example using fruits](./example/messages/Fruits.ts). All you need to do, is create a component that calls `useMessages` like this:
 
@@ -490,7 +490,7 @@ You can also call individual messages like this:
 fruitsMessages.format('banana');
 ```
 
-The idea to share those lists of items is that you can have a consistent experience across different components. Imagine a dropdown with a list of fruit in one page, and in another page an auto-complete input. But the important part to remember is that the list must always be used in the same context, not to re-use some of the messages in different context.
+The idea to share those lists of items is that you can have a consistent experience across different components. Imagine a dropdown with a list of fruits in one page, and in another page an auto-complete input. But the important part to remember is that the list must always be used in the same context, not to re-use some of the messages in a different context.
 
 ### Message Variables
 
@@ -563,7 +563,7 @@ To fully benefit from the SEO markup, `<MulHead>` must be included on all pages.
 
 ### Custom Error Pages
 
-Like most site, you will want to leverage Next.js' [custom your error pages](https://nextjs.org/docs/advanced-features/custom-error-page) capability. With `useMessages()`, it's just as easy as creating any other pages. For example, for a `404` error, you can create your `404.tsx`:
+Like most site, you will want to leverage Next.js' [custom error pages](https://nextjs.org/docs/advanced-features/custom-error-page) capability. With `useMessages()`, it's just as easy as creating any other pages. For example, for a `404` error, you can create your `404.tsx`:
 
 ```tsx
 import { useMessages } from 'next-multilingual/messages';
