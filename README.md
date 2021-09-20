@@ -48,7 +48,7 @@ We offer two APIs to simplify this step:
 Short for "get multilingual configuration", this function will generate a Next.js config that will meet most use cases. `getMulConfig` takes the following arguments:
 
 - `applicationIdentifier` — The unique application identifier that will be used as a messages key prefix.
-- `locales` — The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](../../docs/design-decisions.md) document.
+- `locales` — The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](./docs/design-decisions.md) document.
 - `options` (optional) — Options part of a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
 - Also a few other arguments you probably will never need to use - check in your IDE (JSDoc) for more details.
 
