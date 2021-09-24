@@ -139,7 +139,6 @@ export class Messages {
   public format(key: string, values?: MessageValues): string {
     if (!this.messages.length) {
       // No need to log the error since it was caught when calling `useMessage()`.
-      log.warn('uhuh 0 length');
       return '';
     }
 
