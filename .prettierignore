@@ -1,0 +1,15 @@
+# IDE settings directories
+.idea
+.vscode
+
+# Dependency directories
+node_modules
+
+# Jest coverage report
+/coverage
+
+# Javascript (compiled) version
+/lib
+
+# Next.js
+.next
