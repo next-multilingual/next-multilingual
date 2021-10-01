@@ -6,8 +6,7 @@
     "release": true
   },
   "hooks": {
-    "before:init": ["npm run build"],
-    "after:release": "echo 🎉 Successfully released ${name} v${version} to ${repo.repository}."
+    "before:init": ["npm run build"]
   },
   "plugins": {
     "@release-it/conventional-changelog": {
