@@ -312,6 +312,7 @@ To summarize:
 Creating and managing those files is as simple as creating a style sheet, but here are the important details:
 
 - The message files are `.properties` files. Yes, you might wonder why, but there are good reasons documented in the [design decision document](./docs/design-decisions.md).
+- Make sure yours file encoding is set to `UTF-8`. Not doing so will replace non-latin characters by `�`. 
 - To leverage some of the built-in IDE support for `.properties` files, we follow a strict naming convention: `<Page-Name>.<locale>.properties`
 - Each message must have unique keys that follow a strict naming convention: `<application identifier>.<context>.<id>` where:
   - **application identifier** must use the same value as set in `next-multilingual/config`
