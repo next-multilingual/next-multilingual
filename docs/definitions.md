@@ -10,7 +10,8 @@ _Inspired from the [Wikipedia](https://en.wikipedia.org/wiki/URL) definitions._
   `scheme:[//[userinfo@]host[:port]]path[?query][#fragment]`.
 - **URL path**: the path portion of a URL (see URL pattern). In route configurations, a path can be partial and
   contain more than one segment.
-- **URL path segment**: a portion of the path contained between slashes (`/`).
+- **URL path segment**: a portion of the path contained between slashes (`/`) or at the end of a path.
+- **slug**: the human readable part of a URL (typically the last segment). Spaces are normally replaced by `-`.
 - **Route**: an object that links a URL to its resource on the server.
 - **Route configuration**: a configuration or part of a configuration that defines a route.
 

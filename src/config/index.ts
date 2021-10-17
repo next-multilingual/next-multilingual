@@ -3,12 +3,7 @@ import { existsSync, readdirSync, utimesSync } from 'fs';
 import { extname, resolve, parse as parsePath, sep as pathSeparator } from 'path';
 import { isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
-import {
-  getMessagesFilePath,
-  getSourceFilePath,
-  keySegmentRegExp,
-  urlSegmentKeyId,
-} from '../messages';
+import { getMessagesFilePath, getSourceFilePath, keySegmentRegExp } from '../messages';
 import { log } from '..';
 
 import type { NextConfig } from 'next';
@@ -78,8 +73,15 @@ export type LocalizedUrlPath = {
 };
 
 export class MulConfig {
-  /** The unique application identifier that will be used as a messages key prefix. */
-  readonly applicationIdentifier: string;
+  /** The default location of the Next.js `pages` directory. */
+  public static defaultPagesDirectoryPath = 'pages';
+  /** The default file extensions of Next.js' pages to include when building localized routes. */
+  public static defaultPagesExtensions = ['.tsx', '.jsx'];
+  /** The default files, under the `pages` directory, to exclude when building localized routes. */
+  public static defaultExcludedPages = ['_app', '_document', '_error', '404'];
+  /** The default unique key identifier used to create localized page slugs. */
+  public static defaultSlugKeyId = 'slug';
+
   /** The actual desired locales of the multilingual application. */
   private readonly actualLocales: string[];
 
@@ -95,6 +97,9 @@ export class MulConfig {
   /** The files to exclude within the pages directory path. */
   private readonly excludedPages: string[];
 
+  /** The unique key identifier used to create localized page slugs. */
+  private readonly slugKeyId: string;
+
   /** The Next.js application's multilingual routes. */
   private routes: MultilingualRoute[];
 
@@ -106,15 +111,17 @@ export class MulConfig {
    * @param pagesDirectoryPath - Specify where your `pages` directory is, when not using the Next.js default location.
    * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
    * @param excludedPages - Specify pages to excluded if different than the ones used by Next.js (e.g. _app.tsx).
+   * @param slugKeyId - The unique key identifier used to create localized page slugs.
    *
    * @throws Error when one of the arguments is invalid.
    */
   constructor(
     applicationIdentifier: string,
     locales: string[],
-    pagesDirectoryPath = 'pages',
-    pagesExtensions = ['.tsx', '.jsx'],
-    excludedPages = ['_app', '_document', '_error', '404']
+    pagesDirectoryPath = MulConfig.defaultPagesDirectoryPath,
+    pagesExtensions = MulConfig.defaultPagesExtensions,
+    excludedPages = MulConfig.defaultExcludedPages,
+    slugKeyId = MulConfig.defaultSlugKeyId
   ) {
     // Set the application identifier if valid.
     if (!keySegmentRegExp.test(applicationIdentifier)) {
@@ -122,9 +129,9 @@ export class MulConfig {
         `invalid application identifier '${applicationIdentifier}'. Application identifiers must be between 3 and 50 alphanumerical character.`
       );
     }
-    this.applicationIdentifier = applicationIdentifier;
-    // Manually add to environment variables so that it is available at build time, without extra config.
-    process.env.nextMultilingualApplicationIdentifier = this.applicationIdentifier;
+
+    // Add `applicationIdentifier` to environment variables so that it is available at build time, without extra config.
+    process.env.nextMultilingualApplicationIdentifier = applicationIdentifier;
 
     // Verify if the locale identifiers are using the right format.
     locales.forEach((locale) => {
@@ -155,6 +162,7 @@ export class MulConfig {
       resolve(this.pagesDirectoryPath, excludedPage)
     );
 
+    this.slugKeyId = slugKeyId;
     this.routes = this.getRoutes();
 
     // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
@@ -278,9 +286,8 @@ export class MulConfig {
         : undefined;
 
     this.actualLocales.forEach((locale) => {
-      const localizedUrlSegment = this.getLocalizedUrlPathSegment(directoryEntryPath, locale);
-      const urlSegment =
-        localizedUrlSegment !== '' ? localizedUrlSegment : identifier.split('/').pop();
+      const localizedSlug = this.getLocalizedSlug(directoryEntryPath, locale);
+      const urlSegment = localizedSlug !== '' ? localizedSlug : identifier.split('/').pop();
       const urlPath =
         (parentRoute !== undefined
           ? parentRoute.localizedUrlPaths.find(
@@ -362,38 +369,38 @@ export class MulConfig {
   }
 
   /**
-   * Get a localized URL path segment.
+   * Get a localized slug.
    *
    * @param sourceFilePath - The path of the source file that is calling `useMessages()`.
-   * @param locale - The locale of the URL segment.
+   * @param locale - The locale of the slug.
    *
-   * @return The localized URL path segment.
+   * @return The localized slug.
    */
-  private getLocalizedUrlPathSegment(sourceFilePath: string, locale: string): string {
+  private getLocalizedSlug(sourceFilePath: string, locale: string): string {
     const messagesFilePath = getMessagesFilePath(sourceFilePath, locale);
 
     if (!existsSync(messagesFilePath)) {
       log.warn(
-        `unable to use the \`${normalizeLocale(
+        `unable to create the \`${normalizeLocale(
           locale
-        )}\` URL segment for \`${sourceFilePath}\`. The message file \`${messagesFilePath}\` does not exist.`
+        )}\` slug for \`${sourceFilePath}\`. The message file \`${messagesFilePath}\` does not exist.`
       );
       return '';
     }
 
     const keyValueObject = parsePropertiesFile(messagesFilePath);
-    const urlSegmentKey = Object.keys(keyValueObject).find((key) =>
-      key.endsWith(`.${urlSegmentKeyId}`)
-    );
-    if (!urlSegmentKey) {
+    const slugKey = Object.keys(keyValueObject).find((key) => key.endsWith(`.${this.slugKeyId}`));
+    if (!slugKey) {
       log.warn(
-        `unable to use the \`${normalizeLocale(
+        `unable to create the \`${normalizeLocale(
           locale
-        )}\` URL segment for \`${sourceFilePath}\`. The message file \`${messagesFilePath}\` must include a key with the \`${urlSegmentKeyId}\` identifier.`
+        )}\` slug for \`${sourceFilePath}\`. The message file \`${messagesFilePath}\` must include a key with the \`${
+          this.slugKeyId
+        }\` identifier.`
       );
       return '';
     }
-    return keyValueObject[urlSegmentKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
+    return keyValueObject[slugKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
   }
 
   /**

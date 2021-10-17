@@ -8,8 +8,23 @@ import IntlMessageFormat from 'intl-messageformat';
 
 /** This is the regular expression to validate message key segments. */
 export const keySegmentRegExp = /^[a-z\d]{3,50}$/i;
-/** This is the key identifier used to localize URL segments. */
-export const urlSegmentKeyId = 'pageTitle';
+
+/**
+ * Get a page's title from the locale scope messages.
+ *
+ * A page's `slug` (human readable short description) can meet most use cases for title but
+ * sometimes you might want to customize it. This helper API will check if the `title` message
+ * is available first, and if not try to fallback on the `slug`.
+ *
+ * @param messages - The object containing localized messages of a local scope.
+ *
+ * @returns The message message as a string.
+ */
+export function getTitle(messages: Messages): Message {
+  const titleMessage = messages.get('title');
+  const slugMessage = messages.get('slug');
+  return titleMessage ? titleMessage : slugMessage;
+}
 
 /**
  * Get the localized messages file path.
@@ -155,6 +170,15 @@ export class Messages {
   }
 
   /**
+   * Get a specific message contained in a given local scope.
+   *
+   * @returns The message with the given key, or `undefined` if not found.
+   */
+  public get(key: string): Message {
+    return this.messages.find((message) => message.key === key);
+  }
+
+  /**
    * Get all messages contained in a given local scope.
    *
    * @returns All messages contained in a given local scope.
@@ -187,7 +211,7 @@ export function useMessages(): Messages {
 
   if (!babelifiedMessages.keyValueObjectCollection[locale]) {
     log.warn(
-      `unable to use \`useMessages()\` in \`${babelifiedMessages.sourceFilePath}\` because no messagess could be found at \`${messagesFilePath}\``
+      `unable to use \`useMessages()\` in \`${babelifiedMessages.sourceFilePath}\` because no message could be found at \`${messagesFilePath}\``
     );
   }
 

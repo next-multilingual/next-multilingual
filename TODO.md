@@ -4,9 +4,10 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
+- test /api (remove warnings)
+- refactor 'identifier' to 'id' to make code less verbose
 - export/import CLI
 - profiling, package size optimization (e.g. intl-messageformat strip down)
-- Test in Vercel prod
 - Test dynamic routes (with placeholders)
 - Test `useMessages` with APIs
 - HTML inside properties files (as JSX)
@@ -34,6 +35,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### Done ✔️
 
+- Make separation between `slug` and `title`
 - Make it work with Netlify (looks like their Next.js script does not support our configs)
 - Add other docs: contribution, design doc, etc.
 - Make it work on Vercel (https://github.com/vercel/vercel/discussions/6710)

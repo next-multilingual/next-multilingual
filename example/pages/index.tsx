@@ -10,7 +10,7 @@ import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement, useState } from 'react';
 import Layout from '@/layout';
-import { useMessages } from 'next-multilingual/messages';
+import { useMessages, getTitle } from 'next-multilingual/messages';
 import styles from './index.module.css';
 import { ResolvedLocaleServerSideProps, setCookieLocale } from 'next-multilingual';
 import { useFruitsMessages } from '../messages/Fruits';
@@ -31,7 +31,7 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
   const [count, setCount] = useState(0);
 
   return (
-    <Layout title={messages.format('pageTitle')}>
+    <Layout title={getTitle(messages).format()}>
       <h1 className={styles.headline}>{messages.format('headline')}</h1>
       <div>
         <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>
