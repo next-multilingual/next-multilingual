@@ -229,7 +229,7 @@ import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import Layout from '@/layout';
-import { useMessages } from 'next-multilingual/messages';
+import { useMessages, getTitle } from 'next-multilingual/messages';
 import {
   ResolvedLocaleServerSideProps,
   setCookieLocale
@@ -248,7 +248,7 @@ export default function IndexPage({
   const messages = useMessages();
 
   return (
-    <Layout title={messages.format('pageTitle')}>
+    <Layout title={getTitle(messages).format()}>
       <h1>{messages.format('headline')}</h1>
     </Layout>
   );
@@ -294,16 +294,16 @@ In a nutshell, this is what is happening:
 
 ### Creating messages
 
-Every time that you create a `tsx`, `ts`, `jsx` or `js` file and that you need localized messages, you can simply create a message file in your supported locales that will only be usable by these files. Just like CSS modules, the idea is that you can have message files associated to another file's local scope. This has the benefit to make messages more modular and also not share messages across different context (more details in the [design decisions document](./docs/design-decisions.md) on why this is bad).
+Every time that you create a `tsx`, `ts`, `jsx` or `js` (compilable) file and that you need localized messages, you can simply create a message file in your supported locales that will only be usable by these files. Just like CSS modules, the idea is that you can have message files associated to another file's local scope. This has the benefit to make messages more modular and also not share messages across different context (more details in the [design decisions document](./docs/design-decisions.md) on why this is bad).
 
-There are two uses cases for message files:
+Message files have 2 main use cases:
 
-- For the message's files in your `pages` directory, they will determine what the URL segment (part of a URL in between `/`) of this page is using the `pageTitle` key identifier. On top of that, they will be used as local scope messages if there are messages required specific to that page.
-- They will store all the localizable strings (messages) used by your application. Note that you should only put the message used in the page directly since components also have their own message files. Those messages will be used by the `useMessages` hook and will only be available in local scopes. Imagine CSS but for localizable stings.
+- **Localized URLs**: for the pages in your `pages` directory, you can specify a localized URL segment (part of a URL in between `/` or at the end of the path) using the `slug` key identifier. More details on how to do this below.
+- **All localizable strings**: they will store all the localizable strings (messages) used by your application. Each compilable file can have their own messages. Those messages will be available in local scope only, using the `useMessages` hook. Imagine CSS but for localizable strings.
 
 To summarize:
 
-- Messages are associated to a file and should only be used in that local scope.
+- Messages are associated to a compilable file and should only be used in that local scope.
 - Messages are used both to localize URLs and to display localized text everywhere in your application.
 - You should only use this method in your application to simplify your localization process.
 
@@ -319,32 +319,43 @@ Creating and managing those files is as simple as creating a style sheet, but he
   - **context** must represent the context associated with the message file, for example `aboutUsPage` or `footerComponent` could be good examples of context. Each file can only contain 1 context and context should not be used across many files as this could cause "key collision" (non-unique keys).
   - **id** is the unique identifier in a given context (or message file).
   - Each "segment" of a key must be separated by a `.` and can only contain between 3 to 50 alphanumerical characters - we recommend using camel case for readability.
-- For pages, if you want to localize your URLs, you must include message files that include a key with the `pageTitle` identifier.
+- For pages:
+  - If you want to localize your URLs, you must include message files that include a key with the `slug` identifier.
+  - If you want to customize your title with a description longer than the slug, include a key with the `title` identifier.
+  - Use the `getTitle` API provided in `next-multilingual/messages` to automatically fallback between the `title` and `slug` keys.
 - For components, files are only required if you use the `useMessages` hook.
-- For messages shared across multiple components (shared messages), you need to create a "shared message component" (more details on this below)
+- For messages shared across multiple components (shared messages), you need to create a "shared message component". More details on how to do this below.
 
 Also, make sure to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it easy to detect and fix problems. Note that those logs will only show in non-production environments.
 
 #### Using messages for localized URLs
 
-Also, as mentioned previously, there is one special key for `pages`, where the `id` is `pageTitle`. This message will be used both as a page title, but also as the localized URL segment of that page. Basically the "page title" is the human readable "short description" of your page, and represents a segment (contained between slashes) of a URL. When used as a URL segment, following changes are applied:
+As mentioned previously, there is one special key for `pages`, where the `id` is `slug`. Unlike traditional slugs that look like `this-is-a-page`, we ask you to write the slug as a normal and human readable sentence, so that it can be translated like any other string. This avoids having special processes for slugs which can be costly and complex to manage in multiple languages.
+
+ Basically the `slug` is the human readable "short description" of your page, and represents a segment (part between `/` or at the end of the path) of a URL. When used as a URL segment, the following transformation is applied:
 
 - all characters will be lowercased
 - spaces will be replaced by `-`
 
-For example, `About us` will become `about-us`. For the homepage, the URL will always be `/` which means that `pageTitle` will not be used to create URL segments.
+For example, `About Us` will become `about-us`. 
 
-> ⚠️ Note that if you change `pageTitle`, this means that the URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
+For the homepage, the URL will always be `/` which means that `slug` keys will not be used to create localized URL segments.
 
-If you want to have a directory without any pages, you can still localize it by creating an `index.<locale>.properties` file (where `locale` are the locales you support). We don't really recommend this as this will make URL paths longer which goes against SEO best practice. But the option remains in case it is necessary.
+Don't forget, slugs must be written as a normal short description, which means skipping words to keep it shorter for SEO is discouraged. The main reason for this, is that if you write "a bunch of keywords", a linguist who is not familiar with SEO might have a hard time to translate that message. Having SEO specialists in many languages would also be very costly and difficult to scale. In an ideal scenario, market-specific SEO pages should probably be authored and optimized in the native languages, but this is no longer part of the translation process. `next-multilingual`'s focus is to provide an easy, streamlined solution to localize URLs in many language.
+
+The `slug` key will also be used as a fallback of the `title` key when using the `getTitle` API provided in `next-multilingual/messages`. This API makes it easy to customize titles when a slug feels insufficient.
+
+> ⚠️ Note that changing a `slug` value means that a URL will change. Since those changes are happening in `next.config.js`, like any Next.js config change, the server must be restarted to see the changes in effect. The same applies if you change the folder structure since the underlying configuration relies on this.
+
+If you want to have a directory without any pages, you can still localize it by creating an `index.<locale>.properties` file (where `locale` are the locales you support). While this option is supported, we don't recommend using it as this will make URL paths longer which goes against SEO best practice.
 
 #### What do message files look like?
 
 You can always look into the [example](./example) to see message files in action, but here is a sample that could be used on the homepage:
 
 ```properties
-# Homepage title (will not be used as a URL segment)
-exampleApp.homepage.pageTitle = Homepage
+# Homepage title
+exampleApp.homepage.title = Homepage
 # Homepage headline
 exampleApp.homepage.headline = Welcome to the homepage
 ```
@@ -353,25 +364,30 @@ exampleApp.homepage.headline = Welcome to the homepage
 Now that we learned how to create the homepage and some of the details around how things work, we can easily create other pages. We create many pages in the [example](./example), but here is a sample of what `about-us.jsx` could look like:
 
 ```jsx
-import { useMessages } from 'next-multilingual/messages';
+import { useMessages, getTitle } from 'next-multilingual/messages';
 import type { ReactElement } from 'react';
 import Layout from '@/layout';
 
 export default function AboutUs(): ReactElement {
   const messages = useMessages();
+  const title = getTitle(messages).format();
   return (
-    <Layout title={messages.format('pageTitle')}>
-      <h1>{messages.format('pageTitle')}</h1>
+    <Layout title={title}>
+      <h1>{title}</h1>
       <p>{messages.format('details')}</p>
     </Layout>
   );
-}
+
 ```
 
 And of course you would have this message file `about-us.en-US.properties`:
 
 ```properties
-exampleApp.aboutUsPage.pageTitle = About Us
+# Page localized URL segment (slug) in (translatable) human readable format. 
+# This key will be transformed when used in URLs. For example "About Us" will become "about-us".
+# All characters will be lowercased and all spaces will be replaced by dashes.
+exampleApp.aboutUsPage.slug = About Us
+# Page details.
 exampleApp.aboutUsPage.details = This is just some english boilerplate text.
 ```
 
@@ -386,24 +402,29 @@ In other words, the file structure is considered as the "non-localized" URL repr
 The API is available under `next-multilingual/link` and you can use it like this:
 
 ```tsx
+import { useMessages } from 'next-multilingual/messages';
 import { MulLink } from 'next-multilingual/link';
 
-export default function ContactUs() {
+export default function Menu() {
+  const messages = useMessages();
+
   return (
-    <>
-      <MulLink href="/contact-us">
-        <a>Contact us</a>
+    <nav>
+      <MulLink href="/">
+        <a>{messages.format('home')}</a>
       </MulLink>
-    </>
+      <MulLink href="/about-us">
+        <a>{messages.format('aboutUs')}</a>
+      </MulLink>
+      <MulLink href="/contact-us">
+        <a>{messages.format('contactUs')}</a>
+      </MulLink>
+    </nav>
   );
 }
 ```
 
-In English the URL path will be `/en-us/contact-us`. But when another locale is selected, you will get the localized URLs path. See the example below for when `fr-ca` is selected:
-
-```html
-<a href="/fr-ca/nous-joindre"></a>
-```
+Each of these links will be automatically localized when the `slug` key is specified in that page's message file. For example, in U.S. English the "Contact Us" URL path will be `/en-us/contact-us` while in Canadian French it will be `/fr-ca/nous-joindre`.
 
 #### What about server side rendering?
 
@@ -411,7 +432,7 @@ As the data for this mapping is not immediately available during rendering, `nex
 
 ### Creating components
 
-Creating components is the same as pages but they live outside the `pages` folder. Also as mentioned previously you do not need to add the `pageTitle` key. We have a few [example components](./example/components) that should be self explanatory but here is an example of a `Footer.tsx` component:
+Creating components is the same as pages but they live outside the `pages` directory. Also, the `slug` key (if used) will not have any impact on URLs. We have a few [example components](./example/components) that should be self explanatory but here is an example of a `Footer.tsx` component:
 
 ```tsx
 import type { ReactElement } from 'react';
@@ -434,7 +455,7 @@ And its messages file:
 exampleApp.footerComponent.footerMessage = © Footer
 ```
 
-Also make sure to look at the [language picker component](./example/components/LanguagePicker.tsx) that is a must in all multilingual applications.
+Also make sure to look at the [language picker component example](./example/components/LanguagePicker.tsx) that is a must in all multilingual applications.
 
 ### Creating shared messages
 
@@ -479,7 +500,6 @@ export default function FruitList(): ReactElement {
         .getAll()
         .map((message) => message.format())
         .join(', ')}
-
     </>
   );
 }
@@ -519,7 +539,7 @@ To ensure that your sentence will stay fluent in all languages, you can use the 
 exampleApp.homepage.mfPlural = {count, plural, =0 {No candy left.} one {Got # candy left.} other {Got # candies left.}}
 ```
 
-And the correct plural form will be picked, using the corret plural categories defined by Unicode:
+And the correct plural form will be picked, using the correct plural categories defined by Unicode:
 
 ```ts
 messages.format('mfPlural', { count })
@@ -567,16 +587,17 @@ To fully benefit from the SEO markup, `<MulHead>` must be included on all pages.
 Like most site, you will want to leverage Next.js' [custom error pages](https://nextjs.org/docs/advanced-features/custom-error-page) capability. With `useMessages()`, it's just as easy as creating any other pages. For example, for a `404` error, you can create your `404.tsx`:
 
 ```tsx
-import { useMessages } from 'next-multilingual/messages';
+import { useMessages, getTitle } from 'next-multilingual/messages';
 import { MulLink } from 'next-multilingual/link';
 import type { ReactElement } from 'react';
 import Layout from '@/layout';
 
 export default function Custom400(): ReactElement {
   const messages = useMessages();
+  const title = getTitle(messages).format();
   return (
-    <Layout title={messages.format('pageTitle')}>
-      <h1>{messages.format('pageTitle')}</h1>
+    <Layout title={title}>
+      <h1>{title}</h1>
       <MulLink href="/">
         <a>{messages.format('goBack')}</a>
       </MulLink>
@@ -588,7 +609,9 @@ export default function Custom400(): ReactElement {
 And of course, your messages, for example `404.en-US.properties`:
 
 ```properties
-exampleApp.pageNotFoundError.pageTitle = 404 - Page Not Found
+# Page title
+exampleApp.pageNotFoundError.title = 404 - Page Not Found
+# Go back link text
 exampleApp.pageNotFoundError.goBack = Go back home
 ```
 
