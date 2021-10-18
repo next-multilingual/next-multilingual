@@ -349,6 +349,8 @@ The `slug` key will also be used as a fallback of the `title` key when using the
 
 If you want to have a directory without any pages, you can still localize it by creating an `index.<locale>.properties` file (where `locale` are the locales you support). While this option is supported, we don't recommend using it as this will make URL paths longer which goes against SEO best practice.
 
+By default, `next-multilingual` will exclude some files like custom error pages, or any [API routes](https://nextjs.org/docs/api-routes/introduction) under the `/api` directory. You can always use `slug` keys when using messages for these files but they will not be used create localized URLs.
+
 #### What do message files look like?
 
 You can always look into the [example](./example) to see message files in action, but here is a sample that could be used on the homepage:

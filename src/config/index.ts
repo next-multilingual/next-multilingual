@@ -307,6 +307,21 @@ export class MulConfig {
   }
 
   /**
+   * Is a specific directory path under Next.js' API routes directory.
+   *
+   * @param directoryPath - A directory path relative to Next.js' `pages` directory.
+   *
+   * @return True if the directory path is under Next.js' API routes directory, otherwise false.
+   */
+  private isApiRoute(directoryPath: string): boolean {
+    const ApiRouteDirectory = `${pathSeparator}api`;
+    return (
+      directoryPath === ApiRouteDirectory ||
+      directoryPath.startsWith(`${ApiRouteDirectory}${pathSeparator}`)
+    );
+  }
+
+  /**
    * Returns the Next.js routes from a specific directory.
    *
    * @param baseDirectoryPath - The base directory to read the files from (this should be the `pages` directory).
@@ -319,6 +334,10 @@ export class MulConfig {
     currentDirectoryPath = this.pagesDirectoryPath,
     routes: MultilingualRoute[] = []
   ): MultilingualRoute[] {
+    if (this.isApiRoute(currentDirectoryPath.replace(baseDirectoryPath, ''))) {
+      return; // Skip if the directory is under Next.js' API routes directory.
+    }
+
     // When there is a directory without pages, we can localized it using "index" messages files.
     if (!this.directoryContainsPages(currentDirectoryPath)) {
       const directoryEntryPath = resolve(currentDirectoryPath, 'index');
