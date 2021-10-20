@@ -1,3 +1,5 @@
+## [0.4.1](https://github.com/Avansai/next-multilingual/compare/0.4.0...0.4.1) (2021-10-20)
+
 # [0.4.0](https://github.com/Avansai/next-multilingual/compare/0.3.2...0.4.0) (2021-10-18)
 
 - 💥 breaking change - renaming the `pageTitle` message key by `slug` for localized URLs ([6082034](https://github.com/Avansai/next-multilingual/commit/6082034eed7fb21f87dfbe9b062277b911a0191))
