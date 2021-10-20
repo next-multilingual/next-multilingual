@@ -318,7 +318,7 @@ Creating and managing those files is as simple as creating a style sheet, but he
   - **application identifier** must use the same value as set in `next-multilingual/config`
   - **context** must represent the context associated with the message file, for example `aboutUsPage` or `footerComponent` could be good examples of context. Each file can only contain 1 context and context should not be used across many files as this could cause "key collision" (non-unique keys).
   - **id** is the unique identifier in a given context (or message file).
-  - Each "segment" of a key must be separated by a `.` and can only contain between 3 to 50 alphanumerical characters - we recommend using camel case for readability.
+  - Each "segment" of a key must be separated by a `.` and can only contain between 1 to 50 alphanumerical characters - we recommend using camel case for readability.
 - For pages:
   - If you want to localize your URLs, you must include message files that include a key with the `slug` identifier.
   - If you want to customize your title with a description longer than the slug, include a key with the `title` identifier.
