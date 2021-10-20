@@ -1,6 +1,6 @@
 import { readdirSync } from 'fs';
 import { parse, resolve } from 'path';
-import { keySegmentRegExp } from '.';
+import { keySegmentRegExp, keySegmentRegExpDescription } from '.';
 import { KeyValueObject, KeyValueObjectCollection, parsePropertiesFile } from './properties';
 
 import * as BabelTypes from '@babel/types';
@@ -87,7 +87,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     if (context === undefined) {
       if (!keySegmentRegExp.test(contextSegment)) {
         log.warn(
-          `unable to use messages in \`${propertiesFilePath}\` because the context \`${contextSegment}\` in key \`${key}\` is invalid. Key context must be between 3 and 50 alphanumerical character.`
+          `unable to use messages in \`${propertiesFilePath}\` because the context \`${contextSegment}\` in key \`${key}\` is invalid. Key context ${keySegmentRegExpDescription}.`
         );
         return {};
       }
@@ -102,7 +102,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     // Verify the key's identifier.
     if (!keySegmentRegExp.test(idSegment)) {
       log.warn(
-        `unable to use messages in \`${propertiesFilePath}\` because the identifier \`${idSegment}\` in key \`${key}\` is invalid. Key identifiers must be between 3 and 50 alphanumerical character.`
+        `unable to use messages in \`${propertiesFilePath}\` because the identifier \`${idSegment}\` in key \`${key}\` is invalid. Key identifiers ${keySegmentRegExpDescription}.`
       );
       return {};
     }

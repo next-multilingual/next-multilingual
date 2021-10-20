@@ -3,7 +3,12 @@ import { existsSync, readdirSync, utimesSync } from 'fs';
 import { extname, resolve, parse as parsePath, sep as pathSeparator } from 'path';
 import { isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
-import { getMessagesFilePath, getSourceFilePath, keySegmentRegExp } from '../messages';
+import {
+  getMessagesFilePath,
+  getSourceFilePath,
+  keySegmentRegExp,
+  keySegmentRegExpDescription,
+} from '../messages';
 import { log } from '..';
 
 import type { NextConfig } from 'next';
@@ -106,7 +111,7 @@ export class MulConfig {
   /**
    * A multilingual configuration handler.
    *
-   * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix. Must be between 3 to 50 alphanumerical characters.
+   * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
    * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
    * @param pagesDirectoryPath - Specify where your `pages` directory is, when not using the Next.js default location.
    * @param pagesExtensions - Specify the file extensions used by your pages if different than `.tsx` and `.jsx`.
@@ -126,7 +131,7 @@ export class MulConfig {
     // Set the application identifier if valid.
     if (!keySegmentRegExp.test(applicationIdentifier)) {
       throw new Error(
-        `invalid application identifier '${applicationIdentifier}'. Application identifiers must be between 3 and 50 alphanumerical character.`
+        `invalid application identifier '${applicationIdentifier}'. Application identifiers ${keySegmentRegExpDescription}.`
       );
     }
 
@@ -515,7 +520,7 @@ export class MulConfig {
 /**
  * Returns the Next.js multilingual config.
  *
- * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix. Must be between 3 to 50 alphanumerical characters.
+ * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
  * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
  * @param options - Next.js configuration options.
  * @param pagesDirectoryPath - Specify where yor `pages` directory is, when not using the Next.js default location.

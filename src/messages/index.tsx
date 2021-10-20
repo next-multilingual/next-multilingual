@@ -7,7 +7,9 @@ import { KeyValueObject } from './properties';
 import IntlMessageFormat from 'intl-messageformat';
 
 /** This is the regular expression to validate message key segments. */
-export const keySegmentRegExp = /^[a-z\d]{3,50}$/i;
+export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
+/** This is the regular expression description to keep logs consistent. */
+export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumerical characters';
 
 /**
  * Get a page's title from the locale scope messages.
