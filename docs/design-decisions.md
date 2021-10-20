@@ -1,8 +1,6 @@
 # Design Decisions
 
-`next-multilingual` is an opinionated package, and the main reason behind that is research to back its decisions. This document
-is meant to document that research and helpfully help other open source package to avoid some of the common pitfalls that a lot
-of i18n solutions fell into.
+`next-multilingual` is an opinionated package, and the main reason behind that is research to back its decisions. This document is meant to document that research and helpfully help other open source package to avoid some of the common pitfalls that a lot of i18n solutions fell into.
 
 ## Localized URLs
 
