@@ -4,13 +4,14 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- test /api (remove warnings)
+- add naming best practice for message key in documentation
 - refactor 'identifier' to 'id' to make code less verbose
 - export/import CLI
 - profiling, package size optimization (e.g. intl-messageformat strip down)
 - Test dynamic routes (with placeholders)
 - Test `useMessages` with APIs
 - HTML inside properties files (as JSX)
+- - bug: the Babel plugin does not check if an hijack target (import) is used before injecting. This cause the import to be removed for optimization and cause a 500 error when trying to inject the non-existing import.
 - Check if we can add `title` attributes on `Link` components (not supported by Next.js?) (ref: https://backlinko.com/google-ranking-factors)
 - Add automated test:
   - Test when a string file changes, the page is updated (developer experience?)
@@ -33,8 +34,14 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- bug: intermittent 500 internal server error when using the API
+- support APIs
+- test anchor links (including translation and doc)
+
 ### Done ✔️
 
+- change minimum 3 char key too 1 char
+- Remove erroneous API warning
 - Make separation between `slug` and `title`
 - Make it work with Netlify (looks like their Next.js script does not support our configs)
 - Add other docs: contribution, design doc, etc.

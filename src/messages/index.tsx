@@ -191,20 +191,46 @@ export class Messages {
 }
 
 /**
- * Hook to get the localized messages specific to a Next.js context.
+ * React hook to get the localized messages specific to a Next.js context.
  *
  * @returns An object containing the messages of the local scope.
  */
 export function useMessages(): Messages {
-  if (!this || !(this as BabelifiedMessages).babelified) {
+  const { locale } = useRouter();
+  return handleMessages(this, 'useMessages', locale);
+}
+
+/**
+ * Get the localized messages specific to a Next.js context.
+ *
+ * @param locale - The locale of the message file.
+ *
+ * @returns An object containing the messages of the local scope.
+ */
+export function getMessages(locale: string): Messages {
+  return handleMessages(this, 'getMessages', locale.toLowerCase());
+}
+
+/**
+ * Handles messages coming from both `useMessages` and `getMessages`.
+ *
+ * @param babelifiedMessages - The "babelified" messages object.
+ * @param caller - The function calling the message handler.
+ * @param locale - The locale of the message file.
+ *
+ * @returns An object containing the messages of the local scope.
+ */
+export function handleMessages(
+  babelifiedMessages: BabelifiedMessages,
+  caller: string,
+  locale: string
+): Messages {
+  if (!babelifiedMessages || !babelifiedMessages.babelified) {
     throw new Error(
-      "useMessages() requires the 'next-multilingual/messages/babel-plugin' Babel plugin"
+      `${caller}() requires the 'next-multilingual/messages/babel-plugin' Babel plugin`
     );
   }
 
-  const { locale } = useRouter();
-
-  const babelifiedMessages = this as BabelifiedMessages;
   const sourceFilePath = babelifiedMessages.sourceFilePath;
   const parsedSourceFile = parsePath(sourceFilePath);
   const sourceFileDirectoryPath = parsedSourceFile.dir;
@@ -213,13 +239,13 @@ export function useMessages(): Messages {
 
   if (!babelifiedMessages.keyValueObjectCollection[locale]) {
     log.warn(
-      `unable to use \`useMessages()\` in \`${babelifiedMessages.sourceFilePath}\` because no message could be found at \`${messagesFilePath}\``
+      `unable to use \`${caller}()\` in \`${babelifiedMessages.sourceFilePath}\` because no message could be found at \`${messagesFilePath}\``
     );
   }
 
   return new Messages(
     babelifiedMessages.keyValueObjectCollection[locale],
-    locale,
+    locale.toLowerCase(),
     sourceFilePath,
     messagesFilePath
   );
