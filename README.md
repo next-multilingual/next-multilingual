@@ -617,6 +617,91 @@ exampleApp.pageNotFoundError.title = 404 - Page Not Found
 exampleApp.pageNotFoundError.goBack = Go back home
 ```
 
+### Localized API Routes
+
+One of Next.js' core feature is its [builtin API support](https://nextjs.org/docs/api-routes/introduction). It's not uncommon for APIs to return content in different languages. `next-multilingual` has an equivalent API just for this use case: `getMessages`. Unlike the hook `useMessages`, `getMessages` can be used in API Routes. Here is an "Hello API" example on how to use it:
+
+```ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { getMessages } from 'next-multilingual/messages';
+
+/**
+ * Example API schema.
+ */
+type Schema = {
+  message: string;
+};
+
+/**
+ * The "hello API" handler.
+ */
+export default function handler(request: NextApiRequest, response: NextApiResponse<Schema>): void {
+  const messages = getMessages(request.headers['accept-language']);
+  response.status(200).json({ message: messages.format('message') });
+}
+```
+
+This is very similar to the API implemented in the [example application](./example/pages/api). We are using the `Accept-Language` HTTP header to tell the API in which locale we want its response to be. Unlike `useMessages` that has the context of the current locale, we need to tell `getMessages` in which locale to return messages.
+
+Message files behave exactly the same as with `useMessages`, you simply need to create one next to the API Route's file, in our case `hello.en-US.properties`:
+
+```properties
+# API message
+exampleApp.helloApi.message = Hello, from API.
+```
+
+You can implement this in any pages, just like any other React-based API call, like this:
+
+```tsx
+export default function SomePage(): ReactElement {
+ 
+  const [apiError, setApiError] = useState(null);
+  const [isApiLoaded, setApiIsLoaded] = useState(false);
+  const [apiMessage, setApiMessage] = useState('');
+
+  useEffect(() => {
+    setApiIsLoaded(false);
+    const requestHeaders: HeadersInit = new Headers();
+    requestHeaders.set('Accept-Language', normalizeLocale(router.locale));
+    fetch('/api/hello', { headers: requestHeaders })
+      .then((result) => result.json())
+      .then(
+        (result) => {
+          setApiIsLoaded(true);
+          setApiMessage(result.message);
+        },
+        (apiError) => {
+          setApiIsLoaded(true);
+          setApiError(apiError);
+        }
+      );
+  }, [router.locale]);
+
+  function showApiMessage(): JSX.Element {
+    if (apiError) {
+      return (
+        <>
+          {messages.format('apiError')}
+          {apiError.message}
+        </>
+      );
+    } else if (!isApiLoaded) {
+      return <>{messages.format('apiLoading')}</>;
+    } else {
+      return <>{apiMessage}</>;
+    }
+  }
+
+  return (
+    <div>
+      <h2>{messages.format('apiHeader')}</h2>
+      <div>{showApiMessage()}</div>
+    </div>
+  );
+}
+```
+
+
 ## Translation process 🈺
 
 Our ideal translation process is one where you send the modified files to your localization vendor (while working in a branch), and get back the translated files, with the correct locale in the filenames. Once you get the files back you basically submit them back in your branch which means localization becomes integral part of the development process. Basically, the idea is:
