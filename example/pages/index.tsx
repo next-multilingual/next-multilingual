@@ -30,11 +30,13 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
   // Counter used for ICU MessageFormat example.
   const [count, setCount] = useState(0);
 
+  // Localized API.
   const [apiError, setApiError] = useState(null);
   const [isApiLoaded, setApiIsLoaded] = useState(false);
   const [apiMessage, setApiMessage] = useState('');
 
   useEffect(() => {
+    setApiIsLoaded(false);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept-Language', normalizeLocale(router.locale));
     fetch('/api/hello', { headers: requestHeaders })
@@ -49,7 +51,7 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
           setApiError(apiError);
         }
       );
-  }, [router]);
+  }, [router.locale]);
 
   function showApiMessage(): JSX.Element {
     if (apiError) {
