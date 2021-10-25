@@ -26,7 +26,7 @@ export default function Layout({ title, children }: LayoutProps): ReactElement {
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0"
-        ></meta>
+        />
       </MulHead>
       <header className={styles.header}>
         <div>
@@ -42,6 +42,9 @@ export default function Layout({ title, children }: LayoutProps): ReactElement {
           </MulLink>
           <MulLink href="/contact-us">
             <a>{messages.format('contactUs')}</a>
+          </MulLink>
+          <MulLink href="/settings">
+            <a>{messages.format('settings')}</a>
           </MulLink>
         </nav>
       </header>
