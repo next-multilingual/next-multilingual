@@ -7,9 +7,26 @@ import { KeyValueObject } from './properties';
 import IntlMessageFormat from 'intl-messageformat';
 
 /** This is the regular expression to validate message key segments. */
-export const keySegmentRegExp = /^[a-z\d]{3,50}$/i;
-/** This is the key identifier used to localize URL segments. */
-export const urlSegmentKeyId = 'pageTitle';
+export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
+/** This is the regular expression description to keep logs consistent. */
+export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumerical characters';
+
+/**
+ * Get a page's title from the locale scope messages.
+ *
+ * A page's `slug` (human readable short description) can meet most use cases for title but
+ * sometimes you might want to customize it. This helper API will check if the `title` message
+ * is available first, and if not try to fallback on the `slug`.
+ *
+ * @param messages - The object containing localized messages of a local scope.
+ *
+ * @returns The message message as a string.
+ */
+export function getTitle(messages: Messages): Message {
+  const titleMessage = messages.get('title');
+  const slugMessage = messages.get('slug');
+  return titleMessage ? titleMessage : slugMessage;
+}
 
 /**
  * Get the localized messages file path.
@@ -155,6 +172,15 @@ export class Messages {
   }
 
   /**
+   * Get a specific message contained in a given local scope.
+   *
+   * @returns The message with the given key, or `undefined` if not found.
+   */
+  public get(key: string): Message {
+    return this.messages.find((message) => message.key === key);
+  }
+
+  /**
    * Get all messages contained in a given local scope.
    *
    * @returns All messages contained in a given local scope.
@@ -165,20 +191,46 @@ export class Messages {
 }
 
 /**
- * Hook to get the localized messages specific to a Next.js context.
+ * React hook to get the localized messages specific to a Next.js context.
  *
  * @returns An object containing the messages of the local scope.
  */
 export function useMessages(): Messages {
-  if (!this || !(this as BabelifiedMessages).babelified) {
+  const { locale } = useRouter();
+  return handleMessages(this, 'useMessages', locale);
+}
+
+/**
+ * Get the localized messages specific to a Next.js context.
+ *
+ * @param locale - The locale of the message file.
+ *
+ * @returns An object containing the messages of the local scope.
+ */
+export function getMessages(locale: string): Messages {
+  return handleMessages(this, 'getMessages', locale.toLowerCase());
+}
+
+/**
+ * Handles messages coming from both `useMessages` and `getMessages`.
+ *
+ * @param babelifiedMessages - The "babelified" messages object.
+ * @param caller - The function calling the message handler.
+ * @param locale - The locale of the message file.
+ *
+ * @returns An object containing the messages of the local scope.
+ */
+export function handleMessages(
+  babelifiedMessages: BabelifiedMessages,
+  caller: string,
+  locale: string
+): Messages {
+  if (!babelifiedMessages || !babelifiedMessages.babelified) {
     throw new Error(
-      "useMessages() requires the 'next-multilingual/messages/babel-plugin' Babel plugin"
+      `${caller}() requires the 'next-multilingual/messages/babel-plugin' Babel plugin`
     );
   }
 
-  const { locale } = useRouter();
-
-  const babelifiedMessages = this as BabelifiedMessages;
   const sourceFilePath = babelifiedMessages.sourceFilePath;
   const parsedSourceFile = parsePath(sourceFilePath);
   const sourceFileDirectoryPath = parsedSourceFile.dir;
@@ -187,13 +239,13 @@ export function useMessages(): Messages {
 
   if (!babelifiedMessages.keyValueObjectCollection[locale]) {
     log.warn(
-      `unable to use \`useMessages()\` in \`${babelifiedMessages.sourceFilePath}\` because no messagess could be found at \`${messagesFilePath}\``
+      `unable to use \`${caller}()\` in \`${babelifiedMessages.sourceFilePath}\` because no message could be found at \`${messagesFilePath}\``
     );
   }
 
   return new Messages(
     babelifiedMessages.keyValueObjectCollection[locale],
-    locale,
+    locale.toLowerCase(),
     sourceFilePath,
     messagesFilePath
   );

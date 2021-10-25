@@ -8,9 +8,9 @@ import {
 } from 'next-multilingual';
 import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import Layout from '@/layout';
-import { useMessages } from 'next-multilingual/messages';
+import { useMessages, getTitle } from 'next-multilingual/messages';
 import styles from './index.module.css';
 import { ResolvedLocaleServerSideProps, setCookieLocale } from 'next-multilingual';
 import { useFruitsMessages } from '../messages/Fruits';
@@ -30,8 +30,46 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
   // Counter used for ICU MessageFormat example.
   const [count, setCount] = useState(0);
 
+  // Localized API.
+  const [apiError, setApiError] = useState(null);
+  const [isApiLoaded, setApiIsLoaded] = useState(false);
+  const [apiMessage, setApiMessage] = useState('');
+
+  useEffect(() => {
+    setApiIsLoaded(false);
+    const requestHeaders: HeadersInit = new Headers();
+    requestHeaders.set('Accept-Language', normalizeLocale(router.locale));
+    fetch('/api/hello', { headers: requestHeaders })
+      .then((result) => result.json())
+      .then(
+        (result) => {
+          setApiIsLoaded(true);
+          setApiMessage(result.message);
+        },
+        (apiError) => {
+          setApiIsLoaded(true);
+          setApiError(apiError);
+        }
+      );
+  }, [router.locale]);
+
+  function showApiMessage(): JSX.Element {
+    if (apiError) {
+      return (
+        <>
+          {messages.format('apiError')}
+          {apiError.message}
+        </>
+      );
+    } else if (!isApiLoaded) {
+      return <>{messages.format('apiLoading')}</>;
+    } else {
+      return <>{apiMessage}</>;
+    }
+  }
+
   return (
-    <Layout title={messages.format('pageTitle')}>
+    <Layout title={getTitle(messages).format()}>
       <h1 className={styles.headline}>{messages.format('headline')}</h1>
       <div>
         <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>
@@ -100,6 +138,11 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
           >
             ➖🍭
           </button>
+        </div>
+        <br />
+        <div>
+          <h2>{messages.format('apiHeader')}</h2>
+          <div>{showApiMessage()}</div>
         </div>
       </div>
     </Layout>

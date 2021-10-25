@@ -4,12 +4,13 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- export/import CLI
-- profiling, package size optimization (e.g. intl-messageformat strip down)
-- Test in Vercel prod
+- Add naming best practice for message key in documentation
+- Refactor 'identifier' to 'id' to make code less verbose
+- Export/import CLI
+- Profiling, package size optimization (e.g. intl-messageformat strip down)
 - Test dynamic routes (with placeholders)
-- Test `useMessages` with APIs
 - HTML inside properties files (as JSX)
+- - bug: the Babel plugin does not check if an hijack target (import) is used before injecting. This cause the import to be removed for optimization and cause a 500 error when trying to inject the non-existing import.
 - Check if we can add `title` attributes on `Link` components (not supported by Next.js?) (ref: https://backlinko.com/google-ranking-factors)
 - Add automated test:
   - Test when a string file changes, the page is updated (developer experience?)
@@ -27,13 +28,20 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Default locale fallback
 - Lorem ipsum generator?
 - Try strict mode
-- sitemap
+- Sitemap
 - schema.org markup support (e.g. breadcrumbs)
 
 ### In Progress 🚧
 
+- Support Next.js APIs
+- Test anchor links (including translation and doc)
+
 ### Done ✔️
 
+- Bug: intermittent 500 internal server error when using the API
+- Change minimum 3 char key too 1 char
+- Remove erroneous API warning
+- Make separation between `slug` and `title`
 - Make it work with Netlify (looks like their Next.js script does not support our configs)
 - Add other docs: contribution, design doc, etc.
 - Make it work on Vercel (https://github.com/vercel/vercel/discussions/6710)
@@ -53,9 +61,9 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Fix contact-us pages (add localized strings and CSS)
 - Add license doc
 - Add browser side cookie to persist selected locale on initial page load
-- move `nookies` to `next-multilingual` -> `getCookieLocale`
-- move `resolve-accept-language` to `next-multilingual` -> `getPreferredLocale`
-- add `next-multilingual/properties` to avoid the extra Webpack loader dependency
+- Move `nookies` to `next-multilingual` -> `getCookieLocale`
+- Move `resolve-accept-language` to `next-multilingual` -> `getPreferredLocale`
+- Add `next-multilingual/properties` to avoid the extra Webpack loader dependency
 - Understand/tweak/document `MulHead`
   - Canonical links?
 - Test/learn/refactor alternate links

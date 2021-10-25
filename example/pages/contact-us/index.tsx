@@ -1,12 +1,13 @@
 import type { ReactElement, FormEvent } from 'react';
 import Layout from '@/layout';
-import { useMessages } from 'next-multilingual/messages';
+import { useMessages, getTitle } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
 import styles from './index.module.css';
 
 export default function ContactUs(): ReactElement {
   const router = useRouter();
   const messages = useMessages();
+  const title = getTitle(messages).format();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault(); // Don't redirect the page.
@@ -14,8 +15,8 @@ export default function ContactUs(): ReactElement {
   }
 
   return (
-    <Layout title={messages.format('pageTitle')}>
-      <h1 className={styles.headline}>{messages.format('pageTitle')}</h1>
+    <Layout title={title}>
+      <h1 className={styles.headline}>{title}</h1>
       <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>
       <form onSubmit={handleSubmit}>
         <label className={styles.messageLabel} htmlFor="message">
