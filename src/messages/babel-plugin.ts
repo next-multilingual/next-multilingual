@@ -29,10 +29,27 @@ if (
   throw new Error(`you must define your application identifier using \`next-multilingual/config\``);
 }
 
-/** Target module to "babelify". */
-const TARGET_MODULE = 'next-multilingual/messages';
-/** Target function (of the target module) to "babelify". */
-const TARGET_FUNCTION = 'useMessages';
+/**
+ * Target to hijack.
+ */
+export type HijackTarget = {
+  module: string;
+  function: string;
+};
+
+/**
+ * Targets to hijack.
+ */
+export const hijackTargets: HijackTarget[] = [
+  {
+    module: 'next-multilingual/messages',
+    function: 'useMessages',
+  },
+  {
+    module: 'next-multilingual/messages',
+    function: 'getMessages',
+  },
+];
 
 /**
  * Class used to inject localized messages using Babel (a.k.a "babelified" messages).
@@ -148,12 +165,13 @@ function getBabelifiedMessages(sourceFilePath: string): string {
  * Verify if an import declaration node matches the target module.
  *
  * @param nodePath - A node path object.
+ * @param hijackTarget - The target to hijack.
  *
  * @returns True is the node matches, otherwise false.
  */
-function isMatchingModule(nodePath: NodePath): boolean {
+function isMatchingModule(nodePath: NodePath, hijackTarget: HijackTarget): boolean {
   if (!nodePath.isImportDeclaration()) return false;
-  if (nodePath.node.source.value !== TARGET_MODULE) return false;
+  if (nodePath.node.source.value !== hijackTarget.module) return false;
   return true;
 }
 
@@ -161,14 +179,17 @@ function isMatchingModule(nodePath: NodePath): boolean {
  * Verify if a specifier matches the target function.
  *
  * @param nodePath - A node path object.
+ * @param hijackTarget - The target to hijack.
  *
  * @returns True is the specifier matches, otherwise false.
  */
 function isMatchingModuleImportName(
-  specifier: ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportSpecifier
+  specifier: ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportSpecifier,
+  hijackTarget: HijackTarget
 ): boolean {
   return (
-    isImportSpecifier(specifier) && (specifier.imported as Identifier).name === TARGET_FUNCTION
+    isImportSpecifier(specifier) &&
+    (specifier.imported as Identifier).name === hijackTarget.function
   );
 }
 
@@ -176,14 +197,15 @@ function isMatchingModuleImportName(
  * Verify if an import declaration node matches the target module and function.
  *
  * @param nodePath - A node path object.
+ * @param hijackTarget - The target to hijack.
  *
  * @returns True is the node matches, otherwise false.
  */
-function isMatchingNamedImport(nodePath: NodePath): boolean {
+function isMatchingNamedImport(nodePath: NodePath, hijackTarget: HijackTarget): boolean {
   return (
-    isMatchingModule(nodePath) &&
+    isMatchingModule(nodePath, hijackTarget) &&
     (nodePath.node as ImportDeclaration).specifiers.some((specifier) =>
-      isMatchingModuleImportName(specifier)
+      isMatchingModuleImportName(specifier, hijackTarget)
     )
   );
 }
@@ -191,13 +213,14 @@ function isMatchingNamedImport(nodePath: NodePath): boolean {
 /**
  * Verify if a namespace import declaration node matches the target module and function.
  *
- * @param nodePath = A node path object.
+ * @param nodePath -  A node path object.
+ * @param hijackTarget - The target to hijack.
  *
  * @returns True is the node matches, otherwise false.
  */
-function isMatchingNamespaceImport(nodePath: NodePath): boolean {
+function isMatchingNamespaceImport(nodePath: NodePath, hijackTarget: HijackTarget): boolean {
   return (
-    isMatchingModule(nodePath) &&
+    isMatchingModule(nodePath, hijackTarget) &&
     isImportNamespaceSpecifier((nodePath.node as ImportDeclaration).specifiers[0])
   );
 }
@@ -253,12 +276,13 @@ class Messages {
  * Get a variable name to hijack either a named import or a namespace import.
  *
  * @param nodePath - The node path from which to get the unique variable name.
+ * @param hijackTarget - The target to hijack.
  * @param suffix - The suffix of the variable name.
  *
  * @returns A unique variable name in the node path's scope.
  */
-function getVariableName(nodePath: NodePath, suffix: string): string {
-  return nodePath.scope.generateUidIdentifier(`${TARGET_FUNCTION}${suffix}`).name;
+function getVariableName(nodePath: NodePath, hijackTarget: HijackTarget, suffix: string): string {
+  return nodePath.scope.generateUidIdentifier(`${hijackTarget.function}${suffix}`).name;
 }
 
 /**
@@ -269,15 +293,20 @@ function getVariableName(nodePath: NodePath, suffix: string): string {
  * hijacked namespace.
  *
  * @param nodePath - The node path being hijacked.
+ * @param hijackTarget - The target to hijack.
  * @param messages - The object used to conditionally inject babelified messages.
  */
-function hijackNamespaceImport(nodePath: NodePath<ImportDeclaration>, messages: Messages): void {
+function hijackNamespaceImport(
+  nodePath: NodePath<ImportDeclaration>,
+  hijackTarget: HijackTarget,
+  messages: Messages
+): void {
   const node = nodePath.node;
   const specifier = node.specifiers[0];
   const currentName = specifier.local.name;
 
   // This is the scope-unique variable name that will replace all matching namespace bindings.
-  const hijackedNamespace = getVariableName(nodePath, 'Namespace');
+  const hijackedNamespace = getVariableName(nodePath, hijackTarget, 'Namespace');
 
   // Rename all bindings with the the new name (this excludes the import declaration).
   const binding = nodePath.scope.getBinding(currentName);
@@ -290,27 +319,32 @@ function hijackNamespaceImport(nodePath: NodePath<ImportDeclaration>, messages: 
   nodePath.insertAfter(
     template.ast(
       `const ${hijackedNamespace} = ${currentName};` +
-        `${hijackedNamespace}.${TARGET_FUNCTION}.bind(${messages.getVariableName()});`
+        `${hijackedNamespace}.${hijackTarget.function}.bind(${messages.getVariableName()});`
     ) as Statement
   );
 }
 
 /**
- * "Hijack" a named (`import { useMessages } from`) import.
+ * "Hijack" a named import (e.g. `import { useMessages } from`).
  *
  * This will simply bind the named import to the babelified messages, on a new function name. All bindings
  * of the original function will replaced by the hijacked function.
  *
  * @param nodePath - The node path being hijacked.
+ * @param hijackTarget - The target to hijack.
  * @param messages - The object used to conditionally inject babelified messages.
  */
-function hijackNamedImport(nodePath: NodePath<ImportDeclaration>, messages: Messages): void {
+function hijackNamedImport(
+  nodePath: NodePath<ImportDeclaration>,
+  hijackTarget: HijackTarget,
+  messages: Messages
+): void {
   const node = nodePath.node;
 
   node.specifiers.forEach((specifier) => {
-    if (isMatchingModuleImportName(specifier)) {
+    if (isMatchingModuleImportName(specifier, hijackTarget)) {
       // This is the scope-unique variable name that will replace all matching function bindings.
-      const hijackedFunction = getVariableName(nodePath, 'Function');
+      const hijackedFunction = getVariableName(nodePath, hijackTarget, 'Function');
 
       const currentName = specifier.local.name;
 
@@ -335,12 +369,13 @@ function hijackNamedImport(nodePath: NodePath<ImportDeclaration>, messages: Mess
  * This is the Babel plugin.
  *
  * This plugin will visit all files used by Next.js during the build time and inject the localized messages
- * to the `useMessages` hook.
+ * to the hijack targets.
  *
  * What is supported:
  *
- * - Named imports (`import { useMessages } from`): this is how `useMessages` is meant to be used.
- * - Namespace imports (`import * as messages from`): there is no reason for this but it's supported.
+ * - Named imports (e.g. `import { useMessages } from`): this is how both `useMessages` and `getMessages` are meant
+ *   to be used.
+ * - Namespace imports (e.g. `import * as messages from`): there is no reason to use this, but it's supported.
  *
  * What is not supported:
  *
@@ -355,11 +390,21 @@ export default function plugin(): PluginObj {
         const messages = new Messages(programNodePath, pluginPass);
 
         (programNodePath.get('body') as NodePath[]).forEach((bodyNodePath) => {
-          if (isMatchingNamespaceImport(bodyNodePath)) {
-            hijackNamespaceImport(bodyNodePath as NodePath<ImportDeclaration>, messages);
-          } else if (isMatchingNamedImport(bodyNodePath)) {
-            hijackNamedImport(bodyNodePath as NodePath<ImportDeclaration>, messages);
-          }
+          hijackTargets.forEach((hijackTarget) => {
+            if (isMatchingNamespaceImport(bodyNodePath, hijackTarget)) {
+              hijackNamespaceImport(
+                bodyNodePath as NodePath<ImportDeclaration>,
+                hijackTarget,
+                messages
+              );
+            } else if (isMatchingNamedImport(bodyNodePath, hijackTarget)) {
+              hijackNamedImport(
+                bodyNodePath as NodePath<ImportDeclaration>,
+                hijackTarget,
+                messages
+              );
+            }
+          });
         });
 
         messages.injectIfMatchesFound();
