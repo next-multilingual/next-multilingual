@@ -62,6 +62,13 @@ export type MessageValues = {
 };
 
 /**
+ * An index to optimize `get` access on messages.
+ */
+export type MessagesIndex = {
+  [key: string]: Message;
+};
+
+/**
  * Object used to format individual localized messages of a local scope.
  */
 export class Message {
@@ -114,6 +121,8 @@ export class Message {
 export class Messages {
   /** Localized messages of a local scope. */
   private messages: Message[] = [];
+  /** An index to optimize `get` access on messages. */
+  private messagesIndex: MessagesIndex = {};
   /** The current locale from Next.js. */
   readonly locale: string;
   /** The source (the file calling `useMessages`) file path. */
@@ -137,7 +146,9 @@ export class Messages {
   ) {
     if (keyValueObject) {
       Object.keys(keyValueObject).forEach((key) => {
-        this.messages.push(new Message(this, key, keyValueObject[key]));
+        const message = new Message(this, key, keyValueObject[key]);
+        this.messages.push(message);
+        this.messagesIndex[key] = message;
       });
     }
     this.locale = normalizeLocale(locale);
@@ -177,7 +188,7 @@ export class Messages {
    * @returns The message with the given key, or `undefined` if not found.
    */
   public get(key: string): Message {
-    return this.messages.find((message) => message.key === key);
+    return this.messagesIndex[key];
   }
 
   /**
