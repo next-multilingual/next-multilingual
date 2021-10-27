@@ -1,3 +1,5 @@
+# [0.6.0](https://github.com/Avansai/next-multilingual/compare/0.5.0...0.6.0) (2021-10-27)
+
 # [0.5.0](https://github.com/Avansai/next-multilingual/compare/0.4.1...0.5.0) (2021-10-25)
 
 - ✨ added `getMessages` to support localized Next.js API Routes
