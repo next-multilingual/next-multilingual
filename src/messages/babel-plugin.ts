@@ -76,7 +76,7 @@ export class BabelifiedMessages {
  *
  * @param propertiesFilePath - The path of the .properties file from which to read the messages.
  *
- * @returns A "key/vale" object storing messages where the key only contains the identifier segment of the key.
+ * @returns A "key/value" object storing messages where the key only contains the identifier segment of the key.
  */
 export function getMessages(propertiesFilePath: string): KeyValueObject {
   const keyValueObject = parsePropertiesFile(propertiesFilePath);

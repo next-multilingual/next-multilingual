@@ -7,7 +7,7 @@ import styles from './index.module.css';
 export default function ContactUs(): ReactElement {
   const router = useRouter();
   const messages = useMessages();
-  const title = getTitle(messages).format();
+  const title = getTitle(messages);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault(); // Don't redirect the page.

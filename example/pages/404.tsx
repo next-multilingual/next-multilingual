@@ -5,7 +5,7 @@ import Layout from '@/layout';
 
 export default function Custom400(): ReactElement {
   const messages = useMessages();
-  const title = getTitle(messages).format();
+  const title = getTitle(messages);
   return (
     <Layout title={title}>
       <h1>{title}</h1>

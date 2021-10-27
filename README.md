@@ -248,7 +248,7 @@ export default function IndexPage({
   const messages = useMessages();
 
   return (
-    <Layout title={getTitle(messages).format()}>
+    <Layout title={getTitle(messages)}>
       <h1>{messages.format('headline')}</h1>
     </Layout>
   );
@@ -372,7 +372,7 @@ import Layout from '@/layout';
 
 export default function AboutUs(): ReactElement {
   const messages = useMessages();
-  const title = getTitle(messages).format();
+  const title = getTitle(messages);
   return (
     <Layout title={title}>
       <h1>{title}</h1>
@@ -596,7 +596,7 @@ import Layout from '@/layout';
 
 export default function Custom400(): ReactElement {
   const messages = useMessages();
-  const title = getTitle(messages).format();
+  const title = getTitle(messages);
   return (
     <Layout title={title}>
       <h1>{title}</h1>

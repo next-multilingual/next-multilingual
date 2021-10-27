@@ -69,7 +69,7 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
   }
 
   return (
-    <Layout title={getTitle(messages).format()}>
+    <Layout title={getTitle(messages)}>
       <h1 className={styles.headline}>{messages.format('headline')}</h1>
       <div>
         <h2 className={styles.subHeader}>{messages.format('subHeader')}</h2>

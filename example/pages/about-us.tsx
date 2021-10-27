@@ -5,7 +5,7 @@ import styles from './index.module.css';
 
 export default function AboutUs(): ReactElement {
   const messages = useMessages();
-  const title = getTitle(messages).format();
+  const title = getTitle(messages);
   return (
     <Layout title={title}>
       <h1 className={styles.headline}>{title}</h1>

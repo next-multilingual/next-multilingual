@@ -19,12 +19,13 @@ export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumeri
  * is available first, and if not try to fallback on the `slug`.
  *
  * @param messages - The object containing localized messages of a local scope.
+ * @param values - The values (e.g. placeholders) used to format the message, if any.
  *
  * @returns The message message as a string.
  */
-export function getTitle(messages: Messages): Message {
-  const titleMessage = messages.get('title');
-  const slugMessage = messages.get('slug');
+export function getTitle(messages: Messages, values?: MessageValues): string {
+  const titleMessage = messages.format('title', values, true);
+  const slugMessage = messages.format('slug', values, true);
   return titleMessage ? titleMessage : slugMessage;
 }
 
@@ -33,7 +34,8 @@ export function getTitle(messages: Messages): Message {
  *
  * @param sourceFilePath - The path of the source file that is calling `useMessages()`.
  * @param locale - The locale of the message file.
- * @returns
+ *
+ * @returns The localized messages file path.
  */
 export function getMessagesFilePath(sourceFilePath: string, locale: string): string {
   const { dir: directoryPath, name: filename } = parsePath(sourceFilePath);
@@ -65,7 +67,7 @@ export type MessageValues = {
  * An index to optimize `get` access on messages.
  */
 export type MessagesIndex = {
-  [key: string]: Message;
+  [key: string]: number;
 };
 
 /**
@@ -146,9 +148,8 @@ export class Messages {
   ) {
     if (keyValueObject) {
       Object.keys(keyValueObject).forEach((key) => {
-        const message = new Message(this, key, keyValueObject[key]);
-        this.messages.push(message);
-        this.messagesIndex[key] = message;
+        this.messagesIndex[key] =
+          this.messages.push(new Message(this, key, keyValueObject[key])) - 1;
       });
     }
     this.locale = normalizeLocale(locale);
@@ -161,34 +162,28 @@ export class Messages {
    *
    * @param key - The local scope key identifying the message.
    * @param values - The values (e.g. placeholders) used to format the message, if any.
+   * @param suppressWarning - If set to true, will not display a warning message if the key is missing.
    *
    * @returns The formatted message as a string.
    */
-  public format(key: string, values?: MessageValues): string {
+  public format(key: string, values?: MessageValues, suppressWarning = false): string {
     if (!this.messages.length) {
       // No need to log the error since it was caught when calling `useMessage()`.
       return '';
     }
 
-    const message = this.messages.find((message) => message.key === key);
+    const message = this.messages[this.messagesIndex[key]];
 
     if (message === undefined) {
-      log.warn(
-        `unable to format key with identifier \`${key}\` in \`${this.sourceFilePath}\` because it was not found in messages file \`${this.messagesFilePath}\``
-      );
+      if (!suppressWarning) {
+        log.warn(
+          `unable to format key with identifier \`${key}\` in \`${this.sourceFilePath}\` because it was not found in messages file \`${this.messagesFilePath}\``
+        );
+      }
       return '';
     }
 
     return message.format(values);
-  }
-
-  /**
-   * Get a specific message contained in a given local scope.
-   *
-   * @returns The message with the given key, or `undefined` if not found.
-   */
-  public get(key: string): Message {
-    return this.messagesIndex[key];
   }
 
   /**
