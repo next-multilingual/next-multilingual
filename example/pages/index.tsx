@@ -13,7 +13,7 @@ import Layout from '@/layout';
 import { useMessages, getTitle } from 'next-multilingual/messages';
 import styles from './index.module.css';
 import { ResolvedLocaleServerSideProps, setCookieLocale } from 'next-multilingual';
-import { useFruitsMessages } from '../messages/Fruits';
+import { useFruitsMessages } from '../messages/useFruits';
 
 export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSideProps): ReactElement {
   const router = useRouter();

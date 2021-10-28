@@ -12,6 +12,16 @@ export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
 export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumerical characters';
 
 /**
+ * The message key identifier used for slugs.
+ */
+export const SLUG_KEY_ID = 'slug';
+
+/**
+ * The message key identifier used for titles.
+ */
+export const TITLE_KEY_ID = 'title';
+
+/**
  * Get a page's title from the locale scope messages.
  *
  * A page's `slug` (human readable short description) can meet most use cases for title but
@@ -24,9 +34,18 @@ export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumeri
  * @returns The message message as a string.
  */
 export function getTitle(messages: Messages, values?: MessageValues): string {
-  const titleMessage = messages.format('title', values, true);
-  const slugMessage = messages.format('slug', values, true);
-  return titleMessage ? titleMessage : slugMessage;
+  const titleMessage = messages.format(TITLE_KEY_ID, values, true);
+  const slugMessage = messages.format(SLUG_KEY_ID, values, true);
+
+  const applicableTitle = titleMessage !== '' ? titleMessage : slugMessage;
+
+  if (applicableTitle === '') {
+    log.warn(
+      `unable to use \`getTitle\` in \`${messages.sourceFilePath}\` because keys with identifiers \`${TITLE_KEY_ID}\` and \`${SLUG_KEY_ID}\` were not found in messages file \`${messages.messagesFilePath}\``
+    );
+  }
+
+  return applicableTitle;
 }
 
 /**

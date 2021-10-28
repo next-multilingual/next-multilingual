@@ -324,7 +324,7 @@ Creating and managing those files is as simple as creating a style sheet, but he
   - If you want to customize your title with a description longer than the slug, include a key with the `title` identifier.
   - Use the `getTitle` API provided in `next-multilingual/messages` to automatically fallback between the `title` and `slug` keys.
 - For components, files are only required if you use the `useMessages` hook.
-- For messages shared across multiple components (shared messages), you need to create a "shared message component". More details on how to do this below.
+- For messages shared across multiple components (shared messages), you need to create a "shared message hook". More details on how to do this below.
 
 Also, make sure to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it easy to detect and fix problems. Note that those logs will only show in non-production environments.
 
@@ -467,7 +467,7 @@ When is it good to share messages? For list of items.
 
 For example, to keep your localization process simple, you want to avoid as much as possible storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). In your database you would identify the context using unique identifiers and you would store your messages in shared message files, where your key's identifiers would match the ones from the database.
 
-To illustrate this we created [one example using fruits](./example/messages/Fruits.ts). All you need to do, is create a component that calls `useMessages` like this:
+To illustrate this we created [one example using fruits](./example/messages/useFruits.ts). All you need to do, is create a hook that calls `useMessages` like this:
 
 ```ts
 import { useMessages } from 'next-multilingual/messages';
@@ -488,11 +488,11 @@ exampleApp.fruits.blueberry = Blueberry
 exampleApp.fruits.lemon = Lemon
 ```
 
-And to use it, simple import this component from anywhere you might need these values:
+And to use it, simple import this hook from anywhere you might need these values:
 
 ```tsx
 import type { ReactElement } from 'react';
-import { useFruitsMessages } from '../messages/Fruits';
+import { useFruitsMessages } from '../messages/useFruits';
 
 export default function FruitList(): ReactElement {
   const fruitsMessages = useFruitsMessages();
@@ -619,7 +619,7 @@ exampleApp.pageNotFoundError.goBack = Go back home
 
 ### Localized API Routes
 
-One of Next.js' core feature is its [builtin API support](https://nextjs.org/docs/api-routes/introduction). It's not uncommon for APIs to return content in different languages. `next-multilingual` has an equivalent API just for this use case: `getMessages`. Unlike the hook `useMessages`, `getMessages` can be used in API Routes. Here is an "Hello API" example on how to use it:
+One of Next.js' core feature is its [builtin API support](https://nextjs.org/docs/api-routes/introduction). It's not uncommon for APIs to return content in different languages. `next-multilingual` has an equivalent API just for this use case: `getMessages`. Unlike the `useMessages` hook, `getMessages` can be used in API Routes. Here is an "Hello API" example on how to use it:
 
 ```ts
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -641,9 +641,9 @@ export default function handler(request: NextApiRequest, response: NextApiRespon
 }
 ```
 
-This is very similar to the API implemented in the [example application](./example/pages/api). We are using the `Accept-Language` HTTP header to tell the API in which locale we want its response to be. Unlike `useMessages` that has the context of the current locale, we need to tell `getMessages` in which locale to return messages.
+This is very similar to the API implemented in the [example application](./example/pages/api). We are using the `Accept-Language` HTTP header to tell the API in which locale we want its response to be. Unlike the `useMessages` hook that has the context of the current locale, we need to tell `getMessages` in which locale to return messages.
 
-Message files behave exactly the same as with `useMessages`, you simply need to create one next to the API Route's file, in our case `hello.en-US.properties`:
+Message files behave exactly the same as with `useMessages` You simply need to create one next to the API Route's file, in our case `hello.en-US.properties`:
 
 ```properties
 # API message
