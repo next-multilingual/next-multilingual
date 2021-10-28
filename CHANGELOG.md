@@ -1,3 +1,5 @@
+# [0.7.0](https://github.com/Avansai/next-multilingual/compare/0.6.0...0.7.0) (2021-10-28)
+
 # [0.6.0](https://github.com/Avansai/next-multilingual/compare/0.5.0...0.6.0) (2021-10-27)
 
 - 💥 breaking change - refactoring the `getTitle` to return a string instead of a `Message` object ([9283a67](https://github.com/Avansai/next-multilingual/commit/9283a672bb34ff083f031df5dbb10797981ae9e0))
