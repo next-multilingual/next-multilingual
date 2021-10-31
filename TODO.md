@@ -33,12 +33,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Add `'` in URL replace
 - Rename `MulLink` to `Link` to be a hot replace of `next/link`
 - Test anchor links (including translation and doc)
 
 ### Done ✔️
 
+- Add `'` in URL replace
 - Fix nested directory localized URL bug
 - Support Next.js API
 - Bug: intermittent 500 internal server error when using the API

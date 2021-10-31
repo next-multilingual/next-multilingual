@@ -415,7 +415,7 @@ export class MulConfig {
       );
       return '';
     }
-    return keyValueObject[slugKey].replace(/[ /-]+/g, '-').toLocaleLowerCase();
+    return keyValueObject[slugKey].replace(/[ /-']+/g, '-').toLocaleLowerCase();
   }
 
   /**
