@@ -305,18 +305,14 @@ export class MulConfig {
   }
 
   /**
-   * Is a specific directory path under Next.js' API routes directory.
+   * Is a multilingual route identifier an API Route?
    *
-   * @param directoryPath - A directory path relative to Next.js' `pages` directory.
+   * @param identifier - A unique multilingual route identifier.
    *
-   * @return True if the directory path is under Next.js' API routes directory, otherwise false.
+   * @return True if the multilingual route identifier is an API Route, otherwise false.
    */
-  private isApiRoute(directoryPath: string): boolean {
-    const ApiRouteDirectory = `${pathSeparator}api`;
-    return (
-      directoryPath === ApiRouteDirectory ||
-      directoryPath.startsWith(`${ApiRouteDirectory}${pathSeparator}`)
-    );
+  private isApiRoute(identifier: string): boolean {
+    return identifier === '/api' || identifier.startsWith('/api/');
   }
 
   /**
@@ -332,25 +328,24 @@ export class MulConfig {
     currentDirectoryPath = this.pagesDirectoryPath,
     routes: MultilingualRoute[] = []
   ): MultilingualRoute[] {
-    if (this.isApiRoute(currentDirectoryPath.replace(baseDirectoryPath, ''))) {
-      return; // Skip if the directory is under Next.js' API routes directory.
+    const rootRelativePath = currentDirectoryPath.replace(baseDirectoryPath, '');
+    const identifier = fileSystemPathToUrlPath(rootRelativePath);
+
+    if (this.isApiRoute(identifier)) {
+      return; // Skip if the identifier it's a Next.js' API Route.
     }
 
-    // When there is a directory without pages, we can localized it using "index" messages files.
+    // When there is a directory without pages, we can localize it using "index" messages files.
     if (!this.directoryContainsPages(currentDirectoryPath)) {
       const directoryEntryPath = resolve(currentDirectoryPath, 'index');
-
-      const identifier = fileSystemPathToUrlPath(
-        currentDirectoryPath.replace(baseDirectoryPath, '')
-      );
-
       this.addRoute(directoryEntryPath, identifier, routes);
     }
 
-    // Read through all the files of the current directory and look for pages or sub-directories.
+    // Add pages routes from the current directory.
     readdirSync(currentDirectoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
-      const directoryEntryPath = resolve(currentDirectoryPath, directoryEntry.name);
       if (directoryEntry.isFile()) {
+        const directoryEntryPath = resolve(currentDirectoryPath, directoryEntry.name);
+
         const directoryEntryExtension = extname(directoryEntryPath);
 
         if (!this.pagesExtensions.includes(directoryEntryExtension)) {
@@ -376,8 +371,13 @@ export class MulConfig {
         }
 
         this.addRoute(directoryEntryPath, identifier, routes);
-      } else if (directoryEntry.isDirectory()) {
-        // If the entry is a directory, call recursively to build child routes.
+      }
+    });
+
+    // Look for sub-directories to build child routes.
+    readdirSync(currentDirectoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
+      if (directoryEntry.isDirectory()) {
+        const directoryEntryPath = resolve(currentDirectoryPath, directoryEntry.name);
         this.getRoutes(baseDirectoryPath, directoryEntryPath, routes);
       }
     });
