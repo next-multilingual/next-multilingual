@@ -30,6 +30,17 @@ if (
 }
 
 /**
+ * Escapes a regular expression string.
+ *
+ * @param regexp - The regular expression string.
+ *
+ * @returns An escaped regular expression.
+ */
+function escapeRegExp(regexp: string): string {
+  return regexp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+/**
  * Target to hijack.
  */
 export type HijackTarget = {
@@ -143,7 +154,7 @@ function getBabelifiedMessages(sourceFilePath: string): string {
   const sourceFilename = parsedSourceFile.name;
   const babelifiedMessages = new BabelifiedMessages(sourceFilePath);
 
-  const fileRegExp = new RegExp(`^${sourceFilename}.(?<locale>[\\w-]+).properties$`);
+  const fileRegExp = new RegExp(`^${escapeRegExp(sourceFilename)}.(?<locale>[\\w-]+).properties$`);
 
   readdirSync(sourceFileDirectoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
     if (directoryEntry.isFile()) {
