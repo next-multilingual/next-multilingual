@@ -1,3 +1,5 @@
+## [0.7.1](https://github.com/Avansai/next-multilingual/compare/0.7.0...0.7.1) (2021-10-31)
+
 # [0.7.0](https://github.com/Avansai/next-multilingual/compare/0.6.0...0.7.0) (2021-10-28)
 
 - 💥 breaking change - the `slugKeyId` parameter has been removed from `MulConfig` to keep the overall solution simpler ([4a8a805](https://github.com/Avansai/next-multilingual/commit/4a8a8052ffb68339c4de09ebac1c407a28eaaa5c))
