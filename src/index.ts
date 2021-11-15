@@ -3,6 +3,8 @@ import type { NextPageContext } from 'next';
 import Cookies from 'nookies';
 
 import * as nextLog from 'next/dist/build/output/log';
+import chalk from 'chalk';
+import type { ParsedUrlQuery } from 'querystring';
 
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
@@ -20,6 +22,17 @@ export class log {
       nextLog.warn(message);
     }
   }
+}
+
+/**
+ * Highlight a segment of a log message.
+ *
+ * @param segment - A segment of a log message.
+ *
+ * @returns The highlighted segment of a log message.
+ */
+export function highlight(segment: string): string {
+  return chalk.cyan(segment);
 }
 
 /**
@@ -178,4 +191,28 @@ export function getCookieLocale(nextPageContext: NextPageContext, actualLocales:
   }
 
   return cookieLocale;
+}
+
+/**
+ * Hydrate a URL back with its query values.
+ *
+ * This allows to re-inject dynamic routes values back into URLs.
+ *
+ * @see https://nextjs.org/docs/routing/dynamic-routes
+ *
+ * @param pathname - The `pathname` property coming from Next.js' `useRouter()`.
+ * @param query - The `query` property coming from Next.js' `useRouter()`.
+ *
+ * @returns The hydrated URL containing `query` values instead of placeholders.
+ */
+export function hydrateUrlQuery(pathname: string, query: ParsedUrlQuery): string {
+  if (!query || !Object.entries(query).length) {
+    return pathname;
+  }
+
+  let usableUrl = pathname;
+  for (const [queryName, queryValue] of Object.entries(query)) {
+    usableUrl = usableUrl.replace(`[${queryName}]`, queryValue as string);
+  }
+  return usableUrl;
 }

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { BabelifiedMessages } from './babel-plugin';
-import { parse as parsePath, resolve } from 'path';
+import { extname, parse as parsePath, resolve } from 'path';
 import { normalizeLocale } from '..';
 import { log } from '..';
 import { KeyValueObject } from './properties';
@@ -49,16 +49,23 @@ export function getTitle(messages: Messages, values?: MessageValues): string {
 }
 
 /**
- * Get the localized messages file path.
+ * Get a localized messages file path associated with a Next.js page.
  *
- * @param sourceFilePath - The path of the source file that is calling `useMessages()`.
+ * @param filesystemPath - The filesystem path (file or directory).
  * @param locale - The locale of the message file.
  *
- * @returns The localized messages file path.
+ * @returns A localized messages file path.
  */
-export function getMessagesFilePath(sourceFilePath: string, locale: string): string {
-  const { dir: directoryPath, name: filename } = parsePath(sourceFilePath);
-  return resolve(directoryPath, `${filename}.${normalizeLocale(locale)}.properties`);
+export function getMessagesFilePath(filesystemPath: string, locale: string): string {
+  const pageFileExtension = extname(filesystemPath);
+
+  if (pageFileExtension) {
+    // Filesystem path is a file.
+    return `${filesystemPath.replace(pageFileExtension, '')}.${normalizeLocale(locale)}.properties`;
+  }
+
+  // Filesystem path is a directory.
+  return `${filesystemPath}/index.${normalizeLocale(locale)}.properties`;
 }
 
 /**
@@ -264,7 +271,7 @@ export function handleMessages(
 
   if (!babelifiedMessages.keyValueObjectCollection[locale]) {
     log.warn(
-      `unable to use \`${caller}()\` in \`${babelifiedMessages.sourceFilePath}\` because no message could be found at \`${messagesFilePath}\``
+      `unable to use \`${caller}()\` in \`${babelifiedMessages.sourceFilePath}\` because no message file could be found at \`${messagesFilePath}\``
     );
   }
 

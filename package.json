@@ -75,6 +75,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.15.8",
+    "chalk": "^4.1.2",
     "chokidar": "^3.5.2",
     "dot-properties": "^1.0.1",
     "intl-messageformat": "^9.9.4",
