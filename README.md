@@ -703,7 +703,7 @@ export default function SomePage(): ReactElement {
 
 ### Dynamic Routes
 
-[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. When using multilingual URLs, supporting dynamic routes only requires using the `hydrateUrlQuery` function available from the `next-multilingual` module. This function does simply re-injects back the value of the parameters into the localized URLs. It should mostly be used in a language picker, as in this example:
+[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. When using multilingual URLs, supporting dynamic routes only requires using the `asPath` property available from Nextj.js' `useRouter()` hook. Here is an example of how it can be used in a language picker:
 
 ```tsx
 import {
@@ -715,7 +715,6 @@ import {
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
 import { MulLink } from 'next-multilingual/link';
-import { hydrateUrlQuery } from 'next-multilingual';
 
 // Locales don't need to be localized.
 const localeStrings = {
@@ -724,10 +723,9 @@ const localeStrings = {
 };
 
 export default function LanguagePicker(): ReactElement {
-  const { pathname, locale, locales, defaultLocale, query } = useRouter();
+const { locale, locales, defaultLocale, asPath } = useRouter();
   const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);
-  const href = hydrateUrlQuery(pathname, query);
 
   return (
     <div>
@@ -740,7 +738,7 @@ export default function LanguagePicker(): ReactElement {
           .filter((locale) => locale !== actualLocale)
           .map((locale) => {
             return (
-              <MulLink key={locale} href={href} locale={locale}>
+              <MulLink key={locale} href={asPath} locale={locale}>
                 <a
                   onClick={() => {
                     setCookieLocale(locale);
@@ -757,7 +755,7 @@ export default function LanguagePicker(): ReactElement {
 }
 ```
 
-This allows a seamless experience across localized URLs when using a simple parameters such as a unique (numerical) identifiers. If your parameter itself needs to be localized, you will have to handle that logic yourself before rehydrating the URLs.
+This allows a seamless experience across localized URLs when using a simple parameters such as a unique (numerical) identifiers. If your parameter itself needs to be localized, you will have to handle that logic yourself.
 
 A fully working example can be found in the [language picker component example](./example/components/LanguagePicker.tsx).
 
