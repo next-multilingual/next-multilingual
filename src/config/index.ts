@@ -272,21 +272,21 @@ export class Config {
   /**
    * A multilingual configuration handler.
    *
-   * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
+   * @param applicationId - The unique application identifier that will be used as a messages key prefix.
    * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
    *
    * @throws Error when one of the arguments is invalid.
    */
-  constructor(applicationIdentifier: string, locales: string[]) {
+  constructor(applicationId: string, locales: string[]) {
     // Set the application identifier if valid.
-    if (!keySegmentRegExp.test(applicationIdentifier)) {
+    if (!keySegmentRegExp.test(applicationId)) {
       throw new Error(
-        `invalid application identifier '${applicationIdentifier}'. Application identifiers ${keySegmentRegExpDescription}.`
+        `invalid application identifier '${applicationId}'. Application identifiers ${keySegmentRegExpDescription}.`
       );
     }
 
-    // Add `applicationIdentifier` to environment variables so that it is available at build time (by Babel), without extra config.
-    process.env.nextMultilingualApplicationIdentifier = applicationIdentifier;
+    // Add `applicationId` to environment variables so that it is available at build time (by Babel), without extra config.
+    process.env.nextMultilingualApplicationId = applicationId;
 
     // Verify if the locale identifiers are using the right format.
     locales.forEach((locale) => {
@@ -614,7 +614,7 @@ export class Config {
 /**
  * Returns the Next.js multilingual config.
  *
- * @param applicationIdentifier - The unique application identifier that will be used as a messages key prefix.
+ * @param applicationId - The unique application identifier that will be used as a messages key prefix.
  * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
  * @param options - Next.js configuration options.
  *
@@ -623,7 +623,7 @@ export class Config {
  * @throws Error when one of the arguments is invalid.
  */
 export function getConfig(
-  applicationIdentifier: string,
+  applicationId: string,
   locales: string[],
   options: NextConfig | ((phase: string, defaultConfig: NextConfig) => void)
 ): NextConfig {
@@ -640,7 +640,7 @@ export function getConfig(
   });
 
   const nextConfig: NextConfig = options ? options : {};
-  const config = new Config(applicationIdentifier, locales);
+  const config = new Config(applicationId, locales);
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
   nextConfig.i18n = {

@@ -8,8 +8,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Add naming best practice for message key in documentation
 - Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
-- Test dynamic routes (with placeholders)
-- - bug: the Babel plugin does not check if an hijack target (import) is used before injecting. This cause the import to be removed for optimization and cause a 500 error when trying to inject the non-existing import.
+- bug: the Babel plugin does not check if an hijack target (import) is used before injecting. This cause the import to be removed for optimization and cause a 500 error when trying to inject the non-existing import.
 - Check if we can add `title` attributes on `Link` components (not supported by Next.js?) (ref: https://backlinko.com/google-ranking-factors)
 - Add automated test:
   - Test when a string file changes, the page is updated (developer experience?)
@@ -32,16 +31,17 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Refactor 'identifier' to 'id' to make code less verbose
 - Test anchor links (including translation and doc)
 
 ### Done ✔️
 
+- Refactor 'identifier' to 'id' to make code less verbose
 - Check paths (don't use absolute) and logs (use highlight) in all files other than MulConfig
 - Prevent [] escapes for dynamic routes
 - Rename `MulConfig` to `Config` (and methods)
 - Rename `MulHead` to `Head` to be a hot replace of `next/head`
 - Rename `MulLink` to `Link` to be a hot replace of `next/link`
+- Support dynamic routes (with placeholders)
 - Add `'` in URL replace
 - Fix nested directory localized URL bug
 - Support Next.js API

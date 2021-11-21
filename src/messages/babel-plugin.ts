@@ -20,12 +20,9 @@ const isImportNamespaceSpecifier = BabelTypes.isImportNamespaceSpecifier;
 const isImportSpecifier = BabelTypes.isImportSpecifier;
 
 const isInNextJs = process?.env?.__NEXT_PROCESSED_ENV === 'true';
-const applicationIdentifier = process?.env?.nextMultilingualApplicationIdentifier;
+const applicationId = process?.env?.nextMultilingualApplicationId;
 
-if (
-  isInNextJs &&
-  (applicationIdentifier === undefined || !keySegmentRegExp.test(applicationIdentifier))
-) {
+if (isInNextJs && (applicationId === undefined || !keySegmentRegExp.test(applicationId))) {
   throw new Error(`you must define your application identifier using \`next-multilingual/config\``);
 }
 
@@ -100,21 +97,21 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         `unable to use messages in ${highlightFilePath(
           propertiesFilePath
         )} because the key ${highlight(key)} is invalid. It must follow the ${highlight(
-          '<application identifier>.<context>.<id>'
+          '<applicationId>.<context>.<id>'
         )} format.`
       );
       return {};
     }
-    const [appIdSegment, contextSegment, idSegment] = keySegments;
+    const [applicationIdSegment, contextSegment, idSegment] = keySegments;
 
     // Verify the key's unique application identifier.
-    if (appIdSegment !== applicationIdentifier) {
+    if (applicationIdSegment !== applicationId) {
       log.warn(
         `unable to use messages in ${highlightFilePath(
           propertiesFilePath
-        )} because the application identifier ${highlight(appIdSegment)} in key ${highlight(
+        )} because the application identifier ${highlight(applicationIdSegment)} in key ${highlight(
           key
-        )} is invalid. Expected value: ${highlight(applicationIdentifier)}.`
+        )} is invalid. Expected value: ${highlight(applicationId)}.`
       );
       return {};
     }

@@ -183,7 +183,7 @@ In conclusion `next-multilingual` made the following decisions:
 
 - `.properties` file will be used since they are the most appropriate format to store messages.
 - The scope of messages will be local: per pages or component.
-- Messages will be identified by unique keys following the pattern `<application identifier>.<context>.<id>`.
+- Messages will be identified by unique keys following the pattern `<applicationId>.<context>.<id>`.
 - ICU MessageFormat will be used to handle plurals.
 
 

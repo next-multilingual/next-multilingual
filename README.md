@@ -38,7 +38,7 @@ For those who prefer to jump right into the action, look in the [`example`](./ex
 
 There are many options to configure in Next.js to achieve our goals. `next-multilingual` mostly cares about:
 
-- Your unique application identifier: this will be used tto ensure that your messages (localized strings) have unique identifiers.
+- Your unique application identifier: this will be used to ensure that your messages (localized strings) have unique identifiers.
 - Your locales: we only support BCP47 language tags that contains both a country and language code.
 
 We offer two APIs to simplify this step:
@@ -47,7 +47,7 @@ We offer two APIs to simplify this step:
 
 This function will generate a Next.js config that will meet most use cases. `getConfig` takes the following arguments:
 
-- `applicationIdentifier` — The unique application identifier that will be used as a messages key prefix.
+- `applicationId` — The unique application identifier that will be used as a messages key prefix.
 - `locales` — The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](./docs/design-decisions.md) document.
 - `options` (optional) — Options part of a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
 - Also a few other arguments you probably will never need to use - check in your IDE (JSDoc) for more details.
@@ -313,9 +313,9 @@ Creating and managing those files is as simple as creating a style sheet, but he
 
 - The message files are `.properties` files. Yes, you might wonder why, but there are good reasons documented in the [design decision document](./docs/design-decisions.md).
 - Make sure yours file encoding is set to `UTF-8`. Not doing so will replace non-latin characters by `�`. 
-- To leverage some of the built-in IDE support for `.properties` files, we follow a strict naming convention: `<Page-Name>.<locale>.properties`
-- Each message must have unique keys that follow a strict naming convention: `<application identifier>.<context>.<id>` where:
-  - **application identifier** must use the same value as set in `next-multilingual/config`
+- To leverage some of the built-in IDE support for `.properties` files, we follow a strict naming convention: `<PageFilename>.<locale>.properties`
+- Each message must have unique keys that follow a strict naming convention: `<applicationId>.<context>.<id>` where:
+  - **applicationId** must use the same value as set in `next-multilingual/config`
   - **context** must represent the context associated with the message file, for example `aboutUsPage` or `footerComponent` could be good examples of context. Each file can only contain 1 context and context should not be used across many files as this could cause "key collision" (non-unique keys).
   - **id** is the unique identifier in a given context (or message file).
   - Each "segment" of a key must be separated by a `.` and can only contain between 1 to 50 alphanumerical characters - we recommend using camel case for readability.
