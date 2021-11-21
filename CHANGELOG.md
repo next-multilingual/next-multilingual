@@ -1,5 +1,9 @@
 # [0.8.0](https://github.com/Avansai/next-multilingual/compare/0.7.4...0.8.0) (2021-11-21)
 
+- 💥 breaking change - rename core APIs: `MulConfig` -> `Config`, `getMulConfig` -> `getConfig`, `MulLink` -> `Link`, `MulHead` -> `Head` ([47a1c7c](https://github.com/Avansai/next-multilingual/commit/47a1c7c7824da5e9bb04e6c2524dd2d3723296b4
+))
+- 🐛 revert change introduced in 0.7.4 to correctly hydrate dynamic route links
+
 ## [0.7.4](https://github.com/Avansai/next-multilingual/compare/0.7.3...0.7.4) (2021-11-15)
 
 ## [0.7.3](https://github.com/Avansai/next-multilingual/compare/0.7.2...0.7.3) (2021-11-15)
