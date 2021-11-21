@@ -1,11 +1,11 @@
 import React, { Children, cloneElement } from 'react';
 import type { ReactElement } from 'react';
-import Link, { LinkProps } from 'next/link';
+import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { useLocalizedUrl } from '../hooks/use-localized-url';
 
 /**
- * MulLink is a wrapper around Next.js' `Link` that provides localized URLs.
+ * Link is a wrapper around Next.js' `Link` that provides localized URLs.
  *
  * @param href - A non-localized Next.js `href` without a locale prefix (e.g. `/contact-us`)
  * @param locale - The locale to grab the correct localized path.
@@ -13,12 +13,12 @@ import { useLocalizedUrl } from '../hooks/use-localized-url';
  *
  * @returns The Next.js `Link` component with the correct localized URLs.
  */
-export function MulLink({
+export default function Link({
   children,
   href,
   locale,
   ...props
-}: React.PropsWithChildren<LinkProps> & { href: string; locale?: string }): ReactElement {
+}: React.PropsWithChildren<NextLinkProps> & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
   locale = locale ? locale : router.locale;
   const localizedUrl = useLocalizedUrl(locale, href);
@@ -36,8 +36,8 @@ export function MulLink({
     // Ignore any error; they will be handled by <Link>
   }
   return (
-    <Link href={localizedUrl} locale={locale} {...props}>
+    <NextLink href={localizedUrl} locale={locale} {...props}>
       {children}
-    </Link>
+    </NextLink>
   );
 }

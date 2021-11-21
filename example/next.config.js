@@ -1,5 +1,5 @@
-const { getMulConfig } = require('next-multilingual/config');
+const { getConfig } = require('next-multilingual/config');
 
-module.exports = getMulConfig('exampleApp', ['en-US', 'fr-CA'], {
+module.exports = getConfig('exampleApp', ['en-US', 'fr-CA'], {
   poweredByHeader: false
 });

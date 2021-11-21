@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import Link, { LinkProps } from 'next/link';
+import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { getLocalizedUrlPath } from '../helpers/get-localized-url-path';
 import { getRewrites } from '../helpers/get-rewrites';
@@ -7,12 +7,12 @@ import { getRewrites } from '../helpers/get-rewrites';
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
   throw new Error(
-    'please use the `next-multilingual/link` on the client side, not `next-multilingual/link-ssr`'
+    '`next-multilingual/link-ssr` must only be used on the server, please use the `next-multilingual/link` instead'
   );
 }
 
 /**
- * MulLink is a wrapper around Next.js' `Link` that provides localized URLs.
+ * Link is a wrapper around Next.js' `Link` that provides localized URLs.
  *
  * This is meant to be used on the server only. Using it on the client side will result in compilation errors.
  *
@@ -22,13 +22,13 @@ if (typeof window !== 'undefined') {
  *
  * @returns The Next.js `Link` component with the correct localized URLs.
  */
-export function MulLink({
+export default function Link({
   href,
   locale,
   ...props
-}: LinkProps & { href: string; locale?: string }): ReactElement {
+}: NextLinkProps & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
   locale = locale ? locale : router.locale;
   const localizedUrl = getLocalizedUrlPath(getRewrites(), locale, href);
-  return <Link href={localizedUrl} locale={locale} {...props} />;
+  return <NextLink href={localizedUrl} locale={locale} {...props} />;
 }

@@ -1,9 +1,9 @@
-import { MulHead } from 'next-multilingual/head';
+import Head from 'next-multilingual/head';
 import type { ReactElement, ReactNode } from 'react';
 import LanguagePicker from '@/components/LanguagePicker';
 import Footer from '@/components/Footer';
 import styles from './Layout.module.css';
-import { MulLink } from 'next-multilingual/link';
+import Link from 'next-multilingual/link';
 import { useMessages } from 'next-multilingual/messages';
 
 type LayoutProps = {
@@ -21,28 +21,25 @@ export default function Layout({ title, children }: LayoutProps): ReactElement {
   const messages = useMessages();
   return (
     <>
-      <MulHead>
+      <Head>
         <title>{title}</title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
-        ></meta>
-      </MulHead>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+      </Head>
       <header className={styles.header}>
         <div>
           <a href="/">{messages.format('header')}</a>
         </div>
         <LanguagePicker />
         <nav className={styles.nav}>
-          <MulLink href="/">
+          <Link href="/">
             <a>{messages.format('home')}</a>
-          </MulLink>
-          <MulLink href="/about-us">
+          </Link>
+          <Link href="/about-us">
             <a>{messages.format('aboutUs')}</a>
-          </MulLink>
-          <MulLink href="/contact-us">
+          </Link>
+          <Link href="/contact-us">
             <a>{messages.format('contactUs')}</a>
-          </MulLink>
+          </Link>
         </nav>
       </header>
       <main className={styles.main}>{children}</main>

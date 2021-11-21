@@ -34,11 +34,14 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 ### In Progress 🚧
 
 - Check paths (don't use absolute) and logs (use highlight) in all files other than MulConfig
-- Rename `MulLink` to `Link` to be a hot replace of `next/link`
 - Test anchor links (including translation and doc)
 
 ### Done ✔️
 
+- Prevent [] escapes for dynamic routes
+- Rename `MulConfig` to `Config` (and methods)
+- Rename `MulHead` to `Head` to be a hot replace of `next/head`
+- Rename `MulLink` to `Link` to be a hot replace of `next/link`
 - Add `'` in URL replace
 - Fix nested directory localized URL bug
 - Support Next.js API

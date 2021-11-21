@@ -1,5 +1,5 @@
 import { useMessages, getTitle } from 'next-multilingual/messages';
-import { MulLink } from 'next-multilingual/link';
+import Link from 'next-multilingual/link';
 import type { ReactElement } from 'react';
 import Layout from '@/layout';
 
@@ -9,9 +9,9 @@ export default function Custom400(): ReactElement {
   return (
     <Layout title={title}>
       <h1>{title}</h1>
-      <MulLink href="/">
+      <Link href="/">
         <a>{messages.format('goBack')}</a>
-      </MulLink>
+      </Link>
     </Layout>
   );
 }

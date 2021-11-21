@@ -1,14 +1,14 @@
-import Head from 'next/head';
+import NextHead from 'next/head';
 import React from 'react';
 import { useAlternateLinks, AlternateLink } from '../hooks/use-alternate-links';
 import { useCanonicalLink } from '../hooks/use-canonical-link';
 
 /**
- * MulHead is a wrapper around Next.js' `Head` that provides alternate links with localized URLs and a canonical link.
+ * Head is a wrapper around Next.js' `Head` that provides alternate links with localized URLs and a canonical link.
  *
  * @returns The Next.js `Head` component, including alternative links for SEO.
  */
-export function MulHead({ children }: { children: React.ReactNode }): JSX.Element {
+export default function Head({ children }: { children: React.ReactNode }): JSX.Element {
   /**
    * Next.js' `<Head>` does not allow components, so we are using hooks. Details here:
    *
@@ -24,12 +24,12 @@ export function MulHead({ children }: { children: React.ReactNode }): JSX.Elemen
   const canonicalLink = useCanonicalLink();
 
   return (
-    <Head>
+    <NextHead>
       <link rel="canonical" href={canonicalLink.href} key={canonicalLink.key} />
       {alternateLinks.map(({ href, hrefLang, key }: AlternateLink) => {
         return <link rel="alternate" href={href} hrefLang={hrefLang} key={key} />;
       })}
       {children}
-    </Head>
+    </NextHead>
   );
 }

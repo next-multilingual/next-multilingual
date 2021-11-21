@@ -43,39 +43,39 @@ There are many options to configure in Next.js to achieve our goals. `next-multi
 
 We offer two APIs to simplify this step:
 
-#### 〰️ `getMulConfig` (simple config)
+#### 〰️ `getConfig` (simple config)
 
-Short for "get multilingual configuration", this function will generate a Next.js config that will meet most use cases. `getMulConfig` takes the following arguments:
+This function will generate a Next.js config that will meet most use cases. `getConfig` takes the following arguments:
 
 - `applicationIdentifier` — The unique application identifier that will be used as a messages key prefix.
 - `locales` — The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](./docs/design-decisions.md) document.
 - `options` (optional) — Options part of a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
 - Also a few other arguments you probably will never need to use - check in your IDE (JSDoc) for more details.
 
-`getMulConfig` will return a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
+`getConfig` will return a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
 
 To use it, simply add the following code in your application's `next.config.js`:
 
 ```ts
-const { getMulConfig } = require('next-multilingual/config');
-module.exports = getMulConfig('exampleApp', ['en-US', 'fr-CA'], { poweredByHeader: false });
+const { getConfig } = require('next-multilingual/config');
+module.exports = getConfig('exampleApp', ['en-US', 'fr-CA'], { poweredByHeader: false });
 ```
 
-Some options are not supported by `getMulConfig`. If you try to use one, the error message should point you directly to the next section: advanced config.
+Not all configuration options are not supported by `getConfig`. If you ever happen to use one, an error message will point you directly to the next section: advanced config.
 
-#### 〰️ `MulConfig` (advanced config)
+#### 〰️ `Config` (advanced config)
 
-If you have more advanced needs, you can use the `MulConfig` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`. The argument of `MulConfig` are almost identical to `getMulConfig` (minus the `options`) - check in your IDE (JSDoc) for details. Here is an example of how it can be used:
+If you have more advanced needs, you can use the `Config` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`. The argument of `Config` are almost identical to `getConfig` (minus the `options`) - check in your IDE (JSDoc) for details. Here is an example of how it can be used:
 
 ```ts
-const { MulConfig } = require('next-multilingual/config');
+const { Config } = require('next-multilingual/config');
 
-const mulConfig = new MulConfig('exampleApp', ['en-US', 'fr-CA']);
+const config = new Config('exampleApp', ['en-US', 'fr-CA']);
 
 module.exports = {
     i18n: {
-        locales: mulConfig.getUrlLocalePrefixes(),
-        defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),
+        locales: config.getUrlLocalePrefixes(),
+        defaultLocale: config.getDefaultUrlLocalePrefix(),
         localeDetection: false
     },
     poweredByHeader: false,
@@ -86,10 +86,10 @@ module.exports = {
         return config;
     },
     async rewrites() {
-        return mulConfig.getRewrites();
+        return config.getRewrites();
     },
     async redirects() {
-        return mulConfig.getRedirects();
+        return config.getRedirects();
     }
 };
 ```
@@ -190,7 +190,7 @@ This serves only 1 purpose: display the correct server-side locale in the `<html
 
 ### Configure all your pages to use SEO friendly markup
 
-`next-multilingual/head` provides a `<MulHead>` component which automatically creates a canonical link and alternate links in the header. This is something that is not provided out of the box by Next.js.
+`next-multilingual/head` provides a `<Head>` component which automatically creates a canonical link and alternate links in the header. This is something that is not provided out of the box by Next.js.
 
 #### Add a `NEXT_PUBLIC_ORIGIN` environment variable
 
@@ -395,32 +395,32 @@ exampleApp.aboutUsPage.details = This is just some english boilerplate text.
 
 ### Adding links
 
-`next-multilingual` comes with its own `<MulLink>` component that allows for client side and server side rendering of localized URL. It's usage is simple, it works exactly like Next.js' [`<Link>`](https://nextjs.org/docs/api-reference/next/link).
+`next-multilingual` comes with its own `<Link>` component that allows for client side and server side rendering of localized URL. It's usage is simple, it works exactly like Next.js' [`<Link>`](https://nextjs.org/docs/api-reference/next/link).
 
 The only important thing to remember is that the `href` attribute should always contain the Next.js URL. Meaning, the file structure under the `pages` folder should be what is used and not the localized versions.
 
-In other words, the file structure is considered as the "non-localized" URL representation, and `<MulLink>` will take care of replacing the URLs with the localized versions (from the messages files), if they differ from the structure.
+In other words, the file structure is considered as the "non-localized" URL representation, and `<Link>` will take care of replacing the URLs with the localized versions (from the messages files), if they differ from the structure.
 
 The API is available under `next-multilingual/link` and you can use it like this:
 
 ```tsx
 import { useMessages } from 'next-multilingual/messages';
-import { MulLink } from 'next-multilingual/link';
+import Link from 'next-multilingual/link';
 
 export default function Menu() {
   const messages = useMessages();
 
   return (
     <nav>
-      <MulLink href="/">
+      <Link href="/">
         <a>{messages.format('home')}</a>
-      </MulLink>
-      <MulLink href="/about-us">
+      </Link>
+      <Link href="/about-us">
         <a>{messages.format('aboutUs')}</a>
-      </MulLink>
-      <MulLink href="/contact-us">
+      </Link>
+      <Link href="/contact-us">
         <a>{messages.format('contactUs')}</a>
-      </MulLink>
+      </Link>
     </nav>
   );
 }
@@ -430,7 +430,7 @@ Each of these links will be automatically localized when the `slug` key is speci
 
 #### What about server side rendering?
 
-As the data for this mapping is not immediately available during rendering, `next-multilingual/link/ssr` will take care of the server side rendering (SSR). By using `next-multilingual/config`'s `getMulConfig`, the Webpack configuration will be added automatically. If you are using the advanced `MulConfig` method, this explains on why the special Webpack configuration is required in the example provided prior.
+As the data for this mapping is not immediately available during rendering, `next-multilingual/link/ssr` will take care of the server side rendering (SSR). By using `next-multilingual/config`'s `getConfig`, the Webpack configuration will be added automatically. If you are using the advanced `Config` method, this explains on why the special Webpack configuration is required in the example provided prior.
 
 ### Creating components
 
@@ -551,7 +551,7 @@ There is a lot to learn on this topic. Make sure to read the Unicode documentati
 
 ### Search Engine Optimization
 
-One feature that is missing from Next.js is manage important HTML tags used for SEO. We added the `<MulHead>` component to deal with two very important tags that live in the HTML `<head>`:
+One feature that is missing from Next.js is manage important HTML tags used for SEO. We added the `<Head>` component to deal with two very important tags that live in the HTML `<head>`:
 
 - Canonical links (`<link rel=canonical>`): this tells search engines that the source of truth for the page being browsed is this URL. Very important to avoid being penalized for duplicate content, especially since URLs are case insensitive, but Google treats them as case-sensitive.
 - Alternate links (`<link rel=alternate>`): this tells search engines that the page being browsed is also available in other languages and facilitates crawling of the site.
@@ -559,19 +559,19 @@ One feature that is missing from Next.js is manage important HTML tags used for 
 The API is available under `next-multilingual/head` and you can import it like this:
 
 ```ts
-import { MulHead } from 'next-multilingual/head';
+import Head from 'next-multilingual/head';
 ```
 
-Just like `<MulLink>`, `<MulHead>` is meant to be a drop-in replacement for Next.js's [`<Head>` component](https://nextjs.org/docs/api-reference/next/head). In our example, we are using it in the [Layout component](./example/layout/Layout.tsx), like this:
+Just like `<Link>`, `<Head>` is meant to be a drop-in replacement for Next.js's [`<Head>` component](https://nextjs.org/docs/api-reference/next/head). In our example, we are using it in the [Layout component](./example/layout/Layout.tsx), like this:
 
 ```tsx
-<MulHead>
+<Head>
   <title>{title}</title>
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   ></meta>
-</MulHead>
+</Head>
 ```
 
 All this does is insert the canonical and alternate links so that search engines can better crawl your application. For example, if you are on the `/en-us/about-us` page, the following HTML will be added automatically under your HTML `<head>` tag:
@@ -582,7 +582,7 @@ All this does is insert the canonical and alternate links so that search engines
 <link rel="alternate" href="http://localhost:3000/fr-ca/%C3%A0-propos-de-nous" hreflang="fr-CA">
 ```
 
-To fully benefit from the SEO markup, `<MulHead>` must be included on all pages. There are multiple ways to achieve this, but in the example, we created a `<Layout>` [component](./example/layout/Layout.tsx) that is used on all pages.
+To fully benefit from the SEO markup, `<Head>` must be included on all pages. There are multiple ways to achieve this, but in the example, we created a `<Layout>` [component](./example/layout/Layout.tsx) that is used on all pages.
 
 ### Custom Error Pages
 
@@ -590,7 +590,7 @@ Like most site, you will want to leverage Next.js' [custom error pages](https://
 
 ```tsx
 import { useMessages, getTitle } from 'next-multilingual/messages';
-import { MulLink } from 'next-multilingual/link';
+import Link from 'next-multilingual/link';
 import type { ReactElement } from 'react';
 import Layout from '@/layout';
 
@@ -600,9 +600,9 @@ export default function Custom400(): ReactElement {
   return (
     <Layout title={title}>
       <h1>{title}</h1>
-      <MulLink href="/">
+      <Link href="/">
         <a>{messages.format('goBack')}</a>
-      </MulLink>
+      </Link>
     </Layout>
   );
 }
@@ -703,7 +703,7 @@ export default function SomePage(): ReactElement {
 
 ### Dynamic Routes
 
-[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. When using multilingual URLs, supporting dynamic routes only requires using the `asPath` property available from Nextj.js' `useRouter()` hook. Here is an example of how it can be used in a language picker:
+[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. When using multilingual URLs, supporting dynamic routes only requires using the `hydrateUrlQuery` function available from the `next-multilingual` module. This function simply re-injects back the value of the parameters into the non-localized URLs which allows Next.js to match it with its localized versions. Below is an example using `hydrateUrlQuery` in a language picker:
 
 ```tsx
 import {
@@ -714,7 +714,8 @@ import {
 } from 'next-multilingual';
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
-import { MulLink } from 'next-multilingual/link';
+import Link from 'next-multilingual/link';
+import { hydrateUrlQuery } from 'next-multilingual';
 
 // Locales don't need to be localized.
 const localeStrings = {
@@ -723,9 +724,10 @@ const localeStrings = {
 };
 
 export default function LanguagePicker(): ReactElement {
-const { locale, locales, defaultLocale, asPath } = useRouter();
+  const { pathname, locale, locales, defaultLocale, query } = useRouter();
   const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);
+  const href = hydrateUrlQuery(pathname, query);
 
   return (
     <div>
@@ -738,7 +740,7 @@ const { locale, locales, defaultLocale, asPath } = useRouter();
           .filter((locale) => locale !== actualLocale)
           .map((locale) => {
             return (
-              <MulLink key={locale} href={asPath} locale={locale}>
+              <Link key={locale} href={href} locale={locale}>
                 <a
                   onClick={() => {
                     setCookieLocale(locale);
@@ -746,7 +748,7 @@ const { locale, locales, defaultLocale, asPath } = useRouter();
                 >
                   {localeStrings[normalizeLocale(locale)]}
                 </a>
-              </MulLink>
+              </Link>
             );
           })}
       </div>
@@ -755,7 +757,7 @@ const { locale, locales, defaultLocale, asPath } = useRouter();
 }
 ```
 
-This allows a seamless experience across localized URLs when using a simple parameters such as a unique (numerical) identifiers. If your parameter itself needs to be localized, you will have to handle that logic yourself.
+This allows a seamless experience across localized URLs when using a simple parameters such as a unique (numerical) identifiers. If your parameter itself needs to be localized, you will have to handle that logic yourself before rehydrating the URLs.
 
 A fully working example can be found in the [language picker component example](./example/components/LanguagePicker.tsx).
 

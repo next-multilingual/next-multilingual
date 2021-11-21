@@ -268,7 +268,7 @@ export type LocalizedUrlPath = {
   urlPath: string;
 };
 
-export class MulConfig {
+export class Config {
   /** The actual desired locales of the multilingual application. */
   private readonly actualLocales: string[];
   /** The locales used by the Next.js configuration. */
@@ -555,7 +555,9 @@ export class MulConfig {
 
     if (encode) {
       // Normalize to NFC as per https://tools.ietf.org/html/rfc3987#section-3.1
-      return this.encodeUrlPath(normalizedUrlPath);
+      return this.encodeUrlPath(normalizedUrlPath)
+        .replace(/\/%5B(.+)%5D\//g, '/[$1]/') // Unescape dynamic routes URL segments if present.
+        .replace(/\/%5B(.+)%5D$/, '/[$1]'); // Unescape a URL ending with a dynamic route if present.
     }
 
     return normalizedUrlPath;
@@ -631,35 +633,35 @@ export class MulConfig {
  *
  * @throws Error when one of the arguments is invalid.
  */
-export function getMulConfig(
+export function getConfig(
   applicationIdentifier: string,
   locales: string[],
   options: NextConfig | ((phase: string, defaultConfig: NextConfig) => void)
 ): NextConfig {
   if (options instanceof Function) {
-    throw new Error('Function config is not supported. Please use the `MulConfig` object instead');
+    throw new Error('Function config is not supported. Please use the `Config` object instead');
   }
 
   ['env', 'i18n', 'webpack', 'rewrites', 'redirects'].forEach((option) => {
     if (options[option] !== undefined) {
       throw new Error(
-        `the \`${option}\` option is not supported by \`getMulConfig\`. Please use the \`MulConfig\` object instead`
+        `the \`${option}\` option is not supported by \`getConfig\`. Please use the \`Config\` object instead`
       );
     }
   });
 
-  const config: NextConfig = options ? options : {};
-  const mulConfig = new MulConfig(applicationIdentifier, locales);
+  const nextConfig: NextConfig = options ? options : {};
+  const config = new Config(applicationIdentifier, locales);
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
-  config.i18n = {
-    locales: mulConfig.getUrlLocalePrefixes(),
-    defaultLocale: mulConfig.getDefaultUrlLocalePrefix(),
+  nextConfig.i18n = {
+    locales: config.getUrlLocalePrefixes(),
+    defaultLocale: config.getDefaultUrlLocalePrefix(),
     localeDetection: false, // This is important to use the improved language detection feature.
   };
 
   // Set Webpack config.
-  config.webpack = (config, { isServer }) => {
+  nextConfig.webpack = (config, { isServer }) => {
     // Overwrite the `link` component for SSR.
     if (isServer) {
       config.resolve.alias['next-multilingual/link$'] = require.resolve(
@@ -670,14 +672,14 @@ export function getMulConfig(
   };
 
   // Sets localized URLs as rewrites rules.
-  config.rewrites = async () => {
-    return mulConfig.getRewrites();
+  nextConfig.rewrites = async () => {
+    return config.getRewrites();
   };
 
   // Sets redirect rules to normalize URL encoding.
-  config.redirects = async () => {
-    return mulConfig.getRedirects();
+  nextConfig.redirects = async () => {
+    return config.getRedirects();
   };
 
-  return config;
+  return nextConfig;
 }
