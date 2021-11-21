@@ -27,6 +27,7 @@ export default function Layout({ title, children }: LayoutProps): ReactElement {
       </Head>
       <header className={styles.header}>
         <div>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/">{messages.format('header')}</a>
         </div>
         <LanguagePicker />

@@ -1,13 +1,10 @@
 # This file is only used when deploying with Netlify.
-# 
-# Details here: https://answers.netlify.com/t/runtime-unhandledpromiserejection-on-my-next-js-app/44672
 
 [build]
-  command = "npm run build"
-  publish = "out"
+publish = ".next"
 
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
+package = "@netlify/plugin-nextjs"
 
 [functions]
-  included_files = [".next/*.json"]
+included_files = [".next/*.json"]
