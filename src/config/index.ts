@@ -1,7 +1,7 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
 import { existsSync, readdirSync, utimesSync } from 'fs';
-import { extname, sep as pathSeparator } from 'path';
-import { highlight, isLocale, normalizeLocale } from '..';
+import { extname } from 'path';
+import { highlight, highlightFilePath, isLocale, normalizeLocale } from '..';
 import { parsePropertiesFile } from '../messages/properties';
 import {
   getMessagesFilePath,
@@ -121,17 +121,6 @@ export function getNonLocalizedUrlPath(filesystemPath: string): string {
     .replace(/\/index$/, '');
 
   return !urlPath.length ? '/' : urlPath[0] !== '/' ? `/${urlPath}` : urlPath;
-}
-
-/**
- * Highlight a file path segment of a log message, normalized with the current file system path separator
- *
- * @param filePath - A file path segment of a log message.
- *
- * @returns The highlighted file path segment of a log message.
- */
-export function highlightFilePath(filePath: string): string {
-  return highlight(pathSeparator !== '/' ? filePath.replace(/\//g, pathSeparator) : filePath);
 }
 
 /**

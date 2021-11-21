@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { BabelifiedMessages } from './babel-plugin';
 import { extname, parse as parsePath, resolve } from 'path';
-import { normalizeLocale } from '..';
+import { highlight, highlightFilePath, normalizeLocale } from '..';
 import { log } from '..';
 import { KeyValueObject } from './properties';
 import IntlMessageFormat from 'intl-messageformat';
@@ -41,7 +41,11 @@ export function getTitle(messages: Messages, values?: MessageValues): string {
 
   if (applicableTitle === '') {
     log.warn(
-      `unable to use \`getTitle\` in \`${messages.sourceFilePath}\` because keys with identifiers \`${TITLE_KEY_ID}\` and \`${SLUG_KEY_ID}\` were not found in messages file \`${messages.messagesFilePath}\``
+      `unable to use ${highlight('getTitle')} in ${highlightFilePath(
+        messages.sourceFilePath
+      )} because keys with identifiers ${highlight(TITLE_KEY_ID)} and ${highlight(
+        SLUG_KEY_ID
+      )} were not found in messages file ${highlightFilePath(messages.messagesFilePath)}`
     );
   }
 
@@ -203,7 +207,9 @@ export class Messages {
     if (message === undefined) {
       if (!suppressWarning) {
         log.warn(
-          `unable to format key with identifier \`${key}\` in \`${this.sourceFilePath}\` because it was not found in messages file \`${this.messagesFilePath}\``
+          `unable to format key with identifier ${highlight(key)} in ${highlightFilePath(
+            this.sourceFilePath
+          )} because it was not found in messages file ${highlightFilePath(this.messagesFilePath)}`
         );
       }
       return '';
@@ -264,14 +270,19 @@ export function handleMessages(
   }
 
   const sourceFilePath = babelifiedMessages.sourceFilePath;
-  const parsedSourceFile = parsePath(sourceFilePath);
-  const sourceFileDirectoryPath = parsedSourceFile.dir;
-  const messagesFilename = `${parsedSourceFile.name}.${normalizeLocale(locale)}.properties`;
-  const messagesFilePath = resolve(sourceFileDirectoryPath, messagesFilename);
+  const sourceBasename = sourceFilePath.split('/').pop();
+  const sourceFilename = sourceBasename.split('.').slice(0, -1).join('.');
+  const sourceFileDirectoryPath = sourceFilePath.split('/').slice(0, -1).join('/');
+  const messagesFilename = `${sourceFilename}.${normalizeLocale(locale)}.properties`;
+  const messagesFilePath = sourceFileDirectoryPath.length
+    ? `${sourceFileDirectoryPath}/${messagesFilename}`
+    : messagesFilename;
 
   if (!babelifiedMessages.keyValueObjectCollection[locale]) {
     log.warn(
-      `unable to use \`${caller}()\` in \`${babelifiedMessages.sourceFilePath}\` because no message file could be found at \`${messagesFilePath}\``
+      `unable to use ${highlight(caller)}() in ${highlightFilePath(
+        babelifiedMessages.sourceFilePath
+      )} because no message file could be found at ${highlightFilePath(messagesFilePath)}`
     );
   }
 

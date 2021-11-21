@@ -1,12 +1,12 @@
 import { readdirSync } from 'fs';
-import { parse, resolve } from 'path';
+import { parse, sep as pathSeparator } from 'path';
 import { keySegmentRegExp, keySegmentRegExpDescription } from '.';
 import { KeyValueObject, KeyValueObjectCollection, parsePropertiesFile } from './properties';
 
 import * as BabelTypes from '@babel/types';
 import type { PluginObj, PluginPass, NodePath } from '@babel/core';
 import template from '@babel/template';
-import { log } from '..';
+import { highlight, highlightFilePath, log } from '..';
 
 export type Program = BabelTypes.Program;
 export type Statement = BabelTypes.Statement;
@@ -97,7 +97,11 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     const keySegments = key.split('.');
     if (keySegments.length !== 3) {
       log.warn(
-        `unable to use messages in \`${propertiesFilePath}\` because the key \`${key}\` is invalid. It must follow the \`<application identifier>.<context>.<id>\` format.`
+        `unable to use messages in ${highlightFilePath(
+          propertiesFilePath
+        )} because the key ${highlight(key)} is invalid. It must follow the ${highlight(
+          '<application identifier>.<context>.<id>'
+        )} format.`
       );
       return {};
     }
@@ -106,7 +110,11 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     // Verify the key's unique application identifier.
     if (appIdSegment !== applicationIdentifier) {
       log.warn(
-        `unable to use messages in \`${propertiesFilePath}\` because the application identifier \`${appIdSegment}\` in key \`${key}\` is invalid. Expected value: \`${applicationIdentifier}\`.`
+        `unable to use messages in ${highlightFilePath(
+          propertiesFilePath
+        )} because the application identifier ${highlight(appIdSegment)} in key ${highlight(
+          key
+        )} is invalid. Expected value: ${highlight(applicationIdentifier)}.`
       );
       return {};
     }
@@ -115,14 +123,24 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     if (context === undefined) {
       if (!keySegmentRegExp.test(contextSegment)) {
         log.warn(
-          `unable to use messages in \`${propertiesFilePath}\` because the context \`${contextSegment}\` in key \`${key}\` is invalid. Key context ${keySegmentRegExpDescription}.`
+          `unable to use messages in ${highlightFilePath(
+            propertiesFilePath
+          )} because the context ${highlight(contextSegment)} in key ${highlight(
+            key
+          )} is invalid. Key context ${keySegmentRegExpDescription}.`
         );
         return {};
       }
       context = contextSegment;
     } else if (contextSegment !== context) {
       log.warn(
-        `unable to use messages in \`${propertiesFilePath}\` because the context \`${contextSegment}\` in key \`${key}\` is invalid. Only one key context is allowed per file. Expected value: \`${context}\`.`
+        `unable to use messages in ${highlightFilePath(
+          propertiesFilePath
+        )} because the context ${highlight(contextSegment)} in key ${highlight(
+          key
+        )} is invalid. Only one key context is allowed per file. Expected value: ${highlight(
+          context
+        )}.`
       );
       return {};
     }
@@ -130,7 +148,11 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     // Verify the key's identifier.
     if (!keySegmentRegExp.test(idSegment)) {
       log.warn(
-        `unable to use messages in \`${propertiesFilePath}\` because the identifier \`${idSegment}\` in key \`${key}\` is invalid. Key identifiers ${keySegmentRegExpDescription}.`
+        `unable to use messages in ${highlightFilePath(
+          propertiesFilePath
+        )} because the identifier ${highlight(idSegment)} in key ${highlight(
+          key
+        )} is invalid. Key identifiers ${keySegmentRegExpDescription}.`
       );
       return {};
     }
@@ -162,7 +184,9 @@ function getBabelifiedMessages(sourceFilePath: string): string {
       const regExpMatch = directoryEntryFilename.match(fileRegExp);
       if (regExpMatch) {
         const locale = regExpMatch.groups.locale;
-        const propertiesFilePath = resolve(sourceFileDirectoryPath, directoryEntryFilename);
+        const propertiesFilePath = sourceFileDirectoryPath.length
+          ? `${sourceFileDirectoryPath}/${directoryEntryFilename}`
+          : directoryEntryFilename;
         babelifiedMessages.keyValueObjectCollection[locale.toLowerCase()] =
           getMessages(propertiesFilePath);
       }
@@ -256,7 +280,19 @@ class Messages {
    */
   constructor(programNodePath: NodePath<Program>, pluginPass: PluginPass) {
     this.programNodePath = programNodePath;
-    this.sourceFilePath = pluginPass.file.opts.filename;
+
+    const leadingPathSeparatorRegExp = new RegExp(`^${escapeRegExp(pathSeparator)}`);
+
+    this.sourceFilePath = pluginPass.file.opts.filename
+      .replace(process.cwd(), '') // Remove absolute portion of the path to make is "app-root-relative".
+      .replace(leadingPathSeparatorRegExp, ''); // Remove leading path separator (e.g. '/') if present.
+
+    if (pathSeparator !== '/') {
+      // Normalize path separators to `/`.
+      const separatorRegExp = new RegExp(`${escapeRegExp(pathSeparator)}`, 'g');
+      this.sourceFilePath = this.sourceFilePath.replace(separatorRegExp, '/');
+    }
+
     this.variableName = this.programNodePath.scope.generateUidIdentifier('messages').name;
   }
 

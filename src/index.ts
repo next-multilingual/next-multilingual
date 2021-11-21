@@ -1,6 +1,7 @@
 import resolveAcceptLanguage from 'resolve-accept-language';
 import type { NextPageContext } from 'next';
 import Cookies from 'nookies';
+import { sep as pathSeparator } from 'path';
 
 import * as nextLog from 'next/dist/build/output/log';
 import chalk from 'chalk';
@@ -33,6 +34,17 @@ export class log {
  */
 export function highlight(segment: string): string {
   return chalk.cyan(segment);
+}
+
+/**
+ * Highlight a file path segment of a log message, normalized with the current file system path separator
+ *
+ * @param filePath - A file path segment of a log message.
+ *
+ * @returns The highlighted file path segment of a log message.
+ */
+export function highlightFilePath(filePath: string): string {
+  return highlight(pathSeparator !== '/' ? filePath.replace(/\//g, pathSeparator) : filePath);
 }
 
 /**

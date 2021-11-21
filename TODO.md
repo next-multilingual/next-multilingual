@@ -6,7 +6,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 - HTML inside properties files (as JSX)
 - Add naming best practice for message key in documentation
-- Refactor 'identifier' to 'id' to make code less verbose
 - Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
 - Test dynamic routes (with placeholders)
@@ -33,11 +32,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Check paths (don't use absolute) and logs (use highlight) in all files other than MulConfig
+- Refactor 'identifier' to 'id' to make code less verbose
 - Test anchor links (including translation and doc)
 
 ### Done ✔️
 
+- Check paths (don't use absolute) and logs (use highlight) in all files other than MulConfig
 - Prevent [] escapes for dynamic routes
 - Rename `MulConfig` to `Config` (and methods)
 - Rename `MulHead` to `Head` to be a hot replace of `next/head`
