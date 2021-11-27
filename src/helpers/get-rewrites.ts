@@ -3,6 +3,13 @@ import { existsSync, readFileSync } from 'fs';
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 import type { ManifestRewrites } from '../types';
 
+// Throw a clear error is this is included by mistake on the client side.
+if (typeof window !== 'undefined') {
+  throw new Error(
+    '`getRewrites` must only be used on the server, please use the `useRewrites` hook instead'
+  );
+}
+
 /** Local rewrite cache to avoid non-required file system operations. */
 let rewritesCache: Rewrite[];
 
@@ -12,9 +19,9 @@ export type RoutesManifest = {
 };
 
 /**
- * Get the Next.js `Rewrite` objects directly from the build manifest.
+ * `useRewrites` server-side alternative to get the Next.js `Rewrite` objects directly from the build manifest.
  *
- * On the client side it's possible to use `getClientBuildManifest` but for server side rendering, this function is required.
+ * The returned object is cached locally for performance, so this API can be called frequented.
  *
  * @returns An array of `Rewrite` objects.
  */

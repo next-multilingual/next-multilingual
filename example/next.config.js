@@ -1,5 +1,7 @@
 const { getConfig } = require('next-multilingual/config');
 
-module.exports = getConfig('exampleApp', ['en-US', 'fr-CA'], {
+const config = getConfig('exampleApp', ['en-US', 'fr-CA'], {
   poweredByHeader: false
 });
+
+module.exports = config;

@@ -656,6 +656,9 @@ export function getConfig(
       config.resolve.alias['next-multilingual/link$'] = require.resolve(
         'next-multilingual/link/ssr'
       );
+      config.resolve.alias['next-multilingual/head$'] = require.resolve(
+        'next-multilingual/head/ssr'
+      );
     }
     return config;
   };

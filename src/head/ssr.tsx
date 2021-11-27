@@ -3,7 +3,14 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { getActualDefaultLocale, getActualLocales } from '..';
 import { getApplicableUrl } from '../helpers/get-applicable-url-path';
-import { useRewrites } from '../hooks/use-rewrites';
+import { getRewrites } from '../helpers/get-rewrites';
+
+// Throw a clear error is this is included by mistake on the client side.
+if (typeof window !== 'undefined') {
+  throw new Error(
+    '`next-multilingual/head/ssr` must only be used on the server, please use `next-multilingual/head` instead'
+  );
+}
 
 /**
  * Head is a wrapper around Next.js' `Head` that provides alternate links with localized URLs and a canonical link.
@@ -25,20 +32,19 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
   const { pathname, basePath, defaultLocale, locales } = useRouter();
   const actualLocales = getActualLocales(locales, defaultLocale);
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
-  const rewrites = useRewrites(); // Setting a variable here since React hooks can't be used in a callback.
 
   return (
     <NextHead>
       <link
         rel="canonical"
-        href={getApplicableUrl(rewrites, pathname, actualDefaultLocale, basePath, true)}
+        href={getApplicableUrl(getRewrites(), pathname, actualDefaultLocale, basePath, true)}
         key="canonical-link"
       />
       {actualLocales.map((actualLocale) => {
         return (
           <link
             rel="alternate"
-            href={getApplicableUrl(rewrites, pathname, actualLocale, basePath, true)}
+            href={getApplicableUrl(getRewrites(), pathname, actualLocale, basePath, true)}
             hrefLang={actualLocale}
             key={`alternate-link-${actualLocale}`}
           />

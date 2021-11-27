@@ -56,9 +56,14 @@ This function will generate a Next.js config that will meet most use cases. `get
 
 To use it, simply add the following code in your application's `next.config.js`:
 
-```ts
+```js
 const { getConfig } = require('next-multilingual/config');
-module.exports = getConfig('exampleApp', ['en-US', 'fr-CA'], { poweredByHeader: false });
+
+const config = getConfig('exampleApp', ['en-US', 'fr-CA'], {
+poweredByHeader: false
+});
+
+module.exports = config;
 ```
 
 Not all configuration options are not supported by `getConfig`. If you ever happen to use one, an error message will point you directly to the next section: advanced config.
@@ -82,6 +87,7 @@ module.exports = {
     webpack(config, { isServer }) {
         if (isServer) {
             config.resolve.alias['next-multilingual/link$'] = require.resolve('next-multilingual/link/ssr');
+            config.resolve.alias['next-multilingual/head$'] = require.resolve('next-multilingual/head/ssr');
         }
         return config;
     },
@@ -102,7 +108,7 @@ module.exports = {
 2. Add [Redirects](https://nextjs.org/docs/api-reference/next.config.js/redirects) to redirect all possible encoded URL [forms](https://unicode.org/reports/tr15/) to the normalized NFC URL.
 
 `next-multilingual/config` also handles the special Webpack configuration required for server side rendering of localized
-URLs using `next-multilingual/link-ssr`.
+URLs using `next-multilingual/link/ssr` for `Link` components and `next-multilingual/head/ssr` for canonical and alternate links in the `Head` component.
 
 For more details on the implementation such as why we are using UTF-8 characters, refer to the [design decisions](./docs/design-decisions.md) document.
 

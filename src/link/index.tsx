@@ -2,7 +2,8 @@ import React, { Children, cloneElement } from 'react';
 import type { ReactElement } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { useLocalizedUrl } from '../hooks/use-localized-url';
+import { useRewrites } from '../hooks/use-rewrites';
+import { getApplicableUrl } from '../helpers/get-applicable-url-path';
 
 /**
  * Link is a wrapper around Next.js' `Link` that provides localized URLs.
@@ -20,15 +21,16 @@ export default function Link({
   ...props
 }: React.PropsWithChildren<NextLinkProps> & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
-  locale = locale ? locale : router.locale;
-  const localizedUrl = useLocalizedUrl(locale, href);
+  const applicableLocale = locale ? locale : router.locale;
+  const applicableUrlPath = getApplicableUrl(useRewrites(), href, applicableLocale);
+
   try {
     if (Children.only(children) && typeof children === 'object' && 'type' in children) {
       /**
-       * On the client, on first render `useLocalizedUrl` doesn't have access to the rewrites data,
-       * and therefore uses the non-localized URL. We suppress React's warning about the difference
-       * with the data provided by the server, as a proper resolution to this would require either
-       * including the rewrite data twice, or deeply refactoring how Next.js works.
+       * On the client, on first render, Next.js doesn't have access to the rewrites data,
+       * and therefore uses "semi-localized" URL paths (e.g. `/fr-ca/about-us`). We suppress React's warning
+       * about the difference with the data provided by the server, as a proper resolution to this would require
+       * either including the rewrite data twice, or deeply refactoring how Next.js works.
        */
       children = cloneElement(children, { suppressHydrationWarning: true });
     }
@@ -36,7 +38,7 @@ export default function Link({
     // Ignore any error; they will be handled by <Link>
   }
   return (
-    <NextLink href={localizedUrl} locale={locale} {...props}>
+    <NextLink href={applicableUrlPath} locale={applicableLocale} {...props}>
       {children}
     </NextLink>
   );

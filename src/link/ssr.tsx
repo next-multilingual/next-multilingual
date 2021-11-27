@@ -1,13 +1,13 @@
 import { ReactElement } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { getLocalizedUrlPath } from '../helpers/get-localized-url-path';
 import { getRewrites } from '../helpers/get-rewrites';
+import { getApplicableUrl } from '../helpers/get-applicable-url-path';
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
   throw new Error(
-    '`next-multilingual/link-ssr` must only be used on the server, please use the `next-multilingual/link` instead'
+    '`next-multilingual/link/ssr` must only be used on the server, please use `next-multilingual/link` instead'
   );
 }
 
@@ -23,12 +23,18 @@ if (typeof window !== 'undefined') {
  * @returns The Next.js `Link` component with the correct localized URLs.
  */
 export default function Link({
+  children,
   href,
   locale,
   ...props
-}: NextLinkProps & { href: string; locale?: string }): ReactElement {
+}: React.PropsWithChildren<NextLinkProps> & { href: string; locale?: string }): ReactElement {
   const router = useRouter();
-  locale = locale ? locale : router.locale;
-  const localizedUrl = getLocalizedUrlPath(getRewrites(), locale, href);
-  return <NextLink href={localizedUrl} locale={locale} {...props} />;
+  const applicableLocale = locale ? locale : router.locale;
+  const applicableUrlPath = getApplicableUrl(getRewrites(), href, applicableLocale);
+
+  return (
+    <NextLink href={applicableUrlPath} locale={applicableLocale} {...props}>
+      {children}
+    </NextLink>
+  );
 }

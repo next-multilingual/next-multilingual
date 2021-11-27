@@ -11,6 +11,7 @@
     "./link": "./lib/link/index.js",
     "./link/ssr": "./lib/link/ssr.js",
     "./head": "./lib/head/index.js",
+    "./head/ssr": "./lib/head/ssr.js",
     "./messages": "./lib/messages/index.js",
     "./messages/babel-plugin": "./lib/messages/babel-plugin.js"
   },
@@ -24,7 +25,8 @@
         "lib/link/ssr.d.ts"
       ],
       "head": [
-        "lib/head/index.d.ts"
+        "lib/head/index.d.ts",
+        "lib/head/ssr.d.ts"
       ],
       "messages": [
         "lib/messages/index.d.ts",

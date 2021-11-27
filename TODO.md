@@ -4,7 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Update Next.js 12
 - Move BabelPlugin to SWC
 - HTML inside properties files (as JSX)
 - Add naming best practice for message key in documentation
@@ -34,10 +33,14 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- Test error when malformed key? 4 levels no logs
+- Test logs when changing URL?
 - Test anchor links (including translation and doc)
 
 ### Done ✔️
 
+- Fix missing SSR links on `Head`
+- Update Next.js 12
 - Refactor 'identifier' to 'id' to make code less verbose
 - Check paths (don't use absolute) and logs (use highlight) in all files other than MulConfig
 - Prevent [] escapes for dynamic routes
