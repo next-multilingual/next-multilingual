@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { getRewrites } from '../helpers/get-rewrites';
-import { getApplicableUrl } from '../helpers/get-applicable-url-path';
+import { getApplicableUrl } from '../helpers/get-applicable-url';
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {

@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { useRewrites } from '../hooks/use-rewrites';
-import { getApplicableUrl } from '../helpers/get-applicable-url-path';
+import { getApplicableUrl } from '../helpers/get-applicable-url';
 
 /**
  * Link is a wrapper around Next.js' `Link` that provides localized URLs.

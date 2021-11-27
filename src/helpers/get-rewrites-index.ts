@@ -1,6 +1,8 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 import { highlight, isLocale, log } from '..';
 
+/** Track the `rewrites` arguments used when calling `getRewritesIndex` to automatically flush the cache. */
+let lastRewrites: Rewrite[];
 /** Local rewrite index cache to avoid non-required operations. */
 let rewritesIndexCache: RewriteIndex;
 
@@ -24,7 +26,9 @@ export type RewriteLocaleIndex = {
  * @returns An object which allows O(1) localized URL access by using a non-localized URL and a locale.
  */
 export function getRewritesIndex(rewrites: Rewrite[]): RewriteIndex {
-  if (rewritesIndexCache) return rewritesIndexCache;
+  if (rewritesIndexCache && lastRewrites === rewrites) return rewritesIndexCache;
+
+  lastRewrites = rewrites; // Track last `rewrites` to hit cache.
 
   const rewritesIndex = {};
 

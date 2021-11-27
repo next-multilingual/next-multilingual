@@ -2,7 +2,7 @@ import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { getActualDefaultLocale, getActualLocales } from '..';
-import { getApplicableUrl } from '../helpers/get-applicable-url-path';
+import { getApplicableUrl } from '../helpers/get-applicable-url';
 import { useRewrites } from '../hooks/use-rewrites';
 
 /**

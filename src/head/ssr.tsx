@@ -2,7 +2,7 @@ import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { getActualDefaultLocale, getActualLocales } from '..';
-import { getApplicableUrl } from '../helpers/get-applicable-url-path';
+import { getApplicableUrl } from '../helpers/get-applicable-url';
 import { getRewrites } from '../helpers/get-rewrites';
 
 // Throw a clear error is this is included by mistake on the client side.
