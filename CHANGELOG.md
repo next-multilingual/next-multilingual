@@ -1,5 +1,7 @@
 ## [0.8.1](https://github.com/Avansai/next-multilingual/compare/0.8.0...0.8.1) (2021-11-27)
 
+- 🐛 fix non-localized SSR URLs in `<Head>` ([841669a](https://github.com/Avansai/next-multilingual/commit/841669a65a033753f525afc538a1d87beab1fc29))
+
 # [0.8.0](https://github.com/Avansai/next-multilingual/compare/0.7.4...0.8.0) (2021-11-21)
 
 - 💥 breaking change - rename core APIs: `MulConfig` -> `Config`, `getMulConfig` -> `getConfig`, `MulLink` -> `Link`, `MulHead` -> `Head` ([47a1c7c](https://github.com/Avansai/next-multilingual/commit/47a1c7c7824da5e9bb04e6c2524dd2d3723296b4
