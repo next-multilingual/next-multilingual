@@ -1,3 +1,5 @@
+## [0.8.3](https://github.com/Avansai/next-multilingual/compare/0.8.2...0.8.3) (2021-11-28)
+
 ## [0.8.2](https://github.com/Avansai/next-multilingual/compare/0.8.1...0.8.2) (2021-11-28)
 
 - 🐛 fix 0.8.1 client-side non-localized URLs bug ([2ff53e2](https://github.com/Avansai/next-multilingual/commit/2ff53e279cb5ba108d30bc5581b32964d5b597e3))
