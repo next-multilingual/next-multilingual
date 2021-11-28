@@ -37,6 +37,6 @@ export function getOrigin(): string {
     );
   }
 
-  origin = nextPublicOrigin;
+  origin = normalizedOrigin;
   return origin;
 }
