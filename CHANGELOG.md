@@ -1,6 +1,10 @@
 ## [0.8.4](https://github.com/Avansai/next-multilingual/compare/0.8.3...0.8.4) (2021-11-28)
 
+- 🐛 fix NEXT_PUBLIC_ORIGIN trailing slash bug ([493b96c](https://github.com/Avansai/next-multilingual/commit/493b96ce7d3af8c50fe3458c17743cdb728cd39a))
+
 ## [0.8.3](https://github.com/Avansai/next-multilingual/compare/0.8.2...0.8.3) (2021-11-28)
+
+- 🐛 fix NEXT_PUBLIC_ORIGIN trailing slash bug ([8a8cb07](https://github.com/Avansai/next-multilingual/commit/8a8cb075cf3427a9b8a6631ebbd8eb41472b3c68))
 
 ## [0.8.2](https://github.com/Avansai/next-multilingual/compare/0.8.1...0.8.2) (2021-11-28)
 
