@@ -346,6 +346,14 @@ export class Config {
   }
 
   /**
+   * Show the content of the route object (can be useful for debugging).
+   */
+  public showRoutes(): void {
+    console.log('==== ROUTES ====');
+    console.dir(this.routes, { depth: null });
+  }
+
+  /**
    * Get the URL locale prefixes.
    *
    * @return The locales prefixes, all in lowercase.
@@ -641,6 +649,14 @@ export function getConfig(
 
   const nextConfig: NextConfig = options ? options : {};
   const config = new Config(applicationId, locales);
+
+  // Check if debug mode was enabled.
+  if (typeof options.debug !== undefined) {
+    if (options.debug === true) {
+      config.showRoutes();
+    }
+    delete options.debug;
+  }
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
   nextConfig.i18n = {

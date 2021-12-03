@@ -4,6 +4,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
+- support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Move BabelPlugin to SWC
 - HTML inside properties files (as JSX)
 - Add naming best practice for message key in documentation
