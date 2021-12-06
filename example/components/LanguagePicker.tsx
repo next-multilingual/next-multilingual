@@ -23,7 +23,7 @@ export default function LanguagePicker(): ReactElement {
     <div className={styles.languagePicker}>
       <button>
         {localeStrings[normalizeLocale(actualLocale)]}
-        <i></i>
+        <i />
       </button>
       <div>
         {actualLocales
