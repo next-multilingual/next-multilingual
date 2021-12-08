@@ -4,9 +4,10 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
+- HTML inside properties files (as JSX)
+- Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Move BabelPlugin to SWC
-- HTML inside properties files (as JSX)
 - Add naming best practice for message key in documentation
 - Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
@@ -34,9 +35,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Test error when malformed key? 4 levels no logs
-- Test logs when changing URL?
-- Test anchor links (including translation and doc)
+- Test UTF-8 encoding and add warnings
 
 ### Done ✔️
 

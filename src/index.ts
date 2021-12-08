@@ -4,7 +4,7 @@ import Cookies from 'nookies';
 import { sep as pathSeparator } from 'path';
 
 import * as nextLog from 'next/dist/build/output/log';
-import chalk from 'chalk';
+import { cyanBright } from 'colorette';
 import type { ParsedUrlQuery } from 'querystring';
 
 /**
@@ -33,7 +33,7 @@ export class log {
  * @returns The highlighted segment of a log message.
  */
 export function highlight(segment: string): string {
-  return chalk.cyan(segment);
+  return cyanBright(segment);
 }
 
 /**
