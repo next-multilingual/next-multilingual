@@ -1,7 +1,7 @@
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { getActualDefaultLocale, getActualLocales } from '..';
+import { getActualDefaultLocale, getActualLocales, normalizeLocale } from '..';
 import { getApplicableUrl } from '../helpers/get-applicable-url';
 import { useRewrites } from '../hooks/use-rewrites';
 
@@ -39,7 +39,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
           <link
             rel="alternate"
             href={getApplicableUrl(rewrites, pathname, actualLocale, basePath, true)}
-            hrefLang={actualLocale}
+            hrefLang={normalizeLocale(actualLocale)}
             key={`alternate-link-${actualLocale}`}
           />
         );
