@@ -25,7 +25,7 @@ export default function Layout({ title, children }: LayoutProps): ReactElement {
         <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       </Head>
-      <header className={styles.header}>
+      <header id="header" className={styles.header}>
         <div>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/">{messages.format('header')}</a>

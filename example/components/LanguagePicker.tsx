@@ -20,7 +20,7 @@ export default function LanguagePicker(): ReactElement {
   const href = hydrateUrlQuery(pathname, query);
 
   return (
-    <div className={styles.languagePicker}>
+    <div id="language-picker" className={styles.languagePicker}>
       <button>
         {localeStrings[normalizeLocale(actualLocale)]}
         <i></i>
@@ -35,7 +35,7 @@ export default function LanguagePicker(): ReactElement {
                   onClick={() => {
                     setCookieLocale(locale);
                   }}
-                >
+                lang={normalizeLocale(locale)}>
                   {localeStrings[normalizeLocale(locale)]}
                 </a>
               </Link>

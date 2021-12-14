@@ -14,3 +14,7 @@ node_modules/
 
 # Secrets
 .env
+
+# Cypress
+cypress/screenshots
+cypress/videos

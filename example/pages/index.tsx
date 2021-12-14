@@ -99,7 +99,7 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
           </tbody>
         </table>
         <br />
-        <div>
+        <div id="shared-messages">
           <h2>{messages.format('sharedHeader')}</h2>
           <div>
             {messages.format('sharedList')}
@@ -126,11 +126,11 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
             <legend>{messages.format('mfUsing')}</legend>
             {messages.format('mfPlural')}
           </fieldset>
-          <p>{messages.format('mfPlural', { count })}</p>
-          <button onClick={() => setCount(count + 1)} title={messages.format('mfAddCandy')}>
+          <p id="plural-messages-output">{messages.format('mfPlural', { count })}</p>
+          <button id="plural-messages-add" onClick={() => setCount(count + 1)} title={messages.format('mfAddCandy')}>
             ➕🍭
           </button>
-          <button
+          <button id="plural-messages-subtract"
             onClick={() => {
               if (count > 0) setCount(count - 1);
             }}
@@ -142,7 +142,7 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
         <br />
         <div>
           <h2>{messages.format('apiHeader')}</h2>
-          <div>{showApiMessage()}</div>
+          <div id="api-response">{showApiMessage()}</div>
         </div>
       </div>
     </Layout>
