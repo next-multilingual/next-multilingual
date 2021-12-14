@@ -177,6 +177,7 @@ export function setCookieLocale(locale: string): void {
   Cookies.set(null, LOCALE_COOKIE_NAME, locale, {
     maxAge: LOCALE_COOKIE_LIFETIME,
     path: '/',
+    sameSite: 'lax',
   });
 }
 
