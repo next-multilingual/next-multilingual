@@ -11,8 +11,10 @@ class MyDocument extends Document {
       : getActualLocale(locale, defaultLocale, locales);
 
     return (
-      <Html lang={normalizeLocale(actualLocale)}>
-        <Head />
+      <Html lang={normalizeLocale(actualLocale)} translate="no" className="notranslate" >
+        <Head>
+          <meta name="google" content="notranslate" />
+        </Head>
         <body>
           <Main />
           <NextScript />

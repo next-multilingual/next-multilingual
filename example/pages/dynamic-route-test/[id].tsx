@@ -14,7 +14,7 @@ export default function Id(): ReactElement {
     <Layout title={title}>
       <h1 className={styles.headline}>{title}</h1>
       <p>{messages.format('details')}</p>
-      <p>{id}</p>
+      <p id="dynamic-value">{id}</p>
     </Layout>
   );
 }

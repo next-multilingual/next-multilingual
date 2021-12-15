@@ -35,6 +35,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- Add a "URL resolve" function for route push events
 - Test UTF-8 encoding and add warnings
 
 ### Done ✔️
