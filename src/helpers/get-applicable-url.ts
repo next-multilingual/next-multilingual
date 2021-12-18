@@ -1,4 +1,9 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
+import {
+  containsRouterQueries,
+  rewriteParametersToRouterQueries,
+  routerQueriesToRewriteParameters,
+} from '..';
 import { getOrigin } from './get-origin';
 import { getRewritesIndex } from './get-rewrites-index';
 
@@ -27,8 +32,14 @@ export function getApplicableUrl(
   if (urlPath === '/') {
     applicableUrl = `/${locale}`; // Special rule for the homepage.
   } else {
-    const localizedUrlPath = getRewritesIndex(rewrites)?.[urlPath]?.[locale];
-    applicableUrl = localizedUrlPath ? localizedUrlPath : `/${locale}${urlPath}`; // Fallback with the original URL path when not found.
+    const isDynamicRoute = containsRouterQueries(urlPath);
+    const searchablePath = isDynamicRoute ? routerQueriesToRewriteParameters(urlPath) : urlPath;
+    const localizedUrlPath = getRewritesIndex(rewrites)?.[searchablePath]?.[locale];
+    applicableUrl = localizedUrlPath
+      ? isDynamicRoute
+        ? rewriteParametersToRouterQueries(localizedUrlPath)
+        : localizedUrlPath
+      : `/${locale}${urlPath}`; // Fallback with the original URL path when not found.
   }
 
   // Set base path (https://nextjs.org/docs/api-reference/next.config.js/basepath) if present.

@@ -709,7 +709,13 @@ export default function SomePage(): ReactElement {
 
 ### Dynamic Routes
 
-[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. When using multilingual URLs, supporting dynamic routes only requires using the `hydrateUrlQuery` function available from the `next-multilingual` module. This function simply re-injects back the value of the parameters into the non-localized URLs which allows Next.js to match it with its localized versions. Below is an example using `hydrateUrlQuery` in a language picker:
+[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. For simplicity, `next-multilingual` currently only supports [path matching](https://nextjs.org/docs/api-reference/next.config.js/rewrites#path-matching) which is also the most common dynamic route use case. To make dynamic routes work with `next-multilingual` all that you need to do is to use pass the `href` property as a `UrlObject` instead of a `string`. Just like any other links, we want to pass the non-localized path used by the Next.js' router (`pathname`). For dynamic routes, the router uses the bracket syntax (e.g. `[page]`) to identify parameters. For example, if you want to create a `<Link>` for for `/test/[id]` you will need to do the following:
+
+```tsx
+<Link href={{ pathname: '/test/[id]', query: {id: '123'}}}/>
+```
+
+In `UrlObject`, parameters are stored in the `query` property, just like the Next.js router. In a language picker, we can use the properties coming directly from the router as shown in the example below:
 
 ```tsx
 import {
@@ -721,7 +727,6 @@ import {
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
 import Link from 'next-multilingual/link';
-import { hydrateUrlQuery } from 'next-multilingual';
 
 // Locales don't need to be localized.
 const localeStrings = {
@@ -733,7 +738,6 @@ export default function LanguagePicker(): ReactElement {
   const { pathname, locale, locales, defaultLocale, query } = useRouter();
   const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);
-  const href = hydrateUrlQuery(pathname, query);
 
   return (
     <div>
@@ -746,7 +750,7 @@ export default function LanguagePicker(): ReactElement {
           .filter((locale) => locale !== actualLocale)
           .map((locale) => {
             return (
-              <Link key={locale} href={href} locale={locale}>
+              <Link key={locale} href={{ pathname, query }} locale={locale}>
                 <a
                   onClick={() => {
                     setCookieLocale(locale);
@@ -763,9 +767,7 @@ export default function LanguagePicker(): ReactElement {
 }
 ```
 
-This allows a seamless experience across localized URLs when using a simple parameters such as a unique (numerical) identifiers. If your parameter itself needs to be localized, you will have to handle that logic yourself before rehydrating the URLs.
-
-A fully working example can be found in the [language picker component example](./example/components/LanguagePicker.tsx).
+This allows a seamless experience across localized URLs when using a simple parameters such as a unique (numerical) identifiers. If your parameter itself needs to be localized, you will have to handle that logic yourself.
 
 ## Translation Process 🈺
 

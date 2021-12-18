@@ -3,6 +3,7 @@ import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { getRewrites } from '../helpers/get-rewrites';
 import { getApplicableUrl } from '../helpers/get-applicable-url';
+import { hydrateUrlQuery } from '..';
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
@@ -27,13 +28,22 @@ export default function Link({
   href,
   locale,
   ...props
-}: React.PropsWithChildren<NextLinkProps> & { href: string; locale?: string }): ReactElement {
+}: React.PropsWithChildren<NextLinkProps>): ReactElement {
   const router = useRouter();
   const applicableLocale = locale ? locale : router.locale;
-  const applicableUrlPath = getApplicableUrl(getRewrites(), href, applicableLocale);
+  const searchableUrl = href['pathname'] !== undefined ? href['pathname'] : href;
+  const applicableUrlPath = getApplicableUrl(getRewrites(), searchableUrl, applicableLocale);
 
   return (
-    <NextLink href={applicableUrlPath} locale={applicableLocale} {...props}>
+    <NextLink
+      href={
+        href['query'] !== undefined
+          ? hydrateUrlQuery(applicableUrlPath, href['query'])
+          : applicableUrlPath
+      }
+      locale={applicableLocale}
+      {...props}
+    >
       {children}
     </NextLink>
   );

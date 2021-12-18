@@ -4,11 +4,13 @@ import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { useRewrites } from '../hooks/use-rewrites';
 import { getApplicableUrl } from '../helpers/get-applicable-url';
+import { hydrateUrlQuery } from '..';
 
 /**
  * Link is a wrapper around Next.js' `Link` that provides localized URLs.
  *
- * @param href - A non-localized Next.js `href` without a locale prefix (e.g. `/contact-us`)
+ * @param href - A non-localized Next.js `href` without a locale prefix (e.g. `/contact-us`) or its equivalent using
+ * a `UrlObject` (mostly useful when using dynamic routes).
  * @param locale - The locale to grab the correct localized path.
  * @param props - Any property available on the `LinkProps` (properties of the Next.js' `Link` component).
  *
@@ -19,10 +21,11 @@ export default function Link({
   href,
   locale,
   ...props
-}: React.PropsWithChildren<NextLinkProps> & { href: string; locale?: string }): ReactElement {
+}: React.PropsWithChildren<NextLinkProps>): ReactElement {
   const router = useRouter();
   const applicableLocale = locale ? locale : router.locale;
-  const applicableUrlPath = getApplicableUrl(useRewrites(), href, applicableLocale);
+  const searchableUrl = href['pathname'] !== undefined ? href['pathname'] : href;
+  const applicableUrlPath = getApplicableUrl(useRewrites(), searchableUrl, applicableLocale);
 
   try {
     if (Children.only(children) && typeof children === 'object' && 'type' in children) {
@@ -38,7 +41,15 @@ export default function Link({
     // Ignore any error; they will be handled by <Link>
   }
   return (
-    <NextLink href={applicableUrlPath} locale={applicableLocale} {...props}>
+    <NextLink
+      href={
+        href['query'] !== undefined
+          ? hydrateUrlQuery(applicableUrlPath, href['query'])
+          : applicableUrlPath
+      }
+      locale={applicableLocale}
+      {...props}
+    >
       {children}
     </NextLink>
   );

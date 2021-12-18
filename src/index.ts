@@ -232,3 +232,52 @@ export function hydrateUrlQuery(pathname: string, parsedUrlQuery: ParsedUrlQuery
   }
   return usableUrl;
 }
+
+/**
+ * Convert a path using "router queries" to "rewrite parameters".
+ *
+ * Next.js' router uses `[example]` to identify dynamic routes in its `Router` but `rewrites` use the
+ * `:example` format called "parameters".
+ *
+ * @see https://nextjs.org/docs/routing/dynamic-routes
+ * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites
+ *
+ * @param path - A path.
+ *
+ * @returns The path converted to the "rewrite parameters" format.
+ */
+export function routerQueriesToRewriteParameters(path: string): string {
+  return path
+    .replace(/\/\[(.+)\]\//g, '/:$1/') // Converts all "router queries" between slashes, if present.
+    .replace(/\/\[(.+)\]$/, '/:$1'); // Convert trailing "router queries", if present.
+}
+
+/**
+ * Convert a path using "rewrite parameters" to "router queries".
+ *
+ * Next.js' router uses `[example]` to identify dynamic routes in its `Router` but `rewrites` use the
+ * `:example` format called "parameters".
+ *
+ * @see https://nextjs.org/docs/routing/dynamic-routes
+ * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites
+ *
+ * @param path - A path.
+ *
+ * @returns The path converted to the "router queries" format.
+ */
+export function rewriteParametersToRouterQueries(path: string): string {
+  return path
+    .replace(/\/:(.+)\//g, '/[$1]') // Converts all "rewrite parameters" between slashes, if present.
+    .replace(/\/:(.+)$/, '/[$1]'); // Convert trailing "rewrite parameters", if present.
+}
+
+/**
+ * Does a given path contain "router queries"?
+ *
+ * @param path - A path.
+ *
+ * @returns True if the path contains "router queries", otherwise false.
+ */
+export function containsRouterQueries(path: string): boolean {
+  return /\/\[(.+)\]\//g.test(path) || /\/\[(.+)\]$/.test(path);
+}
