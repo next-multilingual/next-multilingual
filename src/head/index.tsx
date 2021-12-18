@@ -2,7 +2,7 @@ import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { getActualDefaultLocale, getActualLocales, normalizeLocale } from '..';
-import { getApplicableUrl } from '../helpers/get-applicable-url';
+import { getLocalizedUrl } from '../helpers/get-localized-url';
 import { useRewrites } from '../hooks/use-rewrites';
 
 /**
@@ -22,7 +22,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
    * | be correctly picked up on client-side navigation.
    *
    */
-  const { pathname, basePath, defaultLocale, locales } = useRouter();
+  const { pathname, basePath, defaultLocale, locales, query } = useRouter();
   const actualLocales = getActualLocales(locales, defaultLocale);
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
   const rewrites = useRewrites(); // Setting a variable here since React hooks can't be used in a callback.
@@ -31,14 +31,14 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
     <NextHead>
       <link
         rel="canonical"
-        href={getApplicableUrl(rewrites, pathname, actualDefaultLocale, basePath, true)}
+        href={getLocalizedUrl(rewrites, { pathname, query }, actualDefaultLocale, basePath, true)}
         key="canonical-link"
       />
       {actualLocales.map((actualLocale) => {
         return (
           <link
             rel="alternate"
-            href={getApplicableUrl(rewrites, pathname, actualLocale, basePath, true)}
+            href={getLocalizedUrl(rewrites, { pathname, query }, actualLocale, basePath, true)}
             hrefLang={normalizeLocale(actualLocale)}
             key={`alternate-link-${actualLocale}`}
           />

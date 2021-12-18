@@ -1,8 +1,11 @@
 /**
  * Shared types.
  */
-
 import { Rewrite } from 'next/dist/lib/load-custom-routes';
+import { UrlObject } from 'url';
+
+/** Type used to get localized URLs. */
+export type Url = string | UrlObject;
 
 /**
  * Rewrites (type is not available in Next.js)

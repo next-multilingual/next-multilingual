@@ -225,7 +225,7 @@ export function hydrateUrlQuery(pathname: string, parsedUrlQuery: ParsedUrlQuery
 
   let usableUrl = pathname;
   for (const [queryName, queryValue] of Object.entries(parsedUrlQuery)) {
-    if (typeof queryValue === 'string') {
+    if (typeof queryValue === 'string' || typeof queryValue === 'number') {
       // `ParsedUrlQuery` can also contain arrays, which does not apply to URLs.
       usableUrl = usableUrl.replace(`[${queryName}]`, queryValue as string);
     }
