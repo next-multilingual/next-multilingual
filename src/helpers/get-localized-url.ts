@@ -1,9 +1,9 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 import {
-  containsRouterQueries,
-  hydrateUrlQuery,
-  rewriteParametersToRouterQueries,
-  routerQueriesToRewriteParameters,
+  containsQueryParameters,
+  hydrateQueryParameters,
+  rewriteToQueryParameters,
+  queryToRewriteParameters,
 } from '..';
 import { Url } from '../types';
 import { getOrigin } from './get-origin';
@@ -13,7 +13,7 @@ import { getRewritesIndex } from './get-rewrites-index';
  * Get the localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  *
  * @param rewrites - An array of Next.js rewrite objects.
- * @param urlPath - A non-localized Next.js `href` without a locale prefix (e.g. `/contact-us`) or its equivalent using
+ * @param url - A non-localized Next.js URL path without a locale prefix (e.g. `/contact-us`) or its equivalent using
  * a `UrlObject`.
  * @param locale - The locale of the localized URL.
  * @param basePath - A path prefix for the Next.js application.
@@ -23,27 +23,25 @@ import { getRewritesIndex } from './get-rewrites-index';
  */
 export function getLocalizedUrl(
   rewrites: Rewrite[],
-  urlPath: Url,
+  url: Url,
   locale: string,
   basePath: string = undefined,
   absolute = false
 ): string {
-  let localizedUrl = urlPath['pathname'] !== undefined ? urlPath['pathname'] : urlPath;
+  let urlPath = url['pathname'] !== undefined ? url['pathname'] : url;
 
-  if (localizedUrl === '/') {
-    localizedUrl = `/${locale}`; // Special rule for the homepage.
+  if (urlPath === '/') {
+    urlPath = `/${locale}`; // Special rule for the homepage.
   } else {
-    const isDynamicRoute = containsRouterQueries(localizedUrl);
-    const searchablePath = isDynamicRoute
-      ? routerQueriesToRewriteParameters(localizedUrl)
-      : localizedUrl;
-    const rewriteUrlMatch = getRewritesIndex(rewrites)?.[searchablePath]?.[locale];
-    localizedUrl =
+    const isDynamicRoute = containsQueryParameters(urlPath);
+    const searchableUrlPath = isDynamicRoute ? queryToRewriteParameters(urlPath) : urlPath;
+    const rewriteUrlMatch = getRewritesIndex(rewrites)?.[searchableUrlPath]?.[locale];
+    urlPath =
       rewriteUrlMatch !== undefined
         ? isDynamicRoute
-          ? rewriteParametersToRouterQueries(rewriteUrlMatch)
+          ? rewriteToQueryParameters(rewriteUrlMatch)
           : rewriteUrlMatch
-        : `/${locale}${localizedUrl}`; // Fallback with the original URL path when not found.
+        : `/${locale}${urlPath}`; // Fallback with the original URL path when not found.
   }
 
   // Set base path (https://nextjs.org/docs/api-reference/next.config.js/basepath) if present.
@@ -51,16 +49,14 @@ export function getLocalizedUrl(
     if (basePath[0] !== '/') {
       throw new Error(`Specified basePath has to start with a /, found "${basePath}"`);
     }
-    localizedUrl = `${basePath}${localizedUrl}`;
+    urlPath = `${basePath}${urlPath}`;
   }
 
   // Set origin if an absolute URL is requested.
   if (absolute) {
     const origin = getOrigin();
-    localizedUrl = `${origin}${localizedUrl}`;
+    urlPath = `${origin}${urlPath}`;
   }
 
-  return urlPath['query'] !== undefined
-    ? hydrateUrlQuery(localizedUrl, urlPath['query'])
-    : localizedUrl;
+  return url['query'] !== undefined ? hydrateQueryParameters(urlPath, url['query']) : urlPath;
 }

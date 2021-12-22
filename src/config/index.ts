@@ -6,7 +6,7 @@ import {
   highlightFilePath,
   isLocale,
   normalizeLocale,
-  routerQueriesToRewriteParameters,
+  queryToRewriteParameters,
 } from '..';
 import { parsePropertiesFile } from '../messages/properties';
 import {
@@ -564,14 +564,22 @@ export class Config {
       normalizedUrlPath = this.encodeUrlPath(normalizedUrlPath);
     }
 
-    // Needs to unescape both brackets and colons since we use the same method in `getRedirects`.
-    return routerQueriesToRewriteParameters(
-      normalizedUrlPath
-        .replace(/\/%3A(.+)\//g, '/:$1/') // Unescape rewrite parameter URL segments if present.
-        .replace(/\/%3A(.+)$/g, '/:$1') // Unescape rewrite parameter URL segments if present.
-        .replace(/\/%5B(.+)%5D\//g, '/:$1/') // Unescape router query URL segments if present.
-        .replace(/\/%5B(.+)%5D$/, '/:$1') // Unescape a URL ending with a router query if present.
-    );
+    // Need to unescape both rewrite and query parameters since we use the same method in `getRedirects`.
+    normalizedUrlPath = normalizedUrlPath
+      .split('/')
+      .map((pathSegment) => {
+        if (/%3A(.+)/.test(pathSegment)) {
+          // Unescape rewrite parameters (e.g. `/:example`) if present.
+          return `:${pathSegment.slice(3)}`;
+        } else if (/%5B(.+)%5D/.test(pathSegment)) {
+          // Unescape query parameters (e.g. `/[example]`) if present.
+          return `:${pathSegment.slice(3, -3)}`;
+        }
+        return pathSegment;
+      })
+      .join('/');
+
+    return queryToRewriteParameters(normalizedUrlPath);
   }
 
   /**

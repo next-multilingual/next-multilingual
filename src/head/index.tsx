@@ -1,7 +1,16 @@
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { getActualDefaultLocale, getActualLocales, normalizeLocale } from '..';
+import {
+  containsQueryParameters,
+  getActualDefaultLocale,
+  getActualLocales,
+  getQueryParameters,
+  highlight,
+  hydrateQueryParameters,
+  log,
+  normalizeLocale,
+} from '..';
 import { getLocalizedUrl } from '../helpers/get-localized-url';
 import { useRewrites } from '../hooks/use-rewrites';
 
@@ -23,9 +32,28 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
    *
    */
   const { pathname, basePath, defaultLocale, locales, query } = useRouter();
+  const rewrites = useRewrites(); // Setting a variable here since React hooks can't be used in a callback.
+
+  // Check if it's a dynamic router and if we have all the information to generate the links.
+  if (containsQueryParameters(pathname)) {
+    const hydratedUrlPath = hydrateQueryParameters(pathname, query, true);
+    if (containsQueryParameters(hydratedUrlPath)) {
+      const missingParameters = getQueryParameters(hydratedUrlPath);
+      log.warn(
+        `unable to generate canonical and alternate links for the path ${highlight(
+          pathname
+        )} because the following query parameter${
+          missingParameters.length > 1 ? 's are' : ' is'
+        } missing: ${highlight(
+          missingParameters.join(',')
+        )}. Did you forget to add a 'getServerSideProps' too your page?`
+      );
+      return <NextHead>{children}</NextHead>;
+    }
+  }
+
   const actualLocales = getActualLocales(locales, defaultLocale);
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
-  const rewrites = useRewrites(); // Setting a variable here since React hooks can't be used in a callback.
 
   return (
     <NextHead>

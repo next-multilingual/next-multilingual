@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["es2016", "dom"],
+    "lib": ["es2018", "dom"],
     "types": ["cypress"]
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "plugins/index.ts", "plugins/index.ts"]
 }

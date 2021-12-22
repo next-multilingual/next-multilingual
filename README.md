@@ -2,10 +2,9 @@
 
 `next-multilingual` is an opinionated end-to-end solution for Next.js applications that requires multiple languages..
 
-Check out our [demo app](https://next-multilingual-example.vercel.app)! 
+Check out our [demo app](https://next-multilingual-example.vercel.app)!
 
 [![Try me](https://img.shields.io/badge/-Try%20me!-green?style=for-the-badge)](https://next-multilingual-example.vercel.app)
-
 
 ## Installation 💻
 
@@ -60,7 +59,7 @@ To use it, simply add the following code in your application's `next.config.js`:
 const { getConfig } = require('next-multilingual/config');
 
 const config = getConfig('exampleApp', ['en-US', 'fr-CA'], {
-poweredByHeader: false
+  poweredByHeader: false,
 });
 
 module.exports = config;
@@ -78,25 +77,29 @@ const { Config } = require('next-multilingual/config');
 const config = new Config('exampleApp', ['en-US', 'fr-CA']);
 
 module.exports = {
-    i18n: {
-        locales: config.getUrlLocalePrefixes(),
-        defaultLocale: config.getDefaultUrlLocalePrefix(),
-        localeDetection: false
-    },
-    poweredByHeader: false,
-    webpack(config, { isServer }) {
-        if (isServer) {
-            config.resolve.alias['next-multilingual/link$'] = require.resolve('next-multilingual/link/ssr');
-            config.resolve.alias['next-multilingual/head$'] = require.resolve('next-multilingual/head/ssr');
-        }
-        return config;
-    },
-    async rewrites() {
-        return config.getRewrites();
-    },
-    async redirects() {
-        return config.getRedirects();
+  i18n: {
+    locales: config.getUrlLocalePrefixes(),
+    defaultLocale: config.getDefaultUrlLocalePrefix(),
+    localeDetection: false,
+  },
+  poweredByHeader: false,
+  webpack(config, { isServer }) {
+    if (isServer) {
+      config.resolve.alias['next-multilingual/link$'] = require.resolve(
+        'next-multilingual/link/ssr'
+      );
+      config.resolve.alias['next-multilingual/head$'] = require.resolve(
+        'next-multilingual/head/ssr'
+      );
     }
+    return config;
+  },
+  async rewrites() {
+    return config.getRewrites();
+  },
+  async redirects() {
+    return config.getRedirects();
+  },
 };
 ```
 
@@ -111,7 +114,6 @@ module.exports = {
 URLs using `next-multilingual/link/ssr` for `Link` components and `next-multilingual/head/ssr` for canonical and alternate links in the `Head` component.
 
 For more details on the implementation such as why we are using UTF-8 characters, refer to the [design decisions](./docs/design-decisions.md) document.
-
 
 ### Configure our Babel plugin
 
@@ -229,21 +231,16 @@ import {
   getActualDefaultLocale,
   getActualLocale,
   getPreferredLocale,
-  getCookieLocale
+  getCookieLocale,
 } from 'next-multilingual';
 import type { NextPageContext } from 'next';
 import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import Layout from '@/layout';
 import { useMessages, getTitle } from 'next-multilingual/messages';
-import {
-  ResolvedLocaleServerSideProps,
-  setCookieLocale
-} from 'next-multilingual';
+import { ResolvedLocaleServerSideProps, setCookieLocale } from 'next-multilingual';
 
-export default function IndexPage({
-  resolvedLocale
-}: ResolvedLocaleServerSideProps): ReactElement {
+export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSideProps): ReactElement {
   const router = useRouter();
 
   // Overwrite the locale with the resolved locale.
@@ -283,8 +280,8 @@ export async function getServerSideProps(
 
   return {
     props: {
-      resolvedLocale
-    }
+      resolvedLocale,
+    },
   };
 }
 ```
@@ -292,11 +289,11 @@ export async function getServerSideProps(
 In a nutshell, this is what is happening:
 
 1. Let the server get the best locale for the page by:
-    - Checking if a previously used locale is available in the `next-multilingual`'s locale cookie.
-    - Otherwise, use smart locale detection based on the user's browsers settings.
+   - Checking if a previously used locale is available in the `next-multilingual`'s locale cookie.
+   - Otherwise, use smart locale detection based on the user's browsers settings.
 2. The server then passes the resolved locale back to the client and:
-    - The client overwrites the value on the router to make this dynamic across the application.
-    - The value is also stored back in the cookie to keep the selection consistent
+   - The client overwrites the value on the router to make this dynamic across the application.
+   - The value is also stored back in the cookie to keep the selection consistent
 
 ### Creating messages
 
@@ -318,7 +315,7 @@ To summarize:
 Creating and managing those files is as simple as creating a style sheet, but here are the important details:
 
 - The message files are `.properties` files. Yes, you might wonder why, but there are good reasons documented in the [design decision document](./docs/design-decisions.md).
-- Make sure yours file encoding is set to `UTF-8`. Not doing so will replace non-latin characters by `�`. 
+- Make sure yours file encoding is set to `UTF-8`. Not doing so will replace non-latin characters by `�`.
 - To leverage some of the built-in IDE support for `.properties` files, we follow a strict naming convention: `<PageFilename>.<locale>.properties`
 - Each message must have unique keys that follow a strict naming convention: `<applicationId>.<context>.<id>` where:
   - **applicationId** must use the same value as set in `next-multilingual/config`
@@ -338,12 +335,12 @@ Also, make sure to check your console log for warnings about potential issues wi
 
 As mentioned previously, there is one special key for `pages`, where the `id` is `slug`. Unlike traditional slugs that look like `this-is-a-page`, we ask you to write the slug as a normal and human readable sentence, so that it can be translated like any other string. This avoids having special processes for slugs which can be costly and complex to manage in multiple languages.
 
- Basically the `slug` is the human readable "short description" of your page, and represents a segment (part between `/` or at the end of the path) of a URL. When used as a URL segment, the following transformation is applied:
+Basically the `slug` is the human readable "short description" of your page, and represents a segment (part between `/` or at the end of the path) of a URL. When used as a URL segment, the following transformation is applied:
 
 - all characters will be lowercased
 - spaces will be replaced by `-`
 
-For example, `About Us` will become `about-us`. 
+For example, `About Us` will become `about-us`.
 
 For the homepage, the URL will always be `/` which means that `slug` keys will not be used to create localized URL segments.
 
@@ -367,6 +364,7 @@ exampleApp.homepage.title = Homepage
 # Homepage headline
 exampleApp.homepage.headline = Welcome to the homepage
 ```
+
 ### Creating other pages
 
 Now that we learned how to create the homepage and some of the details around how things work, we can easily create other pages. We create many pages in the [example](./example), but here is a sample of what `about-us.jsx` could look like:
@@ -391,7 +389,7 @@ export default function AboutUs(): ReactElement {
 And of course you would have this message file `about-us.en-US.properties`:
 
 ```properties
-# Page localized URL segment (slug) in (translatable) human readable format. 
+# Page localized URL segment (slug) in (translatable) human readable format.
 # This key will be transformed when used in URLs. For example "About Us" will become "about-us".
 # All characters will be lowercased and all spaces will be replaced by dashes.
 exampleApp.aboutUsPage.slug = About Us
@@ -438,6 +436,25 @@ Each of these links will be automatically localized when the `slug` key is speci
 
 As the data for this mapping is not immediately available during rendering, `next-multilingual/link/ssr` will take care of the server side rendering (SSR). By using `next-multilingual/config`'s `getConfig`, the Webpack configuration will be added automatically. If you are using the advanced `Config` method, this explains on why the special Webpack configuration is required in the example provided prior.
 
+### Adding links to other components
+
+Not all links are using the `<Link>` component and this is also why Next.js has the `router.push` method that that can used by many other use cases. `next-multilingual` can support these use cases with the `useLocalizedUrl` hook that will return a localized URL, usable by any components. Here is an example on how it can be leveraged:
+
+```tsx
+import { useMessages } from 'next-multilingual/messages';
+import { ReactElement } from 'react';
+import { useLocalizedUrl } from 'next-multilingual/link';
+import router from 'next/router';
+
+export default function Tests(): ReactElement {
+  const messages = useMessages();
+
+  const localizedUrl = useLocalizedUrl('/about-us');
+
+  return <button onClick={() => router.push(localizedUrl)}>{messages.format('clickMe')}</button>;
+}
+```
+
 ### Creating components
 
 Creating components is the same as pages but they live outside the `pages` directory. Also, the `slug` key (if used) will not have any impact on URLs. We have a few [example components](./example/components) that should be self explanatory but here is an example of a `Footer.tsx` component:
@@ -448,11 +465,7 @@ import { useMessages } from 'next-multilingual/messages';
 
 export default function Footer(): ReactElement {
   const messages = useMessages();
-  return (
-    <footer>
-      {messages.format('footerMessage')}
-    </footer>
-  );
+  return <footer>{messages.format('footerMessage')}</footer>;
 }
 ```
 
@@ -469,7 +482,7 @@ Also make sure to look at the [language picker component example](./example/comp
 
 We've been clear that sharing messages is a bad practice from the beginning, so what are we talking about here? In fact, sharing messages by itself is not bad. What can cause problems is when you share messages in different contexts. For example, you might be tempted to create a `Button.ts` shared message file containing `yesButton`, `noButton` keys - but this would be wrong. In many languages simple words as "yes" and "no" can have different spellings depending on the context, even if it's a button.
 
-When is it good to share messages? For list of items. 
+When is it good to share messages? For list of items.
 
 For example, to keep your localization process simple, you want to avoid as much as possible storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). In your database you would identify the context using unique identifiers and you would store your messages in shared message files, where your key's identifiers would match the ones from the database.
 
@@ -526,13 +539,13 @@ The idea to share those lists of items is that you can have a consistent experie
 Using variables in messages is a critical functionality as not all messages contain static text. `next-multilingual` supports the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) syntax out of the box which means that you can use the following message:
 
 ```properties
-exampleApp.homepage.welcome = Hello, {firstName} {lastName}!
+exampleApp.homepage.welcome = Hello {name}!
 ```
 
 And inject back the values using:
 
 ```ts
-messages.format('welcome', { firstName: 'John', lastName: 'Doe' })
+messages.format('welcome', { name: 'John Doe' });
 ```
 
 If you do not provide the values of your variables when formatting the message, it will simply output the message as static text.
@@ -550,7 +563,7 @@ exampleApp.homepage.mfPlural = {count, plural, =0 {No candy left.} one {Got # ca
 And the correct plural form will be picked, using the correct plural categories defined by Unicode:
 
 ```ts
-messages.format('mfPlural', { count })
+messages.format('mfPlural', { count });
 ```
 
 There is a lot to learn on this topic. Make sure to read the Unicode documentation and [try the syntax yourself](https://format-message.github.io/icu-message-format-for-translators/editor.html) to get more familiar with this under-hyped i18n capability.
@@ -573,19 +586,16 @@ Just like `<Link>`, `<Head>` is meant to be a drop-in replacement for Next.js's 
 ```tsx
 <Head>
   <title>{title}</title>
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  ></meta>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 </Head>
 ```
 
 All this does is insert the canonical and alternate links so that search engines can better crawl your application. For example, if you are on the `/en-us/about-us` page, the following HTML will be added automatically under your HTML `<head>` tag:
 
 ```html
-<link rel="canonical" href="http://localhost:3000/en-us/about-us">
-<link rel="alternate" href="http://localhost:3000/en-us/about-us" hreflang="en-US">
-<link rel="alternate" href="http://localhost:3000/fr-ca/%C3%A0-propos-de-nous" hreflang="fr-CA">
+<link rel="canonical" href="http://localhost:3000/en-us/about-us" />
+<link rel="alternate" href="http://localhost:3000/en-us/about-us" hreflang="en-US" />
+<link rel="alternate" href="http://localhost:3000/fr-ca/%C3%A0-propos-de-nous" hreflang="fr-CA" />
 ```
 
 To fully benefit from the SEO markup, `<Head>` must be included on all pages. There are multiple ways to achieve this, but in the example, we created a `<Layout>` [component](./example/layout/Layout.tsx) that is used on all pages.
@@ -660,7 +670,6 @@ You can implement this in any pages, just like any other React-based API call, l
 
 ```tsx
 export default function SomePage(): ReactElement {
- 
   const [apiError, setApiError] = useState(null);
   const [isApiLoaded, setApiIsLoaded] = useState(false);
   const [apiMessage, setApiMessage] = useState('');
@@ -712,7 +721,7 @@ export default function SomePage(): ReactElement {
 [Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. For simplicity, `next-multilingual` currently only supports [path matching](https://nextjs.org/docs/api-reference/next.config.js/rewrites#path-matching) which is also the most common dynamic route use case. To make dynamic routes work with `next-multilingual` all that you need to do is to use pass the `href` property as a `UrlObject` instead of a `string`. Just like any other links, we want to pass the non-localized path used by the Next.js' router (`pathname`). For dynamic routes, the router uses the bracket syntax (e.g. `[page]`) to identify parameters. For example, if you want to create a `<Link>` for for `/test/[id]` you will need to do the following:
 
 ```tsx
-<Link href={{ pathname: '/test/[id]', query: {id: '123'}}}/>
+<Link href={{ pathname: '/test/[id]', query: { id: '123' } }} />
 ```
 
 In `UrlObject`, parameters are stored in the `query` property, just like the Next.js router. In a language picker, we can use the properties coming directly from the router as shown in the example below:
@@ -722,7 +731,7 @@ import {
   normalizeLocale,
   getActualLocales,
   getActualLocale,
-  setCookieLocale
+  setCookieLocale,
 } from 'next-multilingual';
 import { useRouter } from 'next/router';
 import type { ReactElement } from 'react';
@@ -731,7 +740,7 @@ import Link from 'next-multilingual/link';
 // Locales don't need to be localized.
 const localeStrings = {
   'en-US': 'English (United States)',
-  'fr-CA': 'Français (Canada)'
+  'fr-CA': 'Français (Canada)',
 };
 
 export default function LanguagePicker(): ReactElement {
@@ -767,7 +776,19 @@ export default function LanguagePicker(): ReactElement {
 }
 ```
 
-This allows a seamless experience across localized URLs when using a simple parameters such as a unique (numerical) identifiers. If your parameter itself needs to be localized, you will have to handle that logic yourself.
+Note that while this example is using the `<Link>` component, this is also support by the `useLocalizedUrl` hook when other components are used.
+
+There is one last thing that needs to be taken care of, and it's making query parameters available for SSR. By default Next.js' router will return `{}` for its `query` property. To fix this and get the SEO benefits from SSR markup, we can simply add a `getServerSideProps` on the page with the dynamic route. As soon as we add a `getServerSideProps`, Next.js will make all the data available without any additional work. There is no need to even read the properties return from `getServerSideProps` for this to work. Here is an example of a minimalist `getServerSideProps` that will do exactly this:
+
+```tsx
+export const getServerSideProps: GetServerSideProps = async () => {
+  return { props: {} };
+};
+```
+
+This allows a seamless experience across localized URLs when using a simple parameters such as a unique identifiers (e.g. UUIDs or numerical). If your parameter itself needs to be localized, you will have to handle that logic yourself using `getServerSideProps`.
+
+We also provided a [fully working example](./example/pages/dynamic-route-test/[id].tsx) for those who wants to see it in action.
 
 ## Translation Process 🈺
 
@@ -786,4 +807,4 @@ Why did we put so much effort with these details? Because our hypothesis is that
 - Boosting customer trust with more locally relevant content.
 - Making string management easier and more modular.
 
-More details an be found on the implementation and design decision in the individual README files of each API and in the [documentation](./doc) directory. 
+More details an be found on the implementation and design decision in the individual README files of each API and in the [documentation](./doc) directory.

@@ -5,7 +5,7 @@ import { sep as pathSeparator } from 'path';
 
 import * as nextLog from 'next/dist/build/output/log';
 import { cyanBright } from 'colorette';
-import type { ParsedUrlQuery } from 'querystring';
+import { ParsedUrlQuery } from 'querystring';
 
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
@@ -134,7 +134,7 @@ export function normalizeLocale(locale: string): string {
 }
 
 /**
- * Generic properties for multilingual messages when using `getServerSideProps` on `/`.
+ * Generic type when using `getServerSideProps` on `/` to do dynamic locale detection.
  */
 export type ResolvedLocaleServerSideProps = {
   /** The locale resolved by the server side detection. */
@@ -207,77 +207,127 @@ export function getCookieLocale(nextPageContext: NextPageContext, actualLocales:
 }
 
 /**
- * Hydrate a URL back with its query values.
+ * Hydrate a path back with its query values.
  *
- * This allows to re-inject dynamic routes values back into URLs.
+ * Missing query parameters will show warning messages and will be kept in their original format.
  *
  * @see https://nextjs.org/docs/routing/dynamic-routes
  *
- * @param pathname - The `pathname` property coming from Next.js' `useRouter()`.
- * @param parsedUrlQuery - A `ParsedUrlQuery` object containing URL queries.
+ * @param path - A path containing "query parameters".
+ * @param parsedUrlQuery - A `ParsedUrlQuery` object containing router queries.
+ * @param suppressWarning - If set to true, will not display a warning message if the key is missing.
  *
- * @returns The hydrated URL containing `query` values instead of placeholders.
+ * @returns The hydrated path containing `query` values instead of placeholders.
  */
-export function hydrateUrlQuery(pathname: string, parsedUrlQuery: ParsedUrlQuery): string {
-  if (!parsedUrlQuery || !Object.entries(parsedUrlQuery).length) {
-    return pathname;
+export function hydrateQueryParameters(
+  path: string,
+  parsedUrlQuery: ParsedUrlQuery,
+  suppressWarning = false
+): string {
+  const pathSegments = path.split('/');
+  const missingParameters = [];
+
+  const hydratedPath = pathSegments
+    .map((pathSegment) => {
+      if (/^\[.+\]$/.test(pathSegment)) {
+        const parameterName = pathSegment.slice(1, -1);
+        if (parsedUrlQuery[parameterName] !== undefined) {
+          return parsedUrlQuery[parameterName];
+        } else {
+          missingParameters.push(parameterName);
+        }
+      }
+      return pathSegment;
+    })
+    .join('/');
+
+  if (missingParameters.length && !suppressWarning) {
+    log.warn(
+      `unable to hydrate the path ${highlight(path)} because the following query parameter${
+        missingParameters.length > 1 ? 's are' : ' is'
+      } missing: ${highlight(missingParameters.join(','))}.`
+    );
   }
 
-  let usableUrl = pathname;
-  for (const [queryName, queryValue] of Object.entries(parsedUrlQuery)) {
-    if (typeof queryValue === 'string' || typeof queryValue === 'number') {
-      // `ParsedUrlQuery` can also contain arrays, which does not apply to URLs.
-      usableUrl = usableUrl.replace(`[${queryName}]`, queryValue as string);
-    }
-  }
-  return usableUrl;
+  return hydratedPath;
 }
 
 /**
- * Convert a path using "router queries" to "rewrite parameters".
+ * Convert a path using "query parameters" to "rewrite parameters".
  *
- * Next.js' router uses `[example]` to identify dynamic routes in its `Router` but `rewrites` use the
- * `:example` format called "parameters".
+ * Next.js' router uses the bracket format (e.g. `/[example]`) to identify dynamic routes, called "query parameters". The
+ * rewrite statements use the colon format (e.g. `/:example`), called "rewrite parameters".
  *
  * @see https://nextjs.org/docs/routing/dynamic-routes
  * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites
  *
- * @param path - A path.
+ * @param path - A path containing "query parameters".
  *
  * @returns The path converted to the "rewrite parameters" format.
  */
-export function routerQueriesToRewriteParameters(path: string): string {
+export function queryToRewriteParameters(path: string): string {
   return path
-    .replace(/\/\[(.+)\]\//g, '/:$1/') // Converts all "router queries" between slashes, if present.
-    .replace(/\/\[(.+)\]$/, '/:$1'); // Convert trailing "router queries", if present.
+    .split('/')
+    .map((pathSegment) => {
+      if (/^\[.+\]$/.test(pathSegment)) {
+        return `:${pathSegment.slice(1, -1)}`;
+      }
+      return pathSegment;
+    })
+    .join('/');
 }
 
 /**
- * Convert a path using "rewrite parameters" to "router queries".
+ * Convert a path using "rewrite parameters" to "query parameters".
  *
- * Next.js' router uses `[example]` to identify dynamic routes in its `Router` but `rewrites` use the
- * `:example` format called "parameters".
+ * Next.js' router uses the bracket format (e.g. `/[example]`) to identify dynamic routes, called "query parameters". The
+ * rewrite statements use the colon format (e.g. `/:example`), called "rewrite parameters".
  *
  * @see https://nextjs.org/docs/routing/dynamic-routes
  * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites
  *
- * @param path - A path.
+ * @param path - A path containing "rewrite parameters".
  *
  * @returns The path converted to the "router queries" format.
  */
-export function rewriteParametersToRouterQueries(path: string): string {
+export function rewriteToQueryParameters(path: string): string {
   return path
-    .replace(/\/:(.+)\//g, '/[$1]') // Converts all "rewrite parameters" between slashes, if present.
-    .replace(/\/:(.+)$/, '/[$1]'); // Convert trailing "rewrite parameters", if present.
+    .split('/')
+    .map((pathSegment) => {
+      if (pathSegment.startsWith(':')) {
+        return `[${pathSegment.slice(1)}]`;
+      }
+      return pathSegment;
+    })
+    .join('/');
 }
 
 /**
- * Does a given path contain "router queries"?
+ * Does a given path contain "query parameters" (using the bracket syntax)?
  *
- * @param path - A path.
+ * @param path - A path containing "query parameters".
  *
- * @returns True if the path contains "router queries", otherwise false.
+ * @returns True if the path contains "query parameters", otherwise false.
  */
-export function containsRouterQueries(path: string): boolean {
-  return /\/\[(.+)\]\//g.test(path) || /\/\[(.+)\]$/.test(path);
+export function containsQueryParameters(path: string): boolean {
+  return path.split('/').find((pathSegment) => /^\[.+\]$/.test(pathSegment)) === undefined
+    ? false
+    : true;
+}
+
+/**
+ * Get "query parameters" (using the bracket syntax) from a path.
+ *
+ * @param path - A path containing "query parameters".
+ *
+ * @returns An array of "query parameters" or an empty array when not found.
+ */
+export function getQueryParameters(path: string): string[] {
+  const parameters = path.split('/').filter((pathSegment) => /^\[.+\]$/.test(pathSegment));
+
+  if (parameters === undefined) {
+    return [];
+  }
+
+  return parameters.map((parameter) => parameter.slice(1, -1));
 }

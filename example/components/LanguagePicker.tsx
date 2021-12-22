@@ -2,10 +2,10 @@ import {
   normalizeLocale,
   getActualLocales,
   getActualLocale,
-  setCookieLocale
+  setCookieLocale,
 } from 'next-multilingual';
 import { useRouter } from 'next/router';
-import type { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import Link from 'next-multilingual/link';
 import styles from './LanguagePicker.module.css';
 
@@ -17,13 +17,20 @@ export default function LanguagePicker(): ReactElement {
   const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);
 
+  const [isOver, setIsOver] = useState(false);
+
   return (
-    <div id="language-picker" className={styles.languagePicker}>
+    <div
+      id="language-picker"
+      className={styles.languagePicker}
+      onMouseOver={() => setIsOver(true)}
+      onMouseOut={() => setIsOver(false)}
+    >
       <button>
         {localeStrings[normalizeLocale(actualLocale)]}
         <i></i>
       </button>
-      <div>
+      <div className={isOver ? styles.over : ''}>
         {actualLocales
           .filter((locale) => locale !== actualLocale)
           .map((locale) => {
@@ -33,7 +40,8 @@ export default function LanguagePicker(): ReactElement {
                   onClick={() => {
                     setCookieLocale(locale);
                   }}
-                lang={normalizeLocale(locale)}>
+                  lang={normalizeLocale(locale)}
+                >
                   {localeStrings[normalizeLocale(locale)]}
                 </a>
               </Link>
