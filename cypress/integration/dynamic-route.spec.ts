@@ -165,15 +165,11 @@ describe('A dynamic route', () => {
     // Link after picking another language (client-side)
     it(`has the correct '<Link>' value when picking another language (client-side) for '${localeName}'`, () => {
       cy.get(`#language-picker`).trigger('mouseover');
-      cy.wait(100);
       cy.get(`#language-picker a[lang=${otherLocale}]`).click();
-      cy.wait(1000);
       cy.get(`#language-picker`).trigger('mouseout');
       cy.get(`#go-back a`)
         .should('have.attr', 'href')
-        .then((href) => {
-          expect(href).eq(`/${otherLocale.toLowerCase()}${DYNAMIC_ROUTE_URLS[otherLocale]}`);
-        });
+        .should('eq', `/${otherLocale.toLowerCase()}${DYNAMIC_ROUTE_URLS[otherLocale]}`);
     });
   });
 });
