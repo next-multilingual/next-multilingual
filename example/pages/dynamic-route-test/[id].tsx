@@ -3,13 +3,18 @@ import type { ReactElement } from 'react';
 import Layout from '@/layout';
 import styles from './[id].module.css';
 import { useRouter } from 'next/router';
-import Link from 'next-multilingual/link';
-import { GetServerSideProps } from 'next';
+import Link, { useLocalizedUrl } from 'next-multilingual/link';
+import { GetStaticPaths, GetStaticProps } from 'next';
 
 export default function Id(): ReactElement {
   const messages = useMessages();
   const title = getTitle(messages);
   const { pathname, asPath, query, locale } = useRouter();
+
+  const localizedUrl = useLocalizedUrl({
+    pathname,
+    query,
+  });
 
   return (
     <Layout title={title}>
@@ -28,8 +33,14 @@ export default function Id(): ReactElement {
             <td>{pathname}</td>
           </tr>
           <tr>
-            <td>{messages.format('rowLocalizedPagePath')}</td>
-            <td>{asPath}</td>
+            <td>{messages.format('rowLocalizedWithAsPath')}</td>
+            {/* Adding `suppressHydrationWarning` until
+            https://github.com/vercel/next.js/issues/32772 is resolved */}
+            <td suppressHydrationWarning={true}>{asPath}</td>
+          </tr>
+          <tr>
+            <td>{messages.format('rowLocalizedWithUseLocalizedUrl')}</td>
+            <td>{localizedUrl}</td>
           </tr>
           <tr>
             <td>{messages.format('rowParameterValue')}</td>
@@ -54,9 +65,42 @@ export default function Id(): ReactElement {
  *
  * @see https://nextjs.org/docs/api-reference/next/router
  *
- * By adding a `getServerSideProps`, Next.js will populate query parameters automatically and make them available
- * for SSR. This will allow to get the SEO benefits from SSR markup.
+ * By adding `getStaticPaths` we will pre-render only the default [id] at build time. { fallback: blocking } will
+ * server-render pages on-demand for other query parameters.
+ *
+ * Alternatively if we would not know ahead of time any value of the parameters, or did not want to pre-build
+ * pages, we could have used a simple `getServerSideProps` like this:
+ *
+ * @example
+ * Example using `getServerSideProps`:
+ * ```ts
+ * export const getServerSideProps: GetServerSideProps = async () => {
+ *   return { props: {} }; // Empty properties, since we are only using this to get the query parameters.
+ * };
+ * ```
  */
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  /**
+   * We'll pre-render only the default [id] at build time. { fallback: blocking } will server-render pages on-demand
+   * for other query parameters.
+   */
+  return {
+    paths: [
+      {
+        params: {
+          id: '123', // This is the default `id` of the test page.
+        },
+      },
+    ],
+    fallback: 'blocking',
+  };
+};
+
+/**
+ * `getStaticProps` is required for `getStaticPaths` to work.
+ *
+ * @returns Empty properties, since we are only using this for the static paths.
+ */
+export const getStaticProps: GetStaticProps = async () => {
   return { props: {} };
 };

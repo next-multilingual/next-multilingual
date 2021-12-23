@@ -50,7 +50,7 @@ export function getRewrites(): Rewrite[] {
   const buildManifestPath = resolve('.next', 'build-manifest.json');
   const buildManifestContent = readFileSync(buildManifestPath, 'utf8');
 
-  // Get the content of the client build-manifest (e.g. .next/static/development/_buildManifest.json).
+  // Get the content of the client build-manifest (e.g., .next/static/development/_buildManifest.json).
   const clientBuildManifestPath = (
     JSON.parse(buildManifestContent).lowPriorityFiles as string[]
   ).find((filePaths) => filePaths.includes('_buildManifest.js'));

@@ -115,11 +115,11 @@ export function removePagesDirectoryPath(filesystemPath): string {
 }
 
 /**
- * Get the non-localized URL path from a directory entre path (e.g. `pages/hello/index.tsx` -> `/hello`).
+ * Get the non-localized URL path from a directory entre path (e.g., `pages/hello/index.tsx` -> `/hello`).
  *
  * @param filesystemPath - A filesystem path (file or directory).
  *
- * @returns The non-localized URL path (e.g. `pages/hello/index.tsx` -> `/hello`).
+ * @returns The non-localized URL path (e.g., `pages/hello/index.tsx` -> `/hello`).
  */
 export function getNonLocalizedUrlPath(filesystemPath: string): string {
   const urlPath = removeFileExtension(removePagesDirectoryPath(filesystemPath))
@@ -569,10 +569,10 @@ export class Config {
       .split('/')
       .map((pathSegment) => {
         if (/%3A(.+)/.test(pathSegment)) {
-          // Unescape rewrite parameters (e.g. `/:example`) if present.
+          // Unescape rewrite parameters (e.g., `/:example`) if present.
           return `:${pathSegment.slice(3)}`;
         } else if (/%5B(.+)%5D/.test(pathSegment)) {
-          // Unescape query parameters (e.g. `/[example]`) if present.
+          // Unescape query parameters (e.g., `/[example]`) if present.
           return `:${pathSegment.slice(3, -3)}`;
         }
         return pathSegment;

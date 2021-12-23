@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import { getRewrites } from '../helpers/get-rewrites';
@@ -15,7 +15,7 @@ if (typeof window !== 'undefined') {
 /**
  * Link is a wrapper around Next.js' `Link` that provides localized URLs.
  *
- * @param href - A non-localized Next.js URL path without a locale prefix (e.g. `/contact-us`) or its equivalent using
+ * @param href - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
  * a `UrlObject`.
  * @param locale - The locale to grab the correct localized path.
  * @param props - Any property available on the `LinkProps` (properties of the Next.js' `Link` component).
@@ -42,11 +42,11 @@ export default function Link({
 /**
  * React hook to get the localized URL specific to a Next.js context.
  *
- * @param url - A non-localized Next.js URL path without a locale prefix (e.g. `/contact-us`) or its equivalent using
+ * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
  * a `UrlObject`.
  * @param locale - The locale of the localized URL. When not specified, the current locale is used.
  * @param absolute - Returns the absolute URL, including the protocol and
- * domain (e.g. https://example.com/en-us/contact-us). By default relative URLs are used.
+ * domain (e.g., https://example.com/en-us/contact-us). By default relative URLs are used.
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */

@@ -10,7 +10,7 @@ import { ParsedUrlQuery } from 'querystring';
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
  *
- * To avoid exposing sensitive data (e.g. server paths) to the clients, we only display logs in non-production environments.
+ * To avoid exposing sensitive data (e.g., server paths) to the clients, we only display logs in non-production environments.
  */
 export class log {
   /**
@@ -198,7 +198,7 @@ export function getCookieLocale(nextPageContext: NextPageContext, actualLocales:
   const cookieLocale = cookies[LOCALE_COOKIE_NAME];
 
   if (!actualLocales.includes(cookieLocale)) {
-    // Delete the cookie if the value is invalid (e.g. been tampered with).
+    // Delete the cookie if the value is invalid (e.g., been tampered with).
     Cookies.destroy(nextPageContext, LOCALE_COOKIE_NAME);
     return undefined;
   }
@@ -255,8 +255,8 @@ export function hydrateQueryParameters(
 /**
  * Convert a path using "query parameters" to "rewrite parameters".
  *
- * Next.js' router uses the bracket format (e.g. `/[example]`) to identify dynamic routes, called "query parameters". The
- * rewrite statements use the colon format (e.g. `/:example`), called "rewrite parameters".
+ * Next.js' router uses the bracket format (e.g., `/[example]`) to identify dynamic routes, called "query parameters". The
+ * rewrite statements use the colon format (e.g., `/:example`), called "rewrite parameters".
  *
  * @see https://nextjs.org/docs/routing/dynamic-routes
  * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites
@@ -280,8 +280,8 @@ export function queryToRewriteParameters(path: string): string {
 /**
  * Convert a path using "rewrite parameters" to "query parameters".
  *
- * Next.js' router uses the bracket format (e.g. `/[example]`) to identify dynamic routes, called "query parameters". The
- * rewrite statements use the colon format (e.g. `/:example`), called "rewrite parameters".
+ * Next.js' router uses the bracket format (e.g., `/[example]`) to identify dynamic routes, called "query parameters". The
+ * rewrite statements use the colon format (e.g., `/:example`), called "rewrite parameters".
  *
  * @see https://nextjs.org/docs/routing/dynamic-routes
  * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites

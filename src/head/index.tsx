@@ -26,7 +26,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
    * @see https://github.com/vercel/next.js/issues/17721 (closed issue)
    * @see https://nextjs.org/docs/api-reference/next/head (Next.js documentation)
    *
-   * | title, meta or any other elements (e.g. script) need to be contained as direct children of the Head
+   * | title, meta or any other elements (e.g., script) need to be contained as direct children of the Head
    * | element, or wrapped into maximum one level of <React.Fragment> or arrays—otherwise the tags won't
    * | be correctly picked up on client-side navigation.
    *
@@ -46,7 +46,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
           missingParameters.length > 1 ? 's are' : ' is'
         } missing: ${highlight(
           missingParameters.join(',')
-        )}. Did you forget to add a 'getServerSideProps' too your page?`
+        )}. Did you forget to add a 'getStaticPaths' or 'getServerSideProps' to your page?`
       );
       return <NextHead>{children}</NextHead>;
     }
