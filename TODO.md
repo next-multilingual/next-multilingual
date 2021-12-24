@@ -4,7 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- HTML inside properties files (as JSX)
 - Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Move BabelPlugin to SWC
@@ -30,10 +29,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Refactor functions to arrow functions
+- HTML inside properties files (as JSX)
 
 ### Done ✔️
 
+- Refactor to arrow functions
 - Test UTF-8 encoding and add warnings
 - Add automated test:
   - Test language detection

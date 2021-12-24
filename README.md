@@ -136,8 +136,9 @@ We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/cus
 
 ```ts
 import type { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
+
 import { getActualDefaultLocale, setCookieLocale } from 'next-multilingual';
+import { useRouter } from 'next/router';
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   const router = useRouter();
@@ -167,12 +168,11 @@ You might have noticed the `getActualDefaultLocale` API. This API is part of a [
 We also need to create a [custom `Document`](https://nextjs.org/docs/advanced-features/custom-document) by adding [`_document.tsx`](./example/pages/_document.tsx) in the `pages` directory:
 
 ```ts
-import Document, { Html, Head, Main, NextScript } from 'next/document';
-import { ReactElement } from 'react';
 import { getActualLocale, normalizeLocale } from 'next-multilingual';
+import Document, { Head, Html, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {
-  render(): ReactElement {
+  render(): JSX.Element {
     const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__;
     const pagePropsActualLocale = props?.pageProps?.resolvedLocale;
     const actualLocale = pagePropsActualLocale
@@ -180,8 +180,10 @@ class MyDocument extends Document {
       : getActualLocale(locale, defaultLocale, locales);
 
     return (
-      <Html lang={normalizeLocale(actualLocale)}>
-        <Head />
+      <Html lang={normalizeLocale(actualLocale)} translate="no" className="notranslate">
+        <Head>
+          <meta name="google" content="notranslate" />
+        </Head>
         <body>
           <Main />
           <NextScript />
@@ -226,21 +228,22 @@ The homepage is a bit more complex than other pages, because we need to implemen
 You can find a full implementation in the [example](./example/pages/index.tsx), but here is a stripped down version:
 
 ```tsx
+import type { GetServerSideProps, NextPage } from 'next';
 import {
-  getActualLocales,
   getActualDefaultLocale,
   getActualLocale,
-  getPreferredLocale,
+  getActualLocales,
   getCookieLocale,
+  getPreferredLocale,
+  ResolvedLocaleServerSideProps,
+  setCookieLocale,
 } from 'next-multilingual';
-import type { NextPageContext } from 'next';
+import { getTitle, useMessages } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
-import Layout from '@/layout';
-import { useMessages, getTitle } from 'next-multilingual/messages';
-import { ResolvedLocaleServerSideProps, setCookieLocale } from 'next-multilingual';
 
-export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSideProps): ReactElement {
+import Layout from '@/layout';
+
+const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter();
 
   // Overwrite the locale with the resolved locale.
@@ -255,11 +258,13 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
       <h1>{messages.format('headline')}</h1>
     </Layout>
   );
-}
+};
 
-export async function getServerSideProps(
-  nextPageContext: NextPageContext
-): Promise<{ props: ResolvedLocaleServerSideProps }> {
+export default Home;
+
+export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
+  nextPageContext
+) => {
   const { req, locale, locales, defaultLocale } = nextPageContext;
 
   const actualLocales = getActualLocales(locales, defaultLocale);
@@ -283,7 +288,7 @@ export async function getServerSideProps(
       resolvedLocale,
     },
   };
-}
+};
 ```
 
 In a nutshell, this is what is happening:
@@ -370,20 +375,25 @@ exampleApp.homepage.headline = Welcome to the homepage
 Now that we learned how to create the homepage and some of the details around how things work, we can easily create other pages. We create many pages in the [example](./example), but here is a sample of what `about-us.jsx` could look like:
 
 ```jsx
-import { useMessages, getTitle } from 'next-multilingual/messages';
-import type { ReactElement } from 'react';
+import { NextPage } from 'next';
+import { getTitle, useMessages } from 'next-multilingual/messages';
+
 import Layout from '@/layout';
 
-export default function AboutUs(): ReactElement {
+import styles from './index.module.css';
+
+const AboutUs: NextPage = () => {
   const messages = useMessages();
   const title = getTitle(messages);
   return (
     <Layout title={title}>
-      <h1>{title}</h1>
+      <h1 className={styles.headline}>{title}</h1>
       <p>{messages.format('details')}</p>
     </Layout>
   );
+};
 
+export default AboutUs;
 ```
 
 And of course you would have this message file `about-us.en-US.properties`:
@@ -408,10 +418,10 @@ In other words, the file structure is considered as the "non-localized" URL repr
 The API is available under `next-multilingual/link` and you can use it like this:
 
 ```tsx
-import { useMessages } from 'next-multilingual/messages';
 import Link from 'next-multilingual/link';
+import { useMessages } from 'next-multilingual/messages';
 
-export default function Menu() {
+export default function Menu(): JSX.Element {
   const messages = useMessages();
 
   return (
@@ -441,18 +451,18 @@ As the data for this mapping is not immediately available during rendering, `nex
 Not all links are using the `<Link>` component and this is also why Next.js has the `router.push` method that can be used by many other use cases. `next-multilingual` can support these use cases with the `useLocalizedUrl` hook that will return a localized URL, usable by any components. Here is an example on how it can be leveraged:
 
 ```tsx
-import { useMessages } from 'next-multilingual/messages';
-import { ReactElement } from 'react';
+import { NextPage } from 'next';
 import { useLocalizedUrl } from 'next-multilingual/link';
+import { useMessages } from 'next-multilingual/messages';
 import router from 'next/router';
 
-export default function Tests(): ReactElement {
+const Tests: NextPage = () => {
   const messages = useMessages();
-
   const localizedUrl = useLocalizedUrl('/about-us');
-
   return <button onClick={() => router.push(localizedUrl)}>{messages.format('clickMe')}</button>;
-}
+};
+
+export default Tests;
 ```
 
 ### Creating components
@@ -460,10 +470,9 @@ export default function Tests(): ReactElement {
 Creating components is the same as pages but they live outside the `pages` directory. Also, the `slug` key (if used) will not have any impact on URLs. We have a few [example components](./example/components) that should be self-explanatory but here is an example of a `Footer.tsx` component:
 
 ```tsx
-import type { ReactElement } from 'react';
 import { useMessages } from 'next-multilingual/messages';
 
-export default function Footer(): ReactElement {
+export default function Footer(): JSX.Element {
   const messages = useMessages();
   return <footer>{messages.format('footerMessage')}</footer>;
 }
@@ -486,7 +495,7 @@ When is it good to share messages? For lists of items.
 
 For example, to keep your localization process simple, you want to avoid storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). In your database you would identify the context using unique identifiers and you would store your messages in shared message files, where your key's identifiers would match the ones from the database.
 
-To illustrate this we created [one example using fruits](./example/messages/useFruits.ts). All you need to do, is create a hook that calls `useMessages` like this:
+To illustrate this we created [one example using fruits](./example/messages/useFruitsMessages.ts). All you need to do, is create a hook that calls `useMessages` like this:
 
 ```ts
 import { useMessages } from 'next-multilingual/messages';
@@ -511,7 +520,7 @@ And to use it, simple import this hook from anywhere you might need these values
 
 ```tsx
 import type { ReactElement } from 'react';
-import { useFruitsMessages } from '../messages/useFruits';
+import { useFruitsMessages } from '../messages/useFruitsMessages';
 
 export default function FruitList(): ReactElement {
   const fruitsMessages = useFruitsMessages();
@@ -605,12 +614,13 @@ To fully benefit from the SEO markup, `<Head>` must be included on all pages. Th
 Like most sites, you will want to leverage Next.js' [custom error pages](https://nextjs.org/docs/advanced-features/custom-error-page) capability. With `useMessages()`, it's just as easy as creating any other pages. For example, for a `404` error, you can create your `404.tsx`:
 
 ```tsx
-import { useMessages, getTitle } from 'next-multilingual/messages';
+import { NextPage } from 'next';
 import Link from 'next-multilingual/link';
-import type { ReactElement } from 'react';
+import { getTitle, useMessages } from 'next-multilingual/messages';
+
 import Layout from '@/layout';
 
-export default function Custom400(): ReactElement {
+const Custom400: NextPage = () => {
   const messages = useMessages();
   const title = getTitle(messages);
   return (
@@ -621,7 +631,9 @@ export default function Custom400(): ReactElement {
       </Link>
     </Layout>
   );
-}
+};
+
+export default Custom400;
 ```
 
 And of course, your messages, for example `404.en-US.properties`:
@@ -669,7 +681,7 @@ exampleApp.helloApi.message = Hello, from API.
 You can implement this in any pages, just like any other React-based API call, like this:
 
 ```tsx
-export default function SomePage(): ReactElement {
+const SomePage: NextPage = () => {
   const [apiError, setApiError] = useState(null);
   const [isApiLoaded, setApiIsLoaded] = useState(false);
   const [apiMessage, setApiMessage] = useState('');
@@ -713,7 +725,7 @@ export default function SomePage(): ReactElement {
       <div>{showApiMessage()}</div>
     </div>
   );
-}
+};
 ```
 
 ### Dynamic Routes
@@ -728,14 +740,13 @@ In `UrlObject`, parameters are stored in the `query` property, just like the Nex
 
 ```tsx
 import {
-  normalizeLocale,
-  getActualLocales,
   getActualLocale,
+  getActualLocales,
+  normalizeLocale,
   setCookieLocale,
 } from 'next-multilingual';
-import { useRouter } from 'next/router';
-import type { ReactElement } from 'react';
 import Link from 'next-multilingual/link';
+import { useRouter } from 'next/router';
 
 // Locales don't need to be localized.
 const localeStrings = {
@@ -743,7 +754,7 @@ const localeStrings = {
   'fr-CA': 'Français (Canada)',
 };
 
-export default function LanguagePicker(): ReactElement {
+export default function LanguagePicker(): JSX.Element {
   const { pathname, locale, locales, defaultLocale, query } = useRouter();
   const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);

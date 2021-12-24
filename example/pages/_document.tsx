@@ -1,9 +1,8 @@
-import Document, { Html, Head, Main, NextScript } from 'next/document';
-import { ReactElement } from 'react';
 import { getActualLocale, normalizeLocale } from 'next-multilingual';
+import Document, { Head, Html, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {
-  render(): ReactElement {
+  render(): JSX.Element {
     const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__;
     const pagePropsActualLocale = props?.pageProps?.resolvedLocale;
     const actualLocale = pagePropsActualLocale
@@ -11,7 +10,7 @@ class MyDocument extends Document {
       : getActualLocale(locale, defaultLocale, locales);
 
     return (
-      <Html lang={normalizeLocale(actualLocale)} translate="no" className="notranslate" >
+      <Html lang={normalizeLocale(actualLocale)} translate="no" className="notranslate">
         <Head>
           <meta name="google" content="notranslate" />
         </Head>

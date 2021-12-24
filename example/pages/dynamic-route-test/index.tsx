@@ -1,11 +1,14 @@
-import { useMessages, getTitle } from 'next-multilingual/messages';
-import { ReactElement, useState } from 'react';
-import Layout from '@/layout';
-import styles from './index.module.css';
+import { NextPage } from 'next';
 import Link, { useLocalizedUrl } from 'next-multilingual/link';
+import { getTitle, useMessages } from 'next-multilingual/messages';
 import router, { useRouter } from 'next/router';
+import { useState } from 'react';
 
-export default function Tests(): ReactElement {
+import Layout from '@/layout';
+
+import styles from './index.module.css';
+
+const Tests: NextPage = () => {
   const messages = useMessages();
   const { pathname } = useRouter();
   const title = getTitle(messages);
@@ -51,4 +54,6 @@ export default function Tests(): ReactElement {
       <p>{messages.format('instructions')}</p>
     </Layout>
   );
-}
+};
+
+export default Tests;

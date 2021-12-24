@@ -1,12 +1,13 @@
-import { useMessages, getTitle } from 'next-multilingual/messages';
-import type { ReactElement } from 'react';
-import Layout from '@/layout';
-import styles from './[id].module.css';
-import { useRouter } from 'next/router';
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Link, { useLocalizedUrl } from 'next-multilingual/link';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { getTitle, useMessages } from 'next-multilingual/messages';
+import { useRouter } from 'next/router';
 
-export default function Id(): ReactElement {
+import Layout from '@/layout';
+
+import styles from './[id].module.css';
+
+const Id: NextPage = () => {
   const messages = useMessages();
   const title = getTitle(messages);
   const { pathname, asPath, query, locale } = useRouter();
@@ -55,7 +56,9 @@ export default function Id(): ReactElement {
       </div>
     </Layout>
   );
-}
+};
+
+export default Id;
 
 /**
  * By default, Next.js does not populate the `query` value when using the `useRouter` hook.

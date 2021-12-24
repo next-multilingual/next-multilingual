@@ -1,10 +1,12 @@
+import type { ReactNode } from 'react';
 import Head from 'next-multilingual/head';
-import type { ReactElement, ReactNode } from 'react';
-import LanguagePicker from '@/components/LanguagePicker';
-import Footer from '@/components/Footer';
-import styles from './Layout.module.css';
 import Link from 'next-multilingual/link';
 import { useMessages } from 'next-multilingual/messages';
+
+import Footer from '@/components/Footer';
+import LanguagePicker from '@/components/LanguagePicker';
+
+import styles from './Layout.module.css';
 
 type LayoutProps = {
   /** The title of the page. */
@@ -17,7 +19,7 @@ type LayoutProps = {
  *
  * @param title - The title of the page.
  */
-export default function Layout({ title, children }: LayoutProps): ReactElement {
+export default function Layout({ title, children }: LayoutProps): JSX.Element {
   const messages = useMessages();
   return (
     <>

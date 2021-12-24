@@ -1,7 +1,8 @@
 import type { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
-import { getActualDefaultLocale, setCookieLocale } from 'next-multilingual';
 import './_app.css';
+
+import { getActualDefaultLocale, setCookieLocale } from 'next-multilingual';
+import { useRouter } from 'next/router';
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   const router = useRouter();

@@ -1,18 +1,15 @@
 import {
-  normalizeLocale,
-  getActualLocales,
-  getActualLocale,
-  setCookieLocale,
+    getActualLocale, getActualLocales, normalizeLocale, setCookieLocale
 } from 'next-multilingual';
-import { useRouter } from 'next/router';
-import { ReactElement, useState } from 'react';
 import Link from 'next-multilingual/link';
-import styles from './LanguagePicker.module.css';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
+import styles from './LanguagePicker.module.css';
 // Locales are not localized which is why it uses a JSON file.
 import localeStrings from './localeStrings.json';
 
-export default function LanguagePicker(): ReactElement {
+export default function LanguagePicker(): JSX.Element {
   const { pathname, locale, locales, defaultLocale, query } = useRouter();
   const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);

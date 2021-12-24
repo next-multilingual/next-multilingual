@@ -1,5 +1,5 @@
 import resolveAcceptLanguage from 'resolve-accept-language';
-import type { NextPageContext } from 'next';
+import type { GetServerSidePropsContext, PreviewData } from 'next';
 import Cookies from 'nookies';
 import { sep as pathSeparator } from 'path';
 
@@ -184,13 +184,16 @@ export function setCookieLocale(locale: string): void {
 /**
  * Get the locale that was saved to the locale cookie.
  *
- * @param nextPageContext - The Next.js page context.
+ * @param serverSidePropsContext - The Next.js server side properties context.
  * @param actualLocales - The list of actual locales used by `next-multilingual`.
  *
  * @returns The locale that was saved to the locale cookie.
  */
-export function getCookieLocale(nextPageContext: NextPageContext, actualLocales: string[]): string {
-  const cookies = Cookies.get(nextPageContext);
+export function getCookieLocale(
+  serverSidePropsContext: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
+  actualLocales: string[]
+): string {
+  const cookies = Cookies.get(serverSidePropsContext);
 
   if (!Object.keys(cookies).includes(LOCALE_COOKIE_NAME)) {
     return undefined;
@@ -199,7 +202,7 @@ export function getCookieLocale(nextPageContext: NextPageContext, actualLocales:
 
   if (!actualLocales.includes(cookieLocale)) {
     // Delete the cookie if the value is invalid (e.g., been tampered with).
-    Cookies.destroy(nextPageContext, LOCALE_COOKIE_NAME);
+    Cookies.destroy(serverSidePropsContext, LOCALE_COOKIE_NAME);
     return undefined;
   }
 

@@ -1,4 +1,6 @@
-import { LOCALES, LOCALE_NAMES, DEFAULT_LOCALE, BASE_URL } from '../constants';
+import { cpSync } from 'fs';
+
+import { BASE_URL, DEFAULT_LOCALE, LOCALE_NAMES, LOCALES } from '../constants';
 
 export const DYNAMIC_ROUTE_URLS = {
   'en-US': '/dynamic-route-test',
@@ -80,7 +82,8 @@ describe('A dynamic route', () => {
 
     // `useLocalizedUrl` (client-side)
     it(`has the correct URL when using (client-side) the 'useLocalizedUrl' hook for '${localeName}'`, () => {
-      cy.go('back');
+      cy.get(`#go-back a`).click();
+      cy.get(`#parameter-input`).should('have.attr', 'value');
       cy.get(`#route-push-button`)
         .click()
         .then(() => {
