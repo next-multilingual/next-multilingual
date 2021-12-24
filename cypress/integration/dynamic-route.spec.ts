@@ -1,5 +1,3 @@
-import { cpSync } from 'fs';
-
 import { BASE_URL, DEFAULT_LOCALE, LOCALE_NAMES, LOCALES } from '../constants';
 
 export const DYNAMIC_ROUTE_URLS = {
