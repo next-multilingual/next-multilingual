@@ -165,6 +165,7 @@ describe('A dynamic route', () => {
     // Link after picking another language (client-side)
     it(`has the correct '<Link>' value when picking another language (client-side) for '${localeName}'`, () => {
       cy.get(`#language-picker`).trigger('mouseover');
+      cy.get(`#language-picker a[lang=${otherLocale}]`).should('be.visible');
       cy.get(`#language-picker a[lang=${otherLocale}]`).click();
       cy.get(`#language-picker`).trigger('mouseout');
       cy.get(`#go-back a`)

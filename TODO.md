@@ -31,10 +31,10 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 ### In Progress 🚧
 
 - Refactor functions to arrow functions
-- Test UTF-8 encoding and add warnings
 
 ### Done ✔️
 
+- Test UTF-8 encoding and add warnings
 - Add automated test:
   - Test language detection
   - Test Header
