@@ -86,6 +86,7 @@
     "chokidar": "^3.5.2",
     "colorette": "^2.0.16",
     "dot-properties": "^1.0.1",
+    "html-to-react": "^1.4.7",
     "intl-messageformat": "^9.11.0",
     "nookies": "^2.5.2",
     "resolve-accept-language": "^1.0.42"

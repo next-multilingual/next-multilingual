@@ -1,10 +1,14 @@
-import { useRouter } from 'next/router';
-import { BabelifiedMessages } from './babel-plugin';
-import { extname, parse as parsePath, resolve } from 'path';
-import { highlight, highlightFilePath, normalizeLocale } from '..';
-import { log } from '..';
-import { KeyValueObject } from './properties';
 import IntlMessageFormat from 'intl-messageformat';
+import { useRouter } from 'next/router';
+import { extname, parse as parsePath, resolve } from 'path';
+
+import { highlight, highlightFilePath, log, normalizeLocale } from '../';
+import { BabelifiedMessages } from './babel-plugin';
+import { KeyValueObject } from './properties';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const HtmlToReactParser = require('html-to-react').Parser;
+const htmlToReactParser = new HtmlToReactParser();
 
 /** This is the regular expression to validate message key segments. */
 export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
@@ -138,7 +142,10 @@ export class Message {
     if (values) {
       this.intlMessageFormat = this.intlMessageFormat
         ? this.intlMessageFormat
-        : new IntlMessageFormat(this.message, this.parent.locale);
+        : new IntlMessageFormat(
+            this.message.replace(/</g, "'<'").replace(/>/g, "'>'"), // Escape XML for `IntlMessageFormat`.
+            this.parent.locale
+          );
 
       return String(this.intlMessageFormat.format(values));
     }
@@ -216,6 +223,34 @@ export class Messages {
     }
 
     return message.format(values);
+  }
+
+  /**
+   * Format a message identified by a key in a local scope, into JSX.
+   *
+   * @param key - The local scope key identifying the message.
+   * @param values - The values (e.g., placeholders) used to format the message, if any.
+   *
+   * @returns The formatted message into JSX.
+   */
+  public formatJsx(key: string, values?: MessageValues): JSX.Element {
+    if (!this.messages.length) {
+      // No need to log the error since it was caught when calling `useMessage()`.
+      return <></>;
+    }
+
+    const message = this.messages[this.messagesIndex[key]];
+
+    if (message === undefined) {
+      log.warn(
+        `unable to format key with identifier ${highlight(key)} in ${highlightFilePath(
+          this.sourceFilePath
+        )} because it was not found in messages file ${highlightFilePath(this.messagesFilePath)}`
+      );
+      return <></>;
+    }
+
+    return htmlToReactParser.parse(message.format(values)) as JSX.Element;
   }
 
   /**
