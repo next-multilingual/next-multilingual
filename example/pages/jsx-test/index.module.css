@@ -1,0 +1,19 @@
+
+.headline {
+  font-size: 2rem;
+  padding-bottom: 1rem;
+}
+
+.code {
+  background-color: rgb(236, 236, 236);
+  font-size: 0.9rem;
+  font-family: 'Courier New', Courier, monospace;
+} 
+
+.parameter label {
+  font-weight: bold;
+}
+
+.parameter input {
+  margin: 0 1rem;
+}
