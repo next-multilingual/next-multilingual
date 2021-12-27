@@ -4,7 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- HTML inside properties files (as JSX)
 - Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Move BabelPlugin to SWC
@@ -16,13 +15,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Check if we can add `title` attributes on `Link` components (not supported by Next.js?) (ref: https://backlinko.com/google-ranking-factors)
 - Add automated test:
   - Test when a string file changes, the page is updated (developer experience?)
-  - Test language detection
-  - Test Header
-  - Test links
   - Test for: http://localhost:3000/mul/about-us
-  - Test for: http://localhost:3000/about-us
   - Test with a 3rd language (language switcher hydration issues?)
-  - Test fallback to default locale
 - In the `config` API, gracefully merge options passed in argument as an object instead of overwriting
 - In the `config` API, support options passed functions (see Next.js doc)
 - Try Javascript support?
@@ -35,11 +29,19 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Add a "URL resolve" function for route push events
-- Test UTF-8 encoding and add warnings
+- HTML inside properties files (as JSX)
 
 ### Done ✔️
 
+- Refactor to arrow functions
+- Test UTF-8 encoding and add warnings
+- Add automated test:
+  - Test language detection
+  - Test Header
+  - Test links
+  - Test for: http://localhost:3000/about-us
+  - Test fallback to default locale
+- Add `useLocalizedUrl` for other components
 - Fix missing SSR links on `Head`
 - Update Next.js 12
 - Refactor 'identifier' to 'id' to make code less verbose

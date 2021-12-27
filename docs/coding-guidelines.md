@@ -12,6 +12,7 @@
 
 ## Git
 
-- Use imperative commit messages (e.g. "update documentation")
+- Use imperative commit messages (e.g., "update documentation")
 - Commit messages should start with a lowercase letter and end with a letter (no need to try to make sentence and end with a ".")
+- Use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) to generate release notes automatically. Plugins like [Commit Message Editor](https://marketplace.visualstudio.com/items?itemName=adam-bender.commit-message-editor) for Visual Studio Code can help follow the syntax.
 - Avoid big commits - when changing multiple files, try to stage related changes together with a representative commit message to avoid having commit messages that are unrelated to changes in certain files.

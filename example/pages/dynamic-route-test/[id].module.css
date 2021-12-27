@@ -1,5 +1,36 @@
-
 .headline {
   font-size: 2rem;
   padding-bottom: 1rem;
+}
+
+.table {
+  border-collapse: collapse;
+  margin: 1.5625rem 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 25rem;
+  box-shadow: 0 0 1.25rem rgba(0, 0, 0, 0.15);
+}
+
+.table thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 0.9375rem;
+}
+
+.table tbody tr {
+  border-bottom: thin solid #dddddd;
+}
+
+.table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.table tbody tr:last-of-type {
+  border-bottom: medium solid #009879;
 }

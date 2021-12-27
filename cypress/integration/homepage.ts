@@ -1,46 +1,34 @@
-const LOCALES = ['en-US', 'fr-CA'];
-const LOCALE_NAMES = {
-  'en-US': 'English (United States)',
-  'fr-CA': 'Français (Canada)',
-};
+import { LOCALES, LOCALE_NAMES, DEFAULT_LOCALE, BASE_URL } from '../constants';
 
-const ABOUT_US_URLS = {
+export const ABOUT_US_URLS = {
   'en-US': '/about-us',
   'fr-CA': '/%C3%A0-propos-de-nous',
 };
 
-const HEADERS = {
+export const HEADERS = {
   'en-US': 'English header',
   'fr-CA': 'En-tête française',
 };
 
-const LANGUAGE_DIRECTIVES = {
+export const LANGUAGE_DIRECTIVES = {
   'en-US': 'fr;q=0.8, en;q=0.9',
   'fr-CA': 'fr;q=0.9, en;q=0.8',
 };
 
-const FRUITS = {
+export const FRUITS = {
   'en-US': 'Banana',
   'fr-CA': 'Banane',
 };
 
-const PLURAL_MESSAGES = {
+export const PLURAL_MESSAGES = {
   'en-US': ['No candy left.', 'Got 1 candy left.', 'Got 2 candies left.'],
   'fr-CA': ['Il ne reste aucun bonbon.', 'Il reste 1 bonbon.', 'Il reste 2 bonbons.'],
 };
 
-const API_RESPONSES = {
+export const API_RESPONSES = {
   'en-US': 'Hello from the API.',
   'fr-CA': "L'API dit bonjour.",
 };
-
-const DYNAMIC_ROUTE_URLS = {
-  'en-US': '/dynamic-route-test',
-  'fr-CA': '/test-de-route-dynamique',
-};
-
-const DEFAULT_LOCALE = LOCALES[0];
-const BASE_URL = Cypress.config().baseUrl;
 
 describe('The Next.js application', () => {
   // Check that the HTML tag has the default locale on the SSR markup.
@@ -207,22 +195,6 @@ describe('The Next.js application', () => {
           cy.get('#header').contains(HEADERS[linkLocale]);
           return;
         }
-      });
-    });
-
-    // Test dynamic routes.
-    const dynamicValue = Math.random();
-    it(`correctly localize dynamic routes for '${LOCALE_NAMES[locale]}'`, () => {
-      cy.visit(`/${locale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}/${dynamicValue}`);
-      cy.get('#dynamic-value').contains(dynamicValue);
-      const otherLocales = LOCALES.filter((otherLocale) => otherLocale != locale);
-      otherLocales.forEach((otherLocale) => {
-        cy.get(`#language-picker a[lang=${otherLocale}]`)
-          .should('have.attr', 'href')
-          .and(
-            'include',
-            `/${otherLocale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}/${dynamicValue}`
-          );
       });
     });
   });

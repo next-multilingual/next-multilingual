@@ -282,7 +282,7 @@ class Messages {
 
     this.sourceFilePath = pluginPass.file.opts.filename
       .replace(process.cwd(), '') // Remove absolute portion of the path to make is "app-root-relative".
-      .replace(leadingPathSeparatorRegExp, ''); // Remove leading path separator (e.g. '/') if present.
+      .replace(leadingPathSeparatorRegExp, ''); // Remove leading path separator (e.g., '/') if present.
 
     if (pathSeparator !== '/') {
       // Normalize path separators to `/`.
@@ -369,7 +369,7 @@ function hijackNamespaceImport(
 }
 
 /**
- * "Hijack" a named import (e.g. `import { useMessages } from`).
+ * "Hijack" a named import (e.g., `import { useMessages } from`).
  *
  * This will simply bind the named import to the babelified messages, on a new function name. All bindings
  * of the original function will replaced by the hijacked function.
@@ -417,9 +417,9 @@ function hijackNamedImport(
  *
  * What is supported:
  *
- * - Named imports (e.g. `import { useMessages } from`): this is how both `useMessages` and `getMessages` are meant
+ * - Named imports (e.g., `import { useMessages } from`): this is how both `useMessages` and `getMessages` are meant
  *   to be used.
- * - Namespace imports (e.g. `import * as messages from`): there is no reason to use this, but it's supported.
+ * - Namespace imports (e.g., `import * as messages from`): there is no reason to use this, but it's supported.
  *
  * What is not supported:
  *

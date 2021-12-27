@@ -36,13 +36,13 @@ The following design decision have been considered when implementing **localized
    2. It's important to stay consistent with one pattern to avoid duplicate content issues - [Moz, 2021](https://moz.com/learn/seo/url)
 2. All URLs are prefixed by a locale identifier just like Next.js, but unlike most examples, we do not recommend using a simple language code (see the "other recommendations" section below).
 3. [BCP47 language tags](https://tools.ietf.org/search/bcp47) consisting of both an [ISO 639-1 alpha-2 language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) and an [ISO 3166-1 alpha-2 country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) must be used at all times when setting up your `next.config.js`. Using a simple language code is not recommended because:
-    1. There is no such concept as a "regionless" variant of a language. Even English might seem like a simple language but there are many nuances between English U.S. and English U.K. By not specifying which variant is used, the content creator or the translator will have to decide, and this can lead to inconsistency.
-    2. On top of using different expressions, there are many other differences such as date, currency, or number formats. If a site is using none of these, it might sound acceptable to simply use a language code but there are few use cases where this would apply.
-    3. SEO: by targeting better the language with a country, your results will be more relevant in the search results of those countries - [Moz, 2021](https://moz.com/learn/seo/international-seo)
+   1. There is no such concept as a "regionless" variant of a language. Even English might seem like a simple language but there are many nuances between English U.S. and English U.K. By not specifying which variant is used, the content creator or the translator will have to decide, and this can lead to inconsistency.
+   2. On top of using different expressions, there are many other differences such as date, currency, or number formats. If a site is using none of these, it might sound acceptable to simply use a language code but there are few use cases where this would apply.
+   3. SEO: by targeting better the language with a country, your results will be more relevant in the search results of those countries - [Moz, 2021](https://moz.com/learn/seo/international-seo)
 4. Encoded UTF-8 characters are used in URLs because:
    1. Google recommends using encoded UTF-8 characters in URLs for non-English sites - [Google, 2018](https://www.youtube.com/watch?v=74FiBesPkI4)
    2. It boosts SEO ranking in these languages and help gain customer trust - [Moz, 2013](https://moz.com/community/q/topic/30188/urls-in-greek-greeklish-or-english-what-is-the-best-way-to-get-great-ranking)
-   3. Some markets (e.g. Japan, Russia) just expect non-latin characters in URLs - [SEJ, 2021](https://www.searchenginejournal.com/how-to-align-international-roadmap-with-google/)
+   3. Some markets (e.g., Japan, Russia) just expect non-latin characters in URLs - [SEJ, 2021](https://www.searchenginejournal.com/how-to-align-international-roadmap-with-google/)
 5. Hyphens (`-`) are used to separate words, since it is the recommended standard - [Google, 2018](https://www.youtube.com/watch?v=74FiBesPkI4), [Backlinkto, 2020](https://backlinko.com/hub/seo/urls)
 
 ### What are good SEO practices in terms of URLs?
@@ -71,13 +71,13 @@ The idea of having a central place to manage all the strings of a business sound
 
 - Localization is abstracted from developers and can be easier to use in some cases.
 - Localization can be done in parallel of development and prevents from blocking the releases of new features.
-- Depending on the implementation, it is possible to update messages (e.g. fix typos) without re-deploying an application
+- Depending on the implementation, it is possible to update messages (e.g., fix typos) without re-deploying an application
 
 Since the developer experience (DX) in general is great, it seems like a good pattern, but we think that the down sides outweigh the benefits:
 
 - When localization is done in parallel, if messages are changed during development, this will incur extra localization cost for unused strings. Cost will be exponential depending on the number of supported locales and to avoid them will promote a development process that will require more upfront preparation (less agile).
 - It's easy to re-use existing messages. Not everyone is aware where a message is used can have many implications in different languages and can lead to showing the wrong translation in the wrong context, in other words poor user experience. Sharing messages is considered an i18n bad practice and should be avoided.
-- It's hard to track who uses which messages which means that updating or removing keys becomes impossible. This leads to an ever growing repository of messages where no-one is sure who is using what and where. 
+- It's hard to track who uses which messages which means that updating or removing keys becomes impossible. This leads to an ever growing repository of messages where no-one is sure who is using what and where.
 - Depending on the governance process, it can be easy to mix concerns and add non-localizable strings (JavaScript, constants, etc.) in the repository. This basically transforms the string repository into a configuration repository and can create extra cost around the localization process.
 - This can cause challenges when adding new locales as you will need to pick and choose only the keys that are used for each application to avoid translating unused messages. This can be time consuming and error prone.
 - Your translation memory (TM) will also grow exponentially with the number of locales you need to support which can lead to extra localization cost. Either vendors will charge you extra to manage this overhead or your in-house translation management system (TMS) infrastructure will cost more.
@@ -100,16 +100,16 @@ Overall translating a database is complex and should be considered at its own sp
 
 - The short answer is: only when you have no choice! It's easy to avoid storing messages in databases in most common use cases, for example:
   - An API with a small dataset that is self-contained. Try storing the messages with the rest of the application and load them in memory to avoid using a database while increasing performance.
-  - Web applications that use a database. Avoid storing any messages in the database as they will complexify your localization process. Use identifiers instead, and if you need to share the strings with other application (e.g. backend and frontend), consider the "shared model" (more details below) instead.
+  - Web applications that use a database. Avoid storing any messages in the database as they will complexify your localization process. Use identifiers instead, and if you need to share the strings with other application (e.g., backend and frontend), consider the "shared model" (more details below) instead.
 
 ##### What are examples of valid use cases?
 
-- You are using a 3rd party application (e.g. a CMS) - make sure that when you pick those products, their localization tools will fit your needs.
+- You are using a 3rd party application (e.g., a CMS) - make sure that when you pick those products, their localization tools will fit your needs.
 - You have a large dataset that must be stored in a database.
 
 #### The decentralized model
 
-The decentralized model is heavily inspired from [CSS Modules](https://github.com/css-modules/css-modules) which is also supported by Next.js. Basically, the whole idea is to make each application responsible to manage their strings which means that adding, updating, or removing strings becomes as easy as changing CSS. The main difference of course is that strings can only be changed in their source language and every time they change, they must trigger a localization process. 
+The decentralized model is heavily inspired from [CSS Modules](https://github.com/css-modules/css-modules) which is also supported by Next.js. Basically, the whole idea is to make each application responsible to manage their strings which means that adding, updating, or removing strings becomes as easy as changing CSS. The main difference of course is that strings can only be changed in their source language and every time they change, they must trigger a localization process.
 
 This model is not sufficient on its own as a lot of i18n libraries today try to implement it but, on the way, breaks a few best practices (more details below) that can cause quality issues. Presuming a good implementation of this model, these are the benefits:
 
@@ -156,11 +156,11 @@ Most TMSes are document-based (file-based) - in other words they expect a file a
 As we just learned, file formats can be complex. We compared a few popular file formats to try to figure out which would
 `next-multilingual` should use:
 
-| File format   | Key/value based                 | Supports inline comment  | Built for l10n | Good TMS support
-| ------------- | ------------------------------- | ------------------------ | -------------- | ----------------
-| `.properties` | Yes                             | Yes                      | Yes            | Yes
-| `JSON`        | No (supports complex structure) | No (would require JSON5) | No             | Depends on the schema
-| `YAML`        | No (supports complex structure) | Yes                      | No             | Depends on the schema
+| File format   | Key/value based                 | Supports inline comment  | Built for l10n | Good TMS support      |
+| ------------- | ------------------------------- | ------------------------ | -------------- | --------------------- |
+| `.properties` | Yes                             | Yes                      | Yes            | Yes                   |
+| `JSON`        | No (supports complex structure) | No (would require JSON5) | No             | Depends on the schema |
+| `YAML`        | No (supports complex structure) | Yes                      | No             | Depends on the schema |
 
 The clear winner for us are `.properties` files. We know this choice might not be popular for all programming languages as this file format was originated from Java. But it is the format that causes the least i18n problems and is widely supported out of the box. On top of that, some IDEs like JetBrains' (WebStorm, IntelliJ, etc.) come with a [resource bundle editor](https://www.jetbrains.com/help/idea/resource-bundle.html) that can help manage messages in multiple languages.
 
@@ -174,7 +174,7 @@ On top of everything we covered, there are still best practices that need to be 
 - Try to avoid hardcoding values where the format can vary on the locale, such as dates, numbers, and currencies. Many libraries handle this and ensure that the format is consistent across your application.
 - Use MessageFormat for messages that have plural forms. There are 6 plural forms in Arabic - do not try to handle this logic yourself as you will most likely end up creating problems.
 - Add inline context to help linguists do their job. Some words have more than one meaning and without context you could end up with the wrong translation.
-- If you are using inline HTML markup in your message and you have links with URLs, try to parameterize your URLs as they can often vary based on the language. Translators cannot translate URLs and it unless you provide context about why they are in the markup, they will most likely create confusion or send your users to the wrong link. 
+- If you are using inline HTML markup in your message and you have links with URLs, try to parameterize your URLs as they can often vary based on the language. Translators cannot translate URLs and it unless you provide context about why they are in the markup, they will most likely create confusion or send your users to the wrong link.
 - Use unique keys to lower your cost and improve your translation quality.
 
 ### Conclusion
@@ -185,7 +185,6 @@ In conclusion `next-multilingual` made the following decisions:
 - The scope of messages will be local: per pages or component.
 - Messages will be identified by unique keys following the pattern `<applicationId>.<context>.<id>`.
 - ICU MessageFormat will be used to handle plurals.
-
 
 ## SEO-friendly HTML markup
 

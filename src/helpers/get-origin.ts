@@ -21,7 +21,7 @@ export function getOrigin(): string {
 
   if (!matches) {
     throw new Error(
-      'Please make sure that your NEXT_PUBLIC_ORIGIN includes either the `http` or `https` protocol and is a fully-qualified URL (e.g. https://example.com) without any path'
+      'Please make sure that your NEXT_PUBLIC_ORIGIN includes either the `http` or `https` protocol and is a fully-qualified URL (e.g., https://example.com) without any path'
     );
   }
 
@@ -33,7 +33,7 @@ export function getOrigin(): string {
 
   if (slashCount > 2) {
     throw new Error(
-      'Please remove any path from your NEXT_PUBLIC_ORIGIN fully-qualified URL (e.g. https://example.com)'
+      'Please remove any path from your NEXT_PUBLIC_ORIGIN fully-qualified URL (e.g., https://example.com)'
     );
   }
 

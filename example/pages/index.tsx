@@ -1,21 +1,18 @@
 import {
-  getActualLocales,
-  getActualDefaultLocale,
-  normalizeLocale,
-  getActualLocale,
-  getPreferredLocale,
-  getCookieLocale
+    getActualDefaultLocale, getActualLocale, getActualLocales, getCookieLocale, getPreferredLocale,
+    normalizeLocale, ResolvedLocaleServerSideProps, setCookieLocale
 } from 'next-multilingual';
-import type { NextPageContext } from 'next';
+import { getTitle, useMessages } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
-import { ReactElement, useEffect, useState } from 'react';
-import Layout from '@/layout';
-import { useMessages, getTitle } from 'next-multilingual/messages';
-import styles from './index.module.css';
-import { ResolvedLocaleServerSideProps, setCookieLocale } from 'next-multilingual';
-import { useFruitsMessages } from '../messages/useFruits';
+import { useEffect, useState } from 'react';
 
-export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSideProps): ReactElement {
+import Layout from '@/layout';
+
+import { useFruitsMessages } from '../messages/useFruitsMessages';
+import styles from './index.module.css';
+
+import type { GetServerSideProps, NextPage } from 'next';
+const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter();
   const { locales, defaultLocale } = router;
 
@@ -127,10 +124,15 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
             {messages.format('mfPlural')}
           </fieldset>
           <p id="plural-messages-output">{messages.format('mfPlural', { count })}</p>
-          <button id="plural-messages-add" onClick={() => setCount(count + 1)} title={messages.format('mfAddCandy')}>
+          <button
+            id="plural-messages-add"
+            onClick={() => setCount(count + 1)}
+            title={messages.format('mfAddCandy')}
+          >
             ➕🍭
           </button>
-          <button id="plural-messages-subtract"
+          <button
+            id="plural-messages-subtract"
             onClick={() => {
               if (count > 0) setCount(count - 1);
             }}
@@ -147,11 +149,13 @@ export default function IndexPage({ resolvedLocale }: ResolvedLocaleServerSidePr
       </div>
     </Layout>
   );
-}
+};
 
-export async function getServerSideProps(
-  nextPageContext: NextPageContext
-): Promise<{ props: ResolvedLocaleServerSideProps }> {
+export default Home;
+
+export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
+  nextPageContext
+) => {
   const { req, locale, locales, defaultLocale } = nextPageContext;
 
   const actualLocales = getActualLocales(locales, defaultLocale);
@@ -172,7 +176,7 @@ export async function getServerSideProps(
 
   return {
     props: {
-      resolvedLocale
-    }
+      resolvedLocale,
+    },
   };
-}
+};

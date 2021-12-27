@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
-import type { ManifestRewrites } from '../types';
+import type { Rewrites } from '../types';
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
@@ -50,7 +50,7 @@ export function getRewrites(): Rewrite[] {
   const buildManifestPath = resolve('.next', 'build-manifest.json');
   const buildManifestContent = readFileSync(buildManifestPath, 'utf8');
 
-  // Get the content of the client build-manifest (e.g. .next/static/development/_buildManifest.json).
+  // Get the content of the client build-manifest (e.g., .next/static/development/_buildManifest.json).
   const clientBuildManifestPath = (
     JSON.parse(buildManifestContent).lowPriorityFiles as string[]
   ).find((filePaths) => filePaths.includes('_buildManifest.js'));
@@ -60,7 +60,7 @@ export function getRewrites(): Rewrite[] {
   );
 
   // Transform the client build-manifest file content back into a usable object.
-  const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: ManifestRewrites } };
+  const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } };
   new Function('self', clientBuildManifestContent)(clientBuildManifest);
 
   // Save to the cache.

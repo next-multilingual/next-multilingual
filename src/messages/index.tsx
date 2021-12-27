@@ -9,7 +9,7 @@ import IntlMessageFormat from 'intl-messageformat';
 /** This is the regular expression to validate message key segments. */
 export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
 /** This is the regular expression description to keep logs consistent. */
-export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumerical characters';
+export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumeric characters';
 
 /**
  * The message key identifier used for slugs.
@@ -29,7 +29,7 @@ export const TITLE_KEY_ID = 'title';
  * is available first, and if not try to fallback on the `slug`.
  *
  * @param messages - The object containing localized messages of a local scope.
- * @param values - The values (e.g. placeholders) used to format the message, if any.
+ * @param values - The values (e.g., placeholders) used to format the message, if any.
  *
  * @returns The message message as a string.
  */
@@ -87,7 +87,7 @@ export function getSourceFilePath(messageFilePath: string, sourceFileExtension: 
 }
 
 /**
- * The values (e.g. placeholders) used to format a message.
+ * The values (e.g., placeholders) used to format a message.
  */
 export type MessageValues = {
   readonly [key: string]: string | number;
@@ -130,7 +130,7 @@ export class Message {
    * Format a message identified by a key in a local scope.
    *
    * @param key - The local scope key identifying the message.
-   * @param values - The values (e.g. placeholders) used to format the message, if any.
+   * @param values - The values (e.g., placeholders) used to format the message, if any.
    *
    * @returns The formatted message as a string.
    */
@@ -191,7 +191,7 @@ export class Messages {
    * Format a message identified by a key in a local scope.
    *
    * @param key - The local scope key identifying the message.
-   * @param values - The values (e.g. placeholders) used to format the message, if any.
+   * @param values - The values (e.g., placeholders) used to format the message, if any.
    * @param suppressWarning - If set to true, will not display a warning message if the key is missing.
    *
    * @returns The formatted message as a string.

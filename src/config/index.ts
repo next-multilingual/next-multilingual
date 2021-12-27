@@ -1,7 +1,13 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
 import { existsSync, readdirSync, utimesSync } from 'fs';
 import { extname } from 'path';
-import { highlight, highlightFilePath, isLocale, normalizeLocale } from '..';
+import {
+  highlight,
+  highlightFilePath,
+  isLocale,
+  normalizeLocale,
+  queryToRewriteParameters,
+} from '..';
 import { parsePropertiesFile } from '../messages/properties';
 import {
   getMessagesFilePath,
@@ -109,11 +115,11 @@ export function removePagesDirectoryPath(filesystemPath): string {
 }
 
 /**
- * Get the non-localized URL path from a directory entre path (e.g. `pages/hello/index.tsx` -> `/hello`).
+ * Get the non-localized URL path from a directory entre path (e.g., `pages/hello/index.tsx` -> `/hello`).
  *
  * @param filesystemPath - A filesystem path (file or directory).
  *
- * @returns The non-localized URL path (e.g. `pages/hello/index.tsx` -> `/hello`).
+ * @returns The non-localized URL path (e.g., `pages/hello/index.tsx` -> `/hello`).
  */
 export function getNonLocalizedUrlPath(filesystemPath: string): string {
   const urlPath = removeFileExtension(removePagesDirectoryPath(filesystemPath))
@@ -314,7 +320,7 @@ export class Config {
       }
     }
 
-    this.routes = this.getRoutes();
+    this.routes = this.fetchRoutes();
 
     // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
     if (process.env.NODE_ENV === 'development') {
@@ -331,7 +337,7 @@ export class Config {
             if (existsSync(sourceFilePath)) {
               // "touch" the file without any changes to trigger recompile.
               utimesSync(sourceFilePath, new Date(), new Date());
-              const currentRoutes = this.getRoutes();
+              const currentRoutes = this.fetchRoutes();
               if (JSON.stringify(currentRoutes) !== JSON.stringify(routesSnapshot)) {
                 log.warn(
                   `Found a change impacting localized URLs. Restart the server to see the changes in effect.`
@@ -346,11 +352,12 @@ export class Config {
   }
 
   /**
-   * Show the content of the route object (can be useful for debugging).
+   * Get the the multilingual routes.
+   *
+   * @returns The multilingual routes.
    */
-  public showRoutes(): void {
-    console.log('==== ROUTES ====');
-    console.dir(this.routes, { depth: null });
+  public getRoutes(): MultilingualRoute[] {
+    return this.routes;
   }
 
   /**
@@ -436,14 +443,14 @@ export class Config {
   }
 
   /**
-   * Returns the Next.js routes from a specific directory.
+   * Fetch the Next.js routes from a specific directory.
    *
    * @param directoryPath - The directory being currently inspected for routes.
    * @param routes - The current route object array being constructed during a recursive call.
    *
    * @return The Next.js routes.
    */
-  private getRoutes(
+  private fetchRoutes(
     directoryPath = this.pagesDirectoryPath,
     routes: MultilingualRoute[] = []
   ): MultilingualRoute[] {
@@ -496,7 +503,7 @@ export class Config {
     // Look for sub-directories to build child routes.
     for (const directoryEntry of directoryEntries) {
       if (directoryEntry.isDirectory()) {
-        this.getRoutes(`${directoryPath}/${directoryEntry.name}`, routes);
+        this.fetchRoutes(`${directoryPath}/${directoryEntry.name}`, routes);
       }
     }
 
@@ -541,23 +548,38 @@ export class Config {
   /**
    * Normalizes the path based on the locale and case.
    *
-   * @param locale - The locale of the path.
    * @param urlPath - The URL path (excluding the locale from the path).
+   * @param locale - The locale of the path.
    * @param encode - Set to `true` to return an encode URL (by default it's not encoded)
    *
    * @returns The normalized path with the locale.
    */
-  private normalizeUrlPath(locale: string, urlPath: string, encode = false): string {
-    const normalizedUrlPath = `/${locale}${urlPath}`.toLocaleLowerCase(locale);
+  private normalizeUrlPath(urlPath: string, locale: string = undefined, encode = false): string {
+    let normalizedUrlPath = `${
+      locale !== undefined ? `/${locale}` : ''
+    }${urlPath}`.toLocaleLowerCase(locale);
 
     if (encode) {
       // Normalize to NFC as per https://tools.ietf.org/html/rfc3987#section-3.1
-      return this.encodeUrlPath(normalizedUrlPath)
-        .replace(/\/%5B(.+)%5D\//g, '/[$1]/') // Unescape dynamic routes URL segments if present.
-        .replace(/\/%5B(.+)%5D$/, '/[$1]'); // Unescape a URL ending with a dynamic route if present.
+      normalizedUrlPath = this.encodeUrlPath(normalizedUrlPath);
     }
 
-    return normalizedUrlPath;
+    // Need to unescape both rewrite and query parameters since we use the same method in `getRedirects`.
+    normalizedUrlPath = normalizedUrlPath
+      .split('/')
+      .map((pathSegment) => {
+        if (/%3A(.+)/.test(pathSegment)) {
+          // Unescape rewrite parameters (e.g., `/:example`) if present.
+          return `:${pathSegment.slice(3)}`;
+        } else if (/%5B(.+)%5D/.test(pathSegment)) {
+          // Unescape query parameters (e.g., `/[example]`) if present.
+          return `:${pathSegment.slice(3, -3)}`;
+        }
+        return pathSegment;
+      })
+      .join('/');
+
+    return queryToRewriteParameters(normalizedUrlPath);
   }
 
   /**
@@ -569,8 +591,8 @@ export class Config {
     const rewrites = [];
     for (const route of this.routes) {
       for (const locale of this.actualLocales) {
-        const source = this.normalizeUrlPath(locale, route.getLocalizedUrlPath(locale), true);
-        const destination = this.normalizeUrlPath(locale, route.nonLocalizedUrlPath);
+        const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale, true);
+        const destination = this.normalizeUrlPath(route.nonLocalizedUrlPath, locale);
 
         if (source !== destination) {
           rewrites.push({
@@ -593,20 +615,20 @@ export class Config {
     const redirects = [];
     for (const route of this.routes) {
       for (const locale of this.actualLocales) {
-        const source = this.normalizeUrlPath(locale, route.getLocalizedUrlPath(locale));
-        const canonical = source.normalize('NFC');
+        const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale);
+        const canonical = this.normalizeUrlPath(source.normalize('NFC'), undefined, true);
+
         const alreadyIncluded = [canonical];
         for (const alternative of [
           source, // UTF-8
-          source.normalize('NFD'),
-          source.normalize('NFKC'),
-          source.normalize('NFKD'),
-          this.normalizeUrlPath(locale, route.nonLocalizedUrlPath).normalize('NFC'),
+          this.normalizeUrlPath(source.normalize('NFD'), undefined, true),
+          this.normalizeUrlPath(source.normalize('NFKC'), undefined, true),
+          this.normalizeUrlPath(source.normalize('NFKD'), undefined, true),
         ]) {
           if (!alreadyIncluded.includes(alternative) && canonical !== alternative) {
             redirects.push({
-              source: this.encodeUrlPath(alternative),
-              destination: this.encodeUrlPath(canonical),
+              source: alternative,
+              destination: canonical,
               locale: false,
               permanent: true,
             });
@@ -653,7 +675,12 @@ export function getConfig(
   // Check if debug mode was enabled.
   if (typeof options.debug !== undefined) {
     if (options.debug === true) {
-      config.showRoutes();
+      console.log('==== ROUTES ====');
+      console.dir(config.getRoutes(), { depth: null });
+      console.log('==== REWRITES ====');
+      console.dir(config.getRewrites(), { depth: null });
+      console.log('==== REDIRECTS ====');
+      console.dir(config.getRedirects(), { depth: null });
     }
     delete options.debug;
   }

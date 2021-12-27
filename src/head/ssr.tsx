@@ -1,8 +1,17 @@
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { getActualDefaultLocale, getActualLocales, normalizeLocale } from '..';
-import { getApplicableUrl } from '../helpers/get-applicable-url';
+import {
+  containsQueryParameters,
+  getActualDefaultLocale,
+  getActualLocales,
+  getQueryParameters,
+  highlight,
+  hydrateQueryParameters,
+  log,
+  normalizeLocale,
+} from '..';
+import { getLocalizedUrl } from '../helpers/get-localized-url';
 import { getRewrites } from '../helpers/get-rewrites';
 
 // Throw a clear error is this is included by mistake on the client side.
@@ -24,12 +33,31 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
    * @see https://github.com/vercel/next.js/issues/17721 (closed issue)
    * @see https://nextjs.org/docs/api-reference/next/head (Next.js documentation)
    *
-   * | title, meta or any other elements (e.g. script) need to be contained as direct children of the Head
+   * | title, meta or any other elements (e.g., script) need to be contained as direct children of the Head
    * | element, or wrapped into maximum one level of <React.Fragment> or arrays—otherwise the tags won't
    * | be correctly picked up on client-side navigation.
    *
    */
-  const { pathname, basePath, defaultLocale, locales } = useRouter();
+  const { pathname, basePath, defaultLocale, locales, query } = useRouter();
+
+  // Check if it's a dynamic router and if we have all the information to generate the links.
+  if (containsQueryParameters(pathname)) {
+    const hydratedUrlPath = hydrateQueryParameters(pathname, query, true);
+    if (containsQueryParameters(hydratedUrlPath)) {
+      const missingParameters = getQueryParameters(hydratedUrlPath);
+      log.warn(
+        `unable to generate canonical and alternate links for the path ${highlight(
+          pathname
+        )} because the following query parameter${
+          missingParameters.length > 1 ? 's are' : ' is'
+        } missing: ${highlight(
+          missingParameters.join(',')
+        )}. Did you forget to add a 'getStaticPaths' or 'getServerSideProps' to your page?`
+      );
+      return <NextHead>{children}</NextHead>;
+    }
+  }
+
   const actualLocales = getActualLocales(locales, defaultLocale);
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
 
@@ -37,14 +65,20 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
     <NextHead>
       <link
         rel="canonical"
-        href={getApplicableUrl(getRewrites(), pathname, actualDefaultLocale, basePath, true)}
+        href={getLocalizedUrl(
+          getRewrites(),
+          { pathname, query },
+          actualDefaultLocale,
+          basePath,
+          true
+        )}
         key="canonical-link"
       />
       {actualLocales.map((actualLocale) => {
         return (
           <link
             rel="alternate"
-            href={getApplicableUrl(getRewrites(), pathname, actualLocale, basePath, true)}
+            href={getLocalizedUrl(getRewrites(), { pathname, query }, actualLocale, basePath, true)}
             hrefLang={normalizeLocale(actualLocale)}
             key={`alternate-link-${actualLocale}`}
           />

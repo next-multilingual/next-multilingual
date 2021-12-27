@@ -1,9 +1,11 @@
-import { useMessages, getTitle } from 'next-multilingual/messages';
-import type { ReactElement } from 'react';
+import { NextPage } from 'next';
+import { getTitle, useMessages } from 'next-multilingual/messages';
+
 import Layout from '@/layout';
+
 import styles from './index.module.css';
 
-export default function AboutUs(): ReactElement {
+const AboutUs: NextPage = () => {
   const messages = useMessages();
   const title = getTitle(messages);
   return (
@@ -12,4 +14,6 @@ export default function AboutUs(): ReactElement {
       <p>{messages.format('details')}</p>
     </Layout>
   );
-}
+};
+
+export default AboutUs;

@@ -1,10 +1,13 @@
-import type { ReactElement, FormEvent } from 'react';
-import Layout from '@/layout';
-import { useMessages, getTitle } from 'next-multilingual/messages';
+import type { FormEvent } from 'react';
+import { NextPage } from 'next';
+import { getTitle, useMessages } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
+
+import Layout from '@/layout';
+
 import styles from './index.module.css';
 
-export default function ContactUs(): ReactElement {
+const ContactUs: NextPage = () => {
   const router = useRouter();
   const messages = useMessages();
   const title = getTitle(messages);
@@ -34,4 +37,6 @@ export default function ContactUs(): ReactElement {
       </form>
     </Layout>
   );
-}
+};
+
+export default ContactUs;

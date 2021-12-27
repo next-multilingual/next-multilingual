@@ -1,9 +1,10 @@
-import { useMessages, getTitle } from 'next-multilingual/messages';
+import { NextPage } from 'next';
 import Link from 'next-multilingual/link';
-import type { ReactElement } from 'react';
+import { getTitle, useMessages } from 'next-multilingual/messages';
+
 import Layout from '@/layout';
 
-export default function Custom400(): ReactElement {
+const Custom400: NextPage = () => {
   const messages = useMessages();
   const title = getTitle(messages);
   return (
@@ -14,4 +15,6 @@ export default function Custom400(): ReactElement {
       </Link>
     </Layout>
   );
-}
+};
+
+export default Custom400;
