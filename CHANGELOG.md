@@ -1,23 +1,18 @@
 # [0.9.0](https://github.com/Avansai/next-multilingual/compare/0.8.4...0.9.0) (2021-12-27)
 
-
 ### Bug Fixes
 
-* **cookies:** fix `SameSite` warning on cookies ([28f6403](https://github.com/Avansai/next-multilingual/commit/28f64039a0977e67ca7c198ae2336ac506e54b93))
-* **favicon:** fix missing favicon browser warnings ([871f87d](https://github.com/Avansai/next-multilingual/commit/871f87dfb30a6845f33017585d34c569718cf6d9))
-* **head:** normalize locale capitalization in HTML attributes ([269cab9](https://github.com/Avansai/next-multilingual/commit/269cab9daff47dfdbd08067572fe7b2625206af0))
-* **ssr:** fix an issue where the server would be desynchronized with the client ([777a719](https://github.com/Avansai/next-multilingual/commit/777a7197c6ce94f9f3e9a99eb45f71b4f5d976c0))
-* **urls:** make localized dynamic routes work ([7c185bd](https://github.com/Avansai/next-multilingual/commit/7c185bdba33445f0c0aae134839cf89e441cc8eb))
-
+- **cookies:** fix `SameSite` warning on cookies ([28f6403](https://github.com/Avansai/next-multilingual/commit/28f64039a0977e67ca7c198ae2336ac506e54b93))
+- **favicon:** fix missing favicon browser warnings ([871f87d](https://github.com/Avansai/next-multilingual/commit/871f87dfb30a6845f33017585d34c569718cf6d9))
+- **head:** normalize locale capitalization in HTML attributes ([269cab9](https://github.com/Avansai/next-multilingual/commit/269cab9daff47dfdbd08067572fe7b2625206af0))
+- **ssr:** fix an issue where the server would be desynchronized with the client ([777a719](https://github.com/Avansai/next-multilingual/commit/777a7197c6ce94f9f3e9a99eb45f71b4f5d976c0))
+- **urls:** make localized dynamic routes work ([7c185bd](https://github.com/Avansai/next-multilingual/commit/7c185bdba33445f0c0aae134839cf89e441cc8eb))
 
 ### Features
 
-* **encoding:** add warnings when file encoding issues are detected ([4c21b0a](https://github.com/Avansai/next-multilingual/commit/4c21b0a19a33f2c3f5ec8dd90cc89891f60333b3))
-
-
-### Reverts
-
-* remove a file that was inadvertently committed during a test ([69c3a14](https://github.com/Avansai/next-multilingual/commit/69c3a14a9c12552c9f5611c1e028227308bb07b9))
+- **urls:** add new hook `useLocalizedUrl` to enable localized URLs outside of the `<Link>` component ([b759923](https://github.com/Avansai/next-multilingual/commit/b7599232eb9d9b61ef6b900bb515d7903cb8aa6a))
+- **tests:** add automated Cypress tests ([fb1bd95](https://github.com/Avansai/next-multilingual/commit/fb1bd95e79d08eaa402f72e4a8a76ea9e976198f))
+- **encoding:** add warnings when file encoding issues are detected ([4c21b0a](https://github.com/Avansai/next-multilingual/commit/4c21b0a19a33f2c3f5ec8dd90cc89891f60333b3))
 
 ## [0.8.4](https://github.com/Avansai/next-multilingual/compare/0.8.3...0.8.4) (2021-11-28)
 
@@ -37,8 +32,7 @@
 
 # [0.8.0](https://github.com/Avansai/next-multilingual/compare/0.7.4...0.8.0) (2021-11-21)
 
-- 💥 breaking change - rename core APIs: `MulConfig` -> `Config`, `getMulConfig` -> `getConfig`, `MulLink` -> `Link`, `MulHead` -> `Head` ([47a1c7c](https://github.com/Avansai/next-multilingual/commit/47a1c7c7824da5e9bb04e6c2524dd2d3723296b4
-))
+- 💥 breaking change - rename core APIs: `MulConfig` -> `Config`, `getMulConfig` -> `getConfig`, `MulLink` -> `Link`, `MulHead` -> `Head` ([47a1c7c](https://github.com/Avansai/next-multilingual/commit/47a1c7c7824da5e9bb04e6c2524dd2d3723296b4))
 - 🐛 revert change introduced in 0.7.4 to correctly hydrate dynamic route links
 
 ## [0.7.4](https://github.com/Avansai/next-multilingual/compare/0.7.3...0.7.4) (2021-11-15)
@@ -88,14 +82,12 @@
 
 ## 0.1.1 (2021-08-28)
 
-* update dependencies ([b9f59cd](https://github.com/Avansai/next-multilingual/commit/b9f59cdcc613d1029becae6cc0b129557207834f
-))
+- update dependencies ([b9f59cd](https://github.com/Avansai/next-multilingual/commit/b9f59cdcc613d1029becae6cc0b129557207834f))
 
 ## 0.1.0 Initial release (2021-08-28)
 
-* localized URLs supporting UTF-8 characters
-* locale prefix for all locales, including the default locale
-* dynamic localized display on `/` without the need of redirection
-* `useMessages()` hook to access local scope messages
-* `<MulHead>` component generating canonical and alternate links HTML markup
-
+- localized URLs supporting UTF-8 characters
+- locale prefix for all locales, including the default locale
+- dynamic localized display on `/` without the need of redirection
+- `useMessages()` hook to access local scope messages
+- `<MulHead>` component generating canonical and alternate links HTML markup
