@@ -1,3 +1,10 @@
+## [0.9.3](https://github.com/Avansai/next-multilingual/compare/0.9.2...0.9.3) (2022-01-04)
+
+
+### Bug Fixes
+
+* **test:** add test for builds and fix failing tests ([c493655](https://github.com/Avansai/next-multilingual/commit/c493655fa123a6a05137bc9e4bbf29534391a42a))
+
 ## [0.9.2](https://github.com/Avansai/next-multilingual/compare/0.9.1...0.9.2) (2022-01-04)
 
 
