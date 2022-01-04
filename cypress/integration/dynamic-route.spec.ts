@@ -1,4 +1,4 @@
-import { BASE_URL, DEFAULT_LOCALE, LOCALE_NAMES, LOCALES } from '../constants';
+import { DEFAULT_LOCALE, LOCALE_NAMES, LOCALES, ORIGIN } from '../constants';
 
 export const DYNAMIC_ROUTE_URLS = {
   'en-US': '/dynamic-route-test',
@@ -74,7 +74,7 @@ describe('A dynamic route', () => {
       cy.get(`#link-with-parameter`)
         .click()
         .then(() => {
-          cy.url().should('eq', `${BASE_URL}${dynamicRouteUrl}`);
+          cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
         });
     });
 
@@ -85,7 +85,7 @@ describe('A dynamic route', () => {
       cy.get(`#route-push-button`)
         .click()
         .then(() => {
-          cy.url().should('eq', `${BASE_URL}${dynamicRouteUrl}`);
+          cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
         });
     });
 
@@ -100,7 +100,7 @@ describe('A dynamic route', () => {
         },
       }).then(({ body }: Cypress.Response<string>) => {
         source = body; // Save it for the next test to avoid multiple calls.
-        const canonicalLinkMarkup = `<link rel="canonical" href="${BASE_URL}${canonicalDynamicRouteUrl}"/>`;
+        const canonicalLinkMarkup = `<link rel="canonical" href="${ORIGIN}${canonicalDynamicRouteUrl}"/>`;
         expect(source).to.contain(canonicalLinkMarkup);
       });
     });
@@ -111,7 +111,7 @@ describe('A dynamic route', () => {
         const alternateLinkHref = `/${locale.toLowerCase()}${
           DYNAMIC_ROUTE_URLS[locale]
         }/${parameterValue}`;
-        const alternateLinkMarkup = `<link rel="alternate" href="${BASE_URL}${alternateLinkHref}" hrefLang="${locale}"/>`;
+        const alternateLinkMarkup = `<link rel="alternate" href="${ORIGIN}${alternateLinkHref}" hrefLang="${locale}"/>`;
         expect(source).to.contain(alternateLinkMarkup);
       });
     });
@@ -129,7 +129,7 @@ describe('A dynamic route', () => {
       cy.get(`head link[rel=canonical]`)
         .should('have.attr', 'href')
         .then((href) => {
-          expect(href).eq(`${BASE_URL}${canonicalDynamicRouteUrl}`);
+          expect(href).eq(`${ORIGIN}${canonicalDynamicRouteUrl}`);
         });
     });
 
@@ -140,7 +140,7 @@ describe('A dynamic route', () => {
           .should('have.attr', 'href')
           .then((href) => {
             expect(href).eq(
-              `${BASE_URL}/${locale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}/${parameterValue}`
+              `${ORIGIN}/${locale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}/${parameterValue}`
             );
           });
       });

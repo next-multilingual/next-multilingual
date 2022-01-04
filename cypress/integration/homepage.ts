@@ -1,4 +1,4 @@
-import { LOCALES, LOCALE_NAMES, DEFAULT_LOCALE, BASE_URL } from '../constants';
+import { DEFAULT_LOCALE, LOCALE_NAMES, LOCALES, ORIGIN } from '../constants';
 
 export const ABOUT_US_URLS = {
   'en-US': '/about-us',
@@ -79,7 +79,7 @@ describe('The Next.js application', () => {
     });
 
     // Check that the canonical link points on the default locale on the SSR markup.
-    const canonicalLinkMarkup = `<link rel="canonical" href="${BASE_URL}/${DEFAULT_LOCALE.toLowerCase()}"/>`;
+    const canonicalLinkMarkup = `<link rel="canonical" href="${ORIGIN}/${DEFAULT_LOCALE.toLowerCase()}"/>`;
     it(`returns SSR html that contains '${canonicalLinkMarkup}' for '${LOCALE_NAMES[locale]}'`, () => {
       expect(source).to.contain(canonicalLinkMarkup);
     });
@@ -87,7 +87,7 @@ describe('The Next.js application', () => {
     // Check that all alternate links or all locales are present on the SSR markup.
     it(`returns SSR html that contains all alternate links for '${LOCALE_NAMES[locale]}'`, () => {
       LOCALES.forEach((locale) => {
-        const alternateLinkMarkup = `<link rel="alternate" href="${BASE_URL}/${locale.toLowerCase()}" hrefLang="${locale}"/>`;
+        const alternateLinkMarkup = `<link rel="alternate" href="${ORIGIN}/${locale.toLowerCase()}" hrefLang="${locale}"/>`;
         expect(source).to.contain(alternateLinkMarkup);
       });
     });
@@ -115,7 +115,7 @@ describe('The Next.js application', () => {
       cy.get(`head link[rel=canonical]`)
         .should('have.attr', 'href')
         .then((href) => {
-          expect(href).eq(`${BASE_URL}/${DEFAULT_LOCALE.toLowerCase()}`);
+          expect(href).eq(`${ORIGIN}/${DEFAULT_LOCALE.toLowerCase()}`);
         });
     });
 
@@ -125,7 +125,7 @@ describe('The Next.js application', () => {
         cy.get(`head link[rel=alternate][hreflang=${locale}]`)
           .should('have.attr', 'href')
           .then((href) => {
-            expect(href).eq(`${BASE_URL}/${locale.toLowerCase()}`);
+            expect(href).eq(`${ORIGIN}/${locale.toLowerCase()}`);
           });
       });
     });

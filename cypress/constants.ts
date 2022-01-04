@@ -5,4 +5,5 @@ export const LOCALE_NAMES = {
 };
 
 export const DEFAULT_LOCALE = LOCALES[0];
-export const BASE_URL = Cypress.config().baseUrl;
+
+export const ORIGIN = Cypress.env('isProd') ? Cypress.env('prodBaseUrl') : Cypress.config().baseUrl;

@@ -78,11 +78,13 @@
     "start-example": "cd example && npm run dev",
     "start-example-build": "cd example && npm run build && npm run start",
     "cypress": "cypress open",
+    "cypress:build": "cypress open --env isProd=true",
     "cypress:headless": "cypress run",
+    "cypress:build:headless": "cypress run --env isProd=true",
     "e2e": "start-server-and-test start-example http://localhost:3000 cypress",
     "e2e:headless": "start-server-and-test start-example http://localhost:3000 cypress:headless",
-    "e2e:build": "start-server-and-test start-example-build http://localhost:3000 cypress",
-    "e2e:build:headless": "start-server-and-test start-example-build http://localhost:3000 cypress:headless"
+    "e2e:build": "start-server-and-test start-example-build http://localhost:3000 cypress:build",
+    "e2e:build:headless": "start-server-and-test start-example-build http://localhost:3000 cypress:build:headless"
   },
   "dependencies": {
     "@babel/core": "^7.16.7",
