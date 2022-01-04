@@ -76,10 +76,13 @@
     "next-lint": "cd example && next lint",
     "release": "dotenv -- release-it --only-version",
     "start-example": "cd example && npm run dev",
+    "start-example-build": "cd example && npm run build && npm run start",
     "cypress": "cypress open",
     "cypress:headless": "cypress run",
     "e2e": "start-server-and-test start-example http://localhost:3000 cypress",
-    "e2e:headless": "start-server-and-test start-example http://localhost:3000 cypress:headless"
+    "e2e:headless": "start-server-and-test start-example http://localhost:3000 cypress:headless",
+    "e2e:build": "start-server-and-test start-example-build http://localhost:3000 cypress",
+    "e2e:build:headless": "start-server-and-test start-example-build http://localhost:3000 cypress:headless"
   },
   "dependencies": {
     "@babel/core": "^7.16.7",
