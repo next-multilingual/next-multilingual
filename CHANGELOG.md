@@ -1,3 +1,10 @@
+## [0.9.2](https://github.com/Avansai/next-multilingual/compare/0.9.1...0.9.2) (2022-01-04)
+
+
+### Bug Fixes
+
+* `TypeError: Cannot read properties of undefined (reading '__rewrites')` ([ee2a5e4](https://github.com/Avansai/next-multilingual/commit/ee2a5e469a33dea7a19519f8d4c441a3494d0903))
+
 ## [0.9.1](https://github.com/Avansai/next-multilingual/compare/0.9.0...0.9.1) (2022-01-04)
 
 # [0.9.0](https://github.com/Avansai/next-multilingual/compare/0.8.4...0.9.0) (2021-12-27)
