@@ -1,6 +1,6 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
-import chokidar from 'chokidar';
-import { existsSync, readdirSync, utimesSync } from 'fs';
+import CheapWatch from 'cheap-watch';
+import { existsSync, readdirSync, Stats, utimesSync } from 'fs';
 import { extname } from 'path';
 
 import {
@@ -332,29 +332,24 @@ export class Config {
     // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
     if (process.env.NODE_ENV === 'development') {
       let routesSnapshot = this.routes;
-      chokidar
-        .watch('./**/*.properties', {
-          ignored: ['node_modules', '.next'],
-          ignoreInitial: true,
-        })
-        .on('all', (event, messagesFilePath) => {
-          for (const pageFileExtension of PAGE_FILE_EXTENSIONS) {
-            const sourceFilePath = getSourceFilePath(messagesFilePath, pageFileExtension);
 
-            if (existsSync(sourceFilePath)) {
-              // "touch" the file without any changes to trigger recompile.
-              utimesSync(sourceFilePath, new Date(), new Date());
-              const currentRoutes = this.fetchRoutes();
-              if (JSON.stringify(currentRoutes) !== JSON.stringify(routesSnapshot)) {
-                log.warn(
-                  `Found a change impacting localized URLs. Restart the server to see the changes in effect.`
-                );
-                routesSnapshot = currentRoutes; // Update snapshot to avoid logging all subsequent changes.
-              }
-              break;
-            }
-          }
-        });
+      const watch = new CheapWatch({
+        dir: process.cwd(),
+        filter: ({ path, stats }) =>
+          ((stats as Stats).isFile() && (path as string).includes('.properties')) ||
+          ((stats as Stats).isDirectory() &&
+            !(path as string).includes('node_modules') &&
+            !(path as string).includes('.next')),
+      });
+
+      watch.init();
+
+      watch.on('+', ({ path, stats }) => {
+        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot);
+      });
+      watch.on('-', ({ path, stats }) => {
+        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot);
+      });
     }
 
     // Check if debug mode was enabled.
@@ -367,6 +362,41 @@ export class Config {
       console.log('==== REDIRECTS ====');
       console.dir(this.getRedirects(), { depth: null });
     }
+  }
+
+  /**
+   * Force recompile a source file when a message file is modified.
+   *
+   * @param messagesFilePath - The file path of a message file.
+   * @param messagesFileStats - The file stats of the message file.
+   * @param routesSnapshot - The previous snapshot of routes to detect changes.
+   *
+   * @returns The most recent route snapshot.
+   */
+  private recompileSourceFile(
+    messagesFilePath: string,
+    messagesFileStats: Stats,
+    routesSnapshot: MultilingualRoute[]
+  ): MultilingualRoute[] {
+    if (!messagesFileStats.isFile()) return routesSnapshot;
+
+    for (const pageFileExtension of PAGE_FILE_EXTENSIONS) {
+      const sourceFilePath = getSourceFilePath(messagesFilePath, pageFileExtension);
+
+      if (existsSync(sourceFilePath)) {
+        // "touch" the file without any changes to trigger recompile.
+        utimesSync(sourceFilePath, new Date(), new Date());
+        const currentRoutes = this.fetchRoutes();
+        if (JSON.stringify(currentRoutes) !== JSON.stringify(routesSnapshot)) {
+          log.warn(
+            `Found a change impacting localized URLs. Restart the server to see the changes in effect.`
+          );
+          return currentRoutes; // Update snapshot to avoid logging all subsequent changes.
+        }
+        break;
+      }
+    }
+    return routesSnapshot;
   }
 
   /**

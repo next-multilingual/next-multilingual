@@ -88,7 +88,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.16.7",
-    "chokidar": "^3.5.2",
+    "cheap-watch": "^1.0.4",
     "colorette": "^2.0.16",
     "dot-properties": "^1.0.1",
     "intl-messageformat": "^9.11.1",
