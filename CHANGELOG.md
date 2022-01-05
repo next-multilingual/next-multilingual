@@ -1,3 +1,10 @@
+## [0.9.6](https://github.com/Avansai/next-multilingual/compare/0.9.5...0.9.6) (2022-01-05)
+
+
+### Bug Fixes
+
+* **SSR:** replace Chokidar with CheapWatch ([e5a1951](https://github.com/Avansai/next-multilingual/commit/e5a19518f0d84d8eb1c1a624192d8eb5af1b78cf))
+
 ## [0.9.5](https://github.com/Avansai/next-multilingual/compare/0.9.4...0.9.5) (2022-01-05)
 
 
