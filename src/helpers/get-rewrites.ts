@@ -1,5 +1,7 @@
-import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
+
+import { highlightFilePath, log } from '../';
+
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 import type { Rewrites } from '../types';
 
@@ -28,42 +30,91 @@ export type RoutesManifest = {
 export function getRewrites(): Rewrite[] {
   if (rewritesCache) return rewritesCache;
 
+  let foundManifest = false;
+
   // Try to get the content of the routes-manifest (.next/routes-manifest.json) first - this is only available on builds.
-  const routesManifestPath = resolve('.next', 'routes-manifest.json');
+  const routesManifestPath = '.next/routes-manifest.json';
 
   if (existsSync(routesManifestPath)) {
-    const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest;
-    const rewrites = routesManifest.rewrites.map((rewrite) => {
-      return {
-        source: rewrite.source,
-        destination: rewrite.destination,
-        locale: rewrite.locale,
-      };
-    });
+    foundManifest = true;
+    try {
+      const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest;
+      const rewrites = routesManifest.rewrites.map((rewrite) => {
+        return {
+          source: rewrite.source,
+          destination: rewrite.destination,
+          locale: rewrite.locale,
+        };
+      });
 
-    // Save to the cache.
-    rewritesCache = rewrites;
-    return rewritesCache;
+      // Save to the cache.
+      rewritesCache = rewrites;
+    } catch (error) {
+      log.warn(
+        `URLs will not be localized on SSR markup due to an unexpected error while reading ${routesManifestPath}: ${
+          (error as Error).message
+        }`
+      );
+      rewritesCache = [];
+    }
   }
 
-  // If the server routes-manifest is not available, then get can get the rewrites from the client build manifest.
-  const buildManifestPath = resolve('.next', 'build-manifest.json');
-  const buildManifestContent = readFileSync(buildManifestPath, 'utf8');
+  // If the routes-manifest is not available, then get can get the rewrites from the build manifest.
+  const buildManifestPath = '.next/build-manifest.json';
 
-  // Get the content of the client build-manifest (e.g., .next/static/development/_buildManifest.json).
-  const clientBuildManifestPath = (
-    JSON.parse(buildManifestContent).lowPriorityFiles as string[]
-  ).find((filePaths) => filePaths.includes('_buildManifest.js'));
-  const clientBuildManifestContent = readFileSync(
-    resolve('.next', clientBuildManifestPath),
-    'utf8'
-  );
+  if (existsSync(buildManifestPath)) {
+    foundManifest = true;
 
-  // Transform the client build-manifest file content back into a usable object.
-  const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } };
-  new Function('self', clientBuildManifestContent)(clientBuildManifest);
+    try {
+      const buildManifestContent = readFileSync(buildManifestPath, 'utf8');
 
-  // Save to the cache.
-  rewritesCache = clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles;
+      // Get the content of the build-manifest (e.g., .next/static/development/_buildManifest.json).
+      const staticBuildManifestPath = `.next/${(
+        JSON.parse(buildManifestContent).lowPriorityFiles as string[]
+      ).find((filePaths) => filePaths.includes('_buildManifest.js'))}`;
+
+      if (existsSync(staticBuildManifestPath)) {
+        try {
+          const clientBuildManifestContent = readFileSync(staticBuildManifestPath, 'utf8');
+
+          // Transform the client build-manifest file content back into a usable object.
+          const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } };
+          new Function('self', clientBuildManifestContent)(clientBuildManifest);
+
+          // Save to the cache.
+          rewritesCache = clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles;
+        } catch (error) {
+          log.warn(
+            `URLs will not be localized on SSR markup due to an unexpected error while reading ${highlightFilePath(
+              staticBuildManifestPath
+            )}: ${(error as Error).message}`
+          );
+          rewritesCache = [];
+        }
+      }
+    } catch (error) {
+      log.warn(
+        `URLs will not be localized on SSR markup due to an unexpected error while reading ${highlightFilePath(
+          buildManifestPath
+        )}: ${(error as Error).message}`
+      );
+      rewritesCache = [];
+    }
+  }
+
+  if (!foundManifest) {
+    log.warn(
+      `URLs will not be localized on SSR markup because no manifest file could be found at either ${highlightFilePath(
+        routesManifestPath
+      )} or ${highlightFilePath(buildManifestPath)}`
+    );
+    rewritesCache = [];
+  }
+
+  if (typeof process !== 'undefined' && process?.env?.nextMultilingualDebug) {
+    console.log('==== SERVER SIDE REWRITES ====');
+    console.dir(rewritesCache, { depth: null });
+  }
+
   return rewritesCache;
 }

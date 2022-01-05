@@ -1,26 +1,18 @@
 import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
+import chokidar from 'chokidar';
 import { existsSync, readdirSync, utimesSync } from 'fs';
 import { extname } from 'path';
+
 import {
-  highlight,
-  highlightFilePath,
-  isLocale,
-  normalizeLocale,
-  queryToRewriteParameters,
-} from '..';
-import { parsePropertiesFile } from '../messages/properties';
+    highlight, highlightFilePath, isLocale, log, normalizeLocale, queryToRewriteParameters
+} from '../';
 import {
-  getMessagesFilePath,
-  getSourceFilePath,
-  keySegmentRegExp,
-  keySegmentRegExpDescription,
-  SLUG_KEY_ID,
+    getMessagesFilePath, getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription,
+    SLUG_KEY_ID
 } from '../messages';
-import { log } from '..';
+import { parsePropertiesFile } from '../messages/properties';
 
 import type { NextConfig } from 'next';
-import chokidar from 'chokidar';
-
 /**
  * Possible `pages` directories used by Next.js.
  *
@@ -673,8 +665,9 @@ export function getConfig(
   const config = new Config(applicationId, locales);
 
   // Check if debug mode was enabled.
-  if (typeof options.debug !== undefined) {
+  if (typeof options.debug !== 'undefined') {
     if (options.debug === true) {
+      process.env.nextMultilingualDebug = 'true';
       console.log('==== ROUTES ====');
       console.dir(config.getRoutes(), { depth: null });
       console.log('==== REWRITES ====');
