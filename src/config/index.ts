@@ -144,6 +144,20 @@ export function isDynamicRoute(urlPath: string): boolean {
   return urlSegment.startsWith('[') && urlSegment.endsWith(']');
 }
 
+/**
+ * Is `next-multilingual` running in debug mode?
+ *
+ * The current implementation only works on the server side.
+ *
+ * @returns True when running in debug mode, otherwise false.
+ */
+export function isInDebugMode(): boolean {
+  if (typeof process !== 'undefined' && process?.env?.nextMultilingualDebug) {
+    return true;
+  }
+  return false;
+}
+
 export class MultilingualRoute {
   /** The filesystem path (file or directory). */
   public filesystemPath: string;
@@ -272,10 +286,11 @@ export class Config {
    *
    * @param applicationId - The unique application identifier that will be used as a messages key prefix.
    * @param locales - The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted.
+   * @param debug - Enable debug mode to see extra information about `next-multilingual`.
    *
    * @throws Error when one of the arguments is invalid.
    */
-  constructor(applicationId: string, locales: string[]) {
+  constructor(applicationId: string, locales: string[], debug = false) {
     // Set the application identifier if valid.
     if (!keySegmentRegExp.test(applicationId)) {
       throw new Error(
@@ -340,6 +355,17 @@ export class Config {
             }
           }
         });
+    }
+
+    // Check if debug mode was enabled.
+    if (debug) {
+      process.env.nextMultilingualDebug = 'true'; // Set flag on the server to re-use in other modules.
+      console.log('==== ROUTES ====');
+      console.dir(this.getRoutes(), { depth: null });
+      console.log('==== REWRITES ====');
+      console.dir(this.getRewrites(), { depth: null });
+      console.log('==== REDIRECTS ====');
+      console.dir(this.getRedirects(), { depth: null });
     }
   }
 
@@ -662,19 +688,10 @@ export function getConfig(
   });
 
   const nextConfig: NextConfig = options ? options : {};
-  const config = new Config(applicationId, locales);
+  const config = new Config(applicationId, locales, options?.debug);
 
-  // Check if debug mode was enabled.
+  // Remove debug option if used.
   if (typeof options.debug !== 'undefined') {
-    if (options.debug === true) {
-      process.env.nextMultilingualDebug = 'true';
-      console.log('==== ROUTES ====');
-      console.dir(config.getRoutes(), { depth: null });
-      console.log('==== REWRITES ====');
-      console.dir(config.getRewrites(), { depth: null });
-      console.log('==== REDIRECTS ====');
-      console.dir(config.getRedirects(), { depth: null });
-    }
     delete options.debug;
   }
 

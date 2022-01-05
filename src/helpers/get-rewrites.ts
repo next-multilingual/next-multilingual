@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'fs';
 
 import { highlightFilePath, log } from '../';
+import { isInDebugMode } from '../config';
 
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 import type { Rewrites } from '../types';
@@ -111,7 +112,7 @@ export function getRewrites(): Rewrite[] {
     rewritesCache = [];
   }
 
-  if (typeof process !== 'undefined' && process?.env?.nextMultilingualDebug) {
+  if (isInDebugMode()) {
     console.log('==== SERVER SIDE REWRITES ====');
     console.dir(rewritesCache, { depth: null });
   }
