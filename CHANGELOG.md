@@ -1,3 +1,10 @@
+## [0.9.5](https://github.com/Avansai/next-multilingual/compare/0.9.4...0.9.5) (2022-01-05)
+
+
+### Features
+
+* **debug:** add new debug option for advanced configuration ([33f4320](https://github.com/Avansai/next-multilingual/commit/33f43206c064764f7119478f7308d19ee6c2db35))
+
 ## [0.9.4](https://github.com/Avansai/next-multilingual/compare/0.9.3...0.9.4) (2022-01-05)
 
 ## [0.9.3](https://github.com/Avansai/next-multilingual/compare/0.9.2...0.9.3) (2022-01-04)
