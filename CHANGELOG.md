@@ -1,3 +1,10 @@
+## [0.9.7](https://github.com/Avansai/next-multilingual/compare/0.9.6...0.9.7) (2022-01-06)
+
+
+### Bug Fixes
+
+* **SSR:** disable `esmExternals` until we support ES modules to fix localized URLs SSR markup ([26ddb22](https://github.com/Avansai/next-multilingual/commit/26ddb22c2b489064b9520e1b7cba015bab5f8a0e))
+
 ## [0.9.6](https://github.com/Avansai/next-multilingual/compare/0.9.5...0.9.6) (2022-01-05)
 
 
