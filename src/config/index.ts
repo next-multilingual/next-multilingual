@@ -732,6 +732,14 @@ export function getConfig(
     localeDetection: false, // This is important to use the improved language detection feature.
   };
 
+  /* This is required since Next.js 11.1.3-canary.69 until we support ESM. */
+  if (typeof nextConfig.experimental !== 'undefined') {
+    nextConfig.experimental.esmExternals = false;
+  } else {
+    nextConfig.experimental = {};
+    nextConfig.experimental.esmExternals = false;
+  }
+
   // Set Webpack config.
   nextConfig.webpack = (config, { isServer }) => {
     // Overwrite the `link` component for SSR.
