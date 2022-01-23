@@ -1,8 +1,9 @@
 import type { ReactElement } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { getRewrites } from '../helpers/get-rewrites';
+
 import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { getRewrites } from '../helpers/get-rewrites';
 import { Url } from '../types';
 
 // Throw a clear error is this is included by mistake on the client side.

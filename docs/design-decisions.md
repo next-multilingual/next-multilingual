@@ -196,7 +196,7 @@ The values with `$` are called placeholders. Basically those are protected non-t
 
 Ok so why not instead of using `<strong>` we could use `{Got {strongOpen}{count}{strongClose} candy left.}`? This way we can at least simplify the markup.
 
-In theory this looks like a good idea, but in practice this will do more harm than good. Why? Because most TMSes have native HTML (and XML) support, which means they are familiar with the "open/close" syntax of tags. By knowing when a tag is open and closed, it will prevent linguist from doing something like this: `Got $3$2$1 candy left.`. If we remove this syntax, we would basically lose this protection mechanism.
+In theory this looks like a good idea, but in practice this will do more harm than good. Why? Because most TMSes have native HTML (and XML) support, which means they are familiar with the "open/close" syntax of tags. By knowing when a tag is opened and closed, it will prevent linguists from doing something like this: `Got $3$2$1 candy left.`. If we remove this syntax, we would basically lose this protection mechanism.
 
 ### Best practices
 

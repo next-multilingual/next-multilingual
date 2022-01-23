@@ -8,6 +8,7 @@ import styles from './index.module.css';
 const AboutUs: NextPage = () => {
   const messages = useMessages();
   const title = getTitle(messages);
+
   return (
     <Layout title={title}>
       <h1 className={styles.headline}>{title}</h1>

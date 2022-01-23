@@ -7,7 +7,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Move BabelPlugin to SWC
-- Add ESM module support to remove `experimental: { esmExternals: false }`
+- Copy example repo into https://github.com/vercel/next.js/tree/canary/examples/with-next-multilingual (automate pipeline?)
+- Add ESM module support to remove `esmExternals: false`
 - Add naming best practice for message key in documentation
 - Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
@@ -30,6 +31,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- Move `experimental: { esmExternals: false }` to `esmExternals: false`
 - HTML inside properties files (as JSX)
 
 ### Done ✔️
