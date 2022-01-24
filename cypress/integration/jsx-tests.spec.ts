@@ -128,7 +128,6 @@ describe('The JSX test page', () => {
       expect(source).to.contain(`<div id="duplicateTags"></div`);
       expect(source).to.contain(`<div id="badMessageValue1"></div`);
       expect(source).to.contain(`<div id="badMessageValue2"></div`);
-      expect(source).to.contain(`<div id="badMessageValue3"></div`);
       expect(source).to.contain(`<div id="badJsxElement1"></div`);
       expect(source).to.contain(`<div id="badJsxElement2"></div`);
     });

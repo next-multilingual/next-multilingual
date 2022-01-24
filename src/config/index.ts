@@ -733,12 +733,12 @@ export function getConfig(
   };
 
   /* This is required since Next.js 11.1.3-canary.69 until we support ESM. */
-  if (typeof nextConfig.experimental !== 'undefined') {
-    nextConfig.experimental.esmExternals = false;
-  } else {
-    nextConfig.experimental = {};
-    nextConfig.experimental.esmExternals = false;
+  if (typeof nextConfig.esmExternals !== 'undefined') {
+    throw new Error(
+      `the \`esmExternals\` option is not supported by \`next-multilingual\` until we support ESM`
+    );
   }
+  nextConfig.esmExternals = false;
 
   // Set Webpack config.
   nextConfig.webpack = (config, { isServer }) => {

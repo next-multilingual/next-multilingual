@@ -211,17 +211,14 @@ const JsxTests: NextPage = () => {
           })}
         </div>
 
-        {/* Invalid message value: no JSX provided */}
-        <div id="badMessageValue1">{messages.formatJsx('badMessageValue1')}</div>
-
         {/* Invalid message value: wrong value type (variable instead of JSX) */}
-        <div id="badMessageValue2">
-          {messages.formatJsx('badMessageValue2', { strong: 'strong' })}
+        <div id="badMessageValue1">
+          {messages.formatJsx('badMessageValue1', { strong: 'strong' })}
         </div>
 
         {/* Invalid message value: wrong value type (JSX instead of variable) */}
-        <div id="badMessageValue3">
-          {messages.formatJsx('badMessageValue3', { message: <strong></strong> })}
+        <div id="badMessageValue2">
+          {messages.formatJsx('badMessageValue2', { message: <strong></strong> })}
         </div>
 
         {/* Bad JSX element: multi-child */}

@@ -4,7 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Move BabelPlugin to SWC
 - Copy example repo into https://github.com/vercel/next.js/tree/canary/examples/with-next-multilingual (automate pipeline?)
@@ -31,11 +30,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Move `experimental: { esmExternals: false }` to `esmExternals: false`
-- HTML inside properties files (as JSX)
+- Test anchor links (including translation and doc)
 
 ### Done ✔️
 
+- Move `experimental: { esmExternals: false }` to `esmExternals: false`
+- HTML inside properties files (as JSX)
 - Refactor to arrow functions
 - Test UTF-8 encoding and add warnings
 - Add automated test:
