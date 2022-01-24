@@ -170,8 +170,8 @@ Some might wonder, why a "message content" section is required. After all, a mes
 
 Wrong. Actually there are 3 common patterns in messages that requires more than "just text":
 
-1. **Variables**: This is fairly common and typically you will want to keep the value of a variable inside a sentence simple. Numbers are the easiest form of variables because they don't require translations and if they have any impact on grammatical agreement, they can often be resolved by the next pattern in this list. Word are also usable but you need to make sure that they are not going to cause grammatical agreement issues in other languages which is not always easy.
-2. **Grammatical Syntax**: Unicode has spent a lot of time researching this topic and provided an open source solution to this which is called "ICU MessageFormat". While this syntax supports more than plurals, we recommend using it only for this purpose, as well as for variables. Plural rules are complex and no one should: presume there is only 2 forms of plural or try to build their own plural rules. Unicode built solutions to solve other grammatical agreement problems like "list of items" in a sentence, but these tools are only available using their ICU libraries (not syntax) and are not widely known.
+1. **Placeholders**: This is fairly common and typically you will want to keep the value of a placeholder inside a sentence simple. Numbers are the easiest form of placeholders because they don't require translations and if they have any impact on grammatical agreement, they can often be resolved by the next pattern in this list. Words are also usable but you need to make sure that they are not going to cause grammatical agreement issues in other languages which is not always easy. As a general rule, the less placeholders, the better for translation.
+2. **Grammatical Syntax**: Unicode has spent a lot of time researching this topic and provided an open source solution to this which is called "ICU MessageFormat". While this syntax supports more than plurals, we recommend using it only for this purpose, as well as for placeholders. Plural rules are complex and no one should: presume there is only 2 forms of plural or try to build their own plural rules. Unicode built solutions to solve other grammatical agreement problems like "list of items" in a sentence, but these tools are only available using their ICU libraries (not syntax) and are not widely known.
 3. **Markup**: Isn't using markups in messages breaking popular design principles like "separation of concerns"? In theory yes, but in practice, since our translation unit is a sentence, there are common use cases where this is required:
    1. Styling certain words: using `<strong>` or `<i>` to put special emphasis on words.
    2. Linking certain words to other resources with related content: inline links are one of the most common pattern to explore content and trying to avoid it (e.g., entire sentences as links only) puts the user experience (UX) at risk.
@@ -182,7 +182,7 @@ Wrong. Actually there are 3 common patterns in messages that requires more than 
 {count, plural, =0 {No candy left.} one {Got <strong>{count}</strong> candy left.} other {Got <strong>{count}</strong> candies left.}}
 ```
 
-In this example we are using variable, grammatical agreement syntax for plurals, and HTML markup to stylize certain words.
+In this example we are using placeholders, grammatical agreement syntax for plurals, and HTML markup to stylize certain words.
 
 #### How would a linguist translate this message?
 
@@ -192,7 +192,7 @@ Modern TMSes would hide some of the complexity and what the linguists would have
 - Got $1$2$3 candy left.
 - Got $1$2$3 candies left.
 
-The values with `$` are called placeholders. Basically those are protected non-translatable) values from the linguists. One of the last thing we want is for a translation to break an application because a variable name was translated.
+The values with `$` are called placeholders. Basically those are protected non-translatable) values from the linguists. One of the last thing we want is for a translation to break an application because a placeholder name was translated.
 
 Ok so why not instead of using `<strong>` we could use `{Got {strongOpen}{count}{strongClose} candy left.}`? This way we can at least simplify the markup.
 
@@ -204,7 +204,7 @@ On top of everything we covered, there are still best practices that need to be 
 
 - Use the right encoding. Normally [UTF-8](https://en.wikipedia.org/wiki/Popularity_of_text_encodings) should be used on all your files, including the source files, even if it only contains latin characters.
 - Do not concatenate (break in multiple parts) sentences. TMSes works best with sentences, and by breaking sentences you will run into problems with right to left languages. Some messages might not be full sentences, but the idea is that a message is autonomous and does not rely on other messages where the order of messages could become problematic.
-- Use named variables. Ideally variables should look like this `{myVar1}` so the name of the variable gives a hint to the linguist what is going to be the value.
+- Use meaningful names for your placeholders (e.g., `{year}`). This gives extra context for linguists to understand its value and increases the overall translation quality. Well-known functions like `sprintf` uses specifiers that do not require unique names when inserting back values in a string. This pattern is incompatible with localization since the order of the values will be determined by the code. This will not allow for proper translation in many situations (e.g., right to left languages).
 - Try to avoid hardcoding values where the format can vary on the locale, such as dates, numbers, and currencies. Many libraries handle this and ensure that the format is consistent across your application.
 - Use MessageFormat for messages that have plural forms. There are 6 plural forms in Arabic - do not try to handle this logic yourself as you will most likely end up creating problems.
 - Add inline context to help linguists do their job. Some words have more than one meaning and without context you could end up with the wrong translation.
