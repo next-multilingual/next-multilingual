@@ -738,7 +738,7 @@ export function getConfig(
       'the `esmExternals` option is not supported by `next-multilingual` until we support ESM'
     );
   }
-  if (typeof nextConfig.experimental !== 'object') {
+  if (nextConfig.experimental && typeof nextConfig.experimental !== 'object') {
     throw new Error('invalid value for the `experimental` option');
   }
   if (nextConfig.experimental) {
