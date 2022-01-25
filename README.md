@@ -49,7 +49,6 @@ This function will generate a Next.js config that will meet most use cases. `get
 - `applicationId` — The unique application identifier that will be used as a messages key prefix.
 - `locales` — The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](./docs/design-decisions.md) document.
 - `options` (optional) — Options part of a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
-- Also a few other arguments you probably will never need to use - check in your IDE (JSDoc) for more details.
 
 `getConfig` will return a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
 
@@ -71,7 +70,7 @@ Not all configuration options are not supported by `getConfig`. If you ever happ
 
 If you have more advanced needs, you can use the `Config` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`. The arguments of `Config` are almost identical to `getConfig` (minus the `options`) - check in your IDE (TSDoc) for details. Here is an example of how it can be used:
 
-```ts
+```js
 const { Config } = require('next-multilingual/config');
 
 const config = new Config('exampleApp', ['en-US', 'fr-CA']);
@@ -547,9 +546,9 @@ fruitsMessages.format('banana');
 
 The idea to share those lists of items is that you can have a consistent experience across different components. Imagine a dropdown with a list of fruits in one page, and in another page an auto-complete input. But the important part to remember is that the list must always be used in the same context, not to re-use some of the messages in a different context.
 
-### Message Variables
+### Message Placeholders
 
-Using variables in messages is a critical functionality as not all messages contain static text. `next-multilingual` supports the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) syntax out of the box which means that you can use the following message:
+Using placeholders in messages is a critical functionality as not all messages contain static text. `next-multilingual` supports the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) syntax out of the box which means that you can use the following message:
 
 ```properties
 exampleApp.homepage.welcome = Hello {name}!
@@ -561,7 +560,13 @@ And inject back the values using:
 messages.format('welcome', { name: 'John Doe' });
 ```
 
-If you do not provide the values of your variables when formatting the message, it will simply output the message as static text.
+#### How to use `format`
+
+There are a few simple rules to keep in mind when using `format`:
+
+- If you do not provide the `values` argument when formatting the message, it will simply output the message as static text.
+- If you provide the `values` argument when formatting the message, you must include the values of all placeholders using the `{placeholder}` syntax in your message. Otherwise the message will not be displayed.
+- If you provide `values` that are not in your message, they will be silently ignored.
 
 #### Plurals
 
@@ -580,6 +585,80 @@ messages.format('mfPlural', { count });
 ```
 
 There is a lot to learn on this topic. Make sure to read the Unicode documentation and [try the syntax yourself](https://format-message.github.io/icu-message-format-for-translators/editor.html) to get more familiar with this under-hyped i18n capability.
+
+#### Escaping Curly Brackets
+
+In a rare event where you would need to use both placeholders using the `{placeholder}` syntax and also display the `{` and `}` characters in a message, you will need to replace them by the `&#x7b;` (for `{`) and `&#x7d;` (for `}`) HTML entities which are recognized by translation tools like this:
+
+```properties
+exampleApp.debuggingPage.variableInfo = Your variable contains the following values: &#x7b;{values}&#x7d;
+```
+
+If you have a message without values (placeholders), escaping `{` and `}` with HTML entities is not required and will display entities as static text.
+
+#### Injecting JSX
+
+It is a very common situation that we need to have inline HTML, inside a single message. One way to do this would be:
+
+```properties
+# Bad example, do not ever do this!
+exampleApp.homepage.createAccount1 = Please
+exampleApp.homepage.createAccount2 = create your account
+exampleApp.homepage.createAccount3 = today for free.
+```
+
+And then:
+
+```jsx
+<div>
+  {messages.format('createAccount1')}
+  <Link href="/sign-up">{messages.format('createAccount2')}</Link>
+  {messages.format('createAccount3')}
+</div>
+```
+
+There are 2 problems with this approach:
+
+1. Translating a broken sentence like this can create quality issues since its not always obvious what the full sentence looks like in the tools linguists use.
+2. If you need to support right-to-left language like Hebrew and Arabic, this will no longer work because the sentence's order is hardcoded in the JSX.
+
+This is actually an anti-pattern called _concatenation_ and should always be avoided. This is the correct way to do this, using `formatJsx`:
+
+```properties
+exampleApp.homepage.createAccount = Please <link>create your account</link> today for free.
+```
+
+And then:
+
+```jsx
+<div>{messages.formatJsx('createAccount', { link: <Link href="/sign-up"></Link> })}</div>
+```
+
+#### How to use `formatJsx`
+
+`formatJsx` support both placeholders and JSX elements as `values` which means that you can benefit from the standard `format` features (e.g., plurals) while injecting JSX elements.
+
+There are a few simple rules to keep in mind when using `format`:
+
+1. The inline _XML_ in your message is not HTML or JSX - it is merely a way to identify where to put your JSX element while enforcing opening and closing tags.
+2. XML is used so that translation tools are able to keep the correct open/close order in a sentence.
+3. The inline XML does not support any attributes - your attributes should be in the JSX elements you are passing as an argument to `formatJsx`.
+4. The name of your XML tag will be the name you need to use when passing the JSX element in argument. For example, for a `<link>` XML tag, the JSX element needs to be provided using `link: <Link href="/"></Link>`.
+5. XML tag names must be unique in a message and cannot be repeated. This means that even if you use `<i>` many times in a sentence, you will need to create unique tags like `<i1>`, `<i2>`, etc. and pass their values in argument as JSX elements.
+6. Using the same name for a placeholder and XML tag name (e.g., `Hello <name>{name}</name>`) is not supported.
+7. JSX elements passed in arguments must always be closed, otherwise they are not valid JSX.
+8. JSX elements passed in arguments cannot contain messages. The messages must always be in the `.properties` file.
+9. JSX elements passed in arguments can contain children but each child must be unique. For example `<Link href="/contact-us><a id="test"></a></Link>` is valid but `<div><span1></span1><span2></span2></div>` is invalid. Instead you must use same-level XML markup in the `.properties` file and not as a JSX argument.
+
+#### Escaping `<` and `>`
+
+When using `formatJsx` you will still need to [escape curly brackets](#user-content-escaping-curly-brackets) if you want to display them as text. Additionally, since we will be using XML in the `formatJsx` messages, similar rules will apply to `<` and `>` which are used to identify tags.
+
+In a rare event where you would need to inject JSX in a message using the `<element></element>` (XML) syntax and also display the `<` and `>` characters in a message, you will need to replace them by the `&#x3c;` (for `<`) and `&#x3e;` (for `>`) HTML entities which are recognized by translation tools like this:
+
+```properties
+exampleApp.statsPage.targetAchieved = You achieved your weekly target (&#x3c;5) and are eligible for a <link>reward</link>.
+```
 
 ### Search Engine Optimization
 

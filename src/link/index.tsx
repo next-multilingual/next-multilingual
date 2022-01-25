@@ -1,8 +1,9 @@
 import type { ReactElement } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
-import { useRewrites } from '../hooks/use-rewrites';
+
 import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { useRewrites } from '../hooks/use-rewrites';
 import { Url } from '../types';
 
 /**

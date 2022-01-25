@@ -1,6 +1,7 @@
-import { readFileSync } from 'fs';
 import { parse as parseProperties } from 'dot-properties';
-import { highlight, highlightFilePath, log } from '..';
+import { readFileSync } from 'fs';
+
+import { highlight, highlightFilePath, log } from '../';
 
 /**
  * A simple "key/value" object used to store messages.
@@ -24,7 +25,7 @@ export type KeyValueObjectCollection = {
  * @returns The "raw" representation of a `.properties` fille in a simple "key/value" object.
  */
 export function parsePropertiesFile(filePath: string): KeyValueObject {
-  const fileContent = readFileSync(filePath, 'utf8');
+  const fileContent = stripBom(readFileSync(filePath, 'utf8'));
 
   if (fileContent.includes('�')) {
     log.warn(
@@ -35,4 +36,15 @@ export function parsePropertiesFile(filePath: string): KeyValueObject {
   }
 
   return parseProperties(fileContent) as KeyValueObject;
+}
+
+/**
+ * Strip BOM character if present, since it is not supported by .properties file readers.
+ *
+ * @param fileContent - The content from a file.
+ *
+ * @returns The content from a file, without the BOM character.
+ */
+export function stripBom(fileContent: string): string {
+  return fileContent.charCodeAt(0) === 0xfeff ? fileContent.slice(1) : fileContent;
 }

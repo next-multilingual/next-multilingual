@@ -30,7 +30,7 @@ export const API_RESPONSES = {
   'fr-CA': "L'API dit bonjour.",
 };
 
-describe('The Next.js application', () => {
+describe('The homepage', () => {
   // Check that the HTML tag has the default locale on the SSR markup.
   const invalidLocale = 'invalid';
   const htmlTagMarkup = `<html lang="${DEFAULT_LOCALE}"`;

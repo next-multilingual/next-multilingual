@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES6",
+    "lib": ["es2018", "dom"],
     "esModuleInterop": true,
     "isolatedModules": true,
+    "downlevelIteration": true,
     "jsx": "react-jsx",
     "module": "commonjs",
     "moduleResolution": "node",
