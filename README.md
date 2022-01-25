@@ -15,11 +15,12 @@ npm install next-multilingual
 ## What's in it for me? 🤔
 
 - The enforcement of i18n best practices across your entire application.
-- All URLs will use a locale prefix - this is currently a limitation of Next.js where the default locale does not use a prefix.
-- Smart language detection that dynamically renders the homepage, without using redirections.
+- Modular messages (also known as "localized strings") that works just like CSS modules (no more monolithic file).
+- A powerful `useMessages` hook that support [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) and JSX injection out of the box.
 - The ability to use localized URLs (e.g., `/en-us/contact-us` for U.S. English and `/fr-ca/nous-joindre` for Canadian French).
+- All pages URLs will use locale prefixes (related to this [discussion](https://github.com/vercel/next.js/discussions/18419)) .
+- Can easily be configured with smart language detection that dynamically renders the homepage, without using redirections.
 - Automatically generate canonical and alternate links optimized for SEO.
-- Modular localized string configuration support that works just like CSS (no more files containing shared strings).
 
 ## Before we start 💎
 
@@ -222,6 +223,8 @@ Regardless of the environment, `next-multilingual` will look for a variable call
 Now that everything has been configured, we can focus on using `next-multilingual`!
 
 ### Creating the homepage
+
+> ⚠️ Note that while we recommend using smart language detection to dynamically render the homepage, this is completely optional. By using advanced configuration with `localeDetection: true`, you will restore the default Next.js behavior without the need of using `getServerSideProps`.
 
 The homepage is a bit more complex than other pages, because we need to implement dynamic language detection (and display) for the following reason:
 
