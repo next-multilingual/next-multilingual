@@ -1,5 +1,5 @@
 import IntlMessageFormat from 'intl-messageformat';
-import React, { cloneElement, createElement } from 'react';
+import React, { cloneElement } from 'react';
 
 import { highlight, highlightFilePath, log } from '../';
 import {
@@ -287,7 +287,7 @@ export class Message {
       return this.insertNodes(values[key] as JSX.Element, ...reactNodes);
     }
 
-    return createElement(React.Fragment, null, ...reactNodes);
+    return <>...reactNodes</>;
   }
 
   /**
