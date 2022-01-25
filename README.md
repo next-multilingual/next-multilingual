@@ -83,7 +83,9 @@ module.exports = {
   },
   poweredByHeader: false,
   /* This is required since Next.js 11.1.3-canary.69 until we support ESM. */
-  esmExternals: false,
+  experimental: {
+    esmExternals: false,
+  },
   webpack(config, { isServer }) {
     if (isServer) {
       config.resolve.alias['next-multilingual/link$'] = require.resolve(
