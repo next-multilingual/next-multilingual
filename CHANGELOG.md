@@ -1,62 +1,41 @@
 # [0.10.0](https://github.com/Avansai/next-multilingual/compare/0.9.7...0.10.0) (2022-01-25)
 
-
-### Bug Fixes
-
-* add missing characters in JSX tests ([016f64a](https://github.com/Avansai/next-multilingual/commit/016f64a3e4510d3fc92a7d4ded4cecd59831ae62))
-* **config:** fix bad type check when using `experimental` options ([9cfc7c4](https://github.com/Avansai/next-multilingual/commit/9cfc7c47765d95fd59ab2b613ef99a6b40410172))
-* **message:** add missing curly brackets ([bda5e1c](https://github.com/Avansai/next-multilingual/commit/bda5e1c2004e293fbb0566cb965a5ae0bc820a01))
-* move ESM flag out of experimental options and fix build ([57f4aa9](https://github.com/Avansai/next-multilingual/commit/57f4aa95b5731656446a4995628c980bf8b3548e))
-
-
 ### Features
 
-* **encoding:** support optional BOM characters of `.properties` file ([e9e79ab](https://github.com/Avansai/next-multilingual/commit/e9e79abe48fcff3182f30c9f02aafa2bfd06a1c6))
-* **inline-jsx:** complete the inline-jsx feature including tests and documentation ([855c8af](https://github.com/Avansai/next-multilingual/commit/855c8af8e3ddc8952f2da90a2e8c17dd202b5898))
-* **inline-jsx:** initial prototype to support inline (in message files) JSX ([641e8df](https://github.com/Avansai/next-multilingual/commit/641e8df75e61bc77326afd91c206f0c72066694e))
-* **inline-jsx:** initial prototype to support inline (in message files) JSX ([27a5996](https://github.com/Avansai/next-multilingual/commit/27a599695618711d08e88d906e6cb711b9770fbd))
-
-
-### Reverts
-
-* **config:** move back `esmExternals` under `experimental` ([c6733a2](https://github.com/Avansai/next-multilingual/commit/c6733a201093b83baef55d09c49866d7962037b0))
+- **inline-jsx:** complete the inline-jsx feature including tests and documentation ([855c8af](https://github.com/Avansai/next-multilingual/commit/855c8af8e3ddc8952f2da90a2e8c17dd202b5898))
+- **encoding:** support optional BOM characters of `.properties` file ([e9e79ab](https://github.com/Avansai/next-multilingual/commit/e9e79abe48fcff3182f30c9f02aafa2bfd06a1c6))
 
 ## [0.9.7](https://github.com/Avansai/next-multilingual/compare/0.9.6...0.9.7) (2022-01-06)
 
-
 ### Bug Fixes
 
-* **SSR:** disable `esmExternals` until we support ES modules to fix localized URLs SSR markup ([26ddb22](https://github.com/Avansai/next-multilingual/commit/26ddb22c2b489064b9520e1b7cba015bab5f8a0e))
+- **SSR:** disable `esmExternals` until we support ES modules to fix localized URLs SSR markup ([26ddb22](https://github.com/Avansai/next-multilingual/commit/26ddb22c2b489064b9520e1b7cba015bab5f8a0e))
 
 ## [0.9.6](https://github.com/Avansai/next-multilingual/compare/0.9.5...0.9.6) (2022-01-05)
 
-
 ### Bug Fixes
 
-* **SSR:** replace Chokidar with CheapWatch ([e5a1951](https://github.com/Avansai/next-multilingual/commit/e5a19518f0d84d8eb1c1a624192d8eb5af1b78cf))
+- **SSR:** replace Chokidar with CheapWatch ([e5a1951](https://github.com/Avansai/next-multilingual/commit/e5a19518f0d84d8eb1c1a624192d8eb5af1b78cf))
 
 ## [0.9.5](https://github.com/Avansai/next-multilingual/compare/0.9.4...0.9.5) (2022-01-05)
 
-
 ### Features
 
-* **debug:** add new debug option for advanced configuration ([33f4320](https://github.com/Avansai/next-multilingual/commit/33f43206c064764f7119478f7308d19ee6c2db35))
+- **debug:** add new debug option for advanced configuration ([33f4320](https://github.com/Avansai/next-multilingual/commit/33f43206c064764f7119478f7308d19ee6c2db35))
 
 ## [0.9.4](https://github.com/Avansai/next-multilingual/compare/0.9.3...0.9.4) (2022-01-05)
 
 ## [0.9.3](https://github.com/Avansai/next-multilingual/compare/0.9.2...0.9.3) (2022-01-04)
 
-
 ### Bug Fixes
 
-* **test:** add test for builds and fix failing tests ([c493655](https://github.com/Avansai/next-multilingual/commit/c493655fa123a6a05137bc9e4bbf29534391a42a))
+- **test:** add test for builds and fix failing tests ([c493655](https://github.com/Avansai/next-multilingual/commit/c493655fa123a6a05137bc9e4bbf29534391a42a))
 
 ## [0.9.2](https://github.com/Avansai/next-multilingual/compare/0.9.1...0.9.2) (2022-01-04)
 
-
 ### Bug Fixes
 
-* `TypeError: Cannot read properties of undefined (reading '__rewrites')` ([ee2a5e4](https://github.com/Avansai/next-multilingual/commit/ee2a5e469a33dea7a19519f8d4c441a3494d0903))
+- `TypeError: Cannot read properties of undefined (reading '__rewrites')` ([ee2a5e4](https://github.com/Avansai/next-multilingual/commit/ee2a5e469a33dea7a19519f8d4c441a3494d0903))
 
 ## [0.9.1](https://github.com/Avansai/next-multilingual/compare/0.9.0...0.9.1) (2022-01-04)
 
