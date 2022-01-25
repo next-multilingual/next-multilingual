@@ -1,3 +1,26 @@
+# [0.10.0](https://github.com/Avansai/next-multilingual/compare/0.9.7...0.10.0) (2022-01-25)
+
+
+### Bug Fixes
+
+* add missing characters in JSX tests ([016f64a](https://github.com/Avansai/next-multilingual/commit/016f64a3e4510d3fc92a7d4ded4cecd59831ae62))
+* **config:** fix bad type check when using `experimental` options ([9cfc7c4](https://github.com/Avansai/next-multilingual/commit/9cfc7c47765d95fd59ab2b613ef99a6b40410172))
+* **message:** add missing curly brackets ([bda5e1c](https://github.com/Avansai/next-multilingual/commit/bda5e1c2004e293fbb0566cb965a5ae0bc820a01))
+* move ESM flag out of experimental options and fix build ([57f4aa9](https://github.com/Avansai/next-multilingual/commit/57f4aa95b5731656446a4995628c980bf8b3548e))
+
+
+### Features
+
+* **encoding:** support optional BOM characters of `.properties` file ([e9e79ab](https://github.com/Avansai/next-multilingual/commit/e9e79abe48fcff3182f30c9f02aafa2bfd06a1c6))
+* **inline-jsx:** complete the inline-jsx feature including tests and documentation ([855c8af](https://github.com/Avansai/next-multilingual/commit/855c8af8e3ddc8952f2da90a2e8c17dd202b5898))
+* **inline-jsx:** initial prototype to support inline (in message files) JSX ([641e8df](https://github.com/Avansai/next-multilingual/commit/641e8df75e61bc77326afd91c206f0c72066694e))
+* **inline-jsx:** initial prototype to support inline (in message files) JSX ([27a5996](https://github.com/Avansai/next-multilingual/commit/27a599695618711d08e88d906e6cb711b9770fbd))
+
+
+### Reverts
+
+* **config:** move back `esmExternals` under `experimental` ([c6733a2](https://github.com/Avansai/next-multilingual/commit/c6733a201093b83baef55d09c49866d7962037b0))
+
 ## [0.9.7](https://github.com/Avansai/next-multilingual/compare/0.9.6...0.9.7) (2022-01-06)
 
 
