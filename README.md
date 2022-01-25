@@ -1,6 +1,6 @@
 # ![next-multilingual](./assets/next-multilingual-banner.svg)
 
-`next-multilingual` is an opinionated end-to-end solution for Next.js applications that requires multiple languages..
+`next-multilingual` is an opinionated end-to-end solution for Next.js applications that requires multiple languages.
 
 Check out our [demo app](https://next-multilingual-example.vercel.app)!
 
