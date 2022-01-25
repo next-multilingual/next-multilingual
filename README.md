@@ -15,10 +15,10 @@ npm install next-multilingual
 ## What's in it for me? 🤔
 
 - The enforcement of i18n best practices across your entire application.
-- Modular messages (also known as "localized strings") that works just like CSS modules (no more monolithic file).
-- A powerful `useMessages` hook that support [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) and JSX injection out of the box.
+- Modular messages (also known as "localized strings") that work just like CSS modules (no more monolithic files).
+- A powerful `useMessages` hook that supports [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) and JSX injection out of the box.
 - The ability to use localized URLs (e.g., `/en-us/contact-us` for U.S. English and `/fr-ca/nous-joindre` for Canadian French).
-- All pages URLs will use locale prefixes (related to this [discussion](https://github.com/vercel/next.js/discussions/18419)) .
+- All page URLs will use locale prefixes (related to this [discussion](https://github.com/vercel/next.js/discussions/18419)).
 - Can easily be configured with smart language detection that dynamically renders the homepage, without using redirections.
 - Automatically generate canonical and alternate links optimized for SEO.
 
