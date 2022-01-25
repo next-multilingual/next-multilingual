@@ -109,27 +109,27 @@ describe('The JSX test page', () => {
 
     // All failing `formatJsx` calls should return empty SSR markup
     it(`will not create any SSR markup when testing bad use cases of messages with JSX elements for '${LOCALE_NAMES[locale]}'`, () => {
-      expect(source).to.contain(`<div id="missingClose1"></div`);
-      expect(source).to.contain(`<div id="missingClose2"></div`);
-      expect(source).to.contain(`<div id="missingClose3"></div`);
-      expect(source).to.contain(`<div id="missingClose4"></div`);
-      expect(source).to.contain(`<div id="missingClose5"></div`);
-      expect(source).to.contain(`<div id="missingClose6"></div`);
-      expect(source).to.contain(`<div id="missingClose7"></div`);
-      expect(source).to.contain(`<div id="missingOpen1"></div`);
-      expect(source).to.contain(`<div id="missingOpen2"></div`);
-      expect(source).to.contain(`<div id="missingOpen3"></div`);
-      expect(source).to.contain(`<div id="missingOpen4"></div`);
-      expect(source).to.contain(`<div id="missingOpen5"></div`);
-      expect(source).to.contain(`<div id="missingOpen6"></div`);
-      expect(source).to.contain(`<div id="missingOpen7"></div`);
-      expect(source).to.contain(`<div id="invalidXml1"></div`);
-      expect(source).to.contain(`<div id="invalidXml2"></div`);
-      expect(source).to.contain(`<div id="duplicateTags"></div`);
-      expect(source).to.contain(`<div id="badMessageValue1"></div`);
-      expect(source).to.contain(`<div id="badMessageValue2"></div`);
-      expect(source).to.contain(`<div id="badJsxElement1"></div`);
-      expect(source).to.contain(`<div id="badJsxElement2"></div`);
+      expect(source).to.contain(`<div id="missingClose1"></div>`);
+      expect(source).to.contain(`<div id="missingClose2"></div>`);
+      expect(source).to.contain(`<div id="missingClose3"></div>`);
+      expect(source).to.contain(`<div id="missingClose4"></div>`);
+      expect(source).to.contain(`<div id="missingClose5"></div>`);
+      expect(source).to.contain(`<div id="missingClose6"></div>`);
+      expect(source).to.contain(`<div id="missingClose7"></div>`);
+      expect(source).to.contain(`<div id="missingOpen1"></div>`);
+      expect(source).to.contain(`<div id="missingOpen2"></div>`);
+      expect(source).to.contain(`<div id="missingOpen3"></div>`);
+      expect(source).to.contain(`<div id="missingOpen4"></div>`);
+      expect(source).to.contain(`<div id="missingOpen5"></div>`);
+      expect(source).to.contain(`<div id="missingOpen6"></div>`);
+      expect(source).to.contain(`<div id="missingOpen7"></div>`);
+      expect(source).to.contain(`<div id="invalidXml1"></div>`);
+      expect(source).to.contain(`<div id="invalidXml2"></div>`);
+      expect(source).to.contain(`<div id="duplicateTags"></div>`);
+      expect(source).to.contain(`<div id="badMessageValue1"></div>`);
+      expect(source).to.contain(`<div id="badMessageValue2"></div>`);
+      expect(source).to.contain(`<div id="badJsxElement1"></div>`);
+      expect(source).to.contain(`<div id="badJsxElement2"></div>`);
     });
 
     // TODO add client side test:
