@@ -287,7 +287,7 @@ export class Message {
       return this.insertNodes(values[key] as JSX.Element, ...reactNodes);
     }
 
-    return <>...reactNodes</>;
+    return <>{...reactNodes}</>;
   }
 
   /**
