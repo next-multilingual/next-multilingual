@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/Avansai/next-multilingual/compare/0.10.0...0.10.1) (2022-01-26)
+
+
+### Bug Fixes
+
+* downgrade to Node.js 14 for Vercel support ([f4cf125](https://github.com/Avansai/next-multilingual/commit/f4cf125ac9057d3d5838d260f655b5124527bf6d))
+
 # [0.10.0](https://github.com/Avansai/next-multilingual/compare/0.9.7...0.10.0) (2022-01-25)
 
 ### Features
