@@ -1,3 +1,10 @@
+## [0.10.2](https://github.com/Avansai/next-multilingual/compare/0.10.1...0.10.2) (2022-01-26)
+
+
+### Bug Fixes
+
+* re-export `Message` and `Messages` classes to be usable as types ([690e41f](https://github.com/Avansai/next-multilingual/commit/690e41f8eca05390b21d200e7b221a79c7409e9e))
+
 ## [0.10.1](https://github.com/Avansai/next-multilingual/compare/0.10.0...0.10.1) (2022-01-26)
 
 
