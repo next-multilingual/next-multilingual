@@ -59,7 +59,7 @@
   },
   "type": "commonjs",
   "engines": {
-    "node": ">=16.6"
+    "node": ">=14"
   },
   "watch": {
     "build": {

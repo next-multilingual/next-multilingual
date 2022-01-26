@@ -149,10 +149,10 @@ export class Message {
     const tagTracker = [];
     const uniqueTags = [];
 
-    for (const [position, tag] of tagsMatch.entries()) {
+    tagsMatch.forEach((tag, position) => {
       const tagName = this.getXmlTagName(tag);
 
-      if (tag.at(1) !== '/') {
+      if (tag[1] !== '/') {
         // Check for unexpected opening tags.
         if (uniqueTags.includes(tagName)) {
           throw Error(
@@ -167,7 +167,7 @@ export class Message {
         if (position === 0) {
           unexpectedClosing = true;
         } else {
-          if (tagTracker.at(-1) !== tagName) {
+          if (tagTracker[tagTracker.length - 1] !== tagName) {
             unexpectedClosing = true;
           }
         }
@@ -179,10 +179,12 @@ export class Message {
         // Remove tag from index.
         tagTracker.pop();
       }
-    }
+    });
 
     if (tagTracker.length) {
-      throw Error(`unexpected unclosed XML tag ${highlight(`<${tagTracker.at(-1)}>`)}`);
+      throw Error(
+        `unexpected unclosed XML tag ${highlight(`<${tagTracker[tagTracker.length - 1]}>`)}`
+      );
     }
 
     // At this point the XML is deemed valid.
