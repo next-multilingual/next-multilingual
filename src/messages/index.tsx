@@ -5,6 +5,10 @@ import { highlight, highlightFilePath, log, normalizeLocale } from '../';
 import { BabelifiedMessages } from './babel-plugin';
 import { Messages } from './Messages';
 
+// Make message classes available without adding their files to the package exports.
+export { Message } from './Message';
+export { Messages } from './Messages';
+
 /** This is the regular expression to validate message key segments. */
 export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
 /** This is the regular expression description to keep logs consistent. */
