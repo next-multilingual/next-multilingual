@@ -11,6 +11,21 @@ export const CONTACT_US_URLS = {
   'fr-CA': '/nous-joindre',
 };
 
+/**
+ * Convert HTML entities (escape codes) by their original characters.
+ *
+ * @param markup - The HTML markup in string format.
+ *
+ * @returns The equivalent markup with original characters instead of HTML entities.
+ */
+function convertHtmlEntities(markup: string): string {
+  return markup
+    .replace(/&#x27;/gi, "'")
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\s/g, ' ')
+    .trim();
+}
+
 describe('The JSX test page', () => {
   LOCALES.forEach((locale) => {
     const jsxTestsUrl = `/${locale.toLowerCase()}${JSX_TESTS_URLS[locale]}`;
@@ -18,7 +33,15 @@ describe('The JSX test page', () => {
     let source;
     let messages: KeyValueObject;
 
-    // Base test: one JSX element
+    let baseTest1Markup,
+      baseTest2Markup,
+      plural0Markup,
+      plural1Markup,
+      plural2Markup,
+      escapeTestMarkup,
+      styleAndEventsMarkup;
+
+    // Base SSR test: one JSX element
     it(`will display the correct SSR markup when formatting a message with a single JSX element for '${LOCALE_NAMES[locale]}'`, () => {
       const propertiesFilepath = `example/pages/jsx-tests/index.${locale}.properties`;
 
@@ -35,7 +58,7 @@ describe('The JSX test page', () => {
         },
       }).then((response) => {
         source = response.body;
-        const baseTest1Markup = messages.baseTest1
+        baseTest1Markup = messages.baseTest1
           .replace('<link>', `<a href="/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`)
           .replace('</link>', '</a>')
           .replace(/'/g, '&#x27;');
@@ -44,43 +67,43 @@ describe('The JSX test page', () => {
       });
     });
 
-    // Base test: two child elements inside another element
+    // Base SSR test: two child elements inside another element
     it(`will display the correct SSR markup when formatting a message with two child JSX elements inside another element for '${LOCALE_NAMES[locale]}'`, () => {
-      const baseTest2Markup = messages.baseTest2
+      baseTest2Markup = messages.baseTest2
         .replace('<link>', `<a href="/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`)
         .replace('</link>', '</a>');
       // Expected example: <div id="baseTest2">This is a <a href="/en-us/contact-us">link with <strong>bold</strong> and <i>italic</i></a></div>
       expect(source).to.contain(`<div id="baseTest2">${baseTest2Markup}</div`);
     });
 
-    // Plural + JSX test: count == 0
+    // Plural + JSX SSR test: count == 0
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 0 for '${LOCALE_NAMES[locale]}'`, () => {
-      const plural0Markup = messages.plural.match(/=0 {(?<message>.*?)}/m).groups['message'];
+      plural0Markup = messages.plural.match(/=0 {(?<message>.*?)}/m).groups['message'];
       // Expected example: <div id="plural0">No <strong>candy</strong> left.</div>
       expect(source).to.contain(`<div id="plural0">${plural0Markup}</div`);
     });
 
-    // Plural + JSX test: count == 1
+    // Plural + JSX SSR test: count == 1
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 1 for '${LOCALE_NAMES[locale]}'`, () => {
-      const plural1Markup = messages.plural
+      plural1Markup = messages.plural
         .match(/one {(?<message>.*?)}/m)
         .groups['message'].replace('#', '1');
       // Expected example: <div id="plural1">Got 1 <i>candy</i> left.</div>
       expect(source).to.contain(`<div id="plural1">${plural1Markup}</div`);
     });
 
-    // Plural + JSX test: count == 2
+    // Plural + JSX SSR test: count == 2
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 2 for '${LOCALE_NAMES[locale]}'`, () => {
-      const plural2Markup = messages.plural
+      plural2Markup = messages.plural
         .match(/other {(?<message>.*?)}/m)
         .groups['message'].replace('#', '2');
       // Expected example: <div id="plural2">Got <u>2</u> candies left.</div>
       expect(source).to.contain(`<div id="plural2">${plural2Markup}</div`);
     });
 
-    // Escape test: `formatJsx` using '<', '>', '{', '}' and quotes
+    // Escape SSR test: `formatJsx` using '<', '>', '{', '}' and quotes
     it(`will display the correct SSR markup when using JSX elements and escaping characters for '${LOCALE_NAMES[locale]}'`, () => {
-      const escapeTestMarkup = messages.escapeTest
+      escapeTestMarkup = messages.escapeTest
         .replace(/'/g, '&#x27;')
         .replace(/&#x3c;/gi, '&lt;')
         .replace(/&#x3e;/gi, '&gt;')
@@ -90,7 +113,7 @@ describe('The JSX test page', () => {
       expect(source).to.contain(`<div id="escapeTest">${escapeTestMarkup}</div>`);
     });
 
-    // Test that JSX elements can support style and events
+    // SSR test that checks if JSX elements can support style and events
     it(`will display the correct SSR markup when using JSX with style and events for '${LOCALE_NAMES[locale]}'`, () => {
       const elementSource = source.match(/<div id="styleAndEvents">(?<message>.*?)<\/div>/m).groups
         .message;
@@ -98,7 +121,7 @@ describe('The JSX test page', () => {
         .strongClass;
       const aClass = elementSource.match(/a class="(?<aClass>.*?)"/m).groups.aClass;
 
-      const styleAndEventsMarkup = messages.styleAndEvents
+      styleAndEventsMarkup = messages.styleAndEvents
         .replace('<link>', `<a href="/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`)
         .replace('</link>', '</a>')
         .replace('<strong>', `<strong class="${strongClass}">`)
@@ -132,8 +155,127 @@ describe('The JSX test page', () => {
       expect(source).to.contain(`<div id="badJsxElement2"></div>`);
     });
 
-    // TODO add client side test:
-    // - check events
-    // - check for unexpected warming messages
+    // Base client side test: one JSX element
+    it(`will display the correct client side markup when formatting a message with a single JSX element for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.visit({
+        url: jsxTestsUrl,
+        headers: {
+          'Accept-Language': locale,
+          Cookie: 'L=',
+        },
+      });
+      cy.get('#baseTest1')
+        .invoke('html')
+        .then((markup) => {
+          expect(convertHtmlEntities(markup)).to.eq(convertHtmlEntities(baseTest1Markup));
+        });
+    });
+
+    // Base client side test: two child elements inside another element
+    it(`will display the correct client side markup when formatting a message with two child JSX elements inside another element for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#baseTest2')
+        .invoke('html')
+        .then((markup) => {
+          expect(convertHtmlEntities(markup)).to.eq(convertHtmlEntities(baseTest2Markup));
+        });
+    });
+
+    // Plural + JSX client side test: count == 0
+    it(`will display the correct client side markup when using JSX elements inside a plural statement where the count is 0 for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#plural0')
+        .invoke('html')
+        .then((markup) => {
+          expect(convertHtmlEntities(markup)).to.eq(convertHtmlEntities(plural0Markup));
+        });
+    });
+
+    // Plural + JSX client side test: count == 1
+    it(`will display the correct client side markup when using JSX elements inside a plural statement where the count is 1 for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#plural1')
+        .invoke('html')
+        .then((markup) => {
+          expect(convertHtmlEntities(markup)).to.eq(convertHtmlEntities(plural1Markup));
+        });
+    });
+
+    // Plural + JSX client side test: count == 2
+    it(`will display the correct client side markup when using JSX elements inside a plural statement where the count is 2 for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#plural2')
+        .invoke('html')
+        .then((markup) => {
+          expect(convertHtmlEntities(markup)).to.eq(convertHtmlEntities(plural2Markup));
+        });
+    });
+
+    // Escape client side test: `formatJsx` using '<', '>', '{', '}' and quotes
+    it(`will display the correct client side markup when using JSX elements and escaping characters for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#escapeTest')
+        .invoke('html')
+        .then((markup) => {
+          expect(convertHtmlEntities(markup)).to.eq(convertHtmlEntities(escapeTestMarkup));
+        });
+    });
+
+    // Client side test that checks if JSX elements can support style and events
+    it(`will display the correct client side markup when using JSX with style and events for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#styleAndEvents')
+        .invoke('html')
+        .then((markup) => {
+          expect(convertHtmlEntities(markup)).to.eq(convertHtmlEntities(styleAndEventsMarkup));
+        });
+    });
+
+    // Client side test that checks if styles (CSS) are correctly applied to JSX elements
+    it(`will have the correct client side styles (CSS) when using JSX with styles for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#styleAndEvents strong').should('have.css', 'font-size', '20px');
+      cy.get('#styleAndEvents a').should('have.css', 'color', 'rgb(255, 0, 0)');
+    });
+
+    // Client side test that checks if events are correctly applied to JSX elements
+    it(`will have the correct events when using JSX with events for '${LOCALE_NAMES[locale]}'`, () => {
+      cy.get('#styleAndEvents a')
+        .click()
+        .click()
+        .then(() => {
+          cy.window().then((window) => {
+            expect(window['_styleAndEventsClickCount']).to.eq(2);
+          });
+        });
+    });
+
+    // All failing `formatJsx` calls should return empty client side markup
+    it(`will not create any client side markup when testing bad use cases of messages with JSX elements for '${LOCALE_NAMES[locale]}'`, () => {
+      const emptyElements = [
+        'missingClose1',
+        'missingClose2',
+        'missingClose3',
+        'missingClose4',
+        'missingClose5',
+        'missingClose6',
+        'missingClose7',
+        'missingOpen1',
+        'missingOpen2',
+        'missingOpen3',
+        'missingOpen4',
+        'missingOpen5',
+        'missingOpen6',
+        'missingOpen7',
+        'invalidXml1',
+        'invalidXml2',
+        'duplicateTags',
+        'badMessageValue1',
+        'badMessageValue2',
+        'badJsxElement1',
+        'badJsxElement2',
+      ];
+
+      emptyElements.forEach((emptyElement) => {
+        cy.get(`#${emptyElement}`)
+          .invoke('html')
+          .then((markup) => {
+            expect(markup).to.be.empty;
+          });
+      });
+    });
   });
 });

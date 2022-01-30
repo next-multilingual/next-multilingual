@@ -4,7 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Test "beta" releases to avoid rolling out breaking changes before release version 1.0.0
 - Move BabelPlugin to SWC
@@ -32,10 +31,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Add missing client tests for inline JSX
+- Test anchor links (including translation and doc)
 
 ### Done ✔️
 
+- Add missing client tests for inline JSX
 - Move `experimental: { esmExternals: false }` to `esmExternals: false`
 - HTML inside properties files (as JSX)
 - Refactor to arrow functions

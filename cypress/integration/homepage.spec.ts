@@ -189,7 +189,7 @@ describe('The homepage', () => {
         const linkLocale = languagePickerLink.attr('lang');
         if (!visitedLocales.includes(linkLocale)) {
           visitedLocales.push(linkLocale);
-          cy.wrap(languagePickerLink).click({ force: true });
+          cy.wrap(languagePickerLink).click({ force: true, timeout: 10000 });
           cy.get('#header').contains(HEADERS[linkLocale]);
           cy.visit('/');
           cy.get('#header').contains(HEADERS[linkLocale]);

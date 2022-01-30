@@ -72,7 +72,7 @@ describe('A dynamic route', () => {
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
       cy.get(`#link-with-parameter`)
-        .click()
+        .click({ timeout: 10000 })
         .then(() => {
           cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
         });
