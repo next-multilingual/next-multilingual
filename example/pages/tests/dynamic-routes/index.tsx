@@ -25,8 +25,10 @@ const Tests: NextPage = () => {
       <h1 className={styles.headline}>{title}</h1>
       <p>{messages.format('details')}</p>
       <p>
-        {messages.format('intro1')} <code className={styles.code}>/dynamic-route/test/[id]</code>{' '}
-        {messages.format('intro2')}
+        {messages.formatJsx('intro', {
+          url: localizedUrl,
+          code: <code className={styles.code}></code>,
+        })}
       </p>
       <div className={styles.parameter}>
         <label>

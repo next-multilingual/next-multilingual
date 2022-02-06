@@ -1,8 +1,8 @@
 import { DEFAULT_LOCALE, LOCALE_NAMES, LOCALES, ORIGIN } from '../constants';
 
 export const DYNAMIC_ROUTE_URLS = {
-  'en-US': '/dynamic-route-test',
-  'fr-CA': '/test-de-route-dynamique',
+  'en-US': '/tests/dynamic-routes',
+  'fr-CA': '/tests/routes-dynamiques',
 };
 
 describe('A dynamic route', () => {

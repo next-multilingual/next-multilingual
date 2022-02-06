@@ -50,7 +50,7 @@ const Id: NextPage = () => {
         </tbody>
       </table>
       <div id="go-back">
-        <Link href="/dynamic-route-test" locale={locale}>
+        <Link href="/tests/dynamic-routes" locale={locale}>
           {messages.format('goBack')}
         </Link>
       </div>

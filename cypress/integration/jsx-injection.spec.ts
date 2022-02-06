@@ -1,9 +1,9 @@
 import { KeyValueObject } from '../../src/messages/properties';
-import { LOCALE_NAMES, LOCALES } from '../constants';
+import { DEFAULT_LOCALE, LOCALE_NAMES, LOCALES } from '../constants';
 
 export const JSX_TESTS_URLS = {
-  'en-US': '/jsx-tests',
-  'fr-CA': '/tests-de-jsx',
+  'en-US': '/tests/jsx-injection',
+  'fr-CA': '/tests/injection-de-jsx',
 };
 
 export const CONTACT_US_URLS = {
@@ -43,7 +43,7 @@ describe('The JSX test page', () => {
 
     // Base SSR test: one JSX element
     it(`will display the correct SSR markup when formatting a message with a single JSX element for '${LOCALE_NAMES[locale]}'`, () => {
-      const propertiesFilepath = `example/pages/jsx-tests/index.${locale}.properties`;
+      const propertiesFilepath = `example/pages${JSX_TESTS_URLS[DEFAULT_LOCALE]}/index.${locale}.properties`;
 
       cy.task('getMessages', propertiesFilepath).then((keyValueObject) => {
         messages = keyValueObject as KeyValueObject;
