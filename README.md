@@ -406,8 +406,7 @@ And of course you would have this message file `about-us.en-US.properties`:
 
 ```properties
 # Page localized URL segment (slug) in (translatable) human readable format.
-# This key will be transformed when used in URLs. For example "About Us" will become "about-us".
-# All characters will be lowercased and all spaces will be replaced by dashes.
+# This key will be "slugified" (e.g, "About Us" will become "about-us"). All non-alphanumeric characters will be replaced by "-".
 exampleApp.aboutUsPage.slug = About Us
 # Page details.
 exampleApp.aboutUsPage.details = This is just some english boilerplate text.
@@ -525,10 +524,9 @@ exampleApp.fruits.lemon = Lemon
 And to use it, simple import this hook from anywhere you might need these values:
 
 ```tsx
-import type { ReactElement } from 'react';
 import { useFruitsMessages } from '../messages/useFruitsMessages';
 
-export default function FruitList(): ReactElement {
+export default function FruitList(): JSX.Element {
   const fruitsMessages = useFruitsMessages();
   return (
     <>
@@ -662,6 +660,108 @@ In a rare event where you would need to inject JSX in a message using the `<elem
 ```properties
 exampleApp.statsPage.targetAchieved = You achieved your weekly target (&#x3c;5) and are eligible for a <link>reward</link>.
 ```
+
+### Anchor Links
+
+[Anchor links](https://www.macmillandictionary.com/dictionary/british/anchor-link) are links that takes you to a particular place in a document rather than the top of it.
+
+One of `next-multilingual`'s core feature is supporting localized URLs. Our design has been built using normal sentences that are easy to localize and then transformed into SEO-friendly slugs. We can use the same function to slugify anchor links, so that instead of having `/fr-ca/nous-joindre#our-team` you can have `/fr-ca/nous-joindre#notre-équipe`.
+
+There are two type of anchor links:
+
+#### Anchor Links Used on the same page
+
+If the anchor links are on the same page, and not referred on any other pages, you can simply add them in the `.properties` file associate with that page like this:
+
+```properties
+# Table of content header
+exampleApp.longPage.tableOfContent = Table of Content
+
+# This key will be used both as content and "slugified". Make sure when translating that its value is unique.
+exampleApp.longPage.p1Header = Paragraph 1
+# "Lorem ipsum" text to make the (long) page scroll
+exampleApp.longPage.p1 = Lorem ipsum dolor sit amet...
+```
+
+And then the page can use the `slugify` function to link to to the unique identifier associated with the element you want to point the URL fragment to:
+
+```jsx
+import { NextPage } from 'next';
+import Link from 'next-multilingual/link';
+import { slugify, useMessages } from 'next-multilingual/messages';
+import { useRouter } from 'next/router';
+
+const LongPage: NextPage = () => {
+  const messages = useMessages();
+  const { locale } = useRouter();
+
+  return (
+    <div>
+      <div>
+        <h2>{messages.format('tableOfContent')}</h2>
+        <ul>
+          <li>
+            <Link href={`#${slugify(messages.format('p1Header'), locale)}`}>
+              {messages.format('p1Header')}
+            </Link>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2 id={slugify(messages.format('p1Header'), locale)}>{messages.format('p1Header')}</h2>
+        <p>{messages.format('p1')}</p>
+      </div>
+    </div>
+  );
+};
+
+export default LongPage;
+```
+
+#### Anchor Links used across pages
+
+It's also common to use anchor links across pages, so that when you click a link, your browser will directly show the relevant content on that page. To do this, you need to make your page's message available to other pages by adding this simple export that will act just like "shared messages":
+
+```tsx
+export const useLongPageMessages = useMessages;
+```
+
+And then you can use this hook from another page like this:
+
+```tsx
+import { NextPage } from 'next';
+import Link from 'next-multilingual/link';
+import { getTitle, slugify, useMessages } from 'next-multilingual/messages';
+import { useRouter } from 'next/router';
+
+import { useLongPageMessages } from './long-page';
+
+const AnchorLinks: NextPage = () => {
+  const messages = useMessages();
+  const { locale, pathname } = useRouter();
+  const longPageMessages = useLongPageMessages();
+
+  return (
+    <div>
+      <div>
+        <Link
+          href={`${pathname}/long-page#${slugify(longPageMessages.format('p3Header'), locale)}`}
+        >
+          {messages.format('linkAction')}
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+export default AnchorLinks;
+```
+
+This pattern also works for components. The benefit of doing this is that if you delete, or refactor the page, the anchor links associated with it will always stay with the page.
+
+You could create a separate shared message component just for the anchor links but this would break the [proximity principle](https://kula.blog/posts/proximity_principle/).
+
+A full example of anchor links can be found in the [example application](./example/pages/tests/anchor-links/).
 
 ### Search Engine Optimization
 

@@ -8,7 +8,7 @@ import {
 } from '../';
 import {
     getMessagesFilePath, getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription,
-    SLUG_KEY_ID
+    SLUG_KEY_ID, slugify
 } from '../messages';
 import { parsePropertiesFile } from '../messages/properties';
 
@@ -241,7 +241,7 @@ export class MultilingualRoute {
       );
       return '';
     }
-    return keyValueObject[slugKey].replace(/[ /\-']+/g, '-').toLocaleLowerCase();
+    return slugify(keyValueObject[slugKey], locale);
   }
 
   /**

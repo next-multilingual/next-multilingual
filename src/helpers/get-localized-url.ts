@@ -1,10 +1,8 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
 import {
-  containsQueryParameters,
-  hydrateQueryParameters,
-  rewriteToQueryParameters,
-  queryToRewriteParameters,
-} from '..';
+    containsQueryParameters, hydrateQueryParameters, queryToRewriteParameters,
+    rewriteToQueryParameters
+} from '../';
 import { Url } from '../types';
 import { getOrigin } from './get-origin';
 import { getRewritesIndex } from './get-rewrites-index';
@@ -28,7 +26,23 @@ export function getLocalizedUrl(
   basePath: string = undefined,
   absolute = false
 ): string {
-  let urlPath = url['pathname'] !== undefined ? url['pathname'] : url;
+  let urlPath = (url['pathname'] !== undefined ? url['pathname'] : url) as string;
+  let urlFragment = '';
+
+  const urlComponents = urlPath.split('#');
+  if (urlComponents.length !== 1) {
+    urlPath = urlComponents.shift();
+    // No need to use `encodeURIComponent` as it is already handled by Next.js' <Link>.
+    urlFragment = urlComponents.join('#');
+  }
+
+  if (/^tel:/i.test(urlPath)) {
+    return urlPath; // Telephone links have no localized values.
+  }
+
+  if (/^mailto:/i.test(urlPath)) {
+    return urlPath; // Email links have no localized values.
+  }
 
   if (urlPath === '/') {
     urlPath = `/${locale}`; // Special rule for the homepage.
@@ -58,5 +72,7 @@ export function getLocalizedUrl(
     urlPath = `${origin}${urlPath}`;
   }
 
-  return url['query'] !== undefined ? hydrateQueryParameters(urlPath, url['query']) : urlPath;
+  return `${url['query'] !== undefined ? hydrateQueryParameters(urlPath, url['query']) : urlPath}${
+    urlFragment ? `#${urlFragment}` : ''
+  }`;
 }

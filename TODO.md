@@ -4,9 +4,10 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Test "beta" releases to avoid rolling out breaking changes before release version 1.0.0
 - Move BabelPlugin to SWC
+- Replace `intl-messageformat` with a smaller alternative to reduce package size
+- Add anchor links support on language switcher (requires Babel plugin?)
 - Copy example repo into https://github.com/vercel/next.js/tree/canary/examples/with-next-multilingual (automate pipeline?)
 - Add ESM module support to remove `esmExternals: false`
 - Add naming best practice for message key in documentation
@@ -31,10 +32,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Test anchor links (including translation and doc)
+- Add anchor link tests
 
 ### Done ✔️
 
+- Test anchor links (including translation and doc)
+- support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Add missing client tests for inline JSX
 - Move `experimental: { esmExternals: false }` to `esmExternals: false`
 - HTML inside properties files (as JSX)

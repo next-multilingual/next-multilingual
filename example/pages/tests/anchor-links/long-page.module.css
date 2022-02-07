@@ -1,0 +1,10 @@
+.headline {
+  font-size: 2rem;
+  padding-bottom: 1rem;
+}
+
+.content {
+  font-size: 2rem;
+  max-width: 20rem;
+  margin: auto;
+}

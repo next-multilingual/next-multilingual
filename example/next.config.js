@@ -1,3 +1,7 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const { getConfig } = require('next-multilingual/config');
 
 const config = getConfig('exampleApp', ['en-US', 'fr-CA'], {
@@ -6,4 +10,4 @@ const config = getConfig('exampleApp', ['en-US', 'fr-CA'], {
   // debug: true,
 });
 
-module.exports = config;
+module.exports = withBundleAnalyzer(config);
