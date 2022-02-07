@@ -1,3 +1,10 @@
+## [0.10.3](https://github.com/Avansai/next-multilingual/compare/0.10.2...0.10.3) (2022-02-07)
+
+
+### Features
+
+* **link:** add localized anchor links support ([6b1351f](https://github.com/Avansai/next-multilingual/commit/6b1351f7b9ce4e13e4d3a7cc18d9c037ab5bcbb1))
+
 ## [0.10.2](https://github.com/Avansai/next-multilingual/compare/0.10.1...0.10.2) (2022-01-26)
 
 
