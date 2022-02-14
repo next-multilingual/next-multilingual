@@ -16,7 +16,7 @@ const AnchorLinks: NextPage = () => {
   return (
     <Layout title={title}>
       <h1>{title}</h1>
-      <div>
+      <div id="anchor-link-test">
         <Link
           href={`${pathname}/long-page#${slugify(longPageMessages.format('p3Header'), locale)}`}
         >

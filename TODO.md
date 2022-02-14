@@ -13,12 +13,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Add naming best practice for message key in documentation
 - Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
+- Look to see if we can use middleware to redirect default (fake) locale: https://nextjs.org/docs/advanced-features/i18n-routing
 - bug: the Babel plugin does not check if an hijack target (import) is used before injecting. This cause the import to be removed for optimization and cause a 500 error when trying to inject the non-existing import.
 - bug: only get the latest API responses abort previous one on the homepage API test (to reproduce, click 3 times no the language picker)
 - Check if we can add `title` attributes on `Link` components (not supported by Next.js?) (ref: https://backlinko.com/google-ranking-factors)
 - Add automated test:
   - Test when a string file changes, the page is updated (developer experience?)
-  - Test for: http://localhost:3000/mul/about-us
   - Test with a 3rd language (language switcher hydration issues?)
 - In the `config` API, gracefully merge options passed in argument as an object instead of overwriting
 - In the `config` API, support options passed functions (see Next.js doc)
@@ -32,10 +32,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Add anchor link tests
+- Add tests for default (mul) language and its impact to headers and SSR (e.g. http://localhost:3000/mul/about-us)
 
 ### Done ✔️
 
+- Add anchor link tests
 - Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
 - Add missing client tests for inline JSX
