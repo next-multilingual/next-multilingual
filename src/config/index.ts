@@ -290,7 +290,7 @@ export class Config {
    *
    * @throws Error when one of the arguments is invalid.
    */
-  constructor(applicationId: string, locales: string[], debug = false) {
+  constructor(applicationId: string, locales: string[], ...args) {
     // Set the application identifier if valid.
     if (!keySegmentRegExp.test(applicationId)) {
       throw new Error(
@@ -298,8 +298,41 @@ export class Config {
       );
     }
 
+    // test for compatible if options just contains debug boolean or is object or 2 args
+    if ((args.length > 1) || (args.length === 1 && (typeof args[0] !== 'boolean' && typeof args[0] !== 'object'))) {
+      throw new Error(
+        `invalid call of constructor. Use arguments (applicationId, locales, <debug|options>).`
+      );
+    }
+
+    // Get debug from arguments or options
+    const debug = (() => {
+      if (typeof args[0] === 'boolean') {
+        return args[0];
+      } else if (typeof args[0] === 'object' && typeof args[0].debug === 'boolean') {
+        return args[0].debug;
+      }
+      return false;
+    })();
+
+    // Get options from arguments
+    const options = (typeof args[0] === 'object' && args.pop()) || {};
+
     // Add `applicationId` to environment variables so that it is available at build time (by Babel), without extra config.
     process.env.nextMultilingualApplicationId = applicationId;
+
+    // Get file extension for translation files
+    const translationFileExt = options.fileExt || '.properties';
+
+    // Check if valid file type
+    if (!['.properties', '.yaml', '.yml', '.json'].includes(translationFileExt)) {
+      throw new Error(
+        `invalid file extension. Use .properties, .y(a)ml or .json only.`
+      );
+    }
+
+    // Add file extension for translation files to environment variables so that it is available at build time (by Babel), without extra config.
+    process.env.nextMultilingualTranslationFileExt = translationFileExt;
 
     // Verify if the locale identifiers are using the right format.
     locales.forEach((locale) => {
@@ -329,14 +362,14 @@ export class Config {
 
     this.routes = this.fetchRoutes();
 
-    // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
+    // During development, add an extra watcher to trigger recompile when a translation file changes.
     if (process.env.NODE_ENV === 'development') {
       let routesSnapshot = this.routes;
 
       const watch = new CheapWatch({
         dir: process.cwd(),
         filter: ({ path, stats }) =>
-          ((stats as Stats).isFile() && (path as string).includes('.properties')) ||
+          ((stats as Stats).isFile() && (path as string).includes(translationFileExt)) ||
           ((stats as Stats).isDirectory() &&
             !(path as string).includes('node_modules') &&
             !(path as string).includes('.next')),
