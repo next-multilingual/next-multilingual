@@ -1,4 +1,5 @@
 import { parse as parseProperties } from 'dot-properties';
+import yaml from 'js-yaml';
 import { readFileSync } from 'fs';
 
 import { highlight, highlightFilePath, log } from '../';
@@ -18,13 +19,14 @@ export type KeyValueObjectCollection = {
 };
 
 /**
- * Parse a `.properties` file and return it back as a "key/value" object.
+ * Parse a translation file and return it back as a "key/value" object.
  *
- * @param filePath - The file path of the `.properties` file to parse.
+ * @param filePath - The file path of the `.properties|.json|.ya?ml` file to parse.
  *
- * @returns The "raw" representation of a `.properties` fille in a simple "key/value" object.
+ * @returns The "raw" representation of a translation file in a simple "key/value" object.
  */
 export function parsePropertiesFile(filePath: string): KeyValueObject {
+  const translationFileExt = process.env.nextMultilingualTranslationFileExt;
   const fileContent = stripBom(readFileSync(filePath, 'utf8'));
 
   if (fileContent.includes('�')) {
@@ -35,7 +37,18 @@ export function parsePropertiesFile(filePath: string): KeyValueObject {
     );
   }
 
-  return parseProperties(fileContent) as KeyValueObject;
+  if (translationFileExt === '.properties') {
+    return parseProperties(fileContent) as KeyValueObject;
+  } else if (translationFileExt === '.json') {
+    return JSON.parse(fileContent) as KeyValueObject;
+  } else if (['.yaml', '.yml'].includes(translationFileExt)) {
+    return yaml.load(fileContent) as KeyValueObject;
+  }
+
+  log.warn(
+    `unknown translation file extension ${translationFileExt} used.`
+  );
+  return {} as KeyValueObject;
 }
 
 /**

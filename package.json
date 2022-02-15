@@ -91,6 +91,7 @@
     "cheap-watch": "^1.0.4",
     "colorette": "^2.0.16",
     "dot-properties": "^1.0.1",
+    "js-yaml": "^4.1.0",
     "intl-messageformat": "^9.11.3",
     "nookies": "^2.5.2",
     "resolve-accept-language": "^1.0.48"
