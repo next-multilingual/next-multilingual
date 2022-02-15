@@ -65,7 +65,7 @@ export class Messages {
           this.sourceFilePath
         )} because it was not found in messages file ${highlightFilePath(this.messagesFilePath)}`
       );
-      return '';
+      return (new Message(this, key, key)).format(values);
     }
 
     return message.format(values);
@@ -93,7 +93,7 @@ export class Messages {
           this.sourceFilePath
         )} because it was not found in messages file ${highlightFilePath(this.messagesFilePath)}`
       );
-      return <></>;
+      return (new Message(this, key, key)).formatJsx(values);
     }
 
     return message.formatJsx(values);
