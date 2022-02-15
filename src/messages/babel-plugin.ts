@@ -157,7 +157,9 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     }
 
     // If validation passes, keep only the identifier part of the key to reduce file sizes.
-    compactedKeyValueObject[idSegment] = keyValueObject[key];
+    const keyValue = keyValueObject[key];
+    // DRY if optionKeysFromPath and key is already message
+    compactedKeyValueObject[idSegment] = (optionKeysFromPath && (keyValue === null || String(keyValue) === '')) ? key : keyValue;
   }
   return compactedKeyValueObject;
 }
