@@ -88,10 +88,12 @@ export class BabelifiedMessages {
  */
 export function getMessages(propertiesFilePath: string): KeyValueObject {
   const keyValueObject = parsePropertiesFile(propertiesFilePath);
+  const optionKeysFromPath = process.env.nextMultilingualOptionKeysFromPath;
+  const contextSegmentFromPath = optionKeysFromPath ? propertiesFilePath.split('.').slice(0,-2).join('.') : '';
   let context: string;
   const compactedKeyValueObject = {};
   for (const key in keyValueObject) {
-    const keySegments = key.split('.');
+    const keySegments = (!optionKeysFromPath) ? key.split('.') : [applicationId, contextSegmentFromPath, key];
     if (keySegments.length !== 3) {
       log.warn(
         `unable to use messages in ${highlightFilePath(
@@ -118,7 +120,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
 
     // Verify the key's context.
     if (context === undefined) {
-      if (!keySegmentRegExp.test(contextSegment)) {
+      if (!optionKeysFromPath && !keySegmentRegExp.test(contextSegment)) {
         log.warn(
           `unable to use messages in ${highlightFilePath(
             propertiesFilePath
@@ -143,7 +145,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
     }
 
     // Verify the key's identifier.
-    if (!keySegmentRegExp.test(idSegment)) {
+    if (!optionKeysFromPath && !keySegmentRegExp.test(idSegment)) {
       log.warn(
         `unable to use messages in ${highlightFilePath(
           propertiesFilePath
@@ -173,7 +175,8 @@ function getBabelifiedMessages(sourceFilePath: string): string {
   const sourceFilename = parsedSourceFile.name;
   const babelifiedMessages = new BabelifiedMessages(sourceFilePath);
 
-  const fileRegExp = new RegExp(`^${escapeRegExp(sourceFilename)}.(?<locale>[\\w-]+).properties$`);
+  const translationFileExt = process.env.nextMultilingualTranslationFileExt;
+  const fileRegExp = new RegExp(`^${escapeRegExp(sourceFilename)}\.(?<locale>[\\w-]+)\\${translationFileExt}$`);
 
   readdirSync(sourceFileDirectoryPath, { withFileTypes: true }).forEach((directoryEntry) => {
     if (directoryEntry.isFile()) {

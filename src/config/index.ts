@@ -334,6 +334,12 @@ export class Config {
     // Add file extension for translation files to environment variables so that it is available at build time (by Babel), without extra config.
     process.env.nextMultilingualTranslationFileExt = translationFileExt;
 
+    // Get automatic keys and properties handling from config
+    const optionKeysFromPath = (typeof options.keysFromPath === 'boolean' && options.keysFromPath) || false;
+
+    // Add automatic keys and properties handling to environment variables so that it is available at build time (by Babel), without extra config.
+    process.env.nextMultilingualOptionKeysFromPath = optionKeysFromPath;
+
     // Verify if the locale identifiers are using the right format.
     locales.forEach((locale) => {
       if (!isLocale(locale)) {
