@@ -1,5 +1,5 @@
 import { KeyValueObject } from '../../src/messages/properties';
-import { DEFAULT_LOCALE, LOCALE_NAMES, LOCALES } from '../constants';
+import { ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, LOCALE_NAMES } from '../constants';
 
 export const JSX_TESTS_URLS = {
   'en-US': '/tests/jsx-injection',
@@ -27,7 +27,7 @@ function convertHtmlEntities(markup: string): string {
 }
 
 describe('The JSX test page', () => {
-  LOCALES.forEach((locale) => {
+  ACTUAL_LOCALES.forEach((locale) => {
     const jsxTestsUrl = `/${locale.toLowerCase()}${JSX_TESTS_URLS[locale]}`;
 
     let source;
@@ -43,7 +43,7 @@ describe('The JSX test page', () => {
 
     // Base SSR test: one JSX element
     it(`will display the correct SSR markup when formatting a message with a single JSX element for '${LOCALE_NAMES[locale]}'`, () => {
-      const propertiesFilepath = `example/pages${JSX_TESTS_URLS[DEFAULT_LOCALE]}/index.${locale}.properties`;
+      const propertiesFilepath = `example/pages${JSX_TESTS_URLS[ACTUAL_DEFAULT_LOCALE]}/index.${locale}.properties`;
 
       cy.task('getMessages', propertiesFilepath).then((keyValueObject) => {
         messages = keyValueObject as KeyValueObject;

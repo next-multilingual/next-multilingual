@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, LOCALE_NAMES, LOCALES, ORIGIN } from '../constants';
+import { ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, LOCALE_NAMES, ORIGIN } from '../constants';
 
 export const DYNAMIC_ROUTE_URLS = {
   'en-US': '/tests/dynamic-routes',
@@ -6,7 +6,7 @@ export const DYNAMIC_ROUTE_URLS = {
 };
 
 describe('A dynamic route', () => {
-  LOCALES.forEach((locale) => {
+  ACTUAL_LOCALES.forEach((locale) => {
     const localeName = LOCALE_NAMES[locale];
 
     const dynamicRouteIndexUrl = `/${locale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}`;
@@ -36,8 +36,8 @@ describe('A dynamic route', () => {
         expect(inputMarkup).to.match(inputValueRegExp);
         parameterValue = inputMarkup.match(inputValueRegExp).groups['parameterValue'];
         dynamicRouteUrl = `${dynamicRouteIndexUrl}/${parameterValue}`;
-        canonicalDynamicRouteUrl = `/${DEFAULT_LOCALE.toLowerCase()}${
-          DYNAMIC_ROUTE_URLS[DEFAULT_LOCALE]
+        canonicalDynamicRouteUrl = `/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}${
+          DYNAMIC_ROUTE_URLS[ACTUAL_DEFAULT_LOCALE]
         }/${parameterValue}`;
         expect(source).to.match(linkMarkupRegExp);
         const linkInputMarkup = source.match(linkMarkupRegExp).groups['link'];
@@ -107,7 +107,7 @@ describe('A dynamic route', () => {
 
     // Localized Alternate <Head> link (SSR)
     it(`has the correct 'alternate' <Head> links (SSR) markup for '${localeName}'`, () => {
-      LOCALES.forEach((locale) => {
+      ACTUAL_LOCALES.forEach((locale) => {
         const alternateLinkHref = `/${locale.toLowerCase()}${
           DYNAMIC_ROUTE_URLS[locale]
         }/${parameterValue}`;
@@ -135,7 +135,7 @@ describe('A dynamic route', () => {
 
     // Localized Alternate <Head> link (client-side)
     it(`has the correct 'alternate' <Head> links (client-side) markup for '${localeName}'`, () => {
-      LOCALES.forEach((locale) => {
+      ACTUAL_LOCALES.forEach((locale) => {
         cy.get(`head link[rel=alternate][hreflang=${locale}]`)
           .should('have.attr', 'href')
           .then((href) => {
@@ -150,7 +150,7 @@ describe('A dynamic route', () => {
 
     // Language picker (client-side)
     it(`has the correct language picker links (client-side) markup for '${localeName}'`, () => {
-      const otherLocales = LOCALES.filter((otherLocale) => otherLocale != locale);
+      const otherLocales = ACTUAL_LOCALES.filter((otherLocale) => otherLocale != locale);
       otherLocale = otherLocales[0];
       otherLocales.forEach((otherLocale) => {
         cy.get(`#language-picker a[lang=${otherLocale}]`)

@@ -5,9 +5,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 ### To-do 📝
 
 - Test "beta" releases to avoid rolling out breaking changes before release version 1.0.0
-- Move BabelPlugin to SWC
+- Externalize Babel plugin into a "Messages Modules" package
+  - Add SWC support
+  - Add anchor links support on language switcher (requires Babel plugin?)
+  - Find way to split languages in different assets to speed up page load
 - Replace `intl-messageformat` with a smaller alternative to reduce package size
-- Add anchor links support on language switcher (requires Babel plugin?)
 - Copy example repo into https://github.com/vercel/next.js/tree/canary/examples/with-next-multilingual (automate pipeline?)
 - Add ESM module support to remove `esmExternals: false`
 - Add naming best practice for message key in documentation
@@ -32,10 +34,9 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Add tests for default (mul) language and its impact to headers and SSR (e.g. http://localhost:3000/mul/about-us)
-
 ### Done ✔️
 
+- Add tests for default (mul) language and its impact to headers and SSR (e.g. http://localhost:3000/mul/about-us)n
 - Add anchor link tests
 - Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.
