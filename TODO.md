@@ -34,6 +34,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- add new API to call keys by "messages" - this will be indexed by Babel
+  - also add support to fallback to the message when not found
+  - needs to be a new configurable option since it will increase bundle size because of the index
+  - add new i18.config file that will allow Jest and other tools (check fork)
+
 ### Done ✔️
 
 - Add tests for default (mul) language and its impact to headers and SSR (e.g. http://localhost:3000/mul/about-us)n
