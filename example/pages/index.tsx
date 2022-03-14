@@ -35,7 +35,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   useEffect(() => {
     setApiIsLoaded(false);
     const requestHeaders: HeadersInit = new Headers();
-    requestHeaders.set('Accept-Language', normalizeLocale(router.locale));
+    requestHeaders.set('Accept-Language', normalizeLocale(router.locale as string));
     fetch('/api/hello', { headers: requestHeaders })
       .then((result) => result.json())
       .then(
@@ -55,7 +55,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
       return (
         <>
           {messages.format('apiError')}
-          {apiError.message}
+          {(apiError as Error).message}
         </>
       );
     } else if (!isApiLoaded) {
@@ -81,15 +81,15 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           <tbody>
             <tr>
               <td>{messages.format('rowDefaultLocale')}</td>
-              <td>{normalizeLocale(defaultLocale)}</td>
+              <td>{normalizeLocale(defaultLocale as string)}</td>
               <td>{normalizeLocale(getActualDefaultLocale(locales, defaultLocale))}</td>
             </tr>
             <tr>
               <td>{messages.format('rowConfiguredLocales')}</td>
-              <td>{locales.map((locale) => normalizeLocale(locale)).join(', ')}</td>
+              <td>{locales?.map((locale) => normalizeLocale(locale)).join(', ')}</td>
               <td>
                 {getActualLocales(locales, defaultLocale)
-                  .map((locale) => normalizeLocale(locale))
+                  ?.map((locale) => normalizeLocale(locale))
                   .join(', ')}
               </td>
             </tr>

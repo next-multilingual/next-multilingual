@@ -1,5 +1,5 @@
 /** This is the "sanitized" origin to avoid re-validating each time `getOrigin` is called. */
-let origin;
+let origin: string;
 
 /**
  * Get the current environment's URL origin (protocol + domain).

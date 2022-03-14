@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES5",
     "lib": ["es2018", "dom"],
     "esModuleInterop": true,
     "isolatedModules": true,
@@ -8,8 +8,9 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "lib/",
-    "strict": false,
-    "declaration": true
+    "declaration": true,
+    "strict": true,
+    "noImplicitThis": false /** required by `useMessages` and `getMessages` **/
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

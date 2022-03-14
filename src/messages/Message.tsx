@@ -18,7 +18,7 @@ export class Message {
   /** The localized message. */
   private message: string;
   /** The IntlMessageFormat objet, if required. */
-  private intlMessageFormat: IntlMessageFormat;
+  private intlMessageFormat?: IntlMessageFormat;
 
   /**
    * Create an object used to format localized messages of a local scope.
@@ -102,8 +102,8 @@ export class Message {
           this.parent.messagesFilePath
         )}: ${(error as Error).message}`
       );
-      return <></>;
     }
+    return <></>;
   }
 
   /**
@@ -146,8 +146,8 @@ export class Message {
       return true;
     }
 
-    const tagTracker = [];
-    const uniqueTags = [];
+    const tagTracker: string[] = [];
+    const uniqueTags: string[] = [];
 
     tagsMatch.forEach((tag, position) => {
       const tagName = this.getXmlTagName(tag);
@@ -203,7 +203,7 @@ export class Message {
   private getXmlTagName(xmlTag: string): string {
     const tagNameMatch = xmlTag.match(/<\/?(?<tagName>.*)>/m);
 
-    if (tagNameMatch === null) {
+    if (!tagNameMatch?.groups) {
       throw new Error(`invalid XML tag ${highlight(xmlTag)}`);
     }
 
@@ -212,7 +212,7 @@ export class Message {
 
     let hasAttributes = false;
     if (/\s/.test(tagName)) {
-      tagName = tagName.split(/\s/).shift();
+      tagName = tagName.split(/\s/).shift() as string;
       hasAttributes = true;
     }
 
@@ -254,7 +254,7 @@ export class Message {
       // Get the next tag from the current message segment.
       const tagMatch = messageSegment.match(/[^<]*(?<tag><.*?>).*/m);
 
-      if (tagMatch === null) {
+      if (!tagMatch?.groups) {
         reactNodes.push(this.unescapeXml(messageSegment));
         break;
       }
@@ -271,14 +271,18 @@ export class Message {
           `(?<startingSegment>.*?)<${tagName}.*?>(?<innerContent>.*?)<\\/${tagName}\\s*>(?<nextSegment>.*)`,
           'm'
         )
-      );
-      const { startingSegment, innerContent, nextSegment } = nextMatch.groups;
+      ) as RegExpMatchArray;
+
+      const { startingSegment, innerContent, nextSegment } = nextMatch.groups as {
+        [key: string]: string;
+      };
+
       if (startingSegment !== null) {
         reactNodes.push(this.unescapeXml(startingSegment));
       }
       const childNode = this.hydrate(innerContent, values, tagName);
       if (childNode === undefined) {
-        return undefined;
+        return <></>;
       }
 
       reactNodes.push(childNode);
@@ -306,7 +310,7 @@ export class Message {
   private insertNodes(element: JSX.Element, ...reactNodes: React.ReactNode[]): JSX.Element {
     const elements = this.getElementChain(element);
 
-    const injectedElement = cloneElement(elements.pop(), null, ...reactNodes);
+    const injectedElement = cloneElement(elements.pop() as JSX.Element, undefined, ...reactNodes);
 
     if (!elements.length) {
       return injectedElement;
@@ -315,8 +319,8 @@ export class Message {
     let currentElement = injectedElement;
 
     do {
-      const parentElement = elements.pop();
-      currentElement = cloneElement(parentElement, null, currentElement);
+      const parentElement = elements.pop() as JSX.Element;
+      currentElement = cloneElement(parentElement, undefined, currentElement);
     } while (elements.length);
 
     // Return the cloned elements with the inject message.

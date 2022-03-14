@@ -28,7 +28,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Automatically restart Next.js routes changes (e.g. use `forever`)
 - Default locale fallback
 - Lorem ipsum generator?
-- Try strict mode
 - Sitemap
 - schema.org markup support (e.g. breadcrumbs)
 
@@ -41,6 +40,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### Done ✔️
 
+- Move to strict mode
+- support links that include protocol
 - Add tests for default (mul) language and its impact to headers and SSR (e.g. http://localhost:3000/mul/about-us)n
 - Add anchor link tests
 - Test anchor links (including translation and doc)

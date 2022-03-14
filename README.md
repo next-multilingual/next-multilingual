@@ -77,6 +77,7 @@ const { Config } = require('next-multilingual/config');
 const config = new Config('exampleApp', ['en-US', 'fr-CA']);
 
 module.exports = {
+  reactStrictMode: true,
   i18n: {
     locales: config.getUrlLocalePrefixes(),
     defaultLocale: config.getDefaultUrlLocalePrefix(),
@@ -850,7 +851,14 @@ type Schema = {
  * The "hello API" handler.
  */
 export default function handler(request: NextApiRequest, response: NextApiResponse<Schema>): void {
-  const messages = getMessages(request.headers['accept-language']);
+  const locale = request.headers['accept-language'];
+
+  if (locale === undefined || !isLocale(locale)) {
+    response.status(400);
+    return;
+  }
+
+  const messages = getMessages(locale);
   response.status(200).json({ message: messages.format('message') });
 }
 ```
@@ -875,7 +883,7 @@ const SomePage: NextPage = () => {
   useEffect(() => {
     setApiIsLoaded(false);
     const requestHeaders: HeadersInit = new Headers();
-    requestHeaders.set('Accept-Language', normalizeLocale(router.locale));
+    requestHeaders.set('Accept-Language', normalizeLocale(router.locale as string));
     fetch('/api/hello', { headers: requestHeaders })
       .then((result) => result.json())
       .then(
@@ -895,7 +903,7 @@ const SomePage: NextPage = () => {
       return (
         <>
           {messages.format('apiError')}
-          {apiError.message}
+          {(apiError as Error).message}
         </>
       );
     } else if (!isApiLoaded) {
@@ -932,10 +940,11 @@ import {
   setCookieLocale,
 } from 'next-multilingual';
 import Link from 'next-multilingual/link';
+import { KeyValueObject } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
 
 // Locales don't need to be localized.
-const localeStrings = {
+const localeStrings: KeyValueObject = {
   'en-US': 'English (United States)',
   'fr-CA': 'Français (Canada)',
 };

@@ -7,7 +7,7 @@ import { highlight, highlightFilePath, log } from '../';
  * A simple "key/value" object used to store messages.
  */
 export type KeyValueObject = {
-  readonly [key: string]: string;
+  [key: string]: string;
 };
 
 /**

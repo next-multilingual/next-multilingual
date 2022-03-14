@@ -35,7 +35,7 @@ export const NON_ROUTABLE_PAGE_FILES = ['index', '_app', '_document', '_error', 
  * Get all possible permutations of the non-routable app-root-relative pages file paths.
  */
 export function getNonRoutablePages(): string[] {
-  const nonRoutablePages = [];
+  const nonRoutablePages: string[] = [];
   PAGES_DIRECTORIES.forEach((pagesDirectory) => {
     NON_ROUTABLE_PAGE_FILES.forEach((nonRoutablePageFile) => {
       PAGE_FILE_EXTENSIONS.forEach((pageFileExtension) =>
@@ -59,7 +59,7 @@ export const NON_ROUTABLE_PAGES = getNonRoutablePages();
  *
  * @return The `pages` directory path.
  */
-export function getPagesDirectoryPath(filesystemPath): string {
+export function getPagesDirectoryPath(filesystemPath: string): string {
   for (const pagesDirectory of PAGES_DIRECTORIES) {
     if (filesystemPath === pagesDirectory || filesystemPath.startsWith(`${pagesDirectory}/`)) {
       return pagesDirectory;
@@ -77,7 +77,7 @@ export function getPagesDirectoryPath(filesystemPath): string {
  */
 export function removeFileExtension(filesystemPath: string): string {
   const pathComponents = filesystemPath.split('/');
-  const basename = pathComponents.pop();
+  const basename = pathComponents.pop() as string;
 
   if (!basename.includes('.')) {
     return filesystemPath;
@@ -100,7 +100,7 @@ export function removeFileExtension(filesystemPath: string): string {
  *
  * @return The filesystem path without the pages directory.
  */
-export function removePagesDirectoryPath(filesystemPath): string {
+export function removePagesDirectoryPath(filesystemPath: string): string {
   const pagesDirectory = getPagesDirectoryPath(filesystemPath);
   const pagesRegExp = new RegExp(`^${pagesDirectory}\\/`);
   return filesystemPath.replace(pagesRegExp, '');
@@ -140,7 +140,7 @@ export function isApiRoute(urlPath: string): boolean {
  * @return True if the URL path is a dynamic Route, otherwise false.
  */
 export function isDynamicRoute(urlPath: string): boolean {
-  const urlSegment = urlPath.split('/').pop();
+  const urlSegment = urlPath.split('/').pop() as string;
   return urlSegment.startsWith('[') && urlSegment.endsWith(']');
 }
 
@@ -197,7 +197,7 @@ export class MultilingualRoute {
         (parentRoute !== undefined
           ? parentRoute.localizedUrlPaths.find(
               (localizedUrlPath) => localizedUrlPath.locale === locale
-            ).urlPath
+            )?.urlPath ?? ''
           : '') +
         '/' +
         applicableSlug;
@@ -222,9 +222,11 @@ export class MultilingualRoute {
 
     if (!existsSync(messagesFilePath)) {
       log.warn(
-        `unable to create the ${highlight(normalizeLocale(locale))} slug for ${highlightFilePath(
-          filesystemPath
-        )}. The message file ${highlightFilePath(messagesFilePath)} does not exist.`
+        `unable to create the ${highlight(
+          normalizeLocale(locale) as string
+        )} slug for ${highlightFilePath(filesystemPath)}. The message file ${highlightFilePath(
+          messagesFilePath
+        )} does not exist.`
       );
       return '';
     }
@@ -233,9 +235,9 @@ export class MultilingualRoute {
     const slugKey = Object.keys(keyValueObject).find((key) => key.endsWith(`.${SLUG_KEY_ID}`));
     if (!slugKey) {
       log.warn(
-        `unable to create the ${highlight(normalizeLocale(locale))} slug for ${highlightFilePath(
-          filesystemPath
-        )}. The message file ${highlightFilePath(
+        `unable to create the ${highlight(
+          normalizeLocale(locale) as string
+        )} slug for ${highlightFilePath(filesystemPath)}. The message file ${highlightFilePath(
           messagesFilePath
         )} must include a key with the ${highlight(SLUG_KEY_ID)} identifier.`
       );
@@ -255,7 +257,7 @@ export class MultilingualRoute {
     const localizedUrlPath = this.localizedUrlPaths.find(
       (localizedUrlPath) => localizedUrlPath.locale === locale
     );
-    return localizedUrlPath.urlPath;
+    return localizedUrlPath?.urlPath ?? '';
   }
 }
 
@@ -277,7 +279,7 @@ export class Config {
   /** The default locale used by the Next.js configuration. */
   private readonly defaultLocale: string;
   /** The directory path where the Next.js pages can be found. */
-  private readonly pagesDirectoryPath: string;
+  private readonly pagesDirectoryPath: string = PAGES_DIRECTORIES[0];
   /** The Next.js application's multilingual routes. */
   private routes: MultilingualRoute[];
 
@@ -313,18 +315,24 @@ export class Config {
     });
 
     // Set the actual desired locales of the multilingual application.
-    this.actualLocales = locales.map((locale) => normalizeLocale(locale));
+    this.actualLocales = locales.map((locale) => normalizeLocale(locale) as string);
     // The `mul` (multilingual) default locale is required for dynamic locale resolution for requests on `/`.
     this.defaultLocale = 'mul';
     // By convention, the first locale configured in Next.js will be the default locale.
     this.locales = [this.defaultLocale, ...this.actualLocales];
 
     // Set the correct `pages` directory used by the Next.js application.
+    let pagesDirectoryExists = false;
     for (const pageDirectory of PAGES_DIRECTORIES) {
       if (existsSync(pageDirectory)) {
         this.pagesDirectoryPath = pageDirectory;
+        pagesDirectoryExists = true;
         break;
       }
+    }
+
+    if (!pagesDirectoryExists) {
+      throw new Error('unable to find the pages directory');
     }
 
     this.routes = this.fetchRoutes();
@@ -335,7 +343,7 @@ export class Config {
 
       const watch = new CheapWatch({
         dir: process.cwd(),
-        filter: ({ path, stats }) =>
+        filter: ({ path, stats }: { path: string; stats: Stats }) =>
           ((stats as Stats).isFile() && (path as string).includes('.properties')) ||
           ((stats as Stats).isDirectory() &&
             !(path as string).includes('node_modules') &&
@@ -506,7 +514,7 @@ export class Config {
     const isHomepage = nonLocalizedUrlPath === '/' ? true : false;
 
     if (isApiRoute(nonLocalizedUrlPath)) {
-      return; // Skip if the URL path is a Next.js' API Route.
+      return routes; // Skip if the URL path is a Next.js' API Route.
     }
 
     let indexFound = false;
@@ -602,7 +610,11 @@ export class Config {
    *
    * @returns The normalized path with the locale.
    */
-  private normalizeUrlPath(urlPath: string, locale: string = undefined, encode = false): string {
+  private normalizeUrlPath(
+    urlPath: string,
+    locale: string | undefined = undefined,
+    encode = false
+  ): string {
     let normalizedUrlPath = `${
       locale !== undefined ? `/${locale}` : ''
     }${urlPath}`.toLocaleLowerCase(locale);
@@ -636,7 +648,7 @@ export class Config {
    * @returns An array of Next.js `Rewrite` objects.
    */
   public getRewrites(): Rewrite[] {
-    const rewrites = [];
+    const rewrites: Rewrite[] = [];
     for (const route of this.routes) {
       for (const locale of this.actualLocales) {
         const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale, true);
@@ -660,7 +672,7 @@ export class Config {
    * @returns An array of Next.js `Redirect` objects.
    */
   public getRedirects(): Redirect[] {
-    const redirects = [];
+    const redirects: Redirect[] = [];
     for (const route of this.routes) {
       for (const locale of this.actualLocales) {
         const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale);
@@ -732,8 +744,13 @@ export function getConfig(
     localeDetection: false, // This is important to use the improved language detection feature.
   };
 
-  /* This is required since Next.js 11.1.3-canary.69 until we support ESM. */
+  // Add strict mode by default.
+  if (nextConfig?.reactStrictMode !== false) {
+    nextConfig.reactStrictMode = true;
+  }
+
   if (nextConfig?.experimental?.esmExternals !== undefined) {
+    /* This is required since Next.js 11.1.3-canary.69 until we support ESM. */
     throw new Error(
       'the `esmExternals` option is not supported by `next-multilingual` until we support ESM'
     );

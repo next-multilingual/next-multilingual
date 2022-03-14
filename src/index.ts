@@ -1,12 +1,13 @@
-import resolveAcceptLanguage from 'resolve-accept-language';
-import type { GetServerSidePropsContext, PreviewData } from 'next';
+import { cyanBright } from 'colorette';
+import * as nextLog from 'next/dist/build/output/log';
 import Cookies from 'nookies';
 import { sep as pathSeparator } from 'path';
-
-import * as nextLog from 'next/dist/build/output/log';
-import { cyanBright } from 'colorette';
 import { ParsedUrlQuery } from 'querystring';
+import resolveAcceptLanguage from 'resolve-accept-language';
 
+import type { ParsedUrlQueryInput } from 'node:querystring';
+
+import type { GetServerSidePropsContext, PreviewData } from 'next';
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
  *
@@ -61,7 +62,14 @@ export function highlightFilePath(filePath: string): string {
  *
  * @returns The list of actual locales.
  */
-export function getActualLocale(locale: string, defaultLocale: string, locales: string[]): string {
+export function getActualLocale(
+  locale?: string,
+  defaultLocale?: string,
+  locales?: string[]
+): string {
+  if (locale === undefined || defaultLocale === undefined || locales === undefined) {
+    throw Error('locales must be configured in Next.js');
+  }
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
   return locale === defaultLocale ? actualDefaultLocale : locale;
 }
@@ -79,7 +87,10 @@ export function getActualLocale(locale: string, defaultLocale: string, locales: 
  *
  * @returns The list of actual locales.
  */
-export function getActualLocales(locales: string[], defaultLocale: string): string[] {
+export function getActualLocales(locales?: string[], defaultLocale?: string): string[] {
+  if (locales === undefined || defaultLocale === undefined) {
+    throw Error('locales must be configured in Next.js');
+  }
   return locales.filter((locale) => locale !== defaultLocale);
 }
 
@@ -97,8 +108,11 @@ export function getActualLocales(locales: string[], defaultLocale: string): stri
  *
  * @returns The actual default locale.
  */
-export function getActualDefaultLocale(locales: string[], defaultLocale: string): string {
-  return getActualLocales(locales, defaultLocale).shift();
+export function getActualDefaultLocale(locales?: string[], defaultLocale?: string): string {
+  if (locales === undefined || defaultLocale === undefined) {
+    throw Error('locales must be configured in Next.js');
+  }
+  return getActualLocales(locales, defaultLocale)?.shift() as string;
 }
 
 /**
@@ -151,10 +165,13 @@ export type ResolvedLocaleServerSideProps = {
  * @returns The preferred locale identifier.
  */
 export function getPreferredLocale(
-  acceptLanguageHeader: string,
+  acceptLanguageHeader: string | undefined,
   actualLocales: string[],
   actualDefaultLocale: string
 ): string {
+  if (acceptLanguageHeader === undefined) {
+    return actualDefaultLocale;
+  }
   return resolveAcceptLanguage(acceptLanguageHeader, actualLocales, actualDefaultLocale);
 }
 
@@ -164,16 +181,21 @@ const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME
   : 'L';
 
 // The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
-const LOCALE_COOKIE_LIFETIME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
-  ? process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
-  : 60 * 60 * 24 * 365 * 10;
+const LOCALE_COOKIE_LIFETIME: number =
+  process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME !== undefined
+    ? +process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
+    : 60 * 60 * 24 * 365 * 10;
 
 /**
  * Save the current user's locale to the locale cookie.
  *
  * @param locale - A locale identifier.
  */
-export function setCookieLocale(locale: string): void {
+export function setCookieLocale(locale?: string): void {
+  if (locale === undefined) {
+    throw Error('locales must be configured in Next.js');
+  }
+
   Cookies.set(null, LOCALE_COOKIE_NAME, locale, {
     maxAge: LOCALE_COOKIE_LIFETIME,
     path: '/',
@@ -192,7 +214,7 @@ export function setCookieLocale(locale: string): void {
 export function getCookieLocale(
   serverSidePropsContext: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
   actualLocales: string[]
-): string {
+): string | undefined {
   const cookies = Cookies.get(serverSidePropsContext);
 
   if (!Object.keys(cookies).includes(LOCALE_COOKIE_NAME)) {
@@ -217,25 +239,25 @@ export function getCookieLocale(
  * @see https://nextjs.org/docs/routing/dynamic-routes
  *
  * @param path - A path containing "query parameters".
- * @param parsedUrlQuery - A `ParsedUrlQuery` object containing router queries.
+ * @param parsedUrlQueryInput - A `ParsedUrlQueryInput` object containing router queries.
  * @param suppressWarning - If set to true, will not display a warning message if the key is missing.
  *
  * @returns The hydrated path containing `query` values instead of placeholders.
  */
 export function hydrateQueryParameters(
   path: string,
-  parsedUrlQuery: ParsedUrlQuery,
+  parsedUrlQueryInput: ParsedUrlQueryInput,
   suppressWarning = false
 ): string {
   const pathSegments = path.split('/');
-  const missingParameters = [];
+  const missingParameters: string[] = [];
 
   const hydratedPath = pathSegments
     .map((pathSegment) => {
       if (/^\[.+\]$/.test(pathSegment)) {
         const parameterName = pathSegment.slice(1, -1);
-        if (parsedUrlQuery[parameterName] !== undefined) {
-          return parsedUrlQuery[parameterName];
+        if (parsedUrlQueryInput[parameterName] !== undefined) {
+          return parsedUrlQueryInput[parameterName];
         } else {
           missingParameters.push(parameterName);
         }

@@ -1,16 +1,11 @@
 import NextHead from 'next/head';
 import { useRouter } from 'next/router';
 import React from 'react';
+
 import {
-  containsQueryParameters,
-  getActualDefaultLocale,
-  getActualLocales,
-  getQueryParameters,
-  highlight,
-  hydrateQueryParameters,
-  log,
-  normalizeLocale,
-} from '..';
+    containsQueryParameters, getActualDefaultLocale, getActualLocales, getQueryParameters,
+    highlight, hydrateQueryParameters, log, normalizeLocale
+} from '../';
 import { getLocalizedUrl } from '../helpers/get-localized-url';
 import { getRewrites } from '../helpers/get-rewrites';
 
@@ -74,7 +69,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
         )}
         key="canonical-link"
       />
-      {actualLocales.map((actualLocale) => {
+      {actualLocales?.map((actualLocale) => {
         return (
           <link
             rel="alternate"

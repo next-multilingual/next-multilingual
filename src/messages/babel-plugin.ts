@@ -1,13 +1,14 @@
 import { readdirSync } from 'fs';
 import { parse, sep as pathSeparator } from 'path';
-import { keySegmentRegExp, keySegmentRegExpDescription } from '.';
+
+import template from '@babel/template';
+import * as BabelTypes from '@babel/types';
+
+import { highlight, highlightFilePath, log } from '../';
+import { keySegmentRegExp, keySegmentRegExpDescription } from './';
 import { KeyValueObject, KeyValueObjectCollection, parsePropertiesFile } from './properties';
 
-import * as BabelTypes from '@babel/types';
 import type { PluginObj, PluginPass, NodePath } from '@babel/core';
-import template from '@babel/template';
-import { highlight, highlightFilePath, log } from '..';
-
 export type Program = BabelTypes.Program;
 export type Statement = BabelTypes.Statement;
 export type ImportDeclaration = BabelTypes.ImportDeclaration;
@@ -20,7 +21,7 @@ const isImportNamespaceSpecifier = BabelTypes.isImportNamespaceSpecifier;
 const isImportSpecifier = BabelTypes.isImportSpecifier;
 
 const isInNextJs = process?.env?.__NEXT_PROCESSED_ENV === 'true';
-const applicationId = process?.env?.nextMultilingualApplicationId;
+const applicationId = process?.env?.nextMultilingualApplicationId as string;
 
 if (isInNextJs && (applicationId === undefined || !keySegmentRegExp.test(applicationId))) {
   throw new Error(`you must define your application identifier using \`next-multilingual/config\``);
@@ -88,8 +89,8 @@ export class BabelifiedMessages {
  */
 export function getMessages(propertiesFilePath: string): KeyValueObject {
   const keyValueObject = parsePropertiesFile(propertiesFilePath);
-  let context: string;
-  const compactedKeyValueObject = {};
+  let context: string | undefined;
+  const compactedKeyValueObject: KeyValueObject = {};
   for (const key in keyValueObject) {
     const keySegments = key.split('.');
     if (keySegments.length !== 3) {
@@ -179,7 +180,7 @@ function getBabelifiedMessages(sourceFilePath: string): string {
     if (directoryEntry.isFile()) {
       const directoryEntryFilename = directoryEntry.name;
       const regExpMatch = directoryEntryFilename.match(fileRegExp);
-      if (regExpMatch) {
+      if (regExpMatch?.groups) {
         const locale = regExpMatch.groups.locale;
         const propertiesFilePath = sourceFileDirectoryPath.length
           ? `${sourceFileDirectoryPath}/${directoryEntryFilename}`
@@ -280,7 +281,14 @@ class Messages {
 
     const leadingPathSeparatorRegExp = new RegExp(`^${escapeRegExp(pathSeparator)}`);
 
-    this.sourceFilePath = pluginPass.file.opts.filename
+    // this.sourceFilePath = (pluginPass as PluginPass).file.opts.filename
+    const pluginPassFilename = pluginPass.file.opts?.filename;
+
+    if (typeof pluginPassFilename !== 'string') {
+      throw new Error('error getting the name of the file during compilation');
+    }
+
+    this.sourceFilePath = pluginPassFilename
       .replace(process.cwd(), '') // Remove absolute portion of the path to make is "app-root-relative".
       .replace(leadingPathSeparatorRegExp, ''); // Remove leading path separator (e.g., '/') if present.
 
@@ -355,6 +363,10 @@ function hijackNamespaceImport(
   // Rename all bindings with the the new name (this excludes the import declaration).
   const binding = nodePath.scope.getBinding(currentName);
 
+  if (!binding) {
+    return; // If there is no binding, no need to hijack.
+  }
+
   binding.referencePaths.forEach((referencePath) => {
     referencePath.scope.rename(currentName, hijackedNamespace, referencePath.parent);
   });
@@ -394,6 +406,10 @@ function hijackNamedImport(
 
       // Rename all bindings with the the new name (this excludes the import declaration).
       const binding = nodePath.scope.getBinding(currentName);
+
+      if (!binding) {
+        return; // If there is no binding, no need to hijack.
+      }
 
       binding.referencePaths.forEach((referencePath) => {
         referencePath.scope.rename(currentName, hijackedFunction, referencePath.parent);

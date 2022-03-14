@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { isLocale } from 'next-multilingual';
 import { getMessages } from 'next-multilingual/messages';
 
 /**
@@ -28,7 +29,14 @@ export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse<Schema>
 ): Promise<void> {
-  const messages = getMessages(request.headers['accept-language']);
+  const locale = request.headers['accept-language'];
+
+  if (locale === undefined || !isLocale(locale)) {
+    response.status(400);
+    return;
+  }
+
+  const messages = getMessages(locale);
   await delay(2000);
   response.status(200).json({ message: messages.format('message') });
 }

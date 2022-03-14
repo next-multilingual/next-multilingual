@@ -2,6 +2,7 @@ import {
     getActualLocale, getActualLocales, normalizeLocale, setCookieLocale
 } from 'next-multilingual';
 import Link from 'next-multilingual/link';
+import { KeyValueObject } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -24,7 +25,7 @@ export default function LanguagePicker(): JSX.Element {
       onMouseOut={() => setIsOver(false)}
     >
       <button>
-        {localeStrings[normalizeLocale(actualLocale)]}
+        {(localeStrings as KeyValueObject)[normalizeLocale(actualLocale)]}
         <i></i>
       </button>
       <div className={isOver ? styles.over : ''}>
@@ -39,7 +40,7 @@ export default function LanguagePicker(): JSX.Element {
                   }}
                   lang={normalizeLocale(locale)}
                 >
-                  {localeStrings[normalizeLocale(locale)]}
+                  {(localeStrings as KeyValueObject)[normalizeLocale(locale)]}
                 </a>
               </Link>
             );

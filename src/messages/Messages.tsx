@@ -38,7 +38,7 @@ export class Messages {
           this.messages.push(new Message(this, key, keyValueObject[key])) - 1;
       });
     }
-    this.locale = normalizeLocale(locale);
+    this.locale = normalizeLocale(locale) as string;
     this.sourceFilePath = sourceFilePath;
     this.messagesFilePath = messagesFilePath;
   }

@@ -1,5 +1,5 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
-import { highlight, isLocale, log } from '..';
+import { highlight, isLocale, log } from '../';
 
 /** Track the `rewrites` arguments used when calling `getRewritesIndex` to automatically flush the cache. */
 let lastRewrites: Rewrite[];
@@ -30,7 +30,7 @@ export function getRewritesIndex(rewrites: Rewrite[]): RewriteIndex {
 
   lastRewrites = rewrites; // Track last `rewrites` to hit cache.
 
-  const rewritesIndex = {};
+  const rewritesIndex: RewriteIndex = {};
 
   // Build localized URL objects.
   rewrites.forEach((rewrite) => {

@@ -8,6 +8,7 @@ import { Messages } from './Messages';
 // Make message classes available without adding their files to the package exports.
 export { Message } from './Message';
 export { Messages } from './Messages';
+export type { KeyValueObject } from './properties';
 
 /** This is the regular expression to validate message key segments. */
 export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
@@ -62,8 +63,8 @@ export function getTitle(messages: Messages, values?: PlaceholderValues): string
  * This is used by `next-multilingual` to build localized URLs and can be re-used for other similar
  * purposes such as anchor links.
  *
- * The `locale` must always be specified since some languages use ASCII characters for one of their
- * cases but not the other. For example, Turkish capital 'I' is 'ı` in lowercase and will only be
+ * The `locale` must always be specified when available since some languages use ASCII characters for one of
+ * their cases but not the other. For example, Turkish capital `I` is `ı` in lowercase and will only be
  * mapped correctly using `.toLocaleLowerCase('tr-TR')`.
  *
  * @param message - A localized message to "slugify".
@@ -71,7 +72,10 @@ export function getTitle(messages: Messages, values?: PlaceholderValues): string
  *
  * @returns The "slugified" version of a localized message.
  */
-export function slugify(message: string, locale: string): string {
+export function slugify(message: string, locale?: string): string {
+  if (locale === undefined) {
+    log.warn('calling `slugify` without a locale can lead to mistranslated slugs');
+  }
   /**
    * To stay ES5 compatible, and support all Unicode letters and numbers, we are using this very long regular
    * expression that has been generated using the `regexpu-core` npm package which is also used by
@@ -240,8 +244,12 @@ export function getMessages(locale: string): Messages {
 export function handleMessages(
   babelifiedMessages: BabelifiedMessages,
   caller: string,
-  locale: string
+  locale?: string
 ): Messages {
+  if (locale === undefined) {
+    throw new Error(`${caller}() requires the locales to be configured in Next.js`);
+  }
+
   if (!babelifiedMessages || !babelifiedMessages.babelified) {
     throw new Error(
       `${caller}() requires the 'next-multilingual/messages/babel-plugin' Babel plugin`
@@ -249,7 +257,7 @@ export function handleMessages(
   }
 
   const sourceFilePath = babelifiedMessages.sourceFilePath;
-  const sourceBasename = sourceFilePath.split('/').pop();
+  const sourceBasename = sourceFilePath.split('/').pop() as string;
   const sourceFilename = sourceBasename.split('.').slice(0, -1).join('.');
   const sourceFileDirectoryPath = sourceFilePath.split('/').slice(0, -1).join('/');
   const messagesFilename = `${sourceFilename}.${normalizeLocale(locale)}.properties`;

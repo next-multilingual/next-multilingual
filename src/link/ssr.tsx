@@ -31,7 +31,7 @@ export default function Link({
 }: React.PropsWithChildren<NextLinkProps>): ReactElement {
   const router = useRouter();
   const applicableLocale = locale ? locale : router.locale;
-  const url = href[0] === '#' ? `${router.pathname}${href}` : href;
+  const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href;
   const localizedUrl = useLocalizedUrl(url, applicableLocale);
 
   return (
@@ -52,7 +52,11 @@ export default function Link({
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export function useLocalizedUrl(url: Url, locale: string = undefined, absolute = false): string {
+export function useLocalizedUrl(
+  url: Url,
+  locale: string | undefined = undefined,
+  absolute = false
+): string {
   const router = useRouter();
   const applicableLocale = locale ? locale : router.locale;
   return getLocalizedUrl(getRewrites(), url, applicableLocale, router.basePath, absolute);
