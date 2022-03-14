@@ -6,6 +6,13 @@ import Layout from '@/layout';
 
 import styles from './index.module.css';
 
+// Extend `Window` object to add our test's counter.
+declare global {
+  interface Window {
+    _styleAndEventsClickCount: number;
+  }
+}
+
 const JsxTests: NextPage = () => {
   const messages = useMessages();
   const title = getTitle(messages);

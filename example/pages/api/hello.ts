@@ -16,7 +16,7 @@ type Schema = {
  *
  * @returns An empty promise.
  */
-function delay(milliseconds): Promise<void> {
+function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
