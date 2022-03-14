@@ -1,4 +1,7 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
+import type { ParsedUrlQueryInput } from 'node:querystring';
+import { UrlObject } from 'url';
+
 import {
     containsQueryParameters, hydrateQueryParameters, queryToRewriteParameters,
     rewriteToQueryParameters
@@ -22,26 +25,31 @@ import { getRewritesIndex } from './get-rewrites-index';
 export function getLocalizedUrl(
   rewrites: Rewrite[],
   url: Url,
-  locale: string,
-  basePath: string = undefined,
+  locale: string | undefined,
+  basePath: string | undefined = undefined,
   absolute = false
 ): string {
-  let urlPath = (url['pathname'] !== undefined ? url['pathname'] : url) as string;
+  let urlPath = (
+    (url as UrlObject).pathname !== undefined ? (url as UrlObject).pathname : url
+  ) as string;
   let urlFragment = '';
 
   const urlComponents = urlPath.split('#');
   if (urlComponents.length !== 1) {
-    urlPath = urlComponents.shift();
+    urlPath = urlComponents.shift() as string;
     // No need to use `encodeURIComponent` as it is already handled by Next.js' <Link>.
     urlFragment = urlComponents.join('#');
   }
 
-  if (/^tel:/i.test(urlPath)) {
-    return urlPath; // Telephone links have no localized values.
+  if (/^(tel:|mailto:|http[s]?:\/\/)/i.test(urlPath)) {
+    /**
+     * Do not localize "tel:", "mailto:" and "http*" links.
+     */
+    return urlPath;
   }
 
-  if (/^mailto:/i.test(urlPath)) {
-    return urlPath; // Email links have no localized values.
+  if (locale === undefined) {
+    return urlPath; // Next.js locales can be undefined when not configured.
   }
 
   if (urlPath === '/') {
@@ -72,7 +80,9 @@ export function getLocalizedUrl(
     urlPath = `${origin}${urlPath}`;
   }
 
-  return `${url['query'] !== undefined ? hydrateQueryParameters(urlPath, url['query']) : urlPath}${
-    urlFragment ? `#${urlFragment}` : ''
-  }`;
+  return `${
+    (url as UrlObject).query !== undefined
+      ? hydrateQueryParameters(urlPath, (url as UrlObject).query as ParsedUrlQueryInput)
+      : urlPath
+  }${urlFragment ? `#${urlFragment}` : ''}`;
 }
