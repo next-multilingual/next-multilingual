@@ -1,4 +1,11 @@
-## [0.10.3](https://github.com/Avansai/next-multilingual/compare/0.10.2...0.10.3) (2022-02-07)
+
+
+## [0.10.4](https://github.com/Avansai/next-multilingual/compare/0.10.3...0.10.4) (2022-03-14)
+
+
+### Features
+
+* **link:** add support for absolute URLs in the `link` component ([90cabc2](https://github.com/Avansai/next-multilingual/commit/90cabc240c1d9007524fc8121667c7c1830d687a))## [0.10.3](https://github.com/Avansai/next-multilingual/compare/0.10.2...0.10.3) (2022-02-07)
 
 
 ### Features
