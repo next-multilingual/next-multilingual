@@ -3,7 +3,7 @@ import type { ParsedUrlQueryInput } from 'node:querystring';
 import { UrlObject } from 'url';
 
 import {
-    containsQueryParameters, hydrateQueryParameters, queryToRewriteParameters,
+    containsQueryParameters, highlight, hydrateQueryParameters, log, queryToRewriteParameters,
     rewriteToQueryParameters
 } from '../';
 import { Url } from '../types';
@@ -41,14 +41,25 @@ export function getLocalizedUrl(
     urlFragment = urlComponents.join('#');
   }
 
+  /**
+   * Non-localizable links.
+   */
   if (/^(tel:|mailto:|http[s]?:\/\/)/i.test(urlPath)) {
     /**
-     * Do not localize "tel:", "mailto:" and "http*" links.
+     * Using URLs that do not require the router is not recommended by Next.js.
+     *
+     * @see https://github.com/vercel/next.js/issues/8555
      */
+    log.warn(
+      'using URLs that do not require the router is not recommended. Consider using a traditional <a> link instead to avoid Next.js issues.'
+    );
     return urlPath;
   }
 
   if (locale === undefined) {
+    log.warn(
+      `a locale was not provided when trying to localize the following URL: ${highlight(urlPath)}`
+    );
     return urlPath; // Next.js locales can be undefined when not configured.
   }
 
