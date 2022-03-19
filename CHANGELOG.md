@@ -1,30 +1,26 @@
-
-
 ## [0.10.4](https://github.com/Avansai/next-multilingual/compare/0.10.3...0.10.4) (2022-03-14)
 
+### Features
+
+- **link:** add support for absolute URLs in the `link` component ([90cabc2](https://github.com/Avansai/next-multilingual/commit/90cabc240c1d9007524fc8121667c7c1830d687a))## [0.10.3](https://github.com/Avansai/next-multilingual/compare/0.10.2...0.10.3) (2022-02-07)
+
+## [0.10.3](https://github.com/Avansai/next-multilingual/compare/0.10.2...0.10.3) (2022-02-06)
 
 ### Features
 
-* **link:** add support for absolute URLs in the `link` component ([90cabc2](https://github.com/Avansai/next-multilingual/commit/90cabc240c1d9007524fc8121667c7c1830d687a))## [0.10.3](https://github.com/Avansai/next-multilingual/compare/0.10.2...0.10.3) (2022-02-07)
-
-
-### Features
-
-* **link:** add localized anchor links support ([6b1351f](https://github.com/Avansai/next-multilingual/commit/6b1351f7b9ce4e13e4d3a7cc18d9c037ab5bcbb1))
+- **link:** add localized anchor links support ([6b1351f](https://github.com/Avansai/next-multilingual/commit/6b1351f7b9ce4e13e4d3a7cc18d9c037ab5bcbb1))
 
 ## [0.10.2](https://github.com/Avansai/next-multilingual/compare/0.10.1...0.10.2) (2022-01-26)
 
-
 ### Bug Fixes
 
-* re-export `Message` and `Messages` classes to be usable as types ([690e41f](https://github.com/Avansai/next-multilingual/commit/690e41f8eca05390b21d200e7b221a79c7409e9e))
+- re-export `Message` and `Messages` classes to be usable as types ([690e41f](https://github.com/Avansai/next-multilingual/commit/690e41f8eca05390b21d200e7b221a79c7409e9e))
 
 ## [0.10.1](https://github.com/Avansai/next-multilingual/compare/0.10.0...0.10.1) (2022-01-26)
 
-
 ### Bug Fixes
 
-* downgrade to Node.js 14 for Vercel support ([f4cf125](https://github.com/Avansai/next-multilingual/commit/f4cf125ac9057d3d5838d260f655b5124527bf6d))
+- downgrade to Node.js 14 for Vercel support ([f4cf125](https://github.com/Avansai/next-multilingual/commit/f4cf125ac9057d3d5838d260f655b5124527bf6d))
 
 # [0.10.0](https://github.com/Avansai/next-multilingual/compare/0.9.7...0.10.0) (2022-01-25)
 

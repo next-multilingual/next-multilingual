@@ -24,6 +24,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
   - Test with a 3rd language (language switcher hydration issues?)
 - In the `config` API, gracefully merge options passed in argument as an object instead of overwriting
 - In the `config` API, support options passed functions (see Next.js doc)
+- Try to get rid of `noImplicitThis`
 - Try Javascript support?
 - Automatically restart Next.js routes changes (e.g. use `forever`)
 - Default locale fallback
