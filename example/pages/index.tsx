@@ -1,6 +1,12 @@
 import {
-    getActualDefaultLocale, getActualLocale, getActualLocales, getCookieLocale, getPreferredLocale,
-    normalizeLocale, ResolvedLocaleServerSideProps, setCookieLocale
+  getActualDefaultLocale,
+  getActualLocale,
+  getActualLocales,
+  getCookieLocale,
+  getPreferredLocale,
+  normalizeLocale,
+  ResolvedLocaleServerSideProps,
+  setCookieLocale,
 } from 'next-multilingual';
 import { getTitle, useMessages } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
@@ -12,6 +18,7 @@ import { useFruitsMessages } from '../messages/useFruitsMessages';
 import styles from './index.module.css';
 
 import type { GetServerSideProps, NextPage } from 'next';
+
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter();
   const { locales, defaultLocale } = router;
