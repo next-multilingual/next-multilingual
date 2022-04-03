@@ -117,7 +117,7 @@
     "express": "^4.17.3",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
-    "next": "v12.1.1",
+    "next": "v12.1.4",
     "npm-watch": "^0.11.0",
     "prettier": "^2.6.2",
     "react": "^17.0.2",
