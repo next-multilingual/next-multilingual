@@ -6,6 +6,7 @@
     "dev": "cross-env ../node_modules/.bin/next dev",
     "build": "cross-env ../node_modules/.bin/next build",
     "start": "cross-env ../node_modules/.bin/next start",
+    "lint": "cross-env ../node_modules/.bin/next lint",
     "reset": "rm -Rf ./node_module && rm -Rf ./next && npm install",
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
