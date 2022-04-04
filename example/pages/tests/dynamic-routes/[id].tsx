@@ -33,12 +33,13 @@ const Id: NextPage = () => {
             <td>{messages.format('rowNonLocalizedPagePath')}</td>
             <td>{pathname}</td>
           </tr>
-          <tr>
-            <td>{messages.format('rowLocalizedWithAsPath')}</td>
-            {/* Adding `suppressHydrationWarning` until
+          {/* @see https://github.com/facebook/react/issues/24270 (re-enable test once the fix is available) */}
+          {/* <tr>
+            <td>{messages.format('rowLocalizedWithAsPath')}</td> */}
+          {/* Adding `suppressHydrationWarning` until
             https://github.com/vercel/next.js/issues/32772 is resolved */}
-            <td suppressHydrationWarning={true}>{asPath}</td>
-          </tr>
+          {/* <td suppressHydrationWarning={true}>{asPath}</td>
+          </tr> */}
           <tr>
             <td>{messages.format('rowLocalizedWithUseLocalizedUrl')}</td>
             <td>{localizedUrl}</td>

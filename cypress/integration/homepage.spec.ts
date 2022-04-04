@@ -175,6 +175,7 @@ describe('The homepage', () => {
     // Persist the locale preference when navigating to a localized pages.
     it(`persists locale preferences when navigating to the localized page for '${localeName}'`, () => {
       cy.visit(`/${locale.toLowerCase()}`);
+      cy.wait(1000);
       cy.visit('/');
       cy.get('#header').contains(HEADERS[locale]);
     });
