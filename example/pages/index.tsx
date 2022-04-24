@@ -1,16 +1,10 @@
 import {
-  getActualDefaultLocale,
-  getActualLocale,
-  getActualLocales,
-  getCookieLocale,
-  getPreferredLocale,
-  normalizeLocale,
-  ResolvedLocaleServerSideProps,
-  setCookieLocale,
+    getActualDefaultLocale, getActualLocale, getActualLocales, getCookieLocale, getPreferredLocale,
+    normalizeLocale, ResolvedLocaleServerSideProps, setCookieLocale
 } from 'next-multilingual';
 import { getTitle, useMessages } from 'next-multilingual/messages';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Layout from '@/layout';
 
@@ -21,7 +15,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter();
-  const { locales, defaultLocale } = router;
+  const { locales, defaultLocale, basePath } = router;
 
   // Overwrite the locale with the resolved locale.
   router.locale = resolvedLocale;
@@ -35,34 +29,53 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const [count, setCount] = useState(0);
 
   // Localized API.
-  const [apiError, setApiError] = useState(null);
+  const [apiError, setApiError] = useState<DOMException | null>(null);
   const [isApiLoaded, setApiIsLoaded] = useState(false);
   const [apiMessage, setApiMessage] = useState('');
+  const controllerRef = useRef<AbortController | null>();
 
   useEffect(() => {
+    if (controllerRef.current) {
+      /**
+       * This controller allows to abort "queued" requests. Without this, someone could switch language
+       * and an API response in the wrong language could be displayed. Every time `abort` called, it
+       * will trigger an error which we ignore below.
+       */
+      controllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     setApiIsLoaded(false);
     const requestHeaders: HeadersInit = new Headers();
     requestHeaders.set('Accept-Language', normalizeLocale(router.locale as string));
-    fetch('/api/hello', { headers: requestHeaders })
+    fetch(`${basePath}/api/hello`, {
+      headers: requestHeaders,
+      signal: controllerRef.current?.signal,
+    })
       .then((result) => result.json())
       .then(
         (result) => {
           setApiIsLoaded(true);
           setApiMessage(result.message);
+          controllerRef.current = null;
         },
-        (apiError) => {
-          setApiIsLoaded(true);
-          setApiError(apiError);
+        (apiError: DOMException) => {
+          if (apiError.name !== 'AbortError') {
+            // Only show valid errors.
+            setApiIsLoaded(true);
+            setApiError(apiError);
+          }
         }
       );
-  }, [router.locale]);
+  }, [router.locale, basePath]);
 
   function showApiMessage(): JSX.Element {
     if (apiError) {
       return (
         <>
           {messages.format('apiError')}
-          {(apiError as Error).message}
+          {apiError.message}
         </>
       );
     } else if (!isApiLoaded) {
