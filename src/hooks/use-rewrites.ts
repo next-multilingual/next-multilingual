@@ -6,12 +6,9 @@ import { useEffect, useState } from 'react';
 import type { Rewrites } from '../types';
 
 /**
- * Hook to get the localized URL from a standard non-localized Next.js URL.
+ * Hook to get the get Next.js' `Rewrite` objects.
  *
- * @param locale - The locale of the localized URL.
- * @param urlPath - The non-localized URL path (e.g., `/contact-us`).
- *
- * @returns The localized URL.
+ * @returns An array of `Rewrite` objects.
  */
 export function useRewrites(): Rewrite[] {
   let buildManifestRewrites: Rewrite[] = [];
