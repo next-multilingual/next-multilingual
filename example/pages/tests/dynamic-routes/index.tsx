@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
-import Link, { useLocalizedUrl } from 'next-multilingual/link';
+import Link from 'next-multilingual/link';
 import { getTitle, useMessages } from 'next-multilingual/messages';
+import { useLocalizedUrl } from 'next-multilingual/url';
 import router, { useRouter } from 'next/router';
 import { useState } from 'react';
 

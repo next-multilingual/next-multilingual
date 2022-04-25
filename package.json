@@ -8,29 +8,43 @@
   "exports": {
     ".": "./lib/index.js",
     "./config": "./lib/config/index.js",
-    "./link": "./lib/link/index.js",
-    "./link/ssr": "./lib/link/ssr.js",
     "./head": "./lib/head/index.js",
     "./head/ssr": "./lib/head/ssr.js",
+    "./link": "./lib/link/index.js",
+    "./link/ssr": "./lib/link/ssr.js",
     "./messages": "./lib/messages/index.js",
-    "./messages/babel-plugin": "./lib/messages/babel-plugin.js"
+    "./messages/babel-plugin": "./lib/messages/babel-plugin.js",
+    "./url": "./lib/url/index.js",
+    "./url/ssr": "./lib/url/ssr.js"
   },
   "typesVersions": {
     "*": {
       "config": [
         "lib/config/index.d.ts"
       ],
-      "link": [
-        "lib/link/index.d.ts",
-        "lib/link/ssr.d.ts"
-      ],
       "head": [
-        "lib/head/index.d.ts",
+        "lib/head/index.d.ts"
+      ],
+      "head/ssr": [
         "lib/head/ssr.d.ts"
       ],
+      "link": [
+        "lib/link/index.d.ts"
+      ],
+      "link/ssr": [
+        "lib/link/ssr.d.ts"
+      ],
       "messages": [
-        "lib/messages/index.d.ts",
+        "lib/messages/index.d.ts"
+      ],
+      "messages/babel-plugin": [
         "lib/messages/babel-plugin.d.ts"
+      ],
+      "url": [
+        "lib/url/index.d.ts"
+      ],
+      "url/ssr": [
+        "lib/url/ssr.d.ts"
       ]
     }
   },
@@ -78,13 +92,16 @@
     "start-example": "npm run build && cd example && npm run dev",
     "start-example-build": "npm run build && cd example && npm run build && npm run start",
     "cypress": "cypress open",
-    "cypress:build": "cypress open --env isProd=true",
     "cypress:headless": "cypress run",
-    "cypress:build:headless": "cypress run --env isProd=true",
     "e2e": "start-server-and-test start-example http://localhost:3000 cypress",
+    "e2e:base-path": "cross-env BASE_PATH=/some-path CYPRESS_basePath=/some-path start-server-and-test start-example http://localhost:3000/some-path cypress",
     "e2e:headless": "start-server-and-test start-example http://localhost:3000 cypress:headless",
-    "e2e:build": "start-server-and-test start-example-build http://localhost:3000 cypress:build",
-    "e2e:build:headless": "start-server-and-test start-example-build http://localhost:3000 cypress:build:headless"
+    "e2e:headless:base-path": "cross-env BASE_PATH=/some-path CYPRESS_basePath=/some-path start-server-and-test start-example http://localhost:3000/some-path cypress:headless",
+    "e2e:build": "cross-env CYPRESS_isProd=true start-server-and-test start-example-build http://localhost:3000 cypress",
+    "e2e:build:base-path": "cross-env CYPRESS_isProd=true BASE_PATH=/some-path CYPRESS_basePath=/some-path start-server-and-test start-example-build http://localhost:3000/some-path cypress",
+    "e2e:build:headless": "cross-env CYPRESS_isProd=true start-server-and-test start-example-build http://localhost:3000 cypress:headless",
+    "e2e:build:headless:base-path": "cross-env CYPRESS_isProd=true BASE_PATH=/some-path CYPRESS_basePath=/some-path start-server-and-test start-example-build http://localhost:3000/some-path cypress:headless",
+    "tests": "npm run e2e:headless && echo   ☝️ normal dev run && cross-env echo && pause && npm run e2e:headless:base-path && echo   ☝️ dev run with base path && cross-env echo && pause && npm run e2e:build:headless && echo   ☝️ normal build run && cross-env echo && pause && npm run e2e:build:headless:base-path && echo   ☝️ build run with base path"
   },
   "dependencies": {
     "@babel/core": "^7.17.9",

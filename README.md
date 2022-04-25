@@ -90,12 +90,13 @@ module.exports = {
   },
   webpack(config, { isServer }) {
     if (isServer) {
-      config.resolve.alias['next-multilingual/link$'] = require.resolve(
-        'next-multilingual/link/ssr'
-      );
       config.resolve.alias['next-multilingual/head$'] = require.resolve(
         'next-multilingual/head/ssr'
       );
+      config.resolve.alias['next-multilingual/link$'] = require.resolve(
+        'next-multilingual/link/ssr'
+      );
+      config.resolve.alias['next-multilingual/url$'] = require.resolve('next-multilingual/url/ssr');
     }
     return config;
   },
@@ -201,7 +202,7 @@ class MyDocument extends Document {
 export default MyDocument;
 ```
 
-This serves only 1 purpose: display the correct server-side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`. The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URL prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
+This serves only 1 purpose: display the correct server side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`. The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URL prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
 
 ### Configure all your pages to use SEO friendly markup
 
@@ -452,13 +453,13 @@ Each of these links will be automatically localized when the `slug` key is speci
 
 As the data for this mapping is not immediately available during rendering, `next-multilingual/link/ssr` will take care of the server side rendering (SSR). By using `next-multilingual/config`'s `getConfig`, the Webpack configuration will be added automatically. If you are using the advanced `Config` method, this explains why the special Webpack configuration is required in the example provided prior.
 
-### Adding links to other components
+### Using localized URLs in other components
 
-Not all links are using the `<Link>` component and this is also why Next.js has the `router.push` method that can be used by many other use cases. `next-multilingual` can support these use cases with the `useLocalizedUrl` hook that will return a localized URL, usable by any components. Here is an example on how it can be leveraged:
+Not all localized URLs are using the `<Link>` component and this is also why Next.js has the `router.push` method that can be used by many other use cases. `next-multilingual` can support these use cases with the `useLocalizedUrl` hook that will return a localized URL, usable by any components. Here is an example on how it can be leveraged:
 
 ```tsx
 import { NextPage } from 'next';
-import { useLocalizedUrl } from 'next-multilingual/link';
+import { useLocalizedUrl } from 'next-multilingual/url';
 import { useMessages } from 'next-multilingual/messages';
 import router from 'next/router';
 
@@ -469,6 +470,49 @@ const Tests: NextPage = () => {
 };
 
 export default Tests;
+```
+
+### Server side localized URLs
+
+There could be cases where you need to use localized URLs on the server side and hooks (`useLocalizedUrl`) cannot be used. Imagine using Next.js' API to send transactional emails and wanting to leverage `next-multilingual`'s localized URLs without having to hardcode them in a configuration. This is where `getLocalizedUrl` comes in. `getLocalizedUrl` is only usable on the server side which is why it is imported directly from `next-multilingual/url/ssr`. Here is an example of how it can be used:
+
+```ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { isLocale } from 'next-multilingual';
+import { getLocalizedUrl } from 'next-multilingual/url/ssr';
+import { getMessages } from 'next-multilingual/messages';
+
+import { sendEmail } from '../send-email/';
+
+/**
+ * The "/api/send-email" handler.
+ */
+export default async function handler(
+  request: NextApiRequest,
+  response: NextApiResponse
+): Promise<void> {
+  const locale = request.headers['accept-language'];
+  let emailAddress = '';
+
+  try {
+    emailAddress = JSON.parse(request.body).emailAddress;
+  } catch (error) {
+    response.status(400);
+    return;
+  }
+
+  if (locale === undefined || !isLocale(locale) || !emailAddress.length) {
+    response.status(400);
+    return;
+  }
+
+  const messages = getMessages(locale);
+  sendEmail(
+    emailAddress,
+    messages.format('welcome', { loginUrl: getLocalizedUrl('/login', locale, true) })
+  );
+  response.status(200);
+}
 ```
 
 ### Creating components

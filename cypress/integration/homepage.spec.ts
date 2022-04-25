@@ -1,5 +1,5 @@
 import {
-    ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, DEFAULT_LOCALE, LOCALE_NAMES, LOCALES, ORIGIN
+    ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, BASE_PATH, DEFAULT_LOCALE, LOCALE_NAMES, LOCALES, ORIGIN
 } from '../constants';
 
 export const ABOUT_US_URLS = {
@@ -28,8 +28,8 @@ export const PLURAL_MESSAGES = {
 };
 
 export const API_RESPONSES = {
-  'en-US': 'Hello from the API.',
-  'fr-CA': "L'API dit bonjour.",
+  'en-US': `API response: the URL of the "Contact Us" page is: ${ORIGIN}${BASE_PATH}/en-us/contact-us`,
+  'fr-CA': `Réponse de l'API: l'URL de la page "Nous joindre" est: ${ORIGIN}${BASE_PATH}/fr-ca/nous-joindre`,
 };
 
 describe('The homepage', () => {
@@ -39,7 +39,7 @@ describe('The homepage', () => {
   it(`returns SSR html that contains '${htmlTagMarkup}' (actual default locale) when a client locale is invalid`, () => {
     cy.request({
       method: 'GET',
-      url: '/',
+      url: `${BASE_PATH}/`,
       headers: {
         'Accept-Language': invalidLocale,
         Cookie: 'L=',
@@ -52,7 +52,7 @@ describe('The homepage', () => {
   // Check that the content renders using the default locale on the client side.
   it(`dynamically renders content with the actual default locale when a client locale is invalid`, () => {
     cy.visit({
-      url: '/',
+      url: `${BASE_PATH}/`,
       headers: {
         'Accept-Language': invalidLocale,
         Cookie: 'L=',
@@ -73,7 +73,7 @@ describe('The homepage', () => {
     it(`returns SSR html that contains '${htmlTagMarkup}' for '${localeName}'`, () => {
       cy.request({
         method: 'GET',
-        url: '/',
+        url: `${BASE_PATH}/`,
         headers: {
           'Accept-Language': locale,
           Cookie: 'L=',
@@ -85,7 +85,7 @@ describe('The homepage', () => {
     });
 
     // Check that the canonical link points on the default locale on the SSR markup.
-    const canonicalLinkMarkup = `<link rel="canonical" href="${ORIGIN}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}"/>`;
+    const canonicalLinkMarkup = `<link rel="canonical" href="${ORIGIN}${BASE_PATH}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}"/>`;
     it(`returns SSR html that contains '${canonicalLinkMarkup}' for '${localeName}'`, () => {
       expect(source).to.contain(canonicalLinkMarkup);
     });
@@ -93,13 +93,15 @@ describe('The homepage', () => {
     // Check that all alternate links or all locales are present on the SSR markup.
     it(`returns SSR html that contains all alternate links for '${localeName}'`, () => {
       ACTUAL_LOCALES.forEach((locale) => {
-        const alternateLinkMarkup = `<link rel="alternate" href="${ORIGIN}/${locale.toLowerCase()}" hrefLang="${locale}"/>`;
+        const alternateLinkMarkup = `<link rel="alternate" href="${ORIGIN}${BASE_PATH}/${locale.toLowerCase()}" hrefLang="${locale}"/>`;
         expect(source).to.contain(alternateLinkMarkup);
       });
     });
 
     // Test the localized SSR URL for the "about us" page.
-    const aboutUsAnchorMarkup = `<a href="/${locale.toLowerCase()}${ABOUT_US_URLS[locale]}">`;
+    const aboutUsAnchorMarkup = `<a href="${BASE_PATH}/${locale.toLowerCase()}${
+      ABOUT_US_URLS[locale]
+    }">`;
     it(`returns SSR html that contains '${aboutUsAnchorMarkup}' for '${localeName}'`, () => {
       expect(source).to.contain(aboutUsAnchorMarkup);
     });
@@ -107,7 +109,7 @@ describe('The homepage', () => {
     // Check that the content renders dynamically on the client side.
     it(`dynamically renders content with the correct 'Accept-Language' header for '${localeName}'`, () => {
       cy.visit({
-        url: '/',
+        url: `${BASE_PATH}/`,
         headers: {
           'Accept-Language': LANGUAGE_DIRECTIVES[locale],
           Cookie: 'L=',
@@ -121,7 +123,7 @@ describe('The homepage', () => {
       cy.get(`head link[rel=canonical]`)
         .should('have.attr', 'href')
         .then((href) => {
-          expect(href).eq(`${ORIGIN}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}`);
+          expect(href).eq(`${ORIGIN}${BASE_PATH}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}`);
         });
     });
 
@@ -131,14 +133,16 @@ describe('The homepage', () => {
         cy.get(`head link[rel=alternate][hreflang=${locale}]`)
           .should('have.attr', 'href')
           .then((href) => {
-            expect(href).eq(`${ORIGIN}/${locale.toLowerCase()}`);
+            expect(href).eq(`${ORIGIN}${BASE_PATH}/${locale.toLowerCase()}`);
           });
       });
     });
 
     // Test the localized client side URL for the "about us" page.
     it(`dynamically renders client side html that contains localized links for '${localeName}'`, () => {
-      cy.get(`body nav a[href='/${locale.toLowerCase()}${ABOUT_US_URLS[locale]}']`).should('exist');
+      cy.get(
+        `body nav a[href='${BASE_PATH}/${locale.toLowerCase()}${ABOUT_US_URLS[locale]}']`
+      ).should('exist');
     });
 
     // Test the localized "shared messages".
@@ -159,9 +163,9 @@ describe('The homepage', () => {
 
     // Check that the API responses also behaves as expected.
     it(`dynamically fetches API content with the correct 'Accept-Language' header for '${localeName}'`, () => {
-      cy.intercept('/api/hello').as('getApi');
+      cy.intercept(`${BASE_PATH}/api/hello`).as('getApi');
       cy.visit({
-        url: '/',
+        url: `${BASE_PATH}/`,
         headers: {
           'Accept-Language': locale,
           Cookie: 'L=',
@@ -174,16 +178,16 @@ describe('The homepage', () => {
 
     // Persist the locale preference when navigating to a localized pages.
     it(`persists locale preferences when navigating to the localized page for '${localeName}'`, () => {
-      cy.visit(`/${locale.toLowerCase()}`);
+      cy.visit(`${BASE_PATH}/${locale.toLowerCase()}`);
       cy.wait(1000);
-      cy.visit('/');
+      cy.visit(`${BASE_PATH}/`);
       cy.get('#header').contains(HEADERS[locale]);
     });
 
     // Persist the locale preference when changing language.
     it(`persists locale preferences when clicking on language picker links for '${localeName}'`, () => {
       cy.visit({
-        url: '/',
+        url: `${BASE_PATH}/`,
         headers: {
           'Accept-Language': locale,
           Cookie: 'L=',
@@ -198,7 +202,7 @@ describe('The homepage', () => {
           visitedLocales.push(linkLocale);
           cy.wrap(languagePickerLink).click({ force: true, timeout: 10000 });
           cy.get('#header').contains(HEADERS[linkLocale]);
-          cy.visit('/');
+          cy.visit(`${BASE_PATH}/`);
           cy.get('#header').contains(HEADERS[linkLocale]);
           return;
         }

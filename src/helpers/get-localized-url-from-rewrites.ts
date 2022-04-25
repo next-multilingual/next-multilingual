@@ -4,7 +4,7 @@ import { UrlObject } from 'url';
 
 import {
     containsQueryParameters, highlight, hydrateQueryParameters, log, queryToRewriteParameters,
-    rewriteToQueryParameters
+    rewriteToQueryParameters, stripBasePath
 } from '../';
 import { Url } from '../types';
 import { getOrigin } from './get-origin';
@@ -17,23 +17,25 @@ import { getRewritesIndex } from './get-rewrites-index';
  * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
  * a `UrlObject`.
  * @param locale - The locale of the localized URL.
- * @param basePath - A path prefix for the Next.js application.
  * @param absolute - Returns the absolute URL, including the protocol and domain (e.g., https://example.com/en-us/contact-us).
+ * @param basePath - A path prefix for the Next.js application.
+ * @param includeBasePath - Include Next.js' `basePath` in the returned URL. By default Next.js does not require it, but
+ * if `absolute` is used, this will be forced to `true`.
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export function getLocalizedUrl(
+export function getLocalizedUrlFromRewrites(
   rewrites: Rewrite[],
   url: Url,
   locale: string | undefined,
-  basePath: string | undefined = undefined,
-  absolute = false
+  absolute = false,
+  basePath: string,
+  includeBasePath = false
 ): string {
   let urlPath = (
     (url as UrlObject).pathname !== undefined ? (url as UrlObject).pathname : url
   ) as string;
   let urlFragment = '';
-
   const urlComponents = urlPath.split('#');
   if (urlComponents.length !== 1) {
     urlPath = urlComponents.shift() as string;
@@ -63,26 +65,25 @@ export function getLocalizedUrl(
     return urlPath; // Next.js locales can be undefined when not configured.
   }
 
-  if (urlPath === '/') {
-    urlPath = `/${locale}`; // Special rule for the homepage.
-  } else {
-    const isDynamicRoute = containsQueryParameters(urlPath);
-    const searchableUrlPath = isDynamicRoute ? queryToRewriteParameters(urlPath) : urlPath;
-    const rewriteUrlMatch = getRewritesIndex(rewrites)?.[searchableUrlPath]?.[locale];
-    urlPath =
-      rewriteUrlMatch !== undefined
-        ? isDynamicRoute
-          ? rewriteToQueryParameters(rewriteUrlMatch)
-          : rewriteUrlMatch
-        : `/${locale}${urlPath}`; // Fallback with the original URL path when not found.
-  }
-
   // Set base path (https://nextjs.org/docs/api-reference/next.config.js/basepath) if present.
   if (basePath !== undefined && basePath !== '') {
     if (basePath[0] !== '/') {
       throw new Error(`Specified basePath has to start with a /, found "${basePath}"`);
     }
-    urlPath = `${basePath}${urlPath}`;
+  }
+
+  if (urlPath === '/') {
+    urlPath = `${basePath}/${locale}`; // Special rule for the homepage.
+  } else {
+    const isDynamicRoute = containsQueryParameters(urlPath);
+    const searchableUrlPath = isDynamicRoute ? queryToRewriteParameters(urlPath) : urlPath;
+    const rewriteUrlMatch = getRewritesIndex(rewrites, basePath)?.[searchableUrlPath]?.[locale];
+    urlPath =
+      rewriteUrlMatch !== undefined
+        ? isDynamicRoute
+          ? rewriteToQueryParameters(rewriteUrlMatch)
+          : rewriteUrlMatch
+        : `${basePath}/${locale}${urlPath}`; // Fallback with the original URL path when not found.
   }
 
   // Set origin if an absolute URL is requested.
@@ -91,9 +92,11 @@ export function getLocalizedUrl(
     urlPath = `${origin}${urlPath}`;
   }
 
-  return `${
+  const localizedUrl = `${
     (url as UrlObject).query !== undefined
       ? hydrateQueryParameters(urlPath, (url as UrlObject).query as ParsedUrlQueryInput)
       : urlPath
   }${urlFragment ? `#${urlFragment}` : ''}`;
+
+  return absolute || includeBasePath ? localizedUrl : stripBasePath(localizedUrl, basePath);
 }

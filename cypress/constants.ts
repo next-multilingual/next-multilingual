@@ -19,3 +19,6 @@ export const ACTUAL_DEFAULT_LOCALE = ACTUAL_LOCALES[0];
 
 /** The origin used by the Next.js application. */
 export const ORIGIN = Cypress.env('isProd') ? Cypress.env('prodBaseUrl') : Cypress.config().baseUrl;
+
+/** The base path of the Next.js application. (set manually when testing `basePath`) */
+export const BASE_PATH = Cypress.env('basePath') !== undefined ? Cypress.env('basePath') : '';

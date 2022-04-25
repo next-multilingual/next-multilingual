@@ -22,10 +22,11 @@ export type RewriteLocaleIndex = {
  * The returned object is cached locally for performance, so this API can be called frequented.
  *
  * @param rewrites - An array of Next.js rewrite objects.
+ * @param basePath - A path prefix for the Next.js application.
  *
  * @returns An object which allows O(1) localized URL access by using a non-localized URL and a locale.
  */
-export function getRewritesIndex(rewrites: Rewrite[]): RewriteIndex {
+export function getRewritesIndex(rewrites: Rewrite[], basePath?: string): RewriteIndex {
   if (rewritesIndexCache && lastRewrites === rewrites) return rewritesIndexCache;
 
   lastRewrites = rewrites; // Track last `rewrites` to hit cache.
@@ -38,13 +39,23 @@ export function getRewritesIndex(rewrites: Rewrite[]): RewriteIndex {
       return; // Only process `next-multilingual` rewrites.
     }
     const urlSegments = rewrite.destination.split('/');
-    const urlLocale = urlSegments[1];
+    let urlLocale: string;
+    let nonLocalizedUrl: string;
 
-    if (!isLocale(urlLocale)) {
-      return; // Only process actual locales.
+    if (basePath !== undefined && basePath !== '') {
+      if (basePath[0] !== '/') {
+        throw new Error(`Specified basePath has to start with a /, found "${basePath}"`);
+      }
+      urlLocale = urlSegments[2];
+      nonLocalizedUrl = `/${urlSegments.slice(3).join('/')}`;
+    } else {
+      urlLocale = urlSegments[1];
+      nonLocalizedUrl = `/${urlSegments.slice(2).join('/')}`;
     }
 
-    const nonLocalizedUrl = `/${urlSegments.slice(2).join('/')}`;
+    if (!isLocale(urlLocale)) {
+      return; // The URL must contain a valid locale.
+    }
 
     if (!rewritesIndex[nonLocalizedUrl]) {
       rewritesIndex[nonLocalizedUrl] = {};

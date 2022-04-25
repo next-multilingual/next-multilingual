@@ -770,12 +770,13 @@ export function getConfig(
   nextConfig.webpack = (config, { isServer }) => {
     // Overwrite the `link` component for SSR.
     if (isServer) {
-      config.resolve.alias['next-multilingual/link$'] = require.resolve(
-        'next-multilingual/link/ssr'
-      );
       config.resolve.alias['next-multilingual/head$'] = require.resolve(
         'next-multilingual/head/ssr'
       );
+      config.resolve.alias['next-multilingual/link$'] = require.resolve(
+        'next-multilingual/link/ssr'
+      );
+      config.resolve.alias['next-multilingual/url$'] = require.resolve('next-multilingual/url/ssr');
     }
     return config;
   };

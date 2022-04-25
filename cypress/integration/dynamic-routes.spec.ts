@@ -1,4 +1,6 @@
-import { ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, LOCALE_NAMES, ORIGIN } from '../constants';
+import {
+    ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, ORIGIN
+} from '../constants';
 
 export const DYNAMIC_ROUTE_URLS = {
   'en-US': '/tests/dynamic-routes',
@@ -9,7 +11,9 @@ describe('A dynamic route', () => {
   ACTUAL_LOCALES.forEach((locale) => {
     const localeName = LOCALE_NAMES[locale];
 
-    const dynamicRouteIndexUrl = `/${locale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}`;
+    const dynamicRouteIndexUrl = `${BASE_PATH}/${locale.toLowerCase()}${
+      DYNAMIC_ROUTE_URLS[locale]
+    }`;
 
     let source: string;
     let parameterValue: string;
@@ -36,7 +40,7 @@ describe('A dynamic route', () => {
         expect(inputMarkup).to.match(inputValueRegExp);
         parameterValue = inputMarkup.match(inputValueRegExp).groups['parameterValue'];
         dynamicRouteUrl = `${dynamicRouteIndexUrl}/${parameterValue}`;
-        canonicalDynamicRouteUrl = `/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}${
+        canonicalDynamicRouteUrl = `${BASE_PATH}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}${
           DYNAMIC_ROUTE_URLS[ACTUAL_DEFAULT_LOCALE]
         }/${parameterValue}`;
         expect(source).to.match(linkMarkupRegExp);
@@ -71,8 +75,8 @@ describe('A dynamic route', () => {
 
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
-      cy.get(`#link-with-parameter`)
-        .click({ timeout: 10000 })
+      cy.get(`#link-with-parameter`, { timeout: 15000 })
+        .click()
         .then(() => {
           cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
         });
@@ -108,7 +112,7 @@ describe('A dynamic route', () => {
     // Localized Alternate <Head> link (SSR)
     it(`has the correct 'alternate' <Head> links (SSR) markup for '${localeName}'`, () => {
       ACTUAL_LOCALES.forEach((locale) => {
-        const alternateLinkHref = `/${locale.toLowerCase()}${
+        const alternateLinkHref = `${BASE_PATH}/${locale.toLowerCase()}${
           DYNAMIC_ROUTE_URLS[locale]
         }/${parameterValue}`;
         const alternateLinkMarkup = `<link rel="alternate" href="${ORIGIN}${alternateLinkHref}" hrefLang="${locale}"/>`;
@@ -140,7 +144,9 @@ describe('A dynamic route', () => {
           .should('have.attr', 'href')
           .then((href) => {
             expect(href).eq(
-              `${ORIGIN}/${locale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}/${parameterValue}`
+              `${ORIGIN}${BASE_PATH}/${locale.toLowerCase()}${
+                DYNAMIC_ROUTE_URLS[locale]
+              }/${parameterValue}`
             );
           });
       });
@@ -157,7 +163,9 @@ describe('A dynamic route', () => {
           .should('have.attr', 'href')
           .then((href) => {
             expect(href).eq(
-              `/${otherLocale.toLowerCase()}${DYNAMIC_ROUTE_URLS[otherLocale]}/${parameterValue}`
+              `${BASE_PATH}/${otherLocale.toLowerCase()}${
+                DYNAMIC_ROUTE_URLS[otherLocale]
+              }/${parameterValue}`
             );
           });
       });
@@ -171,7 +179,10 @@ describe('A dynamic route', () => {
       cy.get(`#language-picker`).trigger('mouseout');
       cy.get(`#go-back a`)
         .should('have.attr', 'href')
-        .should('eq', `/${otherLocale.toLowerCase()}${DYNAMIC_ROUTE_URLS[otherLocale]}`);
+        .should(
+          'eq',
+          `${BASE_PATH}/${otherLocale.toLowerCase()}${DYNAMIC_ROUTE_URLS[otherLocale]}`
+        );
     });
   });
 });

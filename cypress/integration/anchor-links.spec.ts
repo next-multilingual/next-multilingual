@@ -1,4 +1,4 @@
-import { ACTUAL_LOCALES, LOCALE_NAMES } from '../constants';
+import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES } from '../constants';
 
 export const ANCHOR_LINKS_TESTS_URLS = {
   'en-US': '/tests/anchor-links',
@@ -17,8 +17,10 @@ export const LONG_PAGE_TESTS_URLS = {
 
 describe('An anchor link', () => {
   ACTUAL_LOCALES.forEach((locale) => {
-    const anchorLinksTestsUrl = `/${locale.toLowerCase()}${ANCHOR_LINKS_TESTS_URLS[locale]}`;
-    const longPageTestsUrl = `/${locale.toLowerCase()}${LONG_PAGE_TESTS_URLS[locale]}`;
+    const anchorLinksTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${
+      ANCHOR_LINKS_TESTS_URLS[locale]
+    }`;
+    const longPageTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${LONG_PAGE_TESTS_URLS[locale]}`;
     const linkWithFragment = `${longPageTestsUrl}#${ANCHOR_LINKS_TESTS_FRAGMENTS[locale]}`;
 
     it(`will have the correct SSR markup when using an anchor link for '${LOCALE_NAMES[locale]}'`, () => {

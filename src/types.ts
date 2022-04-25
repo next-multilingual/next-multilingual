@@ -23,3 +23,26 @@ export type Rewrites = {
   /** These rewrites are checked after both pages/public files and dynamic routes are checked. */
   fallback: Rewrite[];
 };
+
+/** Type representing a simplified version of Next.js' route manifest. */
+export type RoutesManifest = {
+  /** The base path normally available in `useRouter`. */
+  basePath: string;
+  /** The router's rewrite configuration. */
+  rewrites: Rewrite[];
+};
+
+/** Type representing a simplified version of Next.js' build manifest. */
+export type BuildManifest = {
+  ampDevFiles: string[];
+  lowPriorityFiles: string[];
+};
+
+/** Type representing a simplified version of Next.js' required server files (manifest). */
+export type RequiredServerFiles = {
+  /** Next.js configurations. */
+  config: {
+    /** The base path normally available in `useRouter`. */
+    basePath: string;
+  };
+};

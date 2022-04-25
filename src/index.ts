@@ -356,3 +356,18 @@ export function getQueryParameters(path: string): string[] {
 
   return parameters.map((parameter) => parameter.slice(1, -1));
 }
+
+/**
+ * Strips the base path from a URL if present.
+ *
+ * @param url - The URL from which to strip the base path.
+ * @param basePath - The base path to strip.
+ *
+ * @returns The URL without the base path if present.
+ */
+export function stripBasePath(url: string, basePath: string): string {
+  if (url.startsWith(basePath)) {
+    return url.replace(basePath, '');
+  }
+  return url;
+}

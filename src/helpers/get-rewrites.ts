@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from 'fs';
 
-import { highlightFilePath, log } from '../';
+import { highlight, highlightFilePath, log } from '../';
 import { isInDebugMode } from '../config';
 
 import type { Rewrite } from 'next/dist/lib/load-custom-routes';
-import type { Rewrites } from '../types';
+import type { BuildManifest, Rewrites, RoutesManifest } from '../types';
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
@@ -16,13 +16,43 @@ if (typeof window !== 'undefined') {
 /** Local rewrite cache to avoid non-required file system operations. */
 let rewritesCache: Rewrite[];
 
-/** Object representing a simplified version of the route manifest files. */
-export type RoutesManifest = {
-  rewrites: Rewrite[];
-};
+/**
+ * Sets the `rewritesCache` value.
+ *
+ * @param rewrites - The value of `rewrites` to cache.
+ *
+ * @returns The `rewritesCache` value.
+ */
+function setRewritesCache(rewrites: Rewrite[]): Rewrite[] {
+  rewritesCache = rewrites;
+  if (isInDebugMode()) {
+    console.log('==== SERVER SIDE REWRITES ====');
+    console.dir(rewritesCache, { depth: null });
+  }
+  return rewritesCache;
+}
 
 /**
- * `useRewrites` server-side alternative to get the Next.js `Rewrite` objects directly from the build manifest.
+ * Sets the `rewritesCache` to an empty string and show warning messages.
+ *
+ * @param warningMessages - The warning messages to show when a `rewrites` cannot be found.
+ *
+ * @returns An empty string since `rewrites` cannot be found.
+ */
+function setEmptyCacheAndShowWarnings(warningMessages: string[]): Rewrite[] {
+  warningMessages.forEach((warningMessage) => {
+    log.warn(warningMessage);
+  });
+  log.warn(
+    `Exhausted all options to get the ${highlight(
+      'rewrites'
+    )} value. Localized URLs will not work when using next-multilingual.`
+  );
+  return setRewritesCache([]);
+}
+
+/**
+ * `useRewrites` server-side alternative to get Next.js' `Rewrite` objects directly from the manifest.
  *
  * The returned object is cached locally for performance, so this API can be called frequented.
  *
@@ -31,91 +61,88 @@ export type RoutesManifest = {
 export function getRewrites(): Rewrite[] {
   if (rewritesCache) return rewritesCache;
 
-  let foundManifest = false;
+  const warningMessages: string[] = [];
 
   // Try to get the content of the routes-manifest (.next/routes-manifest.json) first - this is only available on builds.
   const routesManifestPath = '.next/routes-manifest.json';
 
-  if (existsSync(routesManifestPath)) {
-    foundManifest = true;
+  if (!existsSync(routesManifestPath)) {
+    warningMessages.push(
+      `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
+        routesManifestPath
+      )} because the file does not exist.`
+    );
+  } else {
     try {
       const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest;
-      const rewrites = routesManifest.rewrites.map((rewrite) => {
-        return {
-          source: rewrite.source,
-          destination: rewrite.destination,
-          locale: rewrite.locale,
-        };
-      });
-
-      // Save to the cache.
-      rewritesCache = rewrites;
-    } catch (error) {
-      log.warn(
-        `URLs will not be localized on SSR markup due to an unexpected error while reading ${routesManifestPath}: ${
-          (error as Error).message
-        }`
+      return setRewritesCache(
+        routesManifest.rewrites.map((rewrite) => {
+          return {
+            source: rewrite.source,
+            destination: rewrite.destination,
+            locale: rewrite.locale,
+          };
+        })
       );
-      rewritesCache = [];
+    } catch (error) {
+      warningMessages.push(
+        `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
+          routesManifestPath
+        )} due to an unexpected file parsing error.`
+      );
     }
   }
 
   // If the routes-manifest is not available, then get can get the rewrites from the build manifest.
   const buildManifestPath = '.next/build-manifest.json';
+  const staticBuildManifestFilename = '_buildManifest.js';
 
-  if (existsSync(buildManifestPath)) {
-    foundManifest = true;
-
-    try {
-      const buildManifestContent = readFileSync(buildManifestPath, 'utf8');
-
-      // Get the content of the build-manifest (e.g., .next/static/development/_buildManifest.json).
-      const staticBuildManifestPath = `.next/${(
-        JSON.parse(buildManifestContent).lowPriorityFiles as string[]
-      ).find((filePaths) => filePaths.includes('_buildManifest.js'))}`;
-
-      if (existsSync(staticBuildManifestPath)) {
-        try {
-          const clientBuildManifestContent = readFileSync(staticBuildManifestPath, 'utf8');
-
-          // Transform the client build-manifest file content back into a usable object.
-          const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } };
-          new Function('self', clientBuildManifestContent)(clientBuildManifest);
-
-          // Save to the cache.
-          rewritesCache = clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles;
-        } catch (error) {
-          log.warn(
-            `URLs will not be localized on SSR markup due to an unexpected error while reading ${highlightFilePath(
-              staticBuildManifestPath
-            )}: ${(error as Error).message}`
-          );
-          rewritesCache = [];
-        }
-      }
-    } catch (error) {
-      log.warn(
-        `URLs will not be localized on SSR markup due to an unexpected error while reading ${highlightFilePath(
-          buildManifestPath
-        )}: ${(error as Error).message}`
-      );
-      rewritesCache = [];
-    }
-  }
-
-  if (!foundManifest) {
-    log.warn(
-      `URLs will not be localized on SSR markup because no manifest file could be found at either ${highlightFilePath(
-        routesManifestPath
-      )} or ${highlightFilePath(buildManifestPath)}`
+  if (!existsSync(buildManifestPath)) {
+    warningMessages.push(
+      `Unable to get the ${highlight('rewrites')}: failed to get the location of ${highlight(
+        staticBuildManifestFilename
+      )} from ${highlightFilePath(buildManifestPath)} because the file does not exist.`
     );
-    rewritesCache = [];
+    return setEmptyCacheAndShowWarnings(warningMessages);
   }
 
-  if (isInDebugMode()) {
-    console.log('==== SERVER SIDE REWRITES ====');
-    console.dir(rewritesCache, { depth: null });
+  let staticBuildManifestPath = '';
+  try {
+    const buildManifest = JSON.parse(readFileSync(buildManifestPath, 'utf8')) as BuildManifest;
+    staticBuildManifestPath = `.next/${buildManifest.lowPriorityFiles.find((filePath) =>
+      filePath.endsWith(staticBuildManifestFilename)
+    )}`;
+  } catch (error) {
+    warningMessages.push(
+      `Unable to get the ${highlight('rewrites')}: failed to get the location of ${highlight(
+        staticBuildManifestFilename
+      )} from ${highlightFilePath(buildManifestPath)} due to an unexpected file parsing error.`
+    );
+    return setEmptyCacheAndShowWarnings(warningMessages);
   }
 
-  return rewritesCache;
+  if (!existsSync(staticBuildManifestPath)) {
+    warningMessages.push(
+      `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
+        staticBuildManifestPath
+      )} because the file does not exist.`
+    );
+    return setEmptyCacheAndShowWarnings(warningMessages);
+  }
+
+  try {
+    const clientBuildManifestContent = readFileSync(staticBuildManifestPath, 'utf8');
+
+    // Transform the client build-manifest file content back into a usable object.
+    const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } };
+    new Function('self', clientBuildManifestContent)(clientBuildManifest);
+    return setRewritesCache(clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles);
+  } catch (error) {
+    warningMessages.push(
+      `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
+        staticBuildManifestPath
+      )} due to an unexpected file parsing error.`
+    );
+    return setEmptyCacheAndShowWarnings(warningMessages);
+  }
 }

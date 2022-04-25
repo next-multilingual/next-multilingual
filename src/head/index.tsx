@@ -6,7 +6,7 @@ import {
     containsQueryParameters, getActualDefaultLocale, getActualLocales, getQueryParameters,
     highlight, hydrateQueryParameters, log, normalizeLocale
 } from '../';
-import { getLocalizedUrl } from '../helpers/get-localized-url';
+import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites';
 import { useRewrites } from '../hooks/use-rewrites';
 
 /**
@@ -54,14 +54,26 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
     <NextHead>
       <link
         rel="canonical"
-        href={getLocalizedUrl(rewrites, { pathname, query }, actualDefaultLocale, basePath, true)}
+        href={getLocalizedUrlFromRewrites(
+          rewrites,
+          { pathname, query },
+          actualDefaultLocale,
+          true,
+          basePath
+        )}
         key="canonical-link"
       />
       {actualLocales?.map((actualLocale) => {
         return (
           <link
             rel="alternate"
-            href={getLocalizedUrl(rewrites, { pathname, query }, actualLocale, basePath, true)}
+            href={getLocalizedUrlFromRewrites(
+              rewrites,
+              { pathname, query },
+              actualLocale,
+              true,
+              basePath
+            )}
             hrefLang={normalizeLocale(actualLocale)}
             key={`alternate-link-${actualLocale}`}
           />

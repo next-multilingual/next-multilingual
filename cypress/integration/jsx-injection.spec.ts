@@ -1,5 +1,5 @@
 import { KeyValueObject } from '../../src/messages/properties';
-import { ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, LOCALE_NAMES } from '../constants';
+import { ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES } from '../constants';
 
 export const JSX_TESTS_URLS = {
   'en-US': '/tests/jsx-injection',
@@ -35,7 +35,7 @@ const emptyReact18HtmlComment = '<!-- -->';
 
 describe('The JSX test page', () => {
   ACTUAL_LOCALES.forEach((locale) => {
-    const jsxTestsUrl = `/${locale.toLowerCase()}${JSX_TESTS_URLS[locale]}`;
+    const jsxTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${JSX_TESTS_URLS[locale]}`;
 
     let source;
     let messages: KeyValueObject;
@@ -68,7 +68,7 @@ describe('The JSX test page', () => {
         baseTest1Markup = messages.baseTest1
           .replace(
             '<link>',
-            `${emptyReact18HtmlComment}<a href="/${locale.toLowerCase()}${
+            `${emptyReact18HtmlComment}<a href="${BASE_PATH}/${locale.toLowerCase()}${
               CONTACT_US_URLS[locale]
             }">`
           )
@@ -84,7 +84,9 @@ describe('The JSX test page', () => {
       baseTest2Markup = messages.baseTest2
         .replace(
           '<link>',
-          `${emptyReact18HtmlComment}<a href="/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`
+          `${emptyReact18HtmlComment}<a href="${BASE_PATH}/${locale.toLowerCase()}${
+            CONTACT_US_URLS[locale]
+          }">`
         )
         .replace('</link>', '</a>')
         .replace('<strong>', `${emptyReact18HtmlComment}<strong>`)
@@ -151,7 +153,10 @@ describe('The JSX test page', () => {
 
       styleAndEventsMarkup =
         messages.styleAndEvents
-          .replace('<link>', `<a href="/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`)
+          .replace(
+            '<link>',
+            `<a href="${BASE_PATH}/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`
+          )
           .replace('</link>', '</a>')
           .replace('<strong>', `${emptyReact18HtmlComment}<strong class="${strongClass}">`)
           .replace('<a href', `${emptyReact18HtmlComment}<a class="${aClass}" href`) +
