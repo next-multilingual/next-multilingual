@@ -75,6 +75,10 @@ export function getLocalizedUrlFromRewrites(
   if (urlPath === '/') {
     urlPath = `${basePath}/${locale}`; // Special rule for the homepage.
   } else {
+    if (urlPath.endsWith('/')) {
+      // Next.js automatically normalize URLs and removes trailing slashes. We need to do the same to match localized URLs.
+      urlPath = urlPath.slice(0, -1);
+    }
     const isDynamicRoute = containsQueryParameters(urlPath);
     const searchableUrlPath = isDynamicRoute ? queryToRewriteParameters(urlPath) : urlPath;
     const rewriteUrlMatch = getRewritesIndex(rewrites, basePath)?.[searchableUrlPath]?.[locale];

@@ -37,7 +37,8 @@ export default function Layout({ title, children }: LayoutProps): JSX.Element {
           <Link href="/">
             <a>{messages.format('home')}</a>
           </Link>
-          <Link href="/about-us">
+          {/* The link below uses a trailing slash by design to test that the behavior is the same as Next.js (no impact). */}
+          <Link href="/about-us/">
             <a>{messages.format('aboutUs')}</a>
           </Link>
           <Link href="/contact-us">
