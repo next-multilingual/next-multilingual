@@ -1,5 +1,7 @@
 
 
+## [0.11.1](https://github.com/Avansai/next-multilingual/compare/0.11.0...0.11.1) (2022-05-14)
+
 # [0.11.0](https://github.com/Avansai/next-multilingual/compare/0.10.4...0.11.0) (2022-04-25)
 
 
