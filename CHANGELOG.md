@@ -1,23 +1,22 @@
-
-
 ## [0.11.1](https://github.com/Avansai/next-multilingual/compare/0.11.0...0.11.1) (2022-05-14)
-
-# [0.11.0](https://github.com/Avansai/next-multilingual/compare/0.10.4...0.11.0) (2022-04-25)
-
-
-### Bug Fixes
-
-* **example:** abort API calls when switching language on the example's homepage ([bf1e658](https://github.com/Avansai/next-multilingual/commit/bf1e65867cbfed54a9083478fcabc59f61762ff8))
-
 
 ### Features
 
-* add `basePath` support and new `getLocalizedUrl` API ([fb7f9cf](https://github.com/Avansai/next-multilingual/commit/fb7f9cf1544164fc635809ca1ef6dad1677b6ac5))
+- replicate Next.js' behavior with trailing slashes in URLs ([fe98515](https://github.com/Avansai/next-multilingual/commit/fe9851532bdce5098dad1d1c361e171855344a52))
 
+# [0.11.0](https://github.com/Avansai/next-multilingual/compare/0.10.4...0.11.0) (2022-04-25)
+
+### Bug Fixes
+
+- **example:** abort API calls when switching language on the example's homepage ([bf1e658](https://github.com/Avansai/next-multilingual/commit/bf1e65867cbfed54a9083478fcabc59f61762ff8))
+
+### Features
+
+- add `basePath` support and new `getLocalizedUrl` API ([fb7f9cf](https://github.com/Avansai/next-multilingual/commit/fb7f9cf1544164fc635809ca1ef6dad1677b6ac5))
 
 ### BREAKING CHANGES
 
-* `useLocalizedUrl` was moved from `next-multilingual/link` to `next-multilingual/url`
+- `useLocalizedUrl` was moved from `next-multilingual/link` to `next-multilingual/url`
 
 ## [0.10.4](https://github.com/Avansai/next-multilingual/compare/0.10.3...0.10.4) (2022-03-14)
 
