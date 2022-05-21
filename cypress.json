@@ -2,5 +2,6 @@
   "baseUrl": "http://localhost:3000",
   "env": {
     "prodBaseUrl": "https://next-multilingual-example.vercel.app"
-  }
+  },
+  "video": false
 }
