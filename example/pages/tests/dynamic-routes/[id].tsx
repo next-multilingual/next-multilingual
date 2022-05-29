@@ -36,8 +36,13 @@ const Id: NextPage = () => {
           </tr>
           <tr>
             <td>{messages.format('rowLocalizedWithAsPath')}</td>
-            {/* Adding `suppressHydrationWarning` until
-            https://github.com/vercel/next.js/issues/32772 is resolved */}
+            {/**
+             * @see https://github.com/vercel/next.js/issues/32772 (why `suppressHydrationWarning` is used).
+             *
+             * If you need the `asPath` to match uniquely to each request then `getServerSideProps`
+             * should be used. `getStaticProps` is not meant to be unique per request but instead
+             * unique per-path.
+             */}
             <td suppressHydrationWarning={true}>{asPath}</td>
           </tr>
           <tr>
