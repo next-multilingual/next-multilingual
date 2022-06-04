@@ -1,5 +1,18 @@
 
 
+# [0.12.0](https://github.com/Avansai/next-multilingual/compare/0.11.2...0.12.0) (2022-06-04)
+
+
+### Bug Fixes
+
+* apply LightHouse recommendations to improve the example's score ([5ac3c3c](https://github.com/Avansai/next-multilingual/commit/5ac3c3c49e606fb6463d9dcaab64ea1dd9940c8d))
+* remove generic `JSX.Element` type on `Head` and `Link` components ([b4aafda](https://github.com/Avansai/next-multilingual/commit/b4aafda996755fb5bec3af896c185e5a8f2205ce))
+
+
+### BREAKING CHANGES
+
+* This change should be backward compatible but there is a slight risk of breaking certain implementations since the return type is changing.
+
 ## [0.11.2](https://github.com/Avansai/next-multilingual/compare/0.11.1...0.11.2) (2022-06-04)
 
 
