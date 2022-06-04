@@ -1,3 +1,12 @@
+
+
+## [0.11.2](https://github.com/Avansai/next-multilingual/compare/0.11.1...0.11.2) (2022-06-04)
+
+
+### Bug Fixes
+
+* use localized URL instead of the default locale for canonical links ([a4e98b8](https://github.com/Avansai/next-multilingual/commit/a4e98b828ff4c438c878aeba2b4615a9f79cd8d0))
+
 ## [0.11.1](https://github.com/Avansai/next-multilingual/compare/0.11.0...0.11.1) (2022-05-14)
 
 ### Features
