@@ -1,6 +1,4 @@
-import {
-    ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, ORIGIN
-} from '../constants';
+import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, ORIGIN } from '../constants';
 
 export const DYNAMIC_ROUTE_URLS = {
   'en-US': '/tests/dynamic-routes',
@@ -40,8 +38,8 @@ describe('A dynamic route', () => {
         expect(inputMarkup).to.match(inputValueRegExp);
         parameterValue = inputMarkup.match(inputValueRegExp).groups['parameterValue'];
         dynamicRouteUrl = `${dynamicRouteIndexUrl}/${parameterValue}`;
-        canonicalDynamicRouteUrl = `${BASE_PATH}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}${
-          DYNAMIC_ROUTE_URLS[ACTUAL_DEFAULT_LOCALE]
+        canonicalDynamicRouteUrl = `${BASE_PATH}/${locale.toLowerCase()}${
+          DYNAMIC_ROUTE_URLS[locale]
         }/${parameterValue}`;
         expect(source).to.match(linkMarkupRegExp);
         const linkInputMarkup = source.match(linkMarkupRegExp).groups['link'];

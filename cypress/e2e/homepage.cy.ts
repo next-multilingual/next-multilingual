@@ -85,7 +85,7 @@ describe('The homepage', () => {
     });
 
     // Check that the canonical link points on the default locale on the SSR markup.
-    const canonicalLinkMarkup = `<link rel="canonical" href="${ORIGIN}${BASE_PATH}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}"/>`;
+    const canonicalLinkMarkup = `<link rel="canonical" href="${ORIGIN}${BASE_PATH}/${locale.toLowerCase()}"/>`;
     it(`returns SSR html that contains '${canonicalLinkMarkup}' for '${localeName}'`, () => {
       expect(source).to.contain(canonicalLinkMarkup);
     });
@@ -123,7 +123,7 @@ describe('The homepage', () => {
       cy.get(`head link[rel=canonical]`)
         .should('have.attr', 'href')
         .then((href) => {
-          expect(href).eq(`${ORIGIN}${BASE_PATH}/${ACTUAL_DEFAULT_LOCALE.toLowerCase()}`);
+          expect(href).eq(`${ORIGIN}${BASE_PATH}/${locale.toLowerCase()}`);
         });
     });
 

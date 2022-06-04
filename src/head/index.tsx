@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import React from 'react';
 
 import {
-    containsQueryParameters, getActualDefaultLocale, getActualLocales, getQueryParameters,
-    highlight, hydrateQueryParameters, log, normalizeLocale
+    containsQueryParameters, getActualLocale, getActualLocales, getQueryParameters, highlight,
+    hydrateQueryParameters, log, normalizeLocale
 } from '../';
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites';
 import { useRewrites } from '../hooks/use-rewrites';
@@ -26,7 +26,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
    * | be correctly picked up on client-side navigation.
    *
    */
-  const { pathname, basePath, defaultLocale, locales, query } = useRouter();
+  const { pathname, basePath, defaultLocale, locales, locale, query } = useRouter();
   const rewrites = useRewrites(); // Setting a variable here since React hooks can't be used in a callback.
 
   // Check if it's a dynamic router and if we have all the information to generate the links.
@@ -47,8 +47,8 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
     }
   }
 
+  const actualLocale = getActualLocale(locale, defaultLocale, locales);
   const actualLocales = getActualLocales(locales, defaultLocale);
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
 
   return (
     <NextHead>
@@ -57,7 +57,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
         href={getLocalizedUrlFromRewrites(
           rewrites,
           { pathname, query },
-          actualDefaultLocale,
+          actualLocale,
           true,
           basePath
         )}
