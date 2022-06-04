@@ -11,6 +11,7 @@ import styles from './Layout.module.css';
 type LayoutProps = {
   /** The title of the page. */
   title: string;
+  /** The child node of the `Layout` component. */
   children: ReactNode;
 };
 
@@ -26,6 +27,9 @@ export default function Layout({ title, children }: LayoutProps): JSX.Element {
       <Head>
         <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+        {/** Normally, this should have its own localized `description` content, but to avoid
+         * unnecessary LightHouse warnings we are adding this line. */}
+        <meta name="description" content={title}></meta>
       </Head>
       <header id="header" className={styles.header}>
         <div>

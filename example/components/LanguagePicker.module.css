@@ -40,7 +40,7 @@
 
 .languagePicker > button {
   text-align: left;
-  background-color: #4caf50;
+  background-color: #1a2588;
   color: white;
   padding: 1rem;
   font-size: 1rem;
@@ -76,5 +76,5 @@
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .languagePicker:hover > button {
-  background-color: #3e8e41;
+  background-color: #2130b6;
 }
