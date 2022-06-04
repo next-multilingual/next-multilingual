@@ -1,6 +1,6 @@
-import NextHead from 'next/head';
+import NextJsHead from 'next/head';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import {
     containsQueryParameters, getActualLocale, getActualLocales, getQueryParameters, highlight,
@@ -21,7 +21,11 @@ if (typeof window !== 'undefined') {
  *
  * @returns The Next.js `Head` component, including alternative links for SEO.
  */
-export default function Head({ children }: { children: React.ReactNode }): JSX.Element {
+export default function Head({
+  children,
+}: {
+  children: React.ReactNode;
+}): ReactElement<typeof NextJsHead> {
   /**
    * Next.js' `<Head>` does not allow components, so we are using hooks. Details here:
    *
@@ -49,7 +53,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
           missingParameters.join(',')
         )}. Did you forget to add a 'getStaticPaths' or 'getServerSideProps' to your page?`
       );
-      return <NextHead>{children}</NextHead>;
+      return <NextJsHead>{children}</NextJsHead>;
     }
   }
 
@@ -57,7 +61,7 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
   const actualLocales = getActualLocales(locales, defaultLocale);
 
   return (
-    <NextHead>
+    <NextJsHead>
       <link
         rel="canonical"
         href={getLocalizedUrlFromRewrites(
@@ -86,6 +90,6 @@ export default function Head({ children }: { children: React.ReactNode }): JSX.E
         );
       })}
       {children}
-    </NextHead>
+    </NextJsHead>
   );
 }

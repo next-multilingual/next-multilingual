@@ -12,6 +12,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Replace `intl-messageformat` with a smaller alternative to reduce package size
 - Copy example repo into https://github.com/vercel/next.js/tree/canary/examples/with-next-multilingual (automate pipeline?)
 - Add ESM module support to remove `esmExternals: false`
+- Add pre-build check to validate all `.propeties` files
+  - Check for key collisions
+  - Check for invalid suffix across languaages
+  - Check for deltas
+  - Track problematic files and have a consistent behvior across `Messages` and localized URLs
 - Add naming best practice for message key in documentation
 - Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
@@ -26,26 +31,27 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - In the `config` API, support options passed functions (see Next.js doc)
 - Try to get rid of `noImplicitThis`
 - Try Javascript support?
-- Automatically restart Next.js routes changes (e.g. use `forever`)
-- Default locale fallback
+- Automatically restart Next.js routes changes (e.g. use `forever`?)
 - Lorem ipsum generator?
 - Sitemap
 - schema.org markup support (e.g. breadcrumbs)
+- Waiting on @TomFreudenberg to provide details
+  - add new API to call keys by "messages" - this will be indexed by Babel
+    - also add support to fallback to the message when not found
+    - needs to be a new configurable option since it will increase bundle size because of the index
+    - add new i18.config file that will allow Jest and other tools (check fork)
 
 ### In Progress 🚧
 
-- JSX.element VS ReactElement?
-- add new API to call keys by "messages" - this will be indexed by Babel
-  - also add support to fallback to the message when not found
-  - needs to be a new configurable option since it will increase bundle size because of the index
-  - add new i18.config file that will allow Jest and other tools (check fork)
+- implement `properties-files` and add warnings on key collisions
 
 ### Done ✔️
 
+- JSX.element VS ReactElement?
 - Replicate Next.js' behavior with trailing slashes in URLs
 - Move to strict mode
 - support links that include protocol
-- Add tests for default (mul) language and its impact to headers and SSR (e.g. http://localhost:3000/mul/about-us)n
+- Add tests for default (mul) language and its impact to headers and SSR (e.g. http://localhost:3000/mul/about-us)
 - Add anchor link tests
 - Test anchor links (including translation and doc)
 - support "mailto:", "tel:" in `Link` URLs to avoid localization.

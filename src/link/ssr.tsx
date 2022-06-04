@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import NextLink, { LinkProps as NextLinkProps } from 'next/link';
+import NextJsLink, { LinkProps as NextLinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 
 import { useLocalizedUrl } from '../url/ssr';
@@ -26,15 +26,15 @@ export default function Link({
   href,
   locale,
   ...props
-}: React.PropsWithChildren<NextLinkProps>): ReactElement {
+}: React.PropsWithChildren<NextLinkProps>): ReactElement<typeof NextJsLink> {
   const router = useRouter();
   const applicableLocale = locale ? locale : router.locale;
   const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href;
   const localizedUrl = useLocalizedUrl(url, applicableLocale);
 
   return (
-    <NextLink href={localizedUrl} locale={applicableLocale} {...props}>
+    <NextJsLink href={localizedUrl} locale={applicableLocale} {...props}>
       {children}
-    </NextLink>
+    </NextJsLink>
   );
 }
