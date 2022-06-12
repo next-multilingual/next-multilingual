@@ -108,9 +108,9 @@
     "@babel/core": "^7.18.2",
     "cheap-watch": "^1.0.4",
     "colorette": "^2.0.17",
-    "dot-properties": "^1.0.1",
     "intl-messageformat": "^10.1.0",
     "nookies": "^2.5.2",
+    "properties-file": "^2.0.1",
     "resolve-accept-language": "^1.1.6"
   },
   "devDependencies": {
