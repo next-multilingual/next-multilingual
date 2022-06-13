@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ES5",
     "lib": ["es2018", "dom"],
     "esModuleInterop": true,

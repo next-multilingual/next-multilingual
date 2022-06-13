@@ -4,7 +4,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Test "beta" releases to avoid rolling out breaking changes before release version 1.0.0
 - Externalize Babel plugin into a "Messages Modules" package
   - Add SWC support
   - Add anchor links support on language switcher (requires Babel plugin?)
@@ -12,11 +11,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Replace `intl-messageformat` with a smaller alternative to reduce package size
 - Copy example repo into https://github.com/vercel/next.js/tree/canary/examples/with-next-multilingual (automate pipeline?)
 - Add ESM module support to remove `esmExternals: false`
-- Add pre-build check to validate all `.propeties` files
+- Add pre-build check to validate all `.properties` files
   - Check for key collisions
-  - Check for invalid suffix across languaages
+  - Check for invalid suffix across languages
   - Check for deltas
-  - Track problematic files and have a consistent behvior across `Messages` and localized URLs
+  - Track problematic files and have a consistent behavior across `Messages` and localized URLs
 - Add naming best practice for message key in documentation
 - Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
@@ -33,7 +32,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Try Javascript support?
 - Automatically restart Next.js routes changes (e.g. use `forever`?)
 - Lorem ipsum generator?
-- Sitemap
 - schema.org markup support (e.g. breadcrumbs)
 - Waiting on @TomFreudenberg to provide details
   - add new API to call keys by "messages" - this will be indexed by Babel
@@ -43,10 +41,9 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- implement `properties-files` and add warnings on key collisions
-
 ### Done ✔️
 
+- implement `properties-files` and add warnings on key collisions
 - JSX.element VS ReactElement?
 - Replicate Next.js' behavior with trailing slashes in URLs
 - Move to strict mode

@@ -1,12 +1,13 @@
 import { readdirSync } from 'fs';
 import { parse, sep as pathSeparator } from 'path';
+import { getProperties } from 'properties-file';
 
 import template from '@babel/template';
 import * as BabelTypes from '@babel/types';
 
 import { highlight, highlightFilePath, log } from '../';
 import { keySegmentRegExp, keySegmentRegExpDescription } from './';
-import { KeyValueObject, KeyValueObjectCollection, parsePropertiesFile } from './properties';
+import { KeyValueObject, KeyValueObjectCollection } from './properties';
 
 import type { PluginObj, PluginPass, NodePath } from '@babel/core';
 export type Program = BabelTypes.Program;
@@ -88,16 +89,19 @@ export class BabelifiedMessages {
  * @returns A "key/value" object storing messages where the key only contains the identifier segment of the key.
  */
 export function getMessages(propertiesFilePath: string): KeyValueObject {
-  const keyValueObject = parsePropertiesFile(propertiesFilePath);
+  const properties = getProperties(propertiesFilePath);
   let context: string | undefined;
   const compactedKeyValueObject: KeyValueObject = {};
-  for (const key in keyValueObject) {
-    const keySegments = key.split('.');
+
+  for (const property of properties.collection) {
+    const keySegments = property.key.split('.');
+
+    // Verify the key's format.
     if (keySegments.length !== 3) {
       log.warn(
         `unable to use messages in ${highlightFilePath(
           propertiesFilePath
-        )} because the key ${highlight(key)} is invalid. It must follow the ${highlight(
+        )} because the key ${highlight(property.key)} is invalid. It must follow the ${highlight(
           '<applicationId>.<context>.<id>'
         )} format.`
       );
@@ -111,7 +115,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         `unable to use messages in ${highlightFilePath(
           propertiesFilePath
         )} because the application identifier ${highlight(applicationIdSegment)} in key ${highlight(
-          key
+          property.key
         )} is invalid. Expected value: ${highlight(applicationId)}.`
       );
       return {};
@@ -124,7 +128,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
           `unable to use messages in ${highlightFilePath(
             propertiesFilePath
           )} because the context ${highlight(contextSegment)} in key ${highlight(
-            key
+            property.key
           )} is invalid. Key context ${keySegmentRegExpDescription}.`
         );
         return {};
@@ -135,7 +139,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         `unable to use messages in ${highlightFilePath(
           propertiesFilePath
         )} because the context ${highlight(contextSegment)} in key ${highlight(
-          key
+          property.key
         )} is invalid. Only one key context is allowed per file. Expected value: ${highlight(
           context
         )}.`
@@ -149,15 +153,37 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         `unable to use messages in ${highlightFilePath(
           propertiesFilePath
         )} because the identifier ${highlight(idSegment)} in key ${highlight(
-          key
+          property.key
         )} is invalid. Key identifiers ${keySegmentRegExpDescription}.`
       );
       return {};
     }
 
     // If validation passes, keep only the identifier part of the key to reduce file sizes.
-    compactedKeyValueObject[idSegment] = keyValueObject[key];
+    compactedKeyValueObject[idSegment] = property.value;
   }
+
+  // Verify key collisions.
+  if (Object.entries(compactedKeyValueObject).length) {
+    const keyPrefix = `${applicationId}.${context}.`;
+    const keyCollisions = properties.getKeyCollisions();
+    for (const keyCollision of keyCollisions) {
+      if (keyCollision.key.startsWith(keyPrefix)) {
+        log.warn(
+          `unable to use messages in ${highlightFilePath(
+            propertiesFilePath
+          )} because the key ${highlight(
+            keyCollision.key
+          )} has been used multiple times (lines ${highlight(
+            keyCollision.startingLineNumbers.join(', ')
+          )}).`
+        );
+
+        return {};
+      }
+    }
+  }
+
   return compactedKeyValueObject;
 }
 

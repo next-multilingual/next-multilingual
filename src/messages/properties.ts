@@ -1,5 +1,5 @@
-import { parse as parseProperties } from 'dot-properties';
 import { readFileSync } from 'fs';
+import { propertiesToJson } from 'properties-file/content';
 
 import { highlight, highlightFilePath, log } from '../';
 
@@ -35,7 +35,7 @@ export function parsePropertiesFile(filePath: string): KeyValueObject {
     );
   }
 
-  return parseProperties(fileContent) as KeyValueObject;
+  return propertiesToJson(fileContent);
 }
 
 /**
