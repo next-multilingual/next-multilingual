@@ -1,5 +1,12 @@
 
 
+# [1.0.0](https://github.com/Avansai/next-multilingual/compare/0.12.0...1.0.0) (2022-06-13)
+
+
+### Features
+
+* add key collision detection in .properties files ([6c37ada](https://github.com/Avansai/next-multilingual/commit/6c37ada6a8b6612e8a8b20682c9e59f62749bd0b))
+
 # [0.12.0](https://github.com/Avansai/next-multilingual/compare/0.11.2...0.12.0) (2022-06-04)
 
 
