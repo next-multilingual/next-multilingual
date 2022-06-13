@@ -1,31 +1,27 @@
-
-
 # [1.0.0](https://github.com/Avansai/next-multilingual/compare/0.12.0...1.0.0) (2022-06-13)
 
+🎉 After almost a year of development, we consider our APIs mature enough to release version 1.
 
 ### Features
 
-* add key collision detection in .properties files ([6c37ada](https://github.com/Avansai/next-multilingual/commit/6c37ada6a8b6612e8a8b20682c9e59f62749bd0b))
+- add key collision detection in .properties files ([6c37ada](https://github.com/Avansai/next-multilingual/commit/6c37ada6a8b6612e8a8b20682c9e59f62749bd0b))
 
 # [0.12.0](https://github.com/Avansai/next-multilingual/compare/0.11.2...0.12.0) (2022-06-04)
 
-
 ### Bug Fixes
 
-* apply LightHouse recommendations to improve the example's score ([5ac3c3c](https://github.com/Avansai/next-multilingual/commit/5ac3c3c49e606fb6463d9dcaab64ea1dd9940c8d))
-* remove generic `JSX.Element` type on `Head` and `Link` components ([b4aafda](https://github.com/Avansai/next-multilingual/commit/b4aafda996755fb5bec3af896c185e5a8f2205ce))
-
+- apply LightHouse recommendations to improve the example's score ([5ac3c3c](https://github.com/Avansai/next-multilingual/commit/5ac3c3c49e606fb6463d9dcaab64ea1dd9940c8d))
+- remove generic `JSX.Element` type on `Head` and `Link` components ([b4aafda](https://github.com/Avansai/next-multilingual/commit/b4aafda996755fb5bec3af896c185e5a8f2205ce))
 
 ### BREAKING CHANGES
 
-* This change should be backward compatible but there is a slight risk of breaking certain implementations since the return type is changing.
+- This change should be backward compatible but there is a slight risk of breaking certain implementations since the return type is changing.
 
 ## [0.11.2](https://github.com/Avansai/next-multilingual/compare/0.11.1...0.11.2) (2022-06-04)
 
-
 ### Bug Fixes
 
-* use localized URL instead of the default locale for canonical links ([a4e98b8](https://github.com/Avansai/next-multilingual/commit/a4e98b828ff4c438c878aeba2b4615a9f79cd8d0))
+- use localized URL instead of the default locale for canonical links ([a4e98b8](https://github.com/Avansai/next-multilingual/commit/a4e98b828ff4c438c878aeba2b4615a9f79cd8d0))
 
 ## [0.11.1](https://github.com/Avansai/next-multilingual/compare/0.11.0...0.11.1) (2022-05-14)
 
