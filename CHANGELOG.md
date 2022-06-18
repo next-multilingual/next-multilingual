@@ -1,3 +1,7 @@
+
+
+## [1.0.1](https://github.com/Avansai/next-multilingual/compare/1.0.0...1.0.1) (2022-06-18)
+
 # [1.0.0](https://github.com/Avansai/next-multilingual/compare/0.12.0...1.0.0) (2022-06-13)
 
 🎉 After almost a year of development, we consider our APIs mature enough to release version 1.
