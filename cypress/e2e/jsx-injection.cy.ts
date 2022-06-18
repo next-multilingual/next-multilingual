@@ -26,13 +26,6 @@ function convertHtmlEntities(markup: string): string {
     .trim();
 }
 
-/**
- * Since React 18, test have been updated to include empty HTML comments tags.
- *
- * @see https://github.com/facebook/react/issues/24263
- */
-const emptyReact18HtmlComment = '<!-- -->';
-
 describe('The JSX test page', () => {
   ACTUAL_LOCALES.forEach((locale) => {
     const jsxTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${JSX_TESTS_URLS[locale]}`;
@@ -68,11 +61,9 @@ describe('The JSX test page', () => {
         baseTest1Markup = messages.baseTest1
           .replace(
             '<link>',
-            `${emptyReact18HtmlComment}<a href="${BASE_PATH}/${locale.toLowerCase()}${
-              CONTACT_US_URLS[locale]
-            }">`
+            `<a href="${BASE_PATH}/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`
           )
-          .replace('</link>.', `</a>.${emptyReact18HtmlComment}`)
+          .replace('</link>.', `</a>.`)
           .replace(/'/g, '&#x27;');
         // Expected example: <div id="baseTest1">This is a <a href="/en-us/contact-us">simple link</a>.</div>
         expect(source).to.contain(`<div id="baseTest1">${baseTest1Markup}</div`);
@@ -84,60 +75,53 @@ describe('The JSX test page', () => {
       baseTest2Markup = messages.baseTest2
         .replace(
           '<link>',
-          `${emptyReact18HtmlComment}<a href="${BASE_PATH}/${locale.toLowerCase()}${
-            CONTACT_US_URLS[locale]
-          }">`
+          `<a href="${BASE_PATH}/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`
         )
         .replace('</link>', '</a>')
-        .replace('<strong>', `${emptyReact18HtmlComment}<strong>`)
-        .replace('<i>', `${emptyReact18HtmlComment}<i>`);
+        .replace('<strong>', `<strong>`)
+        .replace('<i>', `<i>`);
       // Expected example: <div id="baseTest2">This is a <a href="/en-us/contact-us">link with <strong>bold</strong> and <i>italic</i></a></div>
       expect(source).to.contain(`<div id="baseTest2">${baseTest2Markup}</div`);
     });
 
     // Plural + JSX SSR test: count == 0
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 0 for '${LOCALE_NAMES[locale]}'`, () => {
-      plural0Markup =
-        messages.plural
-          .match(/=0 {(?<message>.*?)}/m)
-          .groups['message'].replace('<strong>', `${emptyReact18HtmlComment}<strong>`) +
-        emptyReact18HtmlComment;
+      plural0Markup = messages.plural
+        .match(/=0 {(?<message>.*?)}/m)
+        .groups['message'].replace('<strong>', `<strong>`);
       // Expected example: <div id="plural0">No <strong>candy</strong> left.</div>
       expect(source).to.contain(`<div id="plural0">${plural0Markup}</div>`);
     });
 
     // Plural + JSX SSR test: count == 1
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 1 for '${LOCALE_NAMES[locale]}'`, () => {
-      plural1Markup =
-        messages.plural
-          .match(/one {(?<message>.*?)}/m)
-          .groups['message'].replace('#', '1')
-          .replace('<i>', `${emptyReact18HtmlComment}<i>`) + emptyReact18HtmlComment;
+      plural1Markup = messages.plural
+        .match(/one {(?<message>.*?)}/m)
+        .groups['message'].replace('#', '1')
+        .replace('<i>', `<i>`);
       // Expected example: <div id="plural1">Got 1 <i>candy</i> left.</div>
       expect(source).to.contain(`<div id="plural1">${plural1Markup}</div>`);
     });
 
     // Plural + JSX SSR test: count == 2
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 2 for '${LOCALE_NAMES[locale]}'`, () => {
-      plural2Markup =
-        messages.plural
-          .match(/other {(?<message>.*?)}/m)
-          .groups['message'].replace('#', '2')
-          .replace('<u>', `${emptyReact18HtmlComment}<u>`) + emptyReact18HtmlComment;
+      plural2Markup = messages.plural
+        .match(/other {(?<message>.*?)}/m)
+        .groups['message'].replace('#', '2')
+        .replace('<u>', `<u>`);
       // Expected example: <div id="plural2">Got <u>2</u> candies left.</div>
       expect(source).to.contain(`<div id="plural2">${plural2Markup}</div`);
     });
 
     // Escape SSR test: `formatJsx` using '<', '>', '{', '}' and quotes
     it(`will display the correct SSR markup when using JSX elements and escaping characters for '${LOCALE_NAMES[locale]}'`, () => {
-      escapeTestMarkup =
-        messages.escapeTest
-          .replace(/'/g, '&#x27;')
-          .replace(/&#x3c;/gi, '&lt;')
-          .replace(/&#x3e;/gi, '&gt;')
-          .replace(/&#x7b;/gi, '{')
-          .replace(/&#x7d;/gi, '}')
-          .replace('<strong>', `${emptyReact18HtmlComment}<strong>`) + emptyReact18HtmlComment;
+      escapeTestMarkup = messages.escapeTest
+        .replace(/'/g, '&#x27;')
+        .replace(/&#x3c;/gi, '&lt;')
+        .replace(/&#x3e;/gi, '&gt;')
+        .replace(/&#x7b;/gi, '{')
+        .replace(/&#x7d;/gi, '}')
+        .replace('<strong>', `<strong>`);
 
       // Expected example: <div id="escapeTest">This message <strong>should</strong> render with 3 quotes &#x27;&#x27;&#x27;, &lt; &lt; &gt; &gt; greater and lower than characters as well was, { { } } curly brackets.</div>
       expect(source).to.contain(`<div id="escapeTest">${escapeTestMarkup}</div>`);
@@ -151,16 +135,14 @@ describe('The JSX test page', () => {
         .strongClass;
       const aClass = elementSource.match(/a class="(?<aClass>.*?)"/m).groups.aClass;
 
-      styleAndEventsMarkup =
-        messages.styleAndEvents
-          .replace(
-            '<link>',
-            `<a href="${BASE_PATH}/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`
-          )
-          .replace('</link>', '</a>')
-          .replace('<strong>', `${emptyReact18HtmlComment}<strong class="${strongClass}">`)
-          .replace('<a href', `${emptyReact18HtmlComment}<a class="${aClass}" href`) +
-        emptyReact18HtmlComment;
+      styleAndEventsMarkup = messages.styleAndEvents
+        .replace(
+          '<link>',
+          `<a href="${BASE_PATH}/${locale.toLowerCase()}${CONTACT_US_URLS[locale]}">`
+        )
+        .replace('</link>', '</a>')
+        .replace('<strong>', `<strong class="${strongClass}">`)
+        .replace('<a href', `<a class="${aClass}" href`);
       // Expected example: <div id="styleAndEvents">This message should have <strong class="jsx-tests_strong__t_45m">style</strong> and <a class="jsx-tests_link__wsQoZ" href="/en-us/contact-us">events</a> on its JSX elements.</div>
       expect(elementSource).to.eq(styleAndEventsMarkup);
     });
