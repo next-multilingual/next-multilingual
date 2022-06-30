@@ -201,6 +201,7 @@ describe('The homepage', () => {
         if (!visitedLocales.includes(linkLocale)) {
           visitedLocales.push(linkLocale);
           cy.wrap(languagePickerLink).click({ force: true, timeout: 10000 });
+          cy.wait(1000);
           cy.get('#header').contains(HEADERS[linkLocale]);
           cy.visit(`${BASE_PATH}/`);
           cy.get('#header').contains(HEADERS[linkLocale]);
