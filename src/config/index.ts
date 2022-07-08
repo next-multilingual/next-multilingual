@@ -23,7 +23,7 @@ export const PAGES_DIRECTORIES = ['pages', 'src/pages'];
 /**
  * These are the pages file extensions Next.js will use (in this order) if duplicate pages are found.
  */
-export const PAGE_FILE_EXTENSIONS = ['.tsx', 'ts', '.jsx', '.js'];
+export const PAGE_FILE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js'];
 
 /**
  * These are special page files used by Next.js that will not have their own routes. Extensions is excluded since they
