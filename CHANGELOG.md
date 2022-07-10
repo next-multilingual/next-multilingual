@@ -1,5 +1,12 @@
 
 
+## [1.0.4](https://github.com/Avansai/next-multilingual/compare/1.0.3...1.0.4) (2022-07-10)
+
+
+### Bug Fixes
+
+* fix a bug that did prevented automatic content refresh during development for `.ts` files ([80e0ae9](https://github.com/Avansai/next-multilingual/commit/80e0ae932e3c2dcf6afffef7a166986352bc38db))
+
 ## [1.0.3](https://github.com/Avansai/next-multilingual/compare/1.0.2...1.0.3) (2022-07-03)
 
 ## [1.0.2](https://github.com/Avansai/next-multilingual/compare/1.0.1...1.0.2) (2022-06-30)
