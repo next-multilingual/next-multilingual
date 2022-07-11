@@ -118,4 +118,15 @@ export class Messages {
   public getAll(): Message[] {
     return this.messages;
   }
+
+  /**
+   * Check if a message contained in a given local scope exists.
+   *
+   * @param key - The local scope key identifying the message.
+   *
+   * @returns True if the message associated with the key in a given local scope exists, otherwise false.
+   */
+  public exists(key: string): boolean {
+    return this.messages[this.messagesIndex[key]] !== undefined;
+  }
 }
