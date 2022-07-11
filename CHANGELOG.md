@@ -1,5 +1,12 @@
 
 
+## [1.0.5](https://github.com/Avansai/next-multilingual/compare/1.0.4...1.0.5) (2022-07-11)
+
+
+### Features
+
+* add new `exists` method on `messages` ([b16babc](https://github.com/Avansai/next-multilingual/commit/b16babc1055804a2135c97fca9295b30dbeafeba))
+
 ## [1.0.4](https://github.com/Avansai/next-multilingual/compare/1.0.3...1.0.4) (2022-07-10)
 
 
