@@ -1,5 +1,11 @@
 import {
-    ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, BASE_PATH, DEFAULT_LOCALE, LOCALE_NAMES, LOCALES, ORIGIN
+  ACTUAL_DEFAULT_LOCALE,
+  ACTUAL_LOCALES,
+  BASE_PATH,
+  DEFAULT_LOCALE,
+  LOCALE_NAMES,
+  LOCALES,
+  ORIGIN,
 } from '../constants';
 
 export const ABOUT_US_URLS = {
@@ -73,7 +79,7 @@ describe('The homepage', () => {
     it(`returns SSR html that contains '${htmlTagMarkup}' for '${localeName}'`, () => {
       cy.request({
         method: 'GET',
-        url: `${BASE_PATH}/`,
+        url: `${BASE_PATH}/${locale.toLowerCase()}`,
         headers: {
           'Accept-Language': locale,
           Cookie: 'L=',

@@ -73,22 +73,18 @@ describe('A dynamic route', () => {
 
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
-      cy.get(`#link-with-parameter`, { timeout: 15000 })
-        .click()
-        .then(() => {
-          cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
-        });
+      cy.get(`#link-with-parameter`).click();
+      cy.wait(1000);
+      cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
     });
 
     // `useLocalizedUrl` (client-side)
     it(`has the correct URL when using (client-side) the 'useLocalizedUrl' hook for '${localeName}'`, () => {
       cy.get(`#go-back a`).click();
       cy.get(`#parameter-input`).should('have.attr', 'value');
-      cy.get(`#route-push-button`)
-        .click()
-        .then(() => {
-          cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
-        });
+      cy.get(`#route-push-button`).click();
+      cy.wait(1000);
+      cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`);
     });
 
     // Localized Canonical <Head> link (SSR)
