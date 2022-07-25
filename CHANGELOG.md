@@ -1,3 +1,7 @@
+
+
+## [1.1.1](https://github.com/Avansai/next-multilingual/compare/1.1.0...1.1.1) (2022-07-25)
+
 # [1.1.0](https://github.com/Avansai/next-multilingual/compare/1.0.7...1.1.0) (2022-07-25)
 
 ### Code Refactoring
