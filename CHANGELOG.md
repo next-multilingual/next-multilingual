@@ -1,16 +1,12 @@
-
-
 # [1.1.0](https://github.com/Avansai/next-multilingual/compare/1.0.7...1.1.0) (2022-07-25)
-
 
 ### Code Refactoring
 
-* use the new `messages-modules` package to generate the Babel plugin ([127caad](https://github.com/Avansai/next-multilingual/commit/127caad586bbc56a44f0a158348b716a90b5cfc1))
-
+- use the new `messages-modules` package to generate the Babel plugin ([127caad](https://github.com/Avansai/next-multilingual/commit/127caad586bbc56a44f0a158348b716a90b5cfc1))
 
 ### BREAKING CHANGES
 
-* namespace imports (`import * as messages from 'next-multilingal/messages'`) of `useMessages` and `getMessages` are no longer be supported
+- namespace imports (`import * as messages from 'next-multilingual/messages'`) of `useMessages` and `getMessages` are no longer be supported
 
 ## [1.0.7](https://github.com/Avansai/next-multilingual/compare/1.0.6...1.0.7) (2022-07-23)
 
@@ -18,17 +14,15 @@
 
 ## [1.0.5](https://github.com/Avansai/next-multilingual/compare/1.0.4...1.0.5) (2022-07-11)
 
-
 ### Features
 
-* add new `exists` method on `messages` ([b16babc](https://github.com/Avansai/next-multilingual/commit/b16babc1055804a2135c97fca9295b30dbeafeba))
+- add new `exists` method on `messages` ([b16babc](https://github.com/Avansai/next-multilingual/commit/b16babc1055804a2135c97fca9295b30dbeafeba))
 
 ## [1.0.4](https://github.com/Avansai/next-multilingual/compare/1.0.3...1.0.4) (2022-07-10)
 
-
 ### Bug Fixes
 
-* fix a bug that did prevented automatic content refresh during development for `.ts` files ([80e0ae9](https://github.com/Avansai/next-multilingual/commit/80e0ae932e3c2dcf6afffef7a166986352bc38db))
+- fix a bug that did prevented automatic content refresh during development for `.ts` files ([80e0ae9](https://github.com/Avansai/next-multilingual/commit/80e0ae932e3c2dcf6afffef7a166986352bc38db))
 
 ## [1.0.3](https://github.com/Avansai/next-multilingual/compare/1.0.2...1.0.3) (2022-07-03)
 
