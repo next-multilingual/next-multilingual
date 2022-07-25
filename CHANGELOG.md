@@ -1,5 +1,17 @@
 
 
+# [1.1.0](https://github.com/Avansai/next-multilingual/compare/1.0.7...1.1.0) (2022-07-25)
+
+
+### Code Refactoring
+
+* use the new `messages-modules` package to generate the Babel plugin ([127caad](https://github.com/Avansai/next-multilingual/commit/127caad586bbc56a44f0a158348b716a90b5cfc1))
+
+
+### BREAKING CHANGES
+
+* namespace imports (`import * as messages from 'next-multilingal/messages'`) of `useMessages` and `getMessages` are no longer be supported
+
 ## [1.0.7](https://github.com/Avansai/next-multilingual/compare/1.0.6...1.0.7) (2022-07-23)
 
 ## [1.0.6](https://github.com/Avansai/next-multilingual/compare/1.0.5...1.0.6) (2022-07-17)
