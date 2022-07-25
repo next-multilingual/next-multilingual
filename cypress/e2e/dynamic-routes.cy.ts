@@ -81,6 +81,7 @@ describe('A dynamic route', () => {
     // `useLocalizedUrl` (client-side)
     it(`has the correct URL when using (client-side) the 'useLocalizedUrl' hook for '${localeName}'`, () => {
       cy.get(`#go-back a`).click();
+      cy.wait(1000);
       cy.get(`#parameter-input`).should('have.attr', 'value');
       cy.get(`#route-push-button`).click();
       cy.wait(1000);

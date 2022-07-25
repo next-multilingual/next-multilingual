@@ -4,13 +4,13 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Externalize Babel plugin into a "Messages Modules" package
+- Add ESM module support to remove `esmExternals: false`
+- Compiler plugin related:
   - Add SWC support
   - Add anchor links support on language switcher (requires Babel plugin?)
   - Find way to split languages in different assets to speed up page load
 - Replace `intl-messageformat` with a smaller alternative to reduce package size
 - Copy example repo into https://github.com/vercel/next.js/tree/canary/examples/with-next-multilingual (automate pipeline?)
-- Add ESM module support to remove `esmExternals: false`
 - Add pre-build check to validate all `.properties` files
   - Check for key collisions
   - Check for invalid suffix across languages
@@ -28,7 +28,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
   - Test with a 3rd language (language switcher hydration issues?)
 - In the `config` API, gracefully merge options passed in argument as an object instead of overwriting
 - In the `config` API, support options passed functions (see Next.js doc)
-- Try to get rid of `noImplicitThis`
 - Try Javascript support?
 - Automatically restart Next.js routes changes (e.g. use `forever`?)
 - Lorem ipsum generator?
@@ -43,6 +42,8 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### Done ✔️
 
+- Externalize the Babel plugin into a "Messages Modules" package
+- Try to get rid of `noImplicitThis`
 - implement `properties-files` and add warnings on key collisions
 - JSX.element VS ReactElement?
 - Replicate Next.js' behavior with trailing slashes in URLs

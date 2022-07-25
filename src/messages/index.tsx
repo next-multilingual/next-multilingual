@@ -1,8 +1,8 @@
+import { InjectedMessages } from 'messages-modules';
 import { useRouter } from 'next/router';
 import { extname, parse as parsePath, resolve } from 'path';
 
 import { highlight, highlightFilePath, log, normalizeLocale } from '../';
-import { BabelifiedMessages } from './babel-plugin';
 import { Messages } from './Messages';
 
 // Make message classes available without adding their files to the package exports.
@@ -192,7 +192,7 @@ export type MessagesIndex = {
 /**
  * Type guard to check if a message value is a JSX element.
  *
- * @param values - The value of a message (placeholder and/or JSX).
+ * @param value - The value of a message (placeholder and/or JSX).
  *
  * @returns True is the value is a JSX element, otherwise false.
  */
@@ -203,7 +203,7 @@ export function isJsxValue(value: MixedValue): value is JsxValue {
 /**
  * Type guard to check if a message value is a placeholder.
  *
- * @param values - The value of a message (placeholder and/or JSX).
+ * @param value - The value of a message (placeholder and/or JSX).
  *
  * @returns True is the value is a placeholder, otherwise false.
  */
@@ -218,6 +218,7 @@ export function isPlaceholderValue(value: MixedValue): value is PlaceholderValue
  */
 export function useMessages(): Messages {
   const { locale } = useRouter();
+  // @ts-expect-error: `this` is injected using `bind` and will trigger a false compilation error.
   return handleMessages(this, 'useMessages', locale);
 }
 
@@ -229,20 +230,21 @@ export function useMessages(): Messages {
  * @returns An object containing the messages of the local scope.
  */
 export function getMessages(locale: string): Messages {
+  // @ts-expect-error: `this` is injected using `bind` and will trigger a false compilation error.
   return handleMessages(this, 'getMessages', locale.toLowerCase());
 }
 
 /**
  * Handles messages coming from both `useMessages` and `getMessages`.
  *
- * @param babelifiedMessages - The "babelified" messages object.
+ * @param injectedMessages - The "babelified" messages object.
  * @param caller - The function calling the message handler.
  * @param locale - The locale of the message file.
  *
  * @returns An object containing the messages of the local scope.
  */
 export function handleMessages(
-  babelifiedMessages: BabelifiedMessages,
+  injectedMessages: InjectedMessages,
   caller: string,
   locale?: string
 ): Messages {
@@ -250,13 +252,13 @@ export function handleMessages(
     throw new Error(`${caller}() requires the locales to be configured in Next.js`);
   }
 
-  if (!babelifiedMessages || !babelifiedMessages.babelified) {
+  if (!injectedMessages || !injectedMessages.isInjected) {
     throw new Error(
       `${caller}() requires the 'next-multilingual/messages/babel-plugin' Babel plugin`
     );
   }
 
-  const sourceFilePath = babelifiedMessages.sourceFilePath;
+  const sourceFilePath = injectedMessages.sourceFilePath;
   const sourceBasename = sourceFilePath.split('/').pop() as string;
   const sourceFilename = sourceBasename.split('.').slice(0, -1).join('.');
   const sourceFileDirectoryPath = sourceFilePath.split('/').slice(0, -1).join('/');
@@ -265,16 +267,16 @@ export function handleMessages(
     ? `${sourceFileDirectoryPath}/${messagesFilename}`
     : messagesFilename;
 
-  if (!babelifiedMessages.keyValueObjectCollection[locale]) {
+  if (!injectedMessages.keyValueObjectCollection[locale]) {
     log.warn(
       `unable to use ${highlight(caller)}() in ${highlightFilePath(
-        babelifiedMessages.sourceFilePath
+        injectedMessages.sourceFilePath
       )} because no message file could be found at ${highlightFilePath(messagesFilePath)}`
     );
   }
 
   return new Messages(
-    babelifiedMessages.keyValueObjectCollection[locale],
+    injectedMessages.keyValueObjectCollection[locale],
     locale.toLowerCase(),
     sourceFilePath,
     messagesFilePath

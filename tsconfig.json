@@ -10,8 +10,7 @@
     "moduleResolution": "node",
     "outDir": "lib/",
     "declaration": true,
-    "strict": true,
-    "noImplicitThis": false /** required by `useMessages` and `getMessages` **/
+    "strict": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }
