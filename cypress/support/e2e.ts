@@ -1,6 +1,6 @@
-import './commands';
+import './commands'
 
-import failOnConsoleError, { consoleType } from 'cypress-fail-on-console-error';
+import failOnConsoleError, { consoleType } from 'cypress-fail-on-console-error'
 
 const config = {
   excludeMessages: [
@@ -13,6 +13,6 @@ const config = {
     'unable to format message with key badJsxElement',
   ],
   includeConsoleTypes: [consoleType.ERROR, consoleType.WARN],
-};
+}
 
-failOnConsoleError(config);
+failOnConsoleError(config)

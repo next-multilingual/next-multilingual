@@ -1,19 +1,19 @@
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs'
 
-import { highlight, highlightFilePath, log } from '../';
-import { isInDebugMode } from '../config';
+import { highlight, highlightFilePath, log } from '../'
+import { isInDebugMode } from '../config'
 
-import type { BuildManifest, RequiredServerFiles, RoutesManifest } from '../types';
+import type { BuildManifest, RequiredServerFiles, RoutesManifest } from '../types'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
   throw new Error(
     '`getBasePath` must only be used on the server, please use the `useRouter` hook instead'
-  );
+  )
 }
 
 /** Local cache to avoid non-required file system operations. */
-let basePathCache: string | undefined = undefined;
+let basePathCache: string | undefined = undefined
 
 /**
  * Sets the `basePathCache` value.
@@ -23,12 +23,12 @@ let basePathCache: string | undefined = undefined;
  * @returns The `basePathCache` value.
  */
 function setBasePathCache(basePath: string): string {
-  basePathCache = basePath;
+  basePathCache = basePath
   if (isInDebugMode()) {
-    console.log('==== SERVER SIDE BASE PATH ====');
-    console.dir(basePathCache, { depth: null });
+    console.log('==== SERVER SIDE BASE PATH ====')
+    console.dir(basePathCache, { depth: null })
   }
-  return basePathCache;
+  return basePathCache
 }
 
 /**
@@ -40,16 +40,16 @@ function setBasePathCache(basePath: string): string {
  */
 function setEmptyCacheAndShowWarnings(warningMessages: string[]): string {
   warningMessages.forEach((warningMessage) => {
-    log.warn(warningMessage);
-  });
+    log.warn(warningMessage)
+  })
   log.warn(
     `Exhausted all options to get the ${highlight(
       'basePath'
     )} value. If you are using a ${highlight(
       'basePath'
     )}, your application's URLs will not work when using next-multilingual.`
-  );
-  return setBasePathCache('');
+  )
+  return setBasePathCache('')
 }
 
 /**
@@ -60,82 +60,82 @@ function setEmptyCacheAndShowWarnings(warningMessages: string[]): string {
  * @returns The base path value.
  */
 export function getBasePath(): string {
-  if (basePathCache !== undefined) return basePathCache;
+  if (basePathCache !== undefined) return basePathCache
 
-  const warningMessages: string[] = [];
+  const warningMessages: string[] = []
 
   // Try to get the content of the routes-manifest (.next/routes-manifest.json) first - this is only available on builds.
-  const routesManifestPath = '.next/routes-manifest.json';
+  const routesManifestPath = '.next/routes-manifest.json'
 
   if (!existsSync(routesManifestPath)) {
     warningMessages.push(
       `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
         routesManifestPath
       )} because the file does not exist.`
-    );
+    )
   } else {
     try {
-      const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest;
-      return setBasePathCache(routesManifest.basePath);
+      const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest
+      return setBasePathCache(routesManifest.basePath)
     } catch (error) {
       warningMessages.push(
         `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
           routesManifestPath
         )} due to an unexpected file parsing error.`
-      );
+      )
     }
   }
 
   // If the routes-manifest is not available, then get can get the base path from the required server files  - this is only available on builds.
-  const requiredServerFilesPath = '.next/required-server-files.json';
+  const requiredServerFilesPath = '.next/required-server-files.json'
 
   if (!existsSync(requiredServerFilesPath)) {
     warningMessages.push(
       `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
         requiredServerFilesPath
       )} because the file does not exist.`
-    );
+    )
   } else {
     try {
       const requiredServerFiles = JSON.parse(
         readFileSync(requiredServerFilesPath, 'utf8')
-      ) as RequiredServerFiles;
-      return setBasePathCache(requiredServerFiles.config.basePath);
+      ) as RequiredServerFiles
+      return setBasePathCache(requiredServerFiles.config.basePath)
     } catch (error) {
       warningMessages.push(
         `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
           requiredServerFilesPath
         )} due to an unexpected file parsing error.`
-      );
+      )
     }
   }
 
   // If everything else fails, we can look for the base path in the AMP dev file - this seems the best option in development mode.
-  const buildManifestPath = '.next/build-manifest.json';
-  const ampFilename = 'amp.js';
+  const buildManifestPath = '.next/build-manifest.json'
+  const ampFilename = 'amp.js'
 
   if (!existsSync(buildManifestPath)) {
     warningMessages.push(
       `Unable to get the ${highlight('basePath')}: failed to get the location of ${highlight(
         ampFilename
       )} from ${highlightFilePath(buildManifestPath)} because the file does not exist.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 
-  let ampDevFilePath = '';
+  let ampDevFilePath = ''
   try {
-    const buildManifest = JSON.parse(readFileSync(buildManifestPath, 'utf8')) as BuildManifest;
-    ampDevFilePath = `.next/${buildManifest.ampDevFiles.find((filePath) =>
-      filePath.endsWith(ampFilename)
-    )}`;
+    const buildManifest = JSON.parse(readFileSync(buildManifestPath, 'utf8')) as BuildManifest
+    ampDevFilePath = `.next/${
+      buildManifest.ampDevFiles.find((filePath) => filePath.endsWith(ampFilename)) as string
+    }`
   } catch (error) {
     warningMessages.push(
       `Unable to get the ${highlight('basePath')}: failed to get the location of ${highlight(
         ampFilename
       )} from ${highlightFilePath(buildManifestPath)} due to an unexpected file parsing error.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 
   if (!existsSync(ampDevFilePath)) {
@@ -143,35 +143,35 @@ export function getBasePath(): string {
       `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
         ampDevFilePath
       )} because the file does not exist.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 
   try {
-    const ampDevFileContent = readFileSync(ampDevFilePath, 'utf8');
-    const basePathMatch = ampDevFileContent.match(/var basePath =(?<basePath>.+?)\|\|/);
+    const ampDevFileContent = readFileSync(ampDevFilePath, 'utf8')
+    const basePathMatch = ampDevFileContent.match(/var basePath =(?<basePath>.+?)\|\|/)
 
     if (!basePathMatch?.groups) {
       warningMessages.push(
         `Could not find ${highlight('basePath')} from ${highlightFilePath(ampDevFilePath)}.`
-      );
-      return setEmptyCacheAndShowWarnings(warningMessages);
+      )
+      return setEmptyCacheAndShowWarnings(warningMessages)
     } else {
-      const basePath = basePathMatch.groups.basePath.trim();
+      const basePath = basePathMatch.groups.basePath.trim()
 
       if (basePath === 'false') {
         // This is the default value when no `basePath` is set.
-        return setBasePathCache('');
+        return setBasePathCache('')
       } else {
         if (basePath.startsWith('\\"') && basePath.endsWith('\\"')) {
-          return setBasePathCache(basePath.slice(2, -2));
+          return setBasePathCache(basePath.slice(2, -2))
         } else {
           warningMessages.push(
             `Unable to get the ${highlight(
               'basePath'
             )}: unexpected value found in ${highlightFilePath(ampDevFilePath)}.`
-          );
-          return setEmptyCacheAndShowWarnings(warningMessages);
+          )
+          return setEmptyCacheAndShowWarnings(warningMessages)
         }
       }
     }
@@ -180,7 +180,7 @@ export function getBasePath(): string {
       `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
         ampDevFilePath
       )} due to an unexpected file parsing error.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 }

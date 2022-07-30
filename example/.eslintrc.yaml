@@ -1,0 +1,48 @@
+---
+root: true # Disables inheritance from parent config.
+parserOptions:
+  project:
+    - 'tsconfig.json'
+extends:
+  - eslint:recommended
+  - next/core-web-vitals
+  - plugin:prettier/recommended
+rules:
+  # Normalize line breaks across operating systems to avoid polluting Git
+  linebreak-style:
+    - error
+    - unix
+  # Increase the level to 'error' for unused variables (the default is set to 'warning')
+  # @see https://eslint.org/docs/latest/rules/no-unused-vars
+  no-unused-vars:
+    - error
+    - args: all
+overrides:
+  # TypeScript configurations
+  - files:
+      - '*.ts'
+      - '*.mts'
+      - '*.cts'
+      - '*.tsx'
+    extends:
+      - plugin:@typescript-eslint/recommended
+      - plugin:@typescript-eslint/recommended-requiring-type-checking
+    rules:
+      # Increase the level to 'error' for unused variables (the default is set to 'warning')
+      # @see https://typescript-eslint.io/rules/no-unused-vars/
+      'no-unused-vars': 'off'
+      '@typescript-eslint/no-unused-vars':
+        - error
+      # Show errors when missing return types are missing on relevant functions
+      # @see https://typescript-eslint.io/rules/explicit-function-return-type/
+      '@typescript-eslint/explicit-function-return-type':
+        - error
+        - allowExpressions: true
+          allowConciseArrowFunctionExpressionsStartingWithVoid: true
+      # React-only config: allow passing a callback function in React (e.g. click events) while checking for promises
+      # @see https://typescript-eslint.io/rules/no-misused-promises/
+      '@typescript-eslint/no-misused-promises':
+        - error
+        - checksVoidReturn:
+            arguments: false
+            attributes: false

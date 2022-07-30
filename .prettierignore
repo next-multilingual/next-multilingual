@@ -1,15 +1,5 @@
-# IDE settings directories
-.idea
-.vscode
+# @see https://prettier.io/docs/en/ignore.html
+# Pretttier ignores `node_modules` and dot-files by default.
 
-# Dependency directories
-node_modules
-
-# Jest coverage report
-/coverage
-
-# Javascript (compiled) version
-/lib
-
-# Next.js
-.next
+# Compiled roject
+/lib/*

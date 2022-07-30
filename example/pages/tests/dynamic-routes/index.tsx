@@ -1,25 +1,25 @@
-import { NextPage } from 'next';
-import Link from 'next-multilingual/link';
-import { getTitle, useMessages } from 'next-multilingual/messages';
-import { useLocalizedUrl } from 'next-multilingual/url';
-import router, { useRouter } from 'next/router';
-import { useState } from 'react';
+import { NextPage } from 'next'
+import Link from 'next-multilingual/link'
+import { getTitle, useMessages } from 'next-multilingual/messages'
+import { useLocalizedUrl } from 'next-multilingual/url'
+import router, { useRouter } from 'next/router'
+import { useState } from 'react'
 
-import Layout from '@/layout';
+import Layout from '@/layout'
 
-import styles from './index.module.css';
+import styles from './index.module.css'
 
 const Tests: NextPage = () => {
-  const messages = useMessages();
-  const { pathname } = useRouter();
-  const title = getTitle(messages);
+  const messages = useMessages()
+  const { pathname } = useRouter()
+  const title = getTitle(messages)
 
-  const [parameter, setParameter] = useState('123');
+  const [parameter, setParameter] = useState('123')
 
   const localizedUrl = useLocalizedUrl({
     pathname: `${pathname}/[id]`,
     query: { id: parameter },
-  });
+  })
 
   return (
     <Layout title={title}>
@@ -56,7 +56,7 @@ const Tests: NextPage = () => {
       </ul>
       <p>{messages.format('instructions')}</p>
     </Layout>
-  );
-};
+  )
+}
 
-export default Tests;
+export default Tests

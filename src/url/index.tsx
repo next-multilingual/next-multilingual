@@ -1,8 +1,8 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
-import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites';
-import { useRewrites } from '../hooks/use-rewrites';
-import { Url } from '../types';
+import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
+import { useRewrites } from '../hooks/use-rewrites'
+import { Url } from '../types'
 
 /**
  * React hook to get the localized URL specific to a Next.js context.
@@ -23,8 +23,8 @@ export function useLocalizedUrl(
   absolute = false,
   includeBasePath = false
 ): string {
-  const router = useRouter();
-  const applicableLocale = locale ? locale : router.locale;
+  const router = useRouter()
+  const applicableLocale = locale ? locale : router.locale
   return getLocalizedUrlFromRewrites(
     useRewrites(),
     url,
@@ -32,5 +32,5 @@ export function useLocalizedUrl(
     absolute,
     router.basePath,
     includeBasePath
-  );
+  )
 }

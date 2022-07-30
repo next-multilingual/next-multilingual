@@ -1,21 +1,23 @@
-import { readFileSync } from 'fs';
-import { propertiesToJson } from 'properties-file/content';
+import { readFileSync } from 'fs'
+// @todo fix package export (why is this no longer working?)
+// eslint-disable-next-line import/no-unresolved
+import { propertiesToJson } from 'properties-file/content'
 
-import { highlight, highlightFilePath, log } from '../';
+import { highlight, highlightFilePath, log } from '../'
 
 /**
  * A simple "key/value" object used to store messages.
  */
 export type KeyValueObject = {
-  [key: string]: string;
-};
+  [key: string]: string
+}
 
 /**
  * A collection of "key/value" objects for for all locales.
  */
 export type KeyValueObjectCollection = {
-  [key: string]: KeyValueObject;
-};
+  [key: string]: KeyValueObject
+}
 
 /**
  * Parse a `.properties` file and return it back as a "key/value" object.
@@ -25,17 +27,17 @@ export type KeyValueObjectCollection = {
  * @returns The "raw" representation of a `.properties` fille in a simple "key/value" object.
  */
 export function parsePropertiesFile(filePath: string): KeyValueObject {
-  const fileContent = stripBom(readFileSync(filePath, 'utf8'));
+  const fileContent = stripBom(readFileSync(filePath, 'utf8'))
 
   if (fileContent.includes('�')) {
     log.warn(
       `found a garbled character ${highlight('�')} in ${highlightFilePath(
         filePath
       )} which most likely points to an encoding issue. Please make sure that your file's encoding is UTF-8 compatible.`
-    );
+    )
   }
 
-  return propertiesToJson(fileContent);
+  return propertiesToJson(fileContent)
 }
 
 /**
@@ -46,5 +48,5 @@ export function parsePropertiesFile(filePath: string): KeyValueObject {
  * @returns The content from a file, without the BOM character.
  */
 export function stripBom(fileContent: string): string {
-  return fileContent.charCodeAt(0) === 0xfeff ? fileContent.slice(1) : fileContent;
+  return fileContent.charCodeAt(0) === 0xfeff ? fileContent.slice(1) : fileContent
 }

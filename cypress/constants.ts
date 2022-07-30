@@ -1,24 +1,28 @@
 /** The default locale configure in Next.js. */
-export const DEFAULT_LOCALE = 'mul';
+export const DEFAULT_LOCALE = 'mul'
 
 /** The actual locale used by the Next.js application. */
-export const ACTUAL_LOCALES = ['en-US', 'fr-CA'];
+export const ACTUAL_LOCALES = ['en-US', 'fr-CA']
 
 /** All locales configured in Next.js. */
-export const LOCALES = [DEFAULT_LOCALE, ...ACTUAL_LOCALES];
+export const LOCALES = [DEFAULT_LOCALE, ...ACTUAL_LOCALES]
 
 /** Human-readable locale names. */
 export const LOCALE_NAMES = {
   mul: 'Multilingual (default locale)',
   'en-US': 'English (United States)',
   'fr-CA': 'Français (Canada)',
-};
+}
 
 /** The actual default locale used by the Next.js application. */
-export const ACTUAL_DEFAULT_LOCALE = ACTUAL_LOCALES[0];
+export const ACTUAL_DEFAULT_LOCALE = ACTUAL_LOCALES[0]
 
 /** The origin used by the Next.js application. */
-export const ORIGIN = Cypress.env('isProd') ? Cypress.env('prodBaseUrl') : Cypress.config().baseUrl;
+export const ORIGIN: string = (
+  Cypress.env('isProd') ? Cypress.env('prodBaseUrl') : Cypress.config().baseUrl
+) as string
 
 /** The base path of the Next.js application. (set manually when testing `basePath`) */
-export const BASE_PATH = Cypress.env('basePath') !== undefined ? Cypress.env('basePath') : '';
+export const BASE_PATH: string = (
+  Cypress.env('basePath') !== undefined ? Cypress.env('basePath') : ''
+) as string

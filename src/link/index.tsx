@@ -1,8 +1,8 @@
-import NextJsLink, { LinkProps as NextLinkProps } from 'next/link';
-import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
+import NextJsLink, { LinkProps as NextLinkProps } from 'next/link'
+import { useRouter } from 'next/router'
+import { ReactElement } from 'react'
 
-import { useLocalizedUrl } from '../url';
+import { useLocalizedUrl } from '../url'
 
 /**
  * Link is a wrapper around Next.js' `Link` that provides localized URLs.
@@ -20,14 +20,14 @@ export default function Link({
   locale,
   ...props
 }: React.PropsWithChildren<NextLinkProps>): ReactElement<typeof NextJsLink> {
-  const router = useRouter();
-  const applicableLocale = locale ? locale : router.locale;
-  const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href;
-  const localizedUrl = useLocalizedUrl(url, applicableLocale);
+  const router = useRouter()
+  const applicableLocale = locale ? locale : router.locale
+  const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href
+  const localizedUrl = useLocalizedUrl(url, applicableLocale)
 
   return (
     <NextJsLink href={localizedUrl} locale={applicableLocale} {...props}>
       {children}
     </NextJsLink>
-  );
+  )
 }

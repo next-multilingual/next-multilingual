@@ -1,19 +1,19 @@
-import type { ReactNode } from 'react';
-import Head from 'next-multilingual/head';
-import Link from 'next-multilingual/link';
-import { useMessages } from 'next-multilingual/messages';
+import Head from 'next-multilingual/head'
+import Link from 'next-multilingual/link'
+import { useMessages } from 'next-multilingual/messages'
+import type { ReactNode } from 'react'
 
-import Footer from '@/components/Footer';
-import LanguagePicker from '@/components/LanguagePicker';
+import Footer from '@/components/Footer'
+import LanguagePicker from '@/components/LanguagePicker'
 
-import styles from './Layout.module.css';
+import styles from './Layout.module.css'
 
 type LayoutProps = {
   /** The title of the page. */
-  title: string;
+  title: string
   /** The child node of the `Layout` component. */
-  children: ReactNode;
-};
+  children: ReactNode
+}
 
 /**
  * Component used for the general layout of a page.
@@ -21,7 +21,7 @@ type LayoutProps = {
  * @param title - The title of the page.
  */
 export default function Layout({ title, children }: LayoutProps): JSX.Element {
-  const messages = useMessages();
+  const messages = useMessages()
   return (
     <>
       <Head>
@@ -53,5 +53,5 @@ export default function Layout({ title, children }: LayoutProps): JSX.Element {
       <main className={styles.main}>{children}</main>
       <Footer />
     </>
-  );
+  )
 }

@@ -1,38 +1,45 @@
 import {
-    getActualDefaultLocale, getActualLocale, getActualLocales, getCookieLocale, getPreferredLocale,
-    normalizeLocale, ResolvedLocaleServerSideProps, setCookieLocale
-} from 'next-multilingual';
-import { getTitle, useMessages } from 'next-multilingual/messages';
-import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+  getActualDefaultLocale,
+  getActualLocale,
+  getActualLocales,
+  getCookieLocale,
+  getPreferredLocale,
+  normalizeLocale,
+  ResolvedLocaleServerSideProps,
+  setCookieLocale,
+} from 'next-multilingual'
+import { getTitle, useMessages } from 'next-multilingual/messages'
+import { useRouter } from 'next/router'
+import { useEffect, useRef, useState } from 'react'
 
-import Layout from '@/layout';
+import Layout from '@/layout'
 
-import { useFruitsMessages } from '../messages/useFruitsMessages';
-import styles from './index.module.css';
+import { useFruitsMessages } from '../messages/useFruitsMessages'
+import styles from './index.module.css'
 
-import type { GetServerSideProps, NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next'
+import { HelloApiSchema } from './api/hello'
 
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
-  const router = useRouter();
-  const { locales, defaultLocale, basePath } = router;
+  const router = useRouter()
+  const { locales, defaultLocale, basePath } = router
 
   // Overwrite the locale with the resolved locale.
-  router.locale = resolvedLocale;
-  setCookieLocale(router.locale);
+  router.locale = resolvedLocale
+  setCookieLocale(router.locale)
 
   // Load the messages in the correct locale.
-  const messages = useMessages();
-  const fruitsMessages = useFruitsMessages();
+  const messages = useMessages()
+  const fruitsMessages = useFruitsMessages()
 
   // Counter used for ICU MessageFormat example.
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   // Localized API.
-  const [apiError, setApiError] = useState<DOMException | null>(null);
-  const [isApiLoaded, setApiIsLoaded] = useState(false);
-  const [apiMessage, setApiMessage] = useState('');
-  const controllerRef = useRef<AbortController | null>();
+  const [apiError, setApiError] = useState<DOMException | null>(null)
+  const [isApiLoaded, setApiIsLoaded] = useState(false)
+  const [apiMessage, setApiMessage] = useState('')
+  const controllerRef = useRef<AbortController | null>()
 
   useEffect(() => {
     if (controllerRef.current) {
@@ -41,14 +48,14 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
        * and an API response in the wrong language could be displayed. Every time `abort` called, it
        * will trigger an error which we ignore below.
        */
-      controllerRef.current.abort();
+      controllerRef.current.abort()
     }
-    const controller = new AbortController();
-    controllerRef.current = controller;
+    const controller = new AbortController()
+    controllerRef.current = controller
 
-    setApiIsLoaded(false);
-    const requestHeaders: HeadersInit = new Headers();
-    requestHeaders.set('Accept-Language', normalizeLocale(router.locale as string));
+    setApiIsLoaded(false)
+    const requestHeaders: HeadersInit = new Headers()
+    requestHeaders.set('Accept-Language', normalizeLocale(router.locale as string))
     fetch(`${basePath}/api/hello`, {
       headers: requestHeaders,
       signal: controllerRef.current?.signal,
@@ -56,19 +63,20 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
       .then((result) => result.json())
       .then(
         (result) => {
-          setApiIsLoaded(true);
-          setApiMessage(result.message);
-          controllerRef.current = null;
+          const apiResponse = result as unknown as HelloApiSchema
+          setApiIsLoaded(true)
+          setApiMessage(apiResponse.message)
+          controllerRef.current = null
         },
         (apiError: DOMException) => {
           if (apiError.name !== 'AbortError') {
             // Only show valid errors.
-            setApiIsLoaded(true);
-            setApiError(apiError);
+            setApiIsLoaded(true)
+            setApiError(apiError)
           }
         }
-      );
-  }, [router.locale, basePath]);
+      )
+  }, [router.locale, basePath])
 
   function showApiMessage(): JSX.Element {
     if (apiError) {
@@ -77,11 +85,11 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           {messages.format('apiError')}
           {apiError.message}
         </>
-      );
+      )
     } else if (!isApiLoaded) {
-      return <>{messages.format('apiLoading')}</>;
+      return <>{messages.format('apiLoading')}</>
     } else {
-      return <>{apiMessage}</>;
+      return <>{apiMessage}</>
     }
   }
 
@@ -154,7 +162,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           <button
             id="plural-messages-subtract"
             onClick={() => {
-              if (count > 0) setCount(count - 1);
+              if (count > 0) setCount(count - 1)
             }}
             title={messages.format('mfRemoveCandy')}
           >
@@ -168,20 +176,21 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
         </div>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
 
 export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
   nextPageContext
+  // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
-  const { req, locale, locales, defaultLocale } = nextPageContext;
+  const { req, locale, locales, defaultLocale } = nextPageContext
 
-  const actualLocales = getActualLocales(locales, defaultLocale);
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale);
-  const cookieLocale = getCookieLocale(nextPageContext, actualLocales);
-  let resolvedLocale = getActualLocale(locale, defaultLocale, locales);
+  const actualLocales = getActualLocales(locales, defaultLocale)
+  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale)
+  const cookieLocale = getCookieLocale(nextPageContext, actualLocales)
+  let resolvedLocale = getActualLocale(locale, defaultLocale, locales)
 
   // When Next.js tries to use the default locale, try to find a better one.
   if (locale === defaultLocale) {
@@ -191,12 +200,12 @@ export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProp
           req.headers['accept-language'],
           actualLocales,
           actualDefaultLocale
-        ).toLowerCase();
+        ).toLowerCase()
   }
 
   return {
     props: {
       resolvedLocale,
     },
-  };
-};
+  }
+}

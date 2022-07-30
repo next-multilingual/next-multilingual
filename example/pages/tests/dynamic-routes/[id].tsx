@@ -1,22 +1,22 @@
-import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
-import Link from 'next-multilingual/link';
-import { getTitle, useMessages } from 'next-multilingual/messages';
-import { useLocalizedUrl } from 'next-multilingual/url';
-import { useRouter } from 'next/router';
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import Link from 'next-multilingual/link'
+import { getTitle, useMessages } from 'next-multilingual/messages'
+import { useLocalizedUrl } from 'next-multilingual/url'
+import { useRouter } from 'next/router'
 
-import Layout from '@/layout';
+import Layout from '@/layout'
 
-import styles from './[id].module.css';
+import styles from './[id].module.css'
 
 const Id: NextPage = () => {
-  const messages = useMessages();
-  const title = getTitle(messages);
-  const { pathname, asPath, query, locale } = useRouter();
+  const messages = useMessages()
+  const title = getTitle(messages)
+  const { pathname, asPath, query, locale } = useRouter()
 
   const localizedUrl = useLocalizedUrl({
     pathname,
     query,
-  });
+  })
 
   return (
     <Layout title={title}>
@@ -61,10 +61,10 @@ const Id: NextPage = () => {
         </Link>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default Id;
+export default Id
 
 /**
  * By default, Next.js does not populate the `query` value when using the `useRouter` hook.
@@ -88,6 +88,7 @@ export default Id;
  * };
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/require-await
 export const getStaticPaths: GetStaticPaths = async () => {
   /**
    * We'll pre-render only the default [id] at build time. { fallback: blocking } will server-render pages on-demand
@@ -102,14 +103,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
       },
     ],
     fallback: 'blocking',
-  };
-};
+  }
+}
 
 /**
  * `getStaticProps` is required for `getStaticPaths` to work.
  *
  * @returns Empty properties, since we are only using this for the static paths.
  */
+// eslint-disable-next-line @typescript-eslint/require-await
 export const getStaticProps: GetStaticProps = async () => {
-  return { props: {} };
-};
+  return { props: {} }
+}

@@ -1,15 +1,15 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
-import { getBasePath } from '../helpers/get-base-path';
-import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites';
-import { getRewrites } from '../helpers/get-rewrites';
-import { Url } from '../types';
+import { getBasePath } from '../helpers/get-base-path'
+import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
+import { getRewrites } from '../helpers/get-rewrites'
+import { Url } from '../types'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
   throw new Error(
     '`next-multilingual/link/ssr` must only be used on the server, please use `next-multilingual/link` instead'
-  );
+  )
 }
 
 /**
@@ -31,8 +31,8 @@ export function useLocalizedUrl(
   absolute = false,
   includeBasePath = false
 ): string {
-  const router = useRouter();
-  const applicableLocale = locale ? locale : router.locale;
+  const router = useRouter()
+  const applicableLocale = locale ? locale : router.locale
   return getLocalizedUrlFromRewrites(
     getRewrites(),
     url,
@@ -40,7 +40,7 @@ export function useLocalizedUrl(
     absolute,
     router.basePath,
     includeBasePath
-  );
+  )
 }
 
 /**
@@ -60,5 +60,5 @@ export function getLocalizedUrl(url: Url, locale: string, absolute = false): str
     locale.toLowerCase(),
     absolute,
     getBasePath()
-  );
+  )
 }

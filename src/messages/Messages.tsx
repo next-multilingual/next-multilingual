@@ -1,22 +1,22 @@
-import { highlight, highlightFilePath, log, normalizeLocale } from '../';
-import { MessagesIndex, MixedValues, PlaceholderValues } from './';
-import { Message } from './Message';
-import { KeyValueObject } from './properties';
+import { highlight, highlightFilePath, log, normalizeLocale } from '../'
+import { MessagesIndex, MixedValues, PlaceholderValues } from './'
+import { Message } from './Message'
+import { KeyValueObject } from './properties'
 
 /**
  * Object used to format localized messages of a local scope.
  */
 export class Messages {
   /** Localized messages of a local scope. */
-  private messages: Message[] = [];
+  private messages: Message[] = []
   /** An index to optimize `get` access on messages. */
-  private messagesIndex: MessagesIndex = {};
+  private messagesIndex: MessagesIndex = {}
   /** The current locale from Next.js. */
-  readonly locale: string;
+  readonly locale: string
   /** The source (the file calling `useMessages`) file path. */
-  readonly sourceFilePath: string;
+  readonly sourceFilePath: string
   /** The messages file path. */
-  readonly messagesFilePath: string;
+  readonly messagesFilePath: string
 
   /**
    * Create an object used to format localized messages of a local scope.
@@ -35,12 +35,12 @@ export class Messages {
     if (keyValueObject) {
       Object.keys(keyValueObject).forEach((key) => {
         this.messagesIndex[key] =
-          this.messages.push(new Message(this, key, keyValueObject[key])) - 1;
-      });
+          this.messages.push(new Message(this, key, keyValueObject[key])) - 1
+      })
     }
-    this.locale = normalizeLocale(locale) as string;
-    this.sourceFilePath = sourceFilePath;
-    this.messagesFilePath = messagesFilePath;
+    this.locale = normalizeLocale(locale)
+    this.sourceFilePath = sourceFilePath
+    this.messagesFilePath = messagesFilePath
   }
 
   /**
@@ -54,21 +54,21 @@ export class Messages {
   public format(key: string, values?: PlaceholderValues): string {
     if (!this.messages.length) {
       // No need to log the error since it was caught when calling `useMessage()`.
-      return '';
+      return ''
     }
 
-    const message = this.messages[this.messagesIndex[key]];
+    const message = this.messages[this.messagesIndex[key]]
 
     if (message === undefined) {
       log.warn(
         `unable to format key with identifier ${highlight(key)} in ${highlightFilePath(
           this.sourceFilePath
         )} because it was not found in messages file ${highlightFilePath(this.messagesFilePath)}`
-      );
-      return '';
+      )
+      return ''
     }
 
-    return message.format(values);
+    return message.format(values)
   }
 
   /**
@@ -82,21 +82,21 @@ export class Messages {
   public formatJsx(key: string, values: MixedValues): JSX.Element {
     if (!this.messages.length) {
       // No need to log the error since it was caught when calling `useMessage()`.
-      return <></>;
+      return <></>
     }
 
-    const message = this.messages[this.messagesIndex[key]];
+    const message = this.messages[this.messagesIndex[key]]
 
     if (message === undefined) {
       log.warn(
         `unable to format key with identifier ${highlight(key)} in ${highlightFilePath(
           this.sourceFilePath
         )} because it was not found in messages file ${highlightFilePath(this.messagesFilePath)}`
-      );
-      return <></>;
+      )
+      return <></>
     }
 
-    return message.formatJsx(values);
+    return message.formatJsx(values)
   }
 
   /**
@@ -107,7 +107,7 @@ export class Messages {
    * @returns The message associated with the key in a given local scope.
    */
   public get(key: string): Message {
-    return this.messages[this.messagesIndex[key]];
+    return this.messages[this.messagesIndex[key]]
   }
 
   /**
@@ -116,7 +116,7 @@ export class Messages {
    * @returns All messages contained in a given local scope.
    */
   public getAll(): Message[] {
-    return this.messages;
+    return this.messages
   }
 
   /**
@@ -127,6 +127,6 @@ export class Messages {
    * @returns True if the message associated with the key in a given local scope exists, otherwise false.
    */
   public exists(key: string): boolean {
-    return this.messages[this.messagesIndex[key]] !== undefined;
+    return this.messages[this.messagesIndex[key]] !== undefined
   }
 }

@@ -1,0 +1,55 @@
+---
+root: true # Disables inheritance from parent config.
+env:
+  browser: true
+  node: true
+  es6: true
+parser: '@typescript-eslint/parser'
+parserOptions:
+  project:
+    - 'tsconfig.json'
+    - 'cypress/tsconfig.json'
+extends:
+  - eslint:recommended
+  - plugin:import/recommended
+  - plugin:@typescript-eslint/recommended
+  - plugin:@typescript-eslint/recommended-requiring-type-checking
+  - plugin:react/recommended
+  - plugin:react/jsx-runtime
+  - plugin:react-hooks/recommended
+  - plugin:jsx-a11y/recommended
+  - plugin:prettier/recommended
+settings:
+  react:
+    version: detect
+  import/resolver:
+    node:
+      extensions:
+        - '.js'
+        - '.jsx'
+        - '.ts'
+        - '.tsx'
+rules:
+  # Normalize line breaks across operating systems to avoid polluting Git
+  linebreak-style:
+    - error
+    - unix
+  # Increase the level to 'error' for unused variables (the default is set to 'warning')
+  # @see https://typescript-eslint.io/rules/no-unused-vars/
+  '@typescript-eslint/no-unused-vars':
+    - error
+  # This check will only be enabled for TypeScript (the real configuration is in the 'overrides')
+  # @see https://typescript-eslint.io/rules/explicit-function-return-type/#configuring-in-a-mixed-jsts-codebase
+  '@typescript-eslint/explicit-function-return-type': 'off'
+overrides:
+  - files:
+      - '*.ts'
+      - '*.mts'
+      - '*.cts'
+      - '*.tsx'
+    rules:
+      # Show errors when missing return types are missing on relevant functions
+      '@typescript-eslint/explicit-function-return-type':
+        - error
+        - allowExpressions: true
+          allowConciseArrowFunctionExpressionsStartingWithVoid: true

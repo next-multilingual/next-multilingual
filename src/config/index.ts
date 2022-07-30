@@ -1,56 +1,73 @@
-import type { Rewrite, Redirect } from 'next/dist/lib/load-custom-routes';
-import CheapWatch from 'cheap-watch';
-import { existsSync, readdirSync, Stats, utimesSync } from 'fs';
-import { extname } from 'path';
+import CheapWatch from 'cheap-watch'
+import { existsSync, readdirSync, Stats, utimesSync } from 'fs'
+import type { Redirect, Rewrite } from 'next/dist/lib/load-custom-routes'
+import { extname } from 'path'
 
 import {
-    highlight, highlightFilePath, isLocale, log, normalizeLocale, queryToRewriteParameters
-} from '../';
+  highlight,
+  highlightFilePath,
+  isLocale,
+  log,
+  normalizeLocale,
+  queryToRewriteParameters,
+} from '../'
 import {
-    getMessagesFilePath, getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription,
-    SLUG_KEY_ID, slugify
-} from '../messages';
-import { parsePropertiesFile } from '../messages/properties';
+  getMessagesFilePath,
+  getSourceFilePath,
+  keySegmentRegExp,
+  keySegmentRegExpDescription,
+  slugify,
+  SLUG_KEY_ID,
+} from '../messages'
+import { parsePropertiesFile } from '../messages/properties'
 
-import type { NextConfig } from 'next';
+import type { NextConfig } from 'next'
+
 /**
  * Possible `pages` directories used by Next.js.
  *
  * @see https://nextjs.org/docs/advanced-features/src-directory
  */
-export const PAGES_DIRECTORIES = ['pages', 'src/pages'];
+export const PAGES_DIRECTORIES = ['pages', 'src/pages']
 
 /**
  * These are the pages file extensions Next.js will use (in this order) if duplicate pages are found.
  */
-export const PAGE_FILE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js'];
+export const PAGE_FILE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js']
 
 /**
  * These are special page files used by Next.js that will not have their own routes. Extensions is excluded since they
  * can vary. The paths are relative to the `pages` directory.
  */
-export const NON_ROUTABLE_PAGE_FILES = ['index', '_app', '_document', '_error', '404', '500'];
+export const NON_ROUTABLE_PAGE_FILES = ['index', '_app', '_document', '_error', '404', '500']
+
+/**
+ * Next.js did not define any types for its Webpack configs.
+ *
+ * @see https://github.com/vercel/next.js/blob/canary/packages/next/compiled/webpack/webpack.d.ts
+ */
+export type WebpackConfig = { resolve: { alias: { [key: string]: string } } }
 
 /**
  * Get all possible permutations of the non-routable app-root-relative pages file paths.
  */
 export function getNonRoutablePages(): string[] {
-  const nonRoutablePages: string[] = [];
+  const nonRoutablePages: string[] = []
   PAGES_DIRECTORIES.forEach((pagesDirectory) => {
     NON_ROUTABLE_PAGE_FILES.forEach((nonRoutablePageFile) => {
       PAGE_FILE_EXTENSIONS.forEach((pageFileExtension) =>
         nonRoutablePages.push(`${pagesDirectory}/${nonRoutablePageFile}${pageFileExtension}`)
-      );
-    });
-  });
-  return nonRoutablePages;
+      )
+    })
+  })
+  return nonRoutablePages
 }
 
 /**
  * All possible permutations of the non-routable app-root-relative pages file paths. Pre-generating these will
  * avoid complex path manipulations and allow to deal with complete file paths only.
  */
-export const NON_ROUTABLE_PAGES = getNonRoutablePages();
+export const NON_ROUTABLE_PAGES = getNonRoutablePages()
 
 /**
  * Get the `pages` directory path from a directory entry path (file or directory).
@@ -62,10 +79,10 @@ export const NON_ROUTABLE_PAGES = getNonRoutablePages();
 export function getPagesDirectoryPath(filesystemPath: string): string {
   for (const pagesDirectory of PAGES_DIRECTORIES) {
     if (filesystemPath === pagesDirectory || filesystemPath.startsWith(`${pagesDirectory}/`)) {
-      return pagesDirectory;
+      return pagesDirectory
     }
   }
-  throw new Error(`invalid filesystem path: ${filesystemPath}`);
+  throw new Error(`invalid filesystem path: ${filesystemPath}`)
 }
 
 /**
@@ -76,20 +93,20 @@ export function getPagesDirectoryPath(filesystemPath: string): string {
  * @return The filesystem path without the extension.
  */
 export function removeFileExtension(filesystemPath: string): string {
-  const pathComponents = filesystemPath.split('/');
-  const basename = pathComponents.pop() as string;
+  const pathComponents = filesystemPath.split('/')
+  const basename = pathComponents.pop() as string
 
   if (!basename.includes('.')) {
-    return filesystemPath;
+    return filesystemPath
   }
 
-  const filename = `${basename.split('.').slice(0, -1).join('.')}`;
-  const directoryPath = pathComponents.join('/');
+  const filename = `${basename.split('.').slice(0, -1).join('.')}`
+  const directoryPath = pathComponents.join('/')
 
   if (!directoryPath.length) {
-    return filename;
+    return filename
   } else {
-    return `${directoryPath}/${filename}`;
+    return `${directoryPath}/${filename}`
   }
 }
 
@@ -101,9 +118,9 @@ export function removeFileExtension(filesystemPath: string): string {
  * @return The filesystem path without the pages directory.
  */
 export function removePagesDirectoryPath(filesystemPath: string): string {
-  const pagesDirectory = getPagesDirectoryPath(filesystemPath);
-  const pagesRegExp = new RegExp(`^${pagesDirectory}\\/`);
-  return filesystemPath.replace(pagesRegExp, '');
+  const pagesDirectory = getPagesDirectoryPath(filesystemPath)
+  const pagesRegExp = new RegExp(`^${pagesDirectory}\\/`)
+  return filesystemPath.replace(pagesRegExp, '')
 }
 
 /**
@@ -116,9 +133,9 @@ export function removePagesDirectoryPath(filesystemPath: string): string {
 export function getNonLocalizedUrlPath(filesystemPath: string): string {
   const urlPath = removeFileExtension(removePagesDirectoryPath(filesystemPath))
     .replace(/\\/g, '/')
-    .replace(/\/index$/, '');
+    .replace(/\/index$/, '')
 
-  return !urlPath.length ? '/' : urlPath[0] !== '/' ? `/${urlPath}` : urlPath;
+  return !urlPath.length ? '/' : urlPath[0] !== '/' ? `/${urlPath}` : urlPath
 }
 
 /**
@@ -129,7 +146,7 @@ export function getNonLocalizedUrlPath(filesystemPath: string): string {
  * @return True if the URL path is an API Route, otherwise false.
  */
 export function isApiRoute(urlPath: string): boolean {
-  return urlPath === '/api' || urlPath.startsWith('/api/');
+  return urlPath === '/api' || urlPath.startsWith('/api/')
 }
 
 /**
@@ -140,8 +157,8 @@ export function isApiRoute(urlPath: string): boolean {
  * @return True if the URL path is a dynamic Route, otherwise false.
  */
 export function isDynamicRoute(urlPath: string): boolean {
-  const urlSegment = urlPath.split('/').pop() as string;
-  return urlSegment.startsWith('[') && urlSegment.endsWith(']');
+  const urlSegment = urlPath.split('/').pop() as string
+  return urlSegment.startsWith('[') && urlSegment.endsWith(']')
 }
 
 /**
@@ -153,18 +170,18 @@ export function isDynamicRoute(urlPath: string): boolean {
  */
 export function isInDebugMode(): boolean {
   if (typeof process !== 'undefined' && process?.env?.nextMultilingualDebug) {
-    return true;
+    return true
   }
-  return false;
+  return false
 }
 
 export class MultilingualRoute {
   /** The filesystem path (file or directory). */
-  public filesystemPath: string;
+  public filesystemPath: string
   /** The non-localized URL path of a route. */
-  public nonLocalizedUrlPath: string;
+  public nonLocalizedUrlPath: string
   /** An array of localized URL path objects. */
-  public localizedUrlPaths: LocalizedUrlPath[] = [];
+  public localizedUrlPaths: LocalizedUrlPath[] = []
 
   /**
    * A unique route entry, including its localized URL paths.
@@ -174,39 +191,38 @@ export class MultilingualRoute {
    * @param routes - The current route object array being constructed during a recursive call.
    */
   constructor(filesystemPath: string, locales: string[], routes: MultilingualRoute[]) {
-    this.filesystemPath = filesystemPath;
-    this.nonLocalizedUrlPath = getNonLocalizedUrlPath(filesystemPath);
+    this.filesystemPath = filesystemPath
+    this.nonLocalizedUrlPath = getNonLocalizedUrlPath(filesystemPath)
 
-    const nonLocalizedSlug = this.nonLocalizedUrlPath.split('/').pop();
-    const isDynamic = isDynamicRoute(this.nonLocalizedUrlPath);
+    const nonLocalizedSlug = this.nonLocalizedUrlPath.split('/').pop()
+    const isDynamic = isDynamicRoute(this.nonLocalizedUrlPath)
 
     const parentNonLocalizedUrlPath =
       (this.nonLocalizedUrlPath.match(/\//g) || []).length > 1
         ? this.nonLocalizedUrlPath.split('/').slice(0, -1).join('/')
-        : undefined;
+        : undefined
 
     const parentRoute =
       parentNonLocalizedUrlPath !== undefined
         ? routes.find((route) => route.nonLocalizedUrlPath === parentNonLocalizedUrlPath)
-        : undefined;
+        : undefined
 
     locales.forEach((locale) => {
-      const localizedSlug = !isDynamic ? this.getLocalizedSlug(filesystemPath, locale) : '';
-      const applicableSlug = localizedSlug !== '' ? localizedSlug : nonLocalizedSlug;
-      const urlPath =
-        (parentRoute !== undefined
+      const localizedSlug = !isDynamic ? this.getLocalizedSlug(filesystemPath, locale) : ''
+      const applicableSlug = localizedSlug !== '' ? localizedSlug : (nonLocalizedSlug as string)
+      const urlPath = `${
+        parentRoute !== undefined
           ? parentRoute.localizedUrlPaths.find(
               (localizedUrlPath) => localizedUrlPath.locale === locale
             )?.urlPath ?? ''
-          : '') +
-        '/' +
-        applicableSlug;
+          : ''
+      }/${applicableSlug}`
 
       this.localizedUrlPaths.push({
         locale,
         urlPath,
-      });
-    });
+      })
+    })
   }
 
   /**
@@ -218,32 +234,30 @@ export class MultilingualRoute {
    * @return The localized slug.
    */
   private getLocalizedSlug(filesystemPath: string, locale: string): string {
-    const messagesFilePath = getMessagesFilePath(filesystemPath, locale);
+    const messagesFilePath = getMessagesFilePath(filesystemPath, locale)
 
     if (!existsSync(messagesFilePath)) {
       log.warn(
-        `unable to create the ${highlight(
-          normalizeLocale(locale) as string
-        )} slug for ${highlightFilePath(filesystemPath)}. The message file ${highlightFilePath(
-          messagesFilePath
-        )} does not exist.`
-      );
-      return '';
+        `unable to create the ${highlight(normalizeLocale(locale))} slug for ${highlightFilePath(
+          filesystemPath
+        )}. The message file ${highlightFilePath(messagesFilePath)} does not exist.`
+      )
+      return ''
     }
 
-    const keyValueObject = parsePropertiesFile(messagesFilePath);
-    const slugKey = Object.keys(keyValueObject).find((key) => key.endsWith(`.${SLUG_KEY_ID}`));
+    const keyValueObject = parsePropertiesFile(messagesFilePath)
+    const slugKey = Object.keys(keyValueObject).find((key) => key.endsWith(`.${SLUG_KEY_ID}`))
     if (!slugKey) {
       log.warn(
-        `unable to create the ${highlight(
-          normalizeLocale(locale) as string
-        )} slug for ${highlightFilePath(filesystemPath)}. The message file ${highlightFilePath(
+        `unable to create the ${highlight(normalizeLocale(locale))} slug for ${highlightFilePath(
+          filesystemPath
+        )}. The message file ${highlightFilePath(
           messagesFilePath
         )} must include a key with the ${highlight(SLUG_KEY_ID)} identifier.`
-      );
-      return '';
+      )
+      return ''
     }
-    return slugify(keyValueObject[slugKey], locale);
+    return slugify(keyValueObject[slugKey], locale)
   }
 
   /**
@@ -256,8 +270,8 @@ export class MultilingualRoute {
   public getLocalizedUrlPath(locale: string): string {
     const localizedUrlPath = this.localizedUrlPaths.find(
       (localizedUrlPath) => localizedUrlPath.locale === locale
-    );
-    return localizedUrlPath?.urlPath ?? '';
+    )
+    return localizedUrlPath?.urlPath ?? ''
   }
 }
 
@@ -266,22 +280,22 @@ export class MultilingualRoute {
  */
 export type LocalizedUrlPath = {
   /** The locale of the URL path. */
-  locale: string;
+  locale: string
   /** The localized URL path. */
-  urlPath: string;
-};
+  urlPath: string
+}
 
 export class Config {
   /** The actual desired locales of the multilingual application. */
-  private readonly actualLocales: string[];
+  private readonly actualLocales: string[]
   /** The locales used by the Next.js configuration. */
-  private readonly locales: string[];
+  private readonly locales: string[]
   /** The default locale used by the Next.js configuration. */
-  private readonly defaultLocale: string;
+  private readonly defaultLocale: string
   /** The directory path where the Next.js pages can be found. */
-  private readonly pagesDirectoryPath: string = PAGES_DIRECTORIES[0];
+  private readonly pagesDirectoryPath: string = PAGES_DIRECTORIES[0]
   /** The Next.js application's multilingual routes. */
-  private routes: MultilingualRoute[];
+  private routes: MultilingualRoute[]
 
   /**
    * A multilingual configuration handler.
@@ -297,11 +311,11 @@ export class Config {
     if (!keySegmentRegExp.test(applicationId)) {
       throw new Error(
         `invalid application identifier '${applicationId}'. Application identifiers ${keySegmentRegExpDescription}.`
-      );
+      )
     }
 
     // Add `applicationId` to environment variables so that it is available at build time (by Babel), without extra config.
-    process.env.nextMultilingualApplicationId = applicationId;
+    process.env.nextMultilingualApplicationId = applicationId
 
     // Verify if the locale identifiers are using the right format.
     locales.forEach((locale) => {
@@ -310,65 +324,63 @@ export class Config {
           'invalid locale `' +
             locale +
             '` . `next-multilingual` only uses locale identifiers following the `language`-`country` format.'
-        );
+        )
       }
-    });
+    })
 
     // Set the actual desired locales of the multilingual application.
-    this.actualLocales = locales.map((locale) => normalizeLocale(locale) as string);
+    this.actualLocales = locales.map((locale) => normalizeLocale(locale))
     // The `mul` (multilingual) default locale is required for dynamic locale resolution for requests on `/`.
-    this.defaultLocale = 'mul';
+    this.defaultLocale = 'mul'
     // By convention, the first locale configured in Next.js will be the default locale.
-    this.locales = [this.defaultLocale, ...this.actualLocales];
+    this.locales = [this.defaultLocale, ...this.actualLocales]
 
     // Set the correct `pages` directory used by the Next.js application.
-    let pagesDirectoryExists = false;
+    let pagesDirectoryExists = false
     for (const pageDirectory of PAGES_DIRECTORIES) {
       if (existsSync(pageDirectory)) {
-        this.pagesDirectoryPath = pageDirectory;
-        pagesDirectoryExists = true;
-        break;
+        this.pagesDirectoryPath = pageDirectory
+        pagesDirectoryExists = true
+        break
       }
     }
 
     if (!pagesDirectoryExists) {
-      throw new Error('unable to find the pages directory');
+      throw new Error('unable to find the pages directory')
     }
 
-    this.routes = this.fetchRoutes();
+    this.routes = this.fetchRoutes()
 
     // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
     if (process.env.NODE_ENV === 'development') {
-      let routesSnapshot = this.routes;
+      let routesSnapshot = this.routes
 
       const watch = new CheapWatch({
         dir: process.cwd(),
         filter: ({ path, stats }: { path: string; stats: Stats }) =>
-          ((stats as Stats).isFile() && (path as string).includes('.properties')) ||
-          ((stats as Stats).isDirectory() &&
-            !(path as string).includes('node_modules') &&
-            !(path as string).includes('.next')),
-      });
+          (stats.isFile() && path.includes('.properties')) ||
+          (stats.isDirectory() && !path.includes('node_modules') && !path.includes('.next')),
+      })
 
-      watch.init();
+      void watch.init()
 
-      watch.on('+', ({ path, stats }) => {
-        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot);
-      });
-      watch.on('-', ({ path, stats }) => {
-        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot);
-      });
+      watch.on('+', ({ path, stats }: { path: string; stats: Stats }) => {
+        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
+      })
+      watch.on('-', ({ path, stats }: { path: string; stats: Stats }) => {
+        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
+      })
     }
 
     // Check if debug mode was enabled.
     if (debug) {
-      process.env.nextMultilingualDebug = 'true'; // Set flag on the server to re-use in other modules.
-      console.log('==== ROUTES ====');
-      console.dir(this.getRoutes(), { depth: null });
-      console.log('==== REWRITES ====');
-      console.dir(this.getRewrites(), { depth: null });
-      console.log('==== REDIRECTS ====');
-      console.dir(this.getRedirects(), { depth: null });
+      process.env.nextMultilingualDebug = 'true' // Set flag on the server to re-use in other modules.
+      console.log('==== ROUTES ====')
+      console.dir(this.getRoutes(), { depth: null })
+      console.log('==== REWRITES ====')
+      console.dir(this.getRewrites(), { depth: null })
+      console.log('==== REDIRECTS ====')
+      console.dir(this.getRedirects(), { depth: null })
     }
   }
 
@@ -386,25 +398,25 @@ export class Config {
     messagesFileStats: Stats,
     routesSnapshot: MultilingualRoute[]
   ): MultilingualRoute[] {
-    if (!messagesFileStats.isFile()) return routesSnapshot;
+    if (!messagesFileStats.isFile()) return routesSnapshot
 
     for (const pageFileExtension of PAGE_FILE_EXTENSIONS) {
-      const sourceFilePath = getSourceFilePath(messagesFilePath, pageFileExtension);
+      const sourceFilePath = getSourceFilePath(messagesFilePath, pageFileExtension)
 
       if (existsSync(sourceFilePath)) {
         // "touch" the file without any changes to trigger recompile.
-        utimesSync(sourceFilePath, new Date(), new Date());
-        const currentRoutes = this.fetchRoutes();
+        utimesSync(sourceFilePath, new Date(), new Date())
+        const currentRoutes = this.fetchRoutes()
         if (JSON.stringify(currentRoutes) !== JSON.stringify(routesSnapshot)) {
           log.warn(
             `Found a change impacting localized URLs. Restart the server to see the changes in effect.`
-          );
-          return currentRoutes; // Update snapshot to avoid logging all subsequent changes.
+          )
+          return currentRoutes // Update snapshot to avoid logging all subsequent changes.
         }
-        break;
+        break
       }
     }
-    return routesSnapshot;
+    return routesSnapshot
   }
 
   /**
@@ -413,7 +425,7 @@ export class Config {
    * @returns The multilingual routes.
    */
   public getRoutes(): MultilingualRoute[] {
-    return this.routes;
+    return this.routes
   }
 
   /**
@@ -422,7 +434,7 @@ export class Config {
    * @return The locales prefixes, all in lowercase.
    */
   public getUrlLocalePrefixes(): string[] {
-    return this.locales.map((locale) => locale.toLowerCase());
+    return this.locales.map((locale) => locale.toLowerCase())
   }
 
   /**
@@ -431,7 +443,7 @@ export class Config {
    * @return The default locale prefix, in lowercase.
    */
   public getDefaultUrlLocalePrefix(): string {
-    return this.defaultLocale.toLowerCase();
+    return this.defaultLocale.toLowerCase()
   }
 
   /**
@@ -442,14 +454,14 @@ export class Config {
    */
   private addPageRoute(pageFilePath: string, routes: MultilingualRoute[]): void {
     if (extname(pageFilePath) === '') {
-      throw new Error(`invalid page file path ${pageFilePath}`);
+      throw new Error(`invalid page file path ${pageFilePath}`)
     }
 
-    const nonLocalizedUrlPath = getNonLocalizedUrlPath(pageFilePath);
+    const nonLocalizedUrlPath = getNonLocalizedUrlPath(pageFilePath)
 
     const filePathsWithSlug = this.getFilePathsWithSlug(pageFilePath).map((filePathWithSlug) =>
       highlightFilePath(filePathWithSlug)
-    );
+    )
 
     // Check if the route is a non-routable page file.
     if (NON_ROUTABLE_PAGES.includes(pageFilePath)) {
@@ -458,15 +470,13 @@ export class Config {
           `invalid slug${filePathsWithSlug.length > 1 ? 's' : ''} found in ${filePathsWithSlug.join(
             ', '
           )} since ${highlightFilePath(pageFilePath)} is a non-routable page file.`
-        );
+        )
       }
-      return; // Skip as the file is non-routable.
+      return // Skip as the file is non-routable.
     }
 
     // Check if the route already exists.
-    const duplicateRoute = routes.find(
-      (route) => route.nonLocalizedUrlPath === nonLocalizedUrlPath
-    );
+    const duplicateRoute = routes.find((route) => route.nonLocalizedUrlPath === nonLocalizedUrlPath)
 
     if (duplicateRoute !== undefined) {
       if (filePathsWithSlug.length) {
@@ -478,9 +488,9 @@ export class Config {
           )} and ${highlightFilePath(pageFilePath)} both resolve to ${highlight(
             nonLocalizedUrlPath
           )}.`
-        );
+        )
       }
-      return; // Skip since we do not want duplicate routes.
+      return // Skip since we do not want duplicate routes.
     }
 
     // Check if the page is a dynamic route.
@@ -490,12 +500,12 @@ export class Config {
           `the slug${filePathsWithSlug.length > 1 ? 's' : ''} found in ${filePathsWithSlug.join(
             ', '
           )} will be ignored since ${highlight(nonLocalizedUrlPath)} is a dynamic route.`
-        );
+        )
       }
       // Do not skip, since URLs that contain dynamic segments might still be localized.
     }
 
-    routes.push(new MultilingualRoute(pageFilePath, this.actualLocales, routes));
+    routes.push(new MultilingualRoute(pageFilePath, this.actualLocales, routes))
   }
 
   /**
@@ -510,60 +520,60 @@ export class Config {
     directoryPath = this.pagesDirectoryPath,
     routes: MultilingualRoute[] = []
   ): MultilingualRoute[] {
-    const nonLocalizedUrlPath = getNonLocalizedUrlPath(directoryPath);
-    const isHomepage = nonLocalizedUrlPath === '/' ? true : false;
+    const nonLocalizedUrlPath = getNonLocalizedUrlPath(directoryPath)
+    const isHomepage = nonLocalizedUrlPath === '/' ? true : false
 
     if (isApiRoute(nonLocalizedUrlPath)) {
-      return routes; // Skip if the URL path is a Next.js' API Route.
+      return routes // Skip if the URL path is a Next.js' API Route.
     }
 
-    let indexFound = false;
-    let pageFilename, pageExtension, pageFilePath;
-    const directoryEntries = readdirSync(directoryPath, { withFileTypes: true });
+    let indexFound = false
+    let pageFilename, pageExtension, pageFilePath
+    const directoryEntries = readdirSync(directoryPath, { withFileTypes: true })
 
     // Start by checking indexes.
-    pageFilename = 'index';
+    pageFilename = 'index'
     for (pageExtension of PAGE_FILE_EXTENSIONS) {
-      pageFilePath = `${directoryPath}/${pageFilename}${pageExtension}`;
+      pageFilePath = `${directoryPath}/${pageFilename}${pageExtension}`
       if (existsSync(pageFilePath)) {
-        indexFound = true;
-        this.addPageRoute(pageFilePath, routes);
-        break; // Only one index per directory.
+        indexFound = true
+        this.addPageRoute(pageFilePath, routes)
+        break // Only one index per directory.
       }
     }
 
     // If there is no index, try to add a localized route on the directory, as long ad its not the homepage.
     if (!indexFound && !isHomepage) {
-      routes.push(new MultilingualRoute(directoryPath, this.actualLocales, routes));
+      routes.push(new MultilingualRoute(directoryPath, this.actualLocales, routes))
     }
 
     // Check all other files.
     directoryEntries.forEach((directoryEntry) => {
       if (directoryEntry.isFile()) {
-        pageExtension = extname(directoryEntry.name);
-        pageFilename = removeFileExtension(directoryEntry.name);
-        pageFilePath = `${directoryPath}/${pageFilename}${pageExtension}`;
+        pageExtension = extname(directoryEntry.name)
+        pageFilename = removeFileExtension(directoryEntry.name)
+        pageFilePath = `${directoryPath}/${pageFilename}${pageExtension}`
 
         if (!PAGE_FILE_EXTENSIONS.includes(pageExtension)) {
-          return; // Skip this file if the extension is not in scope.
+          return // Skip this file if the extension is not in scope.
         }
 
         if (pageFilename === 'index') {
-          return; // Skip index file since it was already done first.
+          return // Skip index file since it was already done first.
         }
 
-        this.addPageRoute(pageFilePath, routes);
+        this.addPageRoute(pageFilePath, routes)
       }
-    });
+    })
 
     // Look for sub-directories to build child routes.
     for (const directoryEntry of directoryEntries) {
       if (directoryEntry.isDirectory()) {
-        this.fetchRoutes(`${directoryPath}/${directoryEntry.name}`, routes);
+        this.fetchRoutes(`${directoryPath}/${directoryEntry.name}`, routes)
       }
     }
 
-    return routes;
+    return routes
   }
 
   /**
@@ -574,20 +584,20 @@ export class Config {
    * @returns The paths of messages files that contains a `slug` key.
    */
   private getFilePathsWithSlug(pageFilePath: string): string[] {
-    const messageFilePaths: string[] = [];
+    const messageFilePaths: string[] = []
 
     this.actualLocales.forEach((locale) => {
-      const messagesFilePath = getMessagesFilePath(pageFilePath, locale);
+      const messagesFilePath = getMessagesFilePath(pageFilePath, locale)
       if (!existsSync(messagesFilePath)) {
-        return;
+        return
       }
-      const keyValueObject = parsePropertiesFile(messagesFilePath);
+      const keyValueObject = parsePropertiesFile(messagesFilePath)
 
       if (Object.keys(keyValueObject).find((key) => key.endsWith(`.${SLUG_KEY_ID}`))) {
-        messageFilePaths.push(messagesFilePath);
+        messageFilePaths.push(messagesFilePath)
       }
-    });
-    return messageFilePaths;
+    })
+    return messageFilePaths
   }
 
   /**
@@ -598,7 +608,7 @@ export class Config {
    * @returns The encoded URL path.
    */
   private encodeUrlPath(urlPath: string): string {
-    return encodeURIComponent(urlPath).replace(/%2F/g, '/');
+    return encodeURIComponent(urlPath).replace(/%2F/g, '/')
   }
 
   /**
@@ -617,11 +627,11 @@ export class Config {
   ): string {
     let normalizedUrlPath = `${
       locale !== undefined ? `/${locale}` : ''
-    }${urlPath}`.toLocaleLowerCase(locale);
+    }${urlPath}`.toLocaleLowerCase(locale)
 
     if (encode) {
       // Normalize to NFC as per https://tools.ietf.org/html/rfc3987#section-3.1
-      normalizedUrlPath = this.encodeUrlPath(normalizedUrlPath);
+      normalizedUrlPath = this.encodeUrlPath(normalizedUrlPath)
     }
 
     // Need to unescape both rewrite and query parameters since we use the same method in `getRedirects`.
@@ -630,16 +640,16 @@ export class Config {
       .map((pathSegment) => {
         if (/%3A(.+)/.test(pathSegment)) {
           // Unescape rewrite parameters (e.g., `/:example`) if present.
-          return `:${pathSegment.slice(3)}`;
+          return `:${pathSegment.slice(3)}`
         } else if (/%5B(.+)%5D/.test(pathSegment)) {
           // Unescape query parameters (e.g., `/[example]`) if present.
-          return `:${pathSegment.slice(3, -3)}`;
+          return `:${pathSegment.slice(3, -3)}`
         }
-        return pathSegment;
+        return pathSegment
       })
-      .join('/');
+      .join('/')
 
-    return queryToRewriteParameters(normalizedUrlPath);
+    return queryToRewriteParameters(normalizedUrlPath)
   }
 
   /**
@@ -648,22 +658,22 @@ export class Config {
    * @returns An array of Next.js `Rewrite` objects.
    */
   public getRewrites(): Rewrite[] {
-    const rewrites: Rewrite[] = [];
+    const rewrites: Rewrite[] = []
     for (const route of this.routes) {
       for (const locale of this.actualLocales) {
-        const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale, true);
-        const destination = this.normalizeUrlPath(route.nonLocalizedUrlPath, locale);
+        const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale, true)
+        const destination = this.normalizeUrlPath(route.nonLocalizedUrlPath, locale)
 
         if (source !== destination) {
           rewrites.push({
             source,
             destination,
             locale: false,
-          });
+          })
         }
       }
     }
-    return rewrites;
+    return rewrites
   }
 
   /**
@@ -672,13 +682,13 @@ export class Config {
    * @returns An array of Next.js `Redirect` objects.
    */
   public getRedirects(): Redirect[] {
-    const redirects: Redirect[] = [];
+    const redirects: Redirect[] = []
     for (const route of this.routes) {
       for (const locale of this.actualLocales) {
-        const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale);
-        const canonical = this.normalizeUrlPath(source.normalize('NFC'), undefined, true);
+        const source = this.normalizeUrlPath(route.getLocalizedUrlPath(locale), locale)
+        const canonical = this.normalizeUrlPath(source.normalize('NFC'), undefined, true)
 
-        const alreadyIncluded = [canonical];
+        const alreadyIncluded = [canonical]
         for (const alternative of [
           source, // UTF-8
           this.normalizeUrlPath(source.normalize('NFD'), undefined, true),
@@ -691,13 +701,13 @@ export class Config {
               destination: canonical,
               locale: false,
               permanent: true,
-            });
-            alreadyIncluded.push(alternative);
+            })
+            alreadyIncluded.push(alternative)
           }
         }
       }
     }
-    return redirects;
+    return redirects
   }
 }
 
@@ -718,23 +728,23 @@ export function getConfig(
   options: NextConfig | ((phase: string, defaultConfig: NextConfig) => void)
 ): NextConfig {
   if (options instanceof Function) {
-    throw new Error('Function config is not supported. Please use the `Config` object instead');
+    throw new Error('Function config is not supported. Please use the `Config` object instead')
   }
 
-  ['env', 'i18n', 'webpack', 'rewrites', 'redirects'].forEach((option) => {
+  ;['env', 'i18n', 'webpack', 'rewrites', 'redirects'].forEach((option) => {
     if (options[option] !== undefined) {
       throw new Error(
         `the \`${option}\` option is not supported by \`getConfig\`. Please use the \`Config\` object instead`
-      );
+      )
     }
-  });
+  })
 
-  const nextConfig: NextConfig = options ? options : {};
-  const config = new Config(applicationId, locales, options?.debug);
+  const nextConfig: NextConfig = options ? options : {}
+  const config = new Config(applicationId, locales, !!options?.debug)
 
   // Remove debug option if used.
   if (typeof options.debug !== 'undefined') {
-    delete options.debug;
+    delete options.debug
   }
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
@@ -742,54 +752,54 @@ export function getConfig(
     locales: config.getUrlLocalePrefixes(),
     defaultLocale: config.getDefaultUrlLocalePrefix(),
     localeDetection: false, // This is important to use the improved language detection feature.
-  };
+  }
 
   // Add strict mode by default.
   if (nextConfig?.reactStrictMode !== false) {
-    nextConfig.reactStrictMode = true;
+    nextConfig.reactStrictMode = true
   }
 
   if (nextConfig?.experimental?.esmExternals !== undefined) {
     /* This is required since Next.js 11.1.3-canary.69 until we support ESM. */
     throw new Error(
       'the `esmExternals` option is not supported by `next-multilingual` until we support ESM'
-    );
+    )
   }
   if (nextConfig.experimental && typeof nextConfig.experimental !== 'object') {
-    throw new Error('invalid value for the `experimental` option');
+    throw new Error('invalid value for the `experimental` option')
   }
   if (nextConfig.experimental) {
-    nextConfig.experimental.esmExternals = false;
+    nextConfig.experimental.esmExternals = false
   } else {
     nextConfig.experimental = {
       esmExternals: false,
-    };
+    }
   }
 
   // Set Webpack config.
-  nextConfig.webpack = (config, { isServer }) => {
+  nextConfig.webpack = (config: WebpackConfig, { isServer }) => {
     // Overwrite the `link` component for SSR.
     if (isServer) {
       config.resolve.alias['next-multilingual/head$'] = require.resolve(
         'next-multilingual/head/ssr'
-      );
+      )
       config.resolve.alias['next-multilingual/link$'] = require.resolve(
         'next-multilingual/link/ssr'
-      );
-      config.resolve.alias['next-multilingual/url$'] = require.resolve('next-multilingual/url/ssr');
+      )
+      config.resolve.alias['next-multilingual/url$'] = require.resolve('next-multilingual/url/ssr')
     }
-    return config;
-  };
+    return config
+  }
 
   // Sets localized URLs as rewrites rules.
   nextConfig.rewrites = async () => {
-    return config.getRewrites();
-  };
+    return Promise.resolve(config.getRewrites())
+  }
 
   // Sets redirect rules to normalize URL encoding.
   nextConfig.redirects = async () => {
-    return config.getRedirects();
-  };
+    return Promise.resolve(config.getRedirects())
+  }
 
-  return nextConfig;
+  return nextConfig
 }

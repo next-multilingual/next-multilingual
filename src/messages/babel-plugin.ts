@@ -1,16 +1,16 @@
-import { HijackTarget, KeyValueObject, messageModulePlugin } from 'messages-modules';
-import { getProperties } from 'properties-file';
+import { HijackTarget, KeyValueObject, messageModulePlugin } from 'messages-modules'
+import { getProperties } from 'properties-file'
 
-import { highlight, highlightFilePath, log } from '../';
-import { keySegmentRegExp, keySegmentRegExpDescription } from './';
+import { highlight, highlightFilePath, log } from '../'
+import { keySegmentRegExp, keySegmentRegExpDescription } from './'
 
-import type { PluginObj } from '@babel/core';
+import type { PluginObj } from '@babel/core'
 
-const isInNextJs = process?.env?.__NEXT_PROCESSED_ENV === 'true';
-const applicationId = process?.env?.nextMultilingualApplicationId as string;
+const isInNextJs = process?.env?.__NEXT_PROCESSED_ENV === 'true'
+const applicationId = process?.env?.nextMultilingualApplicationId as string
 
 if (isInNextJs && (applicationId === undefined || !keySegmentRegExp.test(applicationId))) {
-  throw new Error(`you must define your application identifier using \`next-multilingual/config\``);
+  throw new Error(`you must define your application identifier using \`next-multilingual/config\``)
 }
 
 /**
@@ -25,7 +25,7 @@ export const hijackTargets: HijackTarget[] = [
     module: 'next-multilingual/messages',
     function: 'getMessages',
   },
-];
+]
 
 /**
  * Get messages from properties file.
@@ -39,12 +39,12 @@ export const hijackTargets: HijackTarget[] = [
  * @returns A "key/value" object storing messages where the key only contains the identifier segment of the key.
  */
 export function getMessages(propertiesFilePath: string): KeyValueObject {
-  const properties = getProperties(propertiesFilePath);
-  let context: string | undefined;
-  const compactedKeyValueObject: KeyValueObject = {};
+  const properties = getProperties(propertiesFilePath)
+  let context: string | undefined
+  const compactedKeyValueObject: KeyValueObject = {}
 
   for (const property of properties.collection) {
-    const keySegments = property.key.split('.');
+    const keySegments = property.key.split('.')
 
     // Verify the key's format.
     if (keySegments.length !== 3) {
@@ -54,10 +54,10 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         )} because the key ${highlight(property.key)} is invalid. It must follow the ${highlight(
           '<applicationId>.<context>.<id>'
         )} format.`
-      );
-      return {};
+      )
+      return {}
     }
-    const [applicationIdSegment, contextSegment, idSegment] = keySegments;
+    const [applicationIdSegment, contextSegment, idSegment] = keySegments
 
     // Verify the key's unique application identifier.
     if (applicationIdSegment !== applicationId) {
@@ -67,8 +67,8 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         )} because the application identifier ${highlight(applicationIdSegment)} in key ${highlight(
           property.key
         )} is invalid. Expected value: ${highlight(applicationId)}.`
-      );
-      return {};
+      )
+      return {}
     }
 
     // Verify the key's context.
@@ -80,10 +80,10 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
           )} because the context ${highlight(contextSegment)} in key ${highlight(
             property.key
           )} is invalid. Key context ${keySegmentRegExpDescription}.`
-        );
-        return {};
+        )
+        return {}
       }
-      context = contextSegment;
+      context = contextSegment
     } else if (contextSegment !== context) {
       log.warn(
         `unable to use messages in ${highlightFilePath(
@@ -93,8 +93,8 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         )} is invalid. Only one key context is allowed per file. Expected value: ${highlight(
           context
         )}.`
-      );
-      return {};
+      )
+      return {}
     }
 
     // Verify the key's identifier.
@@ -105,18 +105,18 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
         )} because the identifier ${highlight(idSegment)} in key ${highlight(
           property.key
         )} is invalid. Key identifiers ${keySegmentRegExpDescription}.`
-      );
-      return {};
+      )
+      return {}
     }
 
     // If validation passes, keep only the identifier part of the key to reduce file sizes.
-    compactedKeyValueObject[idSegment] = property.value;
+    compactedKeyValueObject[idSegment] = property.value
   }
 
   // Verify key collisions.
   if (Object.entries(compactedKeyValueObject).length) {
-    const keyPrefix = `${applicationId}.${context}.`;
-    const keyCollisions = properties.getKeyCollisions();
+    const keyPrefix = `${applicationId}.${context as string}.`
+    const keyCollisions = properties.getKeyCollisions()
     for (const keyCollision of keyCollisions) {
       if (keyCollision.key.startsWith(keyPrefix)) {
         log.warn(
@@ -127,14 +127,14 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
           )} has been used multiple times (lines ${highlight(
             keyCollision.startingLineNumbers.join(', ')
           )}).`
-        );
+        )
 
-        return {};
+        return {}
       }
     }
   }
 
-  return compactedKeyValueObject;
+  return compactedKeyValueObject
 }
 
 /**
@@ -145,5 +145,5 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
  * @returns A Babel plugin object.
  */
 export default function plugin(): PluginObj {
-  return messageModulePlugin(hijackTargets, 'properties', getMessages);
+  return messageModulePlugin(hijackTargets, 'properties', getMessages)
 }

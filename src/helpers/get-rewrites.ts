@@ -1,20 +1,20 @@
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs'
 
-import { highlight, highlightFilePath, log } from '../';
-import { isInDebugMode } from '../config';
+import { highlight, highlightFilePath, log } from '../'
+import { isInDebugMode } from '../config'
 
-import type { Rewrite } from 'next/dist/lib/load-custom-routes';
-import type { BuildManifest, Rewrites, RoutesManifest } from '../types';
+import type { Rewrite } from 'next/dist/lib/load-custom-routes'
+import type { BuildManifest, Rewrites, RoutesManifest } from '../types'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
   throw new Error(
     '`getRewrites` must only be used on the server, please use the `useRewrites` hook instead'
-  );
+  )
 }
 
 /** Local rewrite cache to avoid non-required file system operations. */
-let rewritesCache: Rewrite[];
+let rewritesCache: Rewrite[]
 
 /**
  * Sets the `rewritesCache` value.
@@ -24,12 +24,12 @@ let rewritesCache: Rewrite[];
  * @returns The `rewritesCache` value.
  */
 function setRewritesCache(rewrites: Rewrite[]): Rewrite[] {
-  rewritesCache = rewrites;
+  rewritesCache = rewrites
   if (isInDebugMode()) {
-    console.log('==== SERVER SIDE REWRITES ====');
-    console.dir(rewritesCache, { depth: null });
+    console.log('==== SERVER SIDE REWRITES ====')
+    console.dir(rewritesCache, { depth: null })
   }
-  return rewritesCache;
+  return rewritesCache
 }
 
 /**
@@ -41,14 +41,14 @@ function setRewritesCache(rewrites: Rewrite[]): Rewrite[] {
  */
 function setEmptyCacheAndShowWarnings(warningMessages: string[]): Rewrite[] {
   warningMessages.forEach((warningMessage) => {
-    log.warn(warningMessage);
-  });
+    log.warn(warningMessage)
+  })
   log.warn(
     `Exhausted all options to get the ${highlight(
       'rewrites'
     )} value. Localized URLs will not work when using next-multilingual.`
-  );
-  return setRewritesCache([]);
+  )
+  return setRewritesCache([])
 }
 
 /**
@@ -59,66 +59,68 @@ function setEmptyCacheAndShowWarnings(warningMessages: string[]): Rewrite[] {
  * @returns An array of `Rewrite` objects.
  */
 export function getRewrites(): Rewrite[] {
-  if (rewritesCache) return rewritesCache;
+  if (rewritesCache) return rewritesCache
 
-  const warningMessages: string[] = [];
+  const warningMessages: string[] = []
 
   // Try to get the content of the routes-manifest (.next/routes-manifest.json) first - this is only available on builds.
-  const routesManifestPath = '.next/routes-manifest.json';
+  const routesManifestPath = '.next/routes-manifest.json'
 
   if (!existsSync(routesManifestPath)) {
     warningMessages.push(
       `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
         routesManifestPath
       )} because the file does not exist.`
-    );
+    )
   } else {
     try {
-      const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest;
+      const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest
       return setRewritesCache(
         routesManifest.rewrites.map((rewrite) => {
           return {
             source: rewrite.source,
             destination: rewrite.destination,
             locale: rewrite.locale,
-          };
+          }
         })
-      );
+      )
     } catch (error) {
       warningMessages.push(
         `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
           routesManifestPath
         )} due to an unexpected file parsing error.`
-      );
+      )
     }
   }
 
   // If the routes-manifest is not available, then get can get the rewrites from the build manifest.
-  const buildManifestPath = '.next/build-manifest.json';
-  const staticBuildManifestFilename = '_buildManifest.js';
+  const buildManifestPath = '.next/build-manifest.json'
+  const staticBuildManifestFilename = '_buildManifest.js'
 
   if (!existsSync(buildManifestPath)) {
     warningMessages.push(
       `Unable to get the ${highlight('rewrites')}: failed to get the location of ${highlight(
         staticBuildManifestFilename
       )} from ${highlightFilePath(buildManifestPath)} because the file does not exist.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 
-  let staticBuildManifestPath = '';
+  let staticBuildManifestPath = ''
   try {
-    const buildManifest = JSON.parse(readFileSync(buildManifestPath, 'utf8')) as BuildManifest;
-    staticBuildManifestPath = `.next/${buildManifest.lowPriorityFiles.find((filePath) =>
-      filePath.endsWith(staticBuildManifestFilename)
-    )}`;
+    const buildManifest = JSON.parse(readFileSync(buildManifestPath, 'utf8')) as BuildManifest
+    staticBuildManifestPath = `.next/${
+      buildManifest.lowPriorityFiles.find((filePath) =>
+        filePath.endsWith(staticBuildManifestFilename)
+      ) as string
+    }`
   } catch (error) {
     warningMessages.push(
       `Unable to get the ${highlight('rewrites')}: failed to get the location of ${highlight(
         staticBuildManifestFilename
       )} from ${highlightFilePath(buildManifestPath)} due to an unexpected file parsing error.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 
   if (!existsSync(staticBuildManifestPath)) {
@@ -126,23 +128,24 @@ export function getRewrites(): Rewrite[] {
       `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
         staticBuildManifestPath
       )} because the file does not exist.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 
   try {
-    const clientBuildManifestContent = readFileSync(staticBuildManifestPath, 'utf8');
+    const clientBuildManifestContent = readFileSync(staticBuildManifestPath, 'utf8')
 
     // Transform the client build-manifest file content back into a usable object.
-    const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } };
-    new Function('self', clientBuildManifestContent)(clientBuildManifest);
-    return setRewritesCache(clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles);
+    const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } }
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    new Function('self', clientBuildManifestContent)(clientBuildManifest)
+    return setRewritesCache(clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles)
   } catch (error) {
     warningMessages.push(
       `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
         staticBuildManifestPath
       )} due to an unexpected file parsing error.`
-    );
-    return setEmptyCacheAndShowWarnings(warningMessages);
+    )
+    return setEmptyCacheAndShowWarnings(warningMessages)
   }
 }

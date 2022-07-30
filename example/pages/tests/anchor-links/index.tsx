@@ -1,17 +1,17 @@
-import { NextPage } from 'next';
-import Link from 'next-multilingual/link';
-import { getTitle, slugify, useMessages } from 'next-multilingual/messages';
-import { useRouter } from 'next/router';
+import { NextPage } from 'next'
+import Link from 'next-multilingual/link'
+import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
+import { useRouter } from 'next/router'
 
-import Layout from '@/layout';
+import Layout from '@/layout'
 
-import { useLongPageMessages } from './long-page';
+import { useLongPageMessages } from './long-page'
 
 const AnchorLinks: NextPage = () => {
-  const messages = useMessages();
-  const title = getTitle(messages);
-  const { locale, pathname } = useRouter();
-  const longPageMessages = useLongPageMessages();
+  const messages = useMessages()
+  const title = getTitle(messages)
+  const { locale, pathname } = useRouter()
+  const longPageMessages = useLongPageMessages()
 
   return (
     <Layout title={title}>
@@ -24,7 +24,7 @@ const AnchorLinks: NextPage = () => {
         </Link>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default AnchorLinks;
+export default AnchorLinks

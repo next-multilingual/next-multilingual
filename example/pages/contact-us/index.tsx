@@ -1,20 +1,20 @@
-import type { FormEvent } from 'react';
-import { NextPage } from 'next';
-import { getTitle, useMessages } from 'next-multilingual/messages';
-import { useRouter } from 'next/router';
+import { NextPage } from 'next'
+import { getTitle, useMessages } from 'next-multilingual/messages'
+import { useRouter } from 'next/router'
+import type { FormEvent } from 'react'
 
-import Layout from '@/layout';
+import Layout from '@/layout'
 
-import styles from './index.module.css';
+import styles from './index.module.css'
 
 const ContactUs: NextPage = () => {
-  const router = useRouter();
-  const messages = useMessages();
-  const title = getTitle(messages);
+  const router = useRouter()
+  const messages = useMessages()
+  const title = getTitle(messages)
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-    event.preventDefault(); // Don't redirect the page.
-    router.push('/contact-us/message-sent');
+    event.preventDefault() // Don't redirect the page.
+    void router.push('/contact-us/message-sent')
   }
 
   return (
@@ -36,7 +36,7 @@ const ContactUs: NextPage = () => {
         </button>
       </form>
     </Layout>
-  );
-};
+  )
+}
 
-export default ContactUs;
+export default ContactUs

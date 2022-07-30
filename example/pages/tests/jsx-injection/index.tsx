@@ -1,21 +1,21 @@
-import { NextPage } from 'next';
-import Link from 'next-multilingual/link';
-import { getTitle, useMessages } from 'next-multilingual/messages';
+import { NextPage } from 'next'
+import Link from 'next-multilingual/link'
+import { getTitle, useMessages } from 'next-multilingual/messages'
 
-import Layout from '@/layout';
+import Layout from '@/layout'
 
-import styles from './index.module.css';
+import styles from './index.module.css'
 
 // Extend `Window` object to add our test's counter.
 declare global {
   interface Window {
-    _styleAndEventsClickCount: number;
+    _styleAndEventsClickCount: number
   }
 }
 
 const JsxTests: NextPage = () => {
-  const messages = useMessages();
-  const title = getTitle(messages);
+  const messages = useMessages()
+  const title = getTitle(messages)
 
   return (
     <Layout title={title}>
@@ -88,21 +88,21 @@ const JsxTests: NextPage = () => {
                 <a
                   className={styles.link}
                   onClick={(event) => {
-                    event.preventDefault();
+                    event.preventDefault()
                     if (typeof window !== 'undefined') {
                       if (typeof window['_styleAndEventsClickCount'] === 'undefined') {
-                        window['_styleAndEventsClickCount'] = 1;
+                        window['_styleAndEventsClickCount'] = 1
                       } else {
-                        window['_styleAndEventsClickCount']++;
+                        window['_styleAndEventsClickCount']++
                       }
                       console.log(
                         messages.format('styleAndEventsConsole', {
                           clickCount: window['_styleAndEventsClickCount'],
                         })
-                      );
+                      )
                     }
 
-                    return false;
+                    return false
                   }}
                 ></a>
               </Link>
@@ -262,7 +262,7 @@ const JsxTests: NextPage = () => {
         </div>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default JsxTests;
+export default JsxTests

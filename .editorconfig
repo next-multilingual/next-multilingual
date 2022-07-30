@@ -1,0 +1,10 @@
+# This configuration normalizes base editor behaviors across different IDEs.
+# More information at http://editorconfig.org
+
+# Top-most EditorConfig file
+root = true
+
+[*]
+charset = utf-8             # Use UTF-8 encoding for everything
+end_of_line = lf            # Universal end of line sequence
+insert_final_newline = true # Newline ending for every file

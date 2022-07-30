@@ -1,13 +1,13 @@
 * {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
 }
 
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .container {
-    padding: 1rem;
-    display: inline-block;
+  padding: 1rem;
+  display: inline-block;
 }

@@ -1,29 +1,29 @@
-import { InjectedMessages } from 'messages-modules';
-import { useRouter } from 'next/router';
-import { extname, parse as parsePath, resolve } from 'path';
+import { InjectedMessages } from 'messages-modules'
+import { useRouter } from 'next/router'
+import { extname, parse as parsePath, resolve } from 'path'
 
-import { highlight, highlightFilePath, log, normalizeLocale } from '../';
-import { Messages } from './Messages';
+import { highlight, highlightFilePath, log, normalizeLocale } from '../'
+import { Messages } from './Messages'
 
 // Make message classes available without adding their files to the package exports.
-export { Message } from './Message';
-export { Messages } from './Messages';
-export type { KeyValueObject } from './properties';
+export { Message } from './Message'
+export { Messages } from './Messages'
+export type { KeyValueObject } from './properties'
 
 /** This is the regular expression to validate message key segments. */
-export const keySegmentRegExp = /^[a-z\d]{1,50}$/i;
+export const keySegmentRegExp = /^[a-z\d]{1,50}$/i
 /** This is the regular expression description to keep logs consistent. */
-export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumeric characters';
+export const keySegmentRegExpDescription = 'must be between 1 and 50 alphanumeric characters'
 
 /**
  * The message key identifier used for slugs.
  */
-export const SLUG_KEY_ID = 'slug';
+export const SLUG_KEY_ID = 'slug'
 
 /**
  * The message key identifier used for titles.
  */
-export const TITLE_KEY_ID = 'title';
+export const TITLE_KEY_ID = 'title'
 
 /**
  * Get a page's title from the locale scope messages.
@@ -38,10 +38,10 @@ export const TITLE_KEY_ID = 'title';
  * @returns The message message as a string.
  */
 export function getTitle(messages: Messages, values?: PlaceholderValues): string {
-  const titleMessage = messages.get(TITLE_KEY_ID);
-  const slugMessage = messages.get(SLUG_KEY_ID);
+  const titleMessage = messages.get(TITLE_KEY_ID)
+  const slugMessage = messages.get(SLUG_KEY_ID)
 
-  const applicableTitle = titleMessage !== undefined ? titleMessage : slugMessage;
+  const applicableTitle = titleMessage !== undefined ? titleMessage : slugMessage
 
   if (applicableTitle === undefined) {
     log.warn(
@@ -50,11 +50,11 @@ export function getTitle(messages: Messages, values?: PlaceholderValues): string
       )} because keys with identifiers ${highlight(TITLE_KEY_ID)} and ${highlight(
         SLUG_KEY_ID
       )} were not found in messages file ${highlightFilePath(messages.messagesFilePath)}`
-    );
-    return '';
+    )
+    return ''
   }
 
-  return applicableTitle.format(values);
+  return applicableTitle.format(values)
 }
 
 /**
@@ -74,7 +74,7 @@ export function getTitle(messages: Messages, values?: PlaceholderValues): string
  */
 export function slugify(message: string, locale?: string): string {
   if (locale === undefined) {
-    log.warn('calling `slugify` without a locale can lead to mistranslated slugs');
+    log.warn('calling `slugify` without a locale can lead to mistranslated slugs')
   }
   /**
    * To stay ES5 compatible, and support all Unicode letters and numbers, we are using this very long regular
@@ -101,7 +101,7 @@ export function slugify(message: string, locale?: string): string {
     )
     .replace(/^-/, '') // Remove leading dash, if present.
     .replace(/-$/, '') // Remove trailing dash, if present.
-    .toLocaleLowerCase(locale);
+    .toLocaleLowerCase(locale)
 }
 
 /**
@@ -113,15 +113,15 @@ export function slugify(message: string, locale?: string): string {
  * @returns A localized messages file path.
  */
 export function getMessagesFilePath(filesystemPath: string, locale: string): string {
-  const pageFileExtension = extname(filesystemPath);
+  const pageFileExtension = extname(filesystemPath)
 
   if (pageFileExtension) {
     // Filesystem path is a file.
-    return `${filesystemPath.replace(pageFileExtension, '')}.${normalizeLocale(locale)}.properties`;
+    return `${filesystemPath.replace(pageFileExtension, '')}.${normalizeLocale(locale)}.properties`
   }
 
   // Filesystem path is a directory.
-  return `${filesystemPath}/index.${normalizeLocale(locale)}.properties`;
+  return `${filesystemPath}/index.${normalizeLocale(locale)}.properties`
 }
 
 /**
@@ -133,61 +133,61 @@ export function getMessagesFilePath(filesystemPath: string, locale: string): str
  * @returns The path of the source file that is calling `useMessages()`.
  */
 export function getSourceFilePath(messageFilePath: string, sourceFileExtension: string): string {
-  const messagesFile = parsePath(messageFilePath);
-  const sourceFilename = messagesFile.name.split('.').slice(0, -1).join('.');
-  return resolve(messagesFile.dir, `${sourceFilename}${sourceFileExtension}`);
+  const messagesFile = parsePath(messageFilePath)
+  const sourceFilename = messagesFile.name.split('.').slice(0, -1).join('.')
+  return resolve(messagesFile.dir, `${sourceFilename}${sourceFileExtension}`)
 }
 
 /**
  * The value of a message's placeholder (e.g., `{name}`).
  */
-export type PlaceholderValue = string | number;
+export type PlaceholderValue = string | number
 
 /**
  * The values of a message's placeholders (e.g., `{name: 'Joe'}`).
  */
 export type PlaceholderValues = {
-  [key: string]: string | number;
-};
+  [key: string]: string | number
+}
 
 /**
  * The value of a message's JSX element (e.g., `<b></b>`).
  */
-export type JsxValue = JSX.Element;
+export type JsxValue = JSX.Element
 
 /**
  * The values of a message's JSX elements (e.g., `{b: <b></b>}`).
  */
 export type JsxValues = {
-  [key: string]: JsxValue;
-};
+  [key: string]: JsxValue
+}
 
 /**
  * Any (mixed) message value (placeholders and/or JSX).
  */
-export type MixedValue = PlaceholderValue | JsxValue;
+export type MixedValue = PlaceholderValue | JsxValue
 
 /**
  * The (mixed) values of a message (placeholder and/or JSX).
  */
 export type MixedValues = {
-  [key: string]: MixedValue;
-};
+  [key: string]: MixedValue
+}
 
 /**
  * Message values by types.
  */
 export type MessageValuesByType = {
-  placeholderValues: PlaceholderValues;
-  jsxValues: JsxValues;
-};
+  placeholderValues: PlaceholderValues
+  jsxValues: JsxValues
+}
 
 /**
  * An index to optimize `get` access on messages.
  */
 export type MessagesIndex = {
-  [key: string]: number;
-};
+  [key: string]: number
+}
 
 /**
  * Type guard to check if a message value is a JSX element.
@@ -197,7 +197,7 @@ export type MessagesIndex = {
  * @returns True is the value is a JSX element, otherwise false.
  */
 export function isJsxValue(value: MixedValue): value is JsxValue {
-  return !isPlaceholderValue(value);
+  return !isPlaceholderValue(value)
 }
 
 /**
@@ -208,7 +208,7 @@ export function isJsxValue(value: MixedValue): value is JsxValue {
  * @returns True is the value is a placeholder, otherwise false.
  */
 export function isPlaceholderValue(value: MixedValue): value is PlaceholderValue {
-  return ['string', 'number'].includes(typeof value);
+  return ['string', 'number'].includes(typeof value)
 }
 
 /**
@@ -217,9 +217,10 @@ export function isPlaceholderValue(value: MixedValue): value is PlaceholderValue
  * @returns An object containing the messages of the local scope.
  */
 export function useMessages(): Messages {
-  const { locale } = useRouter();
+  const { locale } = useRouter()
   // @ts-expect-error: `this` is injected using `bind` and will trigger a false compilation error.
-  return handleMessages(this, 'useMessages', locale);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return handleMessages(this, 'useMessages', locale)
 }
 
 /**
@@ -231,7 +232,8 @@ export function useMessages(): Messages {
  */
 export function getMessages(locale: string): Messages {
   // @ts-expect-error: `this` is injected using `bind` and will trigger a false compilation error.
-  return handleMessages(this, 'getMessages', locale.toLowerCase());
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return handleMessages(this, 'getMessages', locale.toLowerCase())
 }
 
 /**
@@ -249,30 +251,30 @@ export function handleMessages(
   locale?: string
 ): Messages {
   if (locale === undefined) {
-    throw new Error(`${caller}() requires the locales to be configured in Next.js`);
+    throw new Error(`${caller}() requires the locales to be configured in Next.js`)
   }
 
   if (!injectedMessages || !injectedMessages.isInjected) {
     throw new Error(
       `${caller}() requires the 'next-multilingual/messages/babel-plugin' Babel plugin`
-    );
+    )
   }
 
-  const sourceFilePath = injectedMessages.sourceFilePath;
-  const sourceBasename = sourceFilePath.split('/').pop() as string;
-  const sourceFilename = sourceBasename.split('.').slice(0, -1).join('.');
-  const sourceFileDirectoryPath = sourceFilePath.split('/').slice(0, -1).join('/');
-  const messagesFilename = `${sourceFilename}.${normalizeLocale(locale)}.properties`;
+  const sourceFilePath = injectedMessages.sourceFilePath
+  const sourceBasename = sourceFilePath.split('/').pop() as string
+  const sourceFilename = sourceBasename.split('.').slice(0, -1).join('.')
+  const sourceFileDirectoryPath = sourceFilePath.split('/').slice(0, -1).join('/')
+  const messagesFilename = `${sourceFilename}.${normalizeLocale(locale)}.properties`
   const messagesFilePath = sourceFileDirectoryPath.length
     ? `${sourceFileDirectoryPath}/${messagesFilename}`
-    : messagesFilename;
+    : messagesFilename
 
   if (!injectedMessages.keyValueObjectCollection[locale]) {
     log.warn(
       `unable to use ${highlight(caller)}() in ${highlightFilePath(
         injectedMessages.sourceFilePath
       )} because no message file could be found at ${highlightFilePath(messagesFilePath)}`
-    );
+    )
   }
 
   return new Messages(
@@ -280,5 +282,5 @@ export function handleMessages(
     locale.toLowerCase(),
     sourceFilePath,
     messagesFilePath
-  );
+  )
 }

@@ -40,8 +40,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- Deploy example and re-align files if necessary (Eslint, Prettier, etc)
+- Cleanup inline todos (post ESLint refactoring)
+
 ### Done ✔️
 
+- Implement new ESLint + Prettier rules
 - Externalize the Babel plugin into a "Messages Modules" package
 - Try to get rid of `noImplicitThis`
 - implement `properties-files` and add warnings on key collisions

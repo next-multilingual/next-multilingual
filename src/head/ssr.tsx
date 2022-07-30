@@ -1,19 +1,25 @@
-import NextJsHead from 'next/head';
-import { useRouter } from 'next/router';
-import React, { ReactElement } from 'react';
+import NextJsHead from 'next/head'
+import { useRouter } from 'next/router'
+import React, { ReactElement } from 'react'
 
 import {
-    containsQueryParameters, getActualLocale, getActualLocales, getQueryParameters, highlight,
-    hydrateQueryParameters, log, normalizeLocale
-} from '../';
-import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites';
-import { getRewrites } from '../helpers/get-rewrites';
+  containsQueryParameters,
+  getActualLocale,
+  getActualLocales,
+  getQueryParameters,
+  highlight,
+  hydrateQueryParameters,
+  log,
+  normalizeLocale,
+} from '../'
+import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
+import { getRewrites } from '../helpers/get-rewrites'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
   throw new Error(
     '`next-multilingual/head/ssr` must only be used on the server, please use `next-multilingual/head` instead'
-  );
+  )
 }
 
 /**
@@ -24,7 +30,7 @@ if (typeof window !== 'undefined') {
 export default function Head({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }): ReactElement<typeof NextJsHead> {
   /**
    * Next.js' `<Head>` does not allow components, so we are using hooks. Details here:
@@ -37,13 +43,13 @@ export default function Head({
    * | be correctly picked up on client-side navigation.
    *
    */
-  const { pathname, basePath, defaultLocale, locales, locale, query } = useRouter();
+  const { pathname, basePath, defaultLocale, locales, locale, query } = useRouter()
 
   // Check if it's a dynamic router and if we have all the information to generate the links.
   if (containsQueryParameters(pathname)) {
-    const hydratedUrlPath = hydrateQueryParameters(pathname, query, true);
+    const hydratedUrlPath = hydrateQueryParameters(pathname, query, true)
     if (containsQueryParameters(hydratedUrlPath)) {
-      const missingParameters = getQueryParameters(hydratedUrlPath);
+      const missingParameters = getQueryParameters(hydratedUrlPath)
       log.warn(
         `unable to generate canonical and alternate links for the path ${highlight(
           pathname
@@ -52,13 +58,13 @@ export default function Head({
         } missing: ${highlight(
           missingParameters.join(',')
         )}. Did you forget to add a 'getStaticPaths' or 'getServerSideProps' to your page?`
-      );
-      return <NextJsHead>{children}</NextJsHead>;
+      )
+      return <NextJsHead>{children}</NextJsHead>
     }
   }
 
-  const actualLocale = getActualLocale(locale, defaultLocale, locales);
-  const actualLocales = getActualLocales(locales, defaultLocale);
+  const actualLocale = getActualLocale(locale, defaultLocale, locales)
+  const actualLocales = getActualLocales(locales, defaultLocale)
 
   return (
     <NextJsHead>
@@ -87,9 +93,9 @@ export default function Head({
             hrefLang={normalizeLocale(actualLocale)}
             key={`alternate-link-${actualLocale}`}
           />
-        );
+        )
       })}
       {children}
     </NextJsHead>
-  );
+  )
 }
