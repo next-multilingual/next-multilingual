@@ -24,7 +24,7 @@ The following extensions are recommended:
 You can also use the following settings for a better experience:
 
 1. Open this project using Visual Studio
-2. Open the command palette (⊞ Windows: `Ctrl+Shift+P` |  Mac: `Cmd+Shift+P`)
+2. Open the command palette (Windows: `Ctrl+Shift+P` | Mac: `Cmd+Shift+P`)
 3. Type: `> Open Workspace Settings (JSON)`
 4. Select the option in the dropdown (this will open your workspace-specific IDE configuration)
 
