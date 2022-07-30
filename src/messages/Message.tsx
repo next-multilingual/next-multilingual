@@ -1,9 +1,5 @@
-// @todo fix package ESLint rules
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { IntlMessageFormat } from 'intl-messageformat'
-import React, { cloneElement } from 'react'
+import React, { cloneElement, ReactElement } from 'react'
 
 import { highlight, highlightFilePath, log } from '../'
 import {
@@ -345,9 +341,10 @@ export class Message {
    * @throws Error when a JSX element in the chain contains more than one child.
    * @throws Error when a JSX element contains a message.
    */
-  private getElementChain(element: JSX.Element): JSX.Element[] {
-    const elements: JSX.Element[] = [element]
-    let currentElement = element
+  private getElementChain(element: ReactElement<HTMLElement>): (ReactElement | HTMLCollection)[] {
+    const elements: (ReactElement | HTMLCollection)[] = [element]
+    // Copy the element since we will manipulate it.
+    let currentElement: ReactElement<HTMLElement> | HTMLCollection = element
 
     if (!currentElement.props.children) {
       return elements
@@ -366,7 +363,7 @@ export class Message {
         )
       }
       elements.push(currentElement.props.children)
-      currentElement = currentElement.props.children
+      currentElement = currentElement.props.children as unknown as ReactElement
     }
 
     return elements
