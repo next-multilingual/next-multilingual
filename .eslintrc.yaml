@@ -29,6 +29,10 @@ settings:
         - '.jsx'
         - '.ts'
         - '.tsx'
+    # Uses `eslint-import-resolver-typescript` to support the `exports` syntax in `package.json`
+    # @see https://github.com/import-js/eslint-import-resolver-typescript
+    typescript:
+      alwaysTryTypes: true
 rules:
   # Normalize line breaks across operating systems to avoid polluting Git
   linebreak-style:

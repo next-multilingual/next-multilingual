@@ -1,6 +1,4 @@
 import { readFileSync } from 'fs'
-// @todo fix package export (why is this no longer working?)
-// eslint-disable-next-line import/no-unresolved
 import { propertiesToJson } from 'properties-file/content'
 
 import { highlight, highlightFilePath, log } from '../'
