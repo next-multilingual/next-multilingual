@@ -1,3 +1,14 @@
+
+
+## [1.1.2](https://github.com/Avansai/next-multilingual/compare/1.1.1...1.1.2) (2022-08-01)
+
+
+### Bug Fixes
+
+* fix ESLint `exports` import resolver issue ([61048e3](https://github.com/Avansai/next-multilingual/commit/61048e3880b7e1b0bfc826d8a7915492a8482afb))
+* fix ESLint issues ([5056cb9](https://github.com/Avansai/next-multilingual/commit/5056cb9b84a19de0d7ce827f36b0f8cf7a8d8ea6))
+* remove non-standard Apple character ([8cfd32a](https://github.com/Avansai/next-multilingual/commit/8cfd32ab4863977cbec8f168c612905e8a5de89a))
+
 ## [1.1.1](https://github.com/Avansai/next-multilingual/compare/1.1.0...1.1.1) (2022-07-25)
 
 # [1.1.0](https://github.com/Avansai/next-multilingual/compare/1.0.7...1.1.0) (2022-07-25)
