@@ -1,8 +1,5 @@
 ---
 root: true # Disables inheritance from parent config.
-parserOptions:
-  project:
-    - 'tsconfig.json'
 extends:
   - eslint:recommended
   - next/core-web-vitals
@@ -24,6 +21,10 @@ overrides:
       - '*.mts'
       - '*.cts'
       - '*.tsx'
+    parser: '@typescript-eslint/parser'
+    parserOptions:
+      project:
+        - 'tsconfig.json'
     extends:
       - plugin:@typescript-eslint/recommended
       - plugin:@typescript-eslint/recommended-requiring-type-checking

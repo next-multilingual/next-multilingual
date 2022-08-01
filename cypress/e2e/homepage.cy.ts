@@ -191,13 +191,21 @@ describe('The homepage', () => {
     // Persist the locale preference when navigating to a localized pages.
     it(`persists locale preferences when navigating to the localized page for '${localeName}'`, () => {
       cy.visit(`${BASE_PATH}/${locale.toLowerCase()}`)
-      cy.wait(1000)
+      // The locale cookie is defined by the browser, so we need to check until the correct value is there.
+      cy.waitUntil(
+        () => cy.getCookie('L').then((cookie) => cookie?.value === locale.toLowerCase()),
+        {
+          errorMsg: 'Could not find the locale cookie defined with the right value',
+          timeout: Cypress.config('defaultCommandTimeout'),
+          interval: 50,
+        }
+      )
       cy.visit(`${BASE_PATH}/`)
       cy.get('#header').contains(localizedHeader)
     })
 
     // Persist the locale preference when changing language.
-    it(`persists locale preferences when clicking on language picker links for '${localeName}'`, () => {
+    it(`persists locale preferences when clicking on the first language picker link for '${localeName}'`, () => {
       cy.visit({
         url: `${BASE_PATH}/`,
         headers: {
@@ -206,21 +214,17 @@ describe('The homepage', () => {
         },
       })
 
-      const visitedLocales: string[] = []
-      const languagePickerLinks = cy.get('#language-picker a')
-      languagePickerLinks.each((languagePickerLink) => {
-        const linkLocale = languagePickerLink.attr('lang')
-        if (!visitedLocales.includes(linkLocale)) {
-          visitedLocales.push(linkLocale)
-          const localizedTargetHeader = HEADERS[linkLocale] as string
-          cy.wrap(languagePickerLink).click({ force: true, timeout: 10000 })
-          cy.wait(1000)
+      cy.get('#language-picker a').first().as('firstLink')
+      cy.get('@firstLink')
+        .invoke('attr', 'lang')
+        .then((lang) => {
+          const localizedTargetHeader = HEADERS[lang] as string
+          cy.get('#language-picker').trigger('mouseover')
+          cy.get('@firstLink').click({ force: true, timeout: 10000 })
           cy.get('#header').contains(localizedTargetHeader)
           cy.visit(`${BASE_PATH}/`)
           cy.get('#header').contains(localizedTargetHeader)
-          return
-        }
-      })
+        })
     })
   })
 })

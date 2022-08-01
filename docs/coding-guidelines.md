@@ -34,7 +34,7 @@ You can also use the following settings for a better experience:
   "eslint.workingDirectories": [".", "example"],
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
-  "eslint.validate": ["javascript", "javescriptreact", "typescript", "typescriptReact"],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptReact"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "typescript.updateImportsOnFileMove.enabled": "always",
   "git.autofetch": true,

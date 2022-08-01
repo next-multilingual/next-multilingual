@@ -10,7 +10,8 @@
     "moduleResolution": "node",
     "outDir": "lib/",
     "declaration": true,
-    "strict": true
+    "strict": true,
+    "newLine": "LF"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

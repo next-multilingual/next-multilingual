@@ -13,10 +13,10 @@
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
-    "next-multilingual": "file:.."
+    "next-multilingual": "file:..",
+    "@next/bundle-analyzer": "^12.1.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.1.0",
     "cross-env": "^7.0.3"
   }
 }

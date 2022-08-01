@@ -3,3 +3,6 @@
 
 # Compiled roject
 /lib/*
+
+# Example files that are not ignored by default.
+example/.*

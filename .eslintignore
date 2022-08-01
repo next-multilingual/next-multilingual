@@ -6,7 +6,3 @@
 
 # Example
 /example/*
-
-# Cypress config
-# @see https://github.com/cypress-io/cypress/issues/23018
-cypress.config.ts

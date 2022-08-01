@@ -89,17 +89,14 @@ describe('A dynamic route', () => {
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
       cy.get(`#link-with-parameter`).click({ force: true, timeout: 10000 })
-      cy.wait(2000)
       cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`)
     })
 
     // `useLocalizedUrl` (client-side)
     it(`has the correct URL when using (client-side) the 'useLocalizedUrl' hook for '${localeName}'`, () => {
       cy.get(`#go-back a`).click()
-      cy.wait(1000)
       cy.get(`#parameter-input`).invoke('val').should('not.be.empty')
       cy.get(`#route-push-button`).click()
-      cy.wait(1000)
       cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`)
     })
 

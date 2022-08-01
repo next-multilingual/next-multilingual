@@ -731,7 +731,9 @@ export function getConfig(
     throw new Error('Function config is not supported. Please use the `Config` object instead')
   }
 
-  ;['env', 'i18n', 'webpack', 'rewrites', 'redirects'].forEach((option) => {
+  // Check if option is unsupported.
+  const unsupportedOptions = ['env', 'i18n', 'webpack', 'rewrites', 'redirects']
+  unsupportedOptions.forEach((option) => {
     if (options[option] !== undefined) {
       throw new Error(
         `the \`${option}\` option is not supported by \`getConfig\`. Please use the \`Config\` object instead`
