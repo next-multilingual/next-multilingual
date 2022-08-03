@@ -1,7 +1,19 @@
 ---
+# ------------------
+#  Basic formatting
+# ------------------
+
+# ⚠ do not configure `useTabs`, `tabWidth` & `printWidth`.
+# Their values are managed from `.editorconfig`.
+
+# As of Prettier 2.0, the default `endOfLine` value is set to `LF`.
+# This is not required as we normalize end of lines using `.gitattributes`.
+# @see https://prettier.io/docs/en/options.html#end-of-line
+endOfLine: auto
+
+# -------------------------
+#  Code related formatting
+# -------------------------
 semi: false
 trailingComma: es5
 singleQuote: true
-printWidth: 100
-tabWidth: 2
-useTabs: false

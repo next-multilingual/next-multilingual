@@ -28,10 +28,6 @@ settings:
     typescript:
       alwaysTryTypes: true
 rules:
-  # Normalize line breaks across operating systems to avoid polluting Git
-  linebreak-style:
-    - error
-    - unix
   # Increase the level to 'error' for unused variables (the default is set to 'warning')
   # @see https://typescript-eslint.io/rules/no-unused-vars/
   '@typescript-eslint/no-unused-vars':

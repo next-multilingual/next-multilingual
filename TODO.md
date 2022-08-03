@@ -40,8 +40,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Deploy example and re-align files if necessary (Eslint, Prettier, etc)
-
 ### Done ✔️
 
 - Post ESLint refactoring

@@ -70,26 +70,17 @@ describe('A dynamic route', () => {
               expect(href).to.equal(dynamicRouteUrl) // Test with the SSR value to make sure it matches.
             })
         })
-
-      cy.get(`#parameter-input`)
-        .invoke('val')
-        .then((value) => {
-          expect(value).to.exist
-          const parameterInputValue = value as string
-          cy.get(`#link-with-parameter`)
-            .invoke('attr', 'href')
-            .then((href) => {
-              expect(href).to.exist
-              expect(href).to.equal(`${dynamicRouteIndexUrl}/${parameterInputValue}`)
-              expect(href).to.equal(dynamicRouteUrl) // Test with the SSR value to make sure it matches.
-            })
-        })
     })
 
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
       cy.get(`#link-with-parameter`).click({ force: true, timeout: 10000 })
-      cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`)
+
+      cy.waitUntil(() => cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`), {
+        errorMsg: 'Could not find the correct URL',
+        timeout: Cypress.config('defaultCommandTimeout'),
+        interval: 50,
+      })
     })
 
     // `useLocalizedUrl` (client-side)

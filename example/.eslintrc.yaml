@@ -5,10 +5,6 @@ extends:
   - next/core-web-vitals
   - plugin:prettier/recommended
 rules:
-  # Normalize line breaks across operating systems to avoid polluting Git
-  linebreak-style:
-    - error
-    - unix
   # Increase the level to 'error' for unused variables (the default is set to 'warning')
   # @see https://eslint.org/docs/latest/rules/no-unused-vars
   no-unused-vars:

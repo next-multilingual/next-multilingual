@@ -5,4 +5,4 @@
 /lib/*
 
 # Example files that are not ignored by default.
-example/.*
+example/.next

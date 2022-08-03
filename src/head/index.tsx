@@ -1,6 +1,6 @@
 import NextJsHead from 'next/head'
 import { useRouter } from 'next/router'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import {
   containsQueryParameters,

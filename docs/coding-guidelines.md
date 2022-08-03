@@ -30,42 +30,23 @@ You can also use the following settings for a better experience:
 
 ```json
 {
-  "files.eol": "\n",
   "eslint.workingDirectories": [".", "example"],
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptReact"],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "git.autofetch": true,
-  "git.enableSmartCommit": true,
-  "files.exclude": {
-    "**/.git": false
-  },
   "javascript.updateImportsOnFileMove.enabled": "always"
 }
 ```
 
-More details around some of these options will be provided in the rest of this document.
+### Automatic configurations
 
-## File format 📁
+- All configuration related to the editor (end of line, encoding, indent style, indent size...) should be handled by [`.editorconfig`](../.editorconfig)
+- Everything related to code formatting should be handled by Prettier ([`../.prettierrc.yaml`](../.prettierrc.yaml))
+- The rest (code quality) should be handled by ESLint ([`../.eslintrc.yaml](../.eslintrc.yaml))
 
-For convenience, we included an [`.editorconfig`](../.editorconfig) file to help normalize settings across different IDEs.
-
-### Newlines
-
-> ⚠️ In [Visual Studio Code](https://code.visualstudio.com/), if you select the wrong end of line sequence (option in your bar at the bottom), it will override our ESLint/Prettier configuration and show linting errors in your files.
-
-To avoid this, make sure that you use `LF` as your end of line sequence (this is the best option, supported by all operating system, as explained [here](https://prettier.io/docs/en/options.html#end-of-line)).
-
-Additionally you have 2 configurations that can help avoid this wrong end of line sequences:
-
-- Add this configuration in Visual Studio Code `settings.json`: `"files.eol": "\n"`
-- Configure Git to only use `LF` by running this command: `git config --global core.autocrlf true`
-
-### Encoding
-
-UTF-8 (without BOM) should be used for all files. Some IDE like IntelliJ are known to have issues with `.properties` file and escape unicode characters. Make sure to use the correct IDE settings to avoid encoding issues.
+We decided to not try to normalize end of line sequences in local environments as it would require complex and fragile configurations. Instead we let the [.gitattributes](../.gitattributes) configuration enforce the normalization when code is pushed to Git.
 
 ## Git ⎇
 
