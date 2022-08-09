@@ -17,7 +17,7 @@ export function getOrigin(): string {
     )
   }
 
-  const matches = nextPublicOrigin.match(/^http[s]?:\/\/.+$/)
+  const matches = nextPublicOrigin.match(/^https?:\/\/.+$/)
 
   if (!matches) {
     throw new Error(

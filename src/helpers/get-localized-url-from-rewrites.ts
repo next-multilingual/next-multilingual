@@ -1,6 +1,6 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes'
 import type { ParsedUrlQueryInput } from 'node:querystring'
-import { UrlObject } from 'url'
+import { UrlObject } from 'node:url'
 
 import {
   containsQueryParameters,
@@ -51,7 +51,7 @@ export function getLocalizedUrlFromRewrites(
   /**
    * Non-localizable links.
    */
-  if (/^(tel:|mailto:|http[s]?:\/\/)/i.test(urlPath)) {
+  if (/^(tel:|mailto:|https?:\/\/)/i.test(urlPath)) {
     /**
      * Using URLs that do not require the router is not recommended by Next.js.
      *
@@ -71,10 +71,8 @@ export function getLocalizedUrlFromRewrites(
   }
 
   // Set base path (https://nextjs.org/docs/api-reference/next.config.js/basepath) if present.
-  if (basePath !== undefined && basePath !== '') {
-    if (basePath[0] !== '/') {
-      throw new Error(`Specified basePath has to start with a /, found "${basePath}"`)
-    }
+  if (basePath !== undefined && basePath !== '' && basePath[0] !== '/') {
+    throw new Error(`Specified basePath has to start with a /, found "${basePath}"`)
   }
 
   if (urlPath === '/') {

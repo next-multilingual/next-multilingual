@@ -1,7 +1,11 @@
 import CheapWatch from 'cheap-watch'
-import { existsSync, readdirSync, Stats, utimesSync } from 'fs'
 import type { Redirect, Rewrite } from 'next/dist/lib/load-custom-routes'
-import { extname } from 'path'
+
+import Webpack from 'webpack'
+
+import { existsSync, readdirSync, Stats, utimesSync } from 'node:fs'
+
+import { extname } from 'node:path'
 
 import {
   highlight,
@@ -11,6 +15,7 @@ import {
   normalizeLocale,
   queryToRewriteParameters,
 } from '../'
+
 import {
   getMessagesFilePath,
   getSourceFilePath,
@@ -19,7 +24,10 @@ import {
   slugify,
   SLUG_KEY_ID,
 } from '../messages'
+
 import { parsePropertiesFile } from '../messages/properties'
+
+import type { WebpackConfigContext } from 'next/dist/server/config-shared'
 
 import type { NextConfig } from 'next'
 
@@ -45,8 +53,11 @@ export const NON_ROUTABLE_PAGE_FILES = ['index', '_app', '_document', '_error', 
  * Next.js did not define any types for its Webpack configs.
  *
  * @see https://github.com/vercel/next.js/blob/canary/packages/next/compiled/webpack/webpack.d.ts
+ * @see https://github.com/vercel/next.js/blob/60c8e5c29e4da99ac1aa458b1ba3bdf829111115/packages/next/server/config-shared.ts#L67
  */
-export type WebpackConfig = { resolve: { alias: { [key: string]: string } } }
+export interface WebpackContext extends WebpackConfigContext {
+  webpack: typeof Webpack
+}
 
 /**
  * Get all possible permutations of the non-routable app-root-relative pages file paths.
@@ -103,11 +114,7 @@ export function removeFileExtension(filesystemPath: string): string {
   const filename = `${basename.split('.').slice(0, -1).join('.')}`
   const directoryPath = pathComponents.join('/')
 
-  if (!directoryPath.length) {
-    return filename
-  } else {
-    return `${directoryPath}/${filename}`
-  }
+  return directoryPath.length === 0 ? filename : `${directoryPath}/${filename}`
 }
 
 /**
@@ -135,7 +142,7 @@ export function getNonLocalizedUrlPath(filesystemPath: string): string {
     .replace(/\\/g, '/')
     .replace(/\/index$/, '')
 
-  return !urlPath.length ? '/' : urlPath[0] !== '/' ? `/${urlPath}` : urlPath
+  return urlPath.length === 0 ? '/' : urlPath[0] !== '/' ? `/${urlPath}` : urlPath
 }
 
 /**
@@ -376,11 +383,11 @@ export class Config {
     if (debug) {
       process.env.nextMultilingualDebug = 'true' // Set flag on the server to re-use in other modules.
       console.log('==== ROUTES ====')
-      console.dir(this.getRoutes(), { depth: null })
+      console.dir(this.getRoutes(), { depth: undefined })
       console.log('==== REWRITES ====')
-      console.dir(this.getRewrites(), { depth: null })
+      console.dir(this.getRewrites(), { depth: undefined })
       console.log('==== REDIRECTS ====')
-      console.dir(this.getRedirects(), { depth: null })
+      console.dir(this.getRedirects(), { depth: undefined })
     }
   }
 
@@ -465,7 +472,7 @@ export class Config {
 
     // Check if the route is a non-routable page file.
     if (NON_ROUTABLE_PAGES.includes(pageFilePath)) {
-      if (filePathsWithSlug.length) {
+      if (filePathsWithSlug.length > 0) {
         log.warn(
           `invalid slug${filePathsWithSlug.length > 1 ? 's' : ''} found in ${filePathsWithSlug.join(
             ', '
@@ -479,7 +486,7 @@ export class Config {
     const duplicateRoute = routes.find((route) => route.nonLocalizedUrlPath === nonLocalizedUrlPath)
 
     if (duplicateRoute !== undefined) {
-      if (filePathsWithSlug.length) {
+      if (filePathsWithSlug.length > 0) {
         log.warn(
           `the slug${filePathsWithSlug.length > 1 ? 's' : ''} found in ${filePathsWithSlug.join(
             ', '
@@ -494,16 +501,14 @@ export class Config {
     }
 
     // Check if the page is a dynamic route.
-    if (isDynamicRoute(getNonLocalizedUrlPath(pageFilePath))) {
-      if (filePathsWithSlug.length) {
-        log.warn(
-          `the slug${filePathsWithSlug.length > 1 ? 's' : ''} found in ${filePathsWithSlug.join(
-            ', '
-          )} will be ignored since ${highlight(nonLocalizedUrlPath)} is a dynamic route.`
-        )
-      }
-      // Do not skip, since URLs that contain dynamic segments might still be localized.
+    if (isDynamicRoute(getNonLocalizedUrlPath(pageFilePath)) && filePathsWithSlug.length > 0) {
+      log.warn(
+        `the slug${filePathsWithSlug.length > 1 ? 's' : ''} found in ${filePathsWithSlug.join(
+          ', '
+        )} will be ignored since ${highlight(nonLocalizedUrlPath)} is a dynamic route.`
+      )
     }
+    // Do not skip, since URLs that contain dynamic segments might still be localized.
 
     routes.push(new MultilingualRoute(pageFilePath, this.actualLocales, routes))
   }
@@ -593,7 +598,7 @@ export class Config {
       }
       const keyValueObject = parsePropertiesFile(messagesFilePath)
 
-      if (Object.keys(keyValueObject).find((key) => key.endsWith(`.${SLUG_KEY_ID}`))) {
+      if (Object.keys(keyValueObject).some((key) => key.endsWith(`.${SLUG_KEY_ID}`))) {
         messageFilePaths.push(messagesFilePath)
       }
     })
@@ -620,11 +625,7 @@ export class Config {
    *
    * @returns The normalized path with the locale.
    */
-  private normalizeUrlPath(
-    urlPath: string,
-    locale: string | undefined = undefined,
-    encode = false
-  ): string {
+  private normalizeUrlPath(urlPath: string, locale?: string | undefined, encode = false): string {
     let normalizedUrlPath = `${
       locale !== undefined ? `/${locale}` : ''
     }${urlPath}`.toLocaleLowerCase(locale)
@@ -712,6 +713,46 @@ export class Config {
 }
 
 /**
+ * Handles the Webpack configuration.
+ *
+ * @param config - The Webpack configuration options.
+ * @param context - The Webpack context
+ *
+ * @returns A Webpack configuration object.
+ */
+export function webpackConfigurationHandler(
+  config: Webpack.Configuration,
+  context: WebpackContext
+): Webpack.Configuration {
+  if (context.isServer) {
+    // Override APIs with SSR-specific versions that use different ways to get URLs.
+    const alias = config.resolve?.alias as { [index: string]: string }
+    // eslint-disable-next-line unicorn/prefer-module
+    alias['next-multilingual/head$'] = require.resolve('next-multilingual/head/ssr')
+    // eslint-disable-next-line unicorn/prefer-module
+    alias['next-multilingual/link$'] = require.resolve('next-multilingual/link/ssr')
+    // eslint-disable-next-line unicorn/prefer-module
+    alias['next-multilingual/url$'] = require.resolve('next-multilingual/url/ssr')
+  }
+
+  /**
+   * Add support for the `node:` scheme available since Node.js 16.
+   *
+   * `next-multilingual` uses the `node:` scheme to increase code clarity.
+   *
+   * @see https://github.com/webpack/webpack/issues/13290
+   */
+  config.plugins = config.plugins ?? []
+  config.plugins.push(
+    new context.webpack.NormalModuleReplacementPlugin(/^node:/, (resource: { request: string }) => {
+      resource.request = resource.request.replace(/^node:/, '')
+    })
+  )
+
+  return config
+}
+
+/**
  * Returns the Next.js multilingual config.
  *
  * @param applicationId - The unique application identifier that will be used as a messages key prefix.
@@ -725,29 +766,27 @@ export class Config {
 export function getConfig(
   applicationId: string,
   locales: string[],
-  options: NextConfig | ((phase: string, defaultConfig: NextConfig) => void)
+  options?: NextConfig | ((phase: string, defaultConfig: NextConfig) => void)
 ): NextConfig {
   if (options instanceof Function) {
     throw new Error('Function config is not supported. Please use the `Config` object instead')
   }
 
-  // Check if option is unsupported.
-  const unsupportedOptions = ['env', 'i18n', 'webpack', 'rewrites', 'redirects']
-  unsupportedOptions.forEach((option) => {
-    if (options[option] !== undefined) {
-      throw new Error(
-        `the \`${option}\` option is not supported by \`getConfig\`. Please use the \`Config\` object instead`
-      )
-    }
-  })
-
-  const nextConfig: NextConfig = options ? options : {}
-  const config = new Config(applicationId, locales, !!options?.debug)
-
-  // Remove debug option if used.
-  if (typeof options.debug !== 'undefined') {
-    delete options.debug
+  if (options !== undefined) {
+    // Check if option is unsupported.
+    const unsupportedOptions = ['env', 'i18n', 'webpack', 'rewrites', 'redirects']
+    unsupportedOptions.forEach((option) => {
+      if (options[option] !== undefined) {
+        throw new Error(
+          `the \`${option}\` option is not supported by \`getConfig\`. Please use the \`Config\` object instead`
+        )
+      }
+    })
   }
+
+  const nextConfig: NextConfig = options ?? {}
+  const debug = typeof options?.debug !== 'undefined' ? true : false
+  const config = new Config(applicationId, locales, debug)
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
   nextConfig.i18n = {
@@ -778,29 +817,17 @@ export function getConfig(
     }
   }
 
-  // Set Webpack config.
-  nextConfig.webpack = (config: WebpackConfig, { isServer }) => {
-    // Overwrite the `link` component for SSR.
-    if (isServer) {
-      config.resolve.alias['next-multilingual/head$'] = require.resolve(
-        'next-multilingual/head/ssr'
-      )
-      config.resolve.alias['next-multilingual/link$'] = require.resolve(
-        'next-multilingual/link/ssr'
-      )
-      config.resolve.alias['next-multilingual/url$'] = require.resolve('next-multilingual/url/ssr')
-    }
-    return config
-  }
+  // Set the Webpack configuration handler.
+  nextConfig.webpack = webpackConfigurationHandler
 
   // Sets localized URLs as rewrites rules.
   nextConfig.rewrites = async () => {
-    return Promise.resolve(config.getRewrites())
+    return await Promise.resolve(config.getRewrites())
   }
 
   // Sets redirect rules to normalize URL encoding.
   nextConfig.redirects = async () => {
-    return Promise.resolve(config.getRedirects())
+    return await Promise.resolve(config.getRedirects())
   }
 
   return nextConfig

@@ -114,7 +114,7 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
   }
 
   // Verify key collisions.
-  if (Object.entries(compactedKeyValueObject).length) {
+  if (Object.entries(compactedKeyValueObject).length > 0) {
     const keyPrefix = `${applicationId}.${context as string}.`
     const keyCollisions = properties.getKeyCollisions()
     for (const keyCollision of keyCollisions) {

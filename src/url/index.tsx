@@ -19,12 +19,12 @@ import { Url } from '../types'
  */
 export function useLocalizedUrl(
   url: Url,
-  locale: string | undefined = undefined,
+  locale?: string | undefined,
   absolute = false,
   includeBasePath = false
 ): string {
   const router = useRouter()
-  const applicableLocale = locale ? locale : router.locale
+  const applicableLocale = locale ?? router.locale
   return getLocalizedUrlFromRewrites(
     useRewrites(),
     url,

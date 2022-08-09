@@ -13,10 +13,12 @@ export default defineConfig({
          * Task to log a message on the console whe running in headless mode.
          *
          * @param message - The message to display on the console.
+         *
+         * @returns `true` because Cypress tasks must always return a value to indicate that the task was handled.
          */
-        log(message: string): null {
+        log(message: string): true {
           console.log(message)
-          return null
+          return true
         },
         /**
          * Get messages from a .properties file.

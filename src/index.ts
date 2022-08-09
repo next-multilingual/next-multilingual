@@ -1,8 +1,8 @@
 import { cyanBright } from 'colorette'
 import * as nextLog from 'next/dist/build/output/log'
+import { sep as pathSeparator } from 'node:path'
+import { ParsedUrlQuery } from 'node:querystring'
 import Cookies from 'nookies'
-import { sep as pathSeparator } from 'path'
-import { ParsedUrlQuery } from 'querystring'
 import resolveAcceptLanguage from 'resolve-accept-language'
 
 import type { ParsedUrlQueryInput } from 'node:querystring'
@@ -14,17 +14,17 @@ import type { GetServerSidePropsContext, PreviewData } from 'next'
  *
  * To avoid exposing sensitive data (e.g., server paths) to the clients, we only display logs in non-production environments.
  */
-export class log {
+export const log = {
   /**
    * Log a warning message in the console(s) to non-production environments.
    *
    * @param message - The warning message to log.
    */
-  static warn(message: string): void {
+  warn(message: string): void {
     if (process.env.NODE_ENV !== 'production') {
       nextLog.warn(message)
     }
-  }
+  },
 }
 
 /**
@@ -69,7 +69,7 @@ export function getActualLocale(
   locales?: string[]
 ): string {
   if (locale === undefined || defaultLocale === undefined || locales === undefined) {
-    throw Error('locales must be configured in Next.js')
+    throw new Error('locales must be configured in Next.js')
   }
   const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale)
   return locale === defaultLocale ? actualDefaultLocale : locale
@@ -90,7 +90,7 @@ export function getActualLocale(
  */
 export function getActualLocales(locales?: string[], defaultLocale?: string): string[] {
   if (locales === undefined || defaultLocale === undefined) {
-    throw Error('locales must be configured in Next.js')
+    throw new Error('locales must be configured in Next.js')
   }
   return locales.filter((locale) => locale !== defaultLocale)
 }
@@ -111,7 +111,7 @@ export function getActualLocales(locales?: string[], defaultLocale?: string): st
  */
 export function getActualDefaultLocale(locales?: string[], defaultLocale?: string): string {
   if (locales === undefined || defaultLocale === undefined) {
-    throw Error('locales must be configured in Next.js')
+    throw new Error('locales must be configured in Next.js')
   }
   return getActualLocales(locales, defaultLocale)?.shift() as string
 }
@@ -184,9 +184,7 @@ export function getPreferredLocale(
 }
 
 // The name of the cookie used to store the user locale, can be overwritten in an `.env` file.
-const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME
-  ? process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME
-  : 'L'
+const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME ?? 'L'
 
 // The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
 const LOCALE_COOKIE_LIFETIME: number =
@@ -201,10 +199,10 @@ const LOCALE_COOKIE_LIFETIME: number =
  */
 export function setCookieLocale(locale?: string): void {
   if (locale === undefined) {
-    throw Error('locales must be configured in Next.js')
+    throw new Error('locales must be configured in Next.js')
   }
 
-  Cookies.set(null, LOCALE_COOKIE_NAME, locale, {
+  Cookies.set(undefined, LOCALE_COOKIE_NAME, locale, {
     maxAge: LOCALE_COOKIE_LIFETIME,
     path: '/',
     sameSite: 'lax',
@@ -262,7 +260,7 @@ export function hydrateQueryParameters(
 
   const hydratedPath = pathSegments
     .map((pathSegment) => {
-      if (/^\[.+\]$/.test(pathSegment)) {
+      if (/^\[.+]$/.test(pathSegment)) {
         const parameterName = pathSegment.slice(1, -1)
         if (parsedUrlQueryInput[parameterName] !== undefined) {
           return parsedUrlQueryInput[parameterName]
@@ -274,7 +272,7 @@ export function hydrateQueryParameters(
     })
     .join('/')
 
-  if (missingParameters.length && !suppressWarning) {
+  if (missingParameters.length > 0 && !suppressWarning) {
     log.warn(
       `unable to hydrate the path ${highlight(path)} because the following query parameter${
         missingParameters.length > 1 ? 's are' : ' is'
@@ -302,7 +300,7 @@ export function queryToRewriteParameters(path: string): string {
   return path
     .split('/')
     .map((pathSegment) => {
-      if (/^\[.+\]$/.test(pathSegment)) {
+      if (/^\[.+]$/.test(pathSegment)) {
         return `:${pathSegment.slice(1, -1)}`
       }
       return pathSegment
@@ -343,9 +341,7 @@ export function rewriteToQueryParameters(path: string): string {
  * @returns True if the path contains "query parameters", otherwise false.
  */
 export function containsQueryParameters(path: string): boolean {
-  return path.split('/').find((pathSegment) => /^\[.+\]$/.test(pathSegment)) === undefined
-    ? false
-    : true
+  return path.split('/').some((pathSegment) => /^\[.+]$/.test(pathSegment))
 }
 
 /**
@@ -356,7 +352,7 @@ export function containsQueryParameters(path: string): boolean {
  * @returns An array of "query parameters" or an empty array when not found.
  */
 export function getQueryParameters(path: string): string[] {
-  const parameters = path.split('/').filter((pathSegment) => /^\[.+\]$/.test(pathSegment))
+  const parameters = path.split('/').filter((pathSegment) => /^\[.+]$/.test(pathSegment))
 
   if (parameters === undefined) {
     return []

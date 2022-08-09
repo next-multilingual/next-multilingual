@@ -22,11 +22,11 @@ import { HelloApiSchema } from './api/hello'
 
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter()
-  const { locales, defaultLocale, basePath } = router
+  const { locales, defaultLocale, basePath, locale } = router
 
   // Overwrite the locale with the resolved locale.
   router.locale = resolvedLocale
-  setCookieLocale(router.locale)
+  setCookieLocale(locale)
 
   // Load the messages in the correct locale.
   const messages = useMessages()
@@ -36,7 +36,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const [count, setCount] = useState(0)
 
   // Localized API.
-  const [apiError, setApiError] = useState<DOMException | null>(null)
+  const [apiError, setApiError] = useState<DOMException | null>()
   const [isApiLoaded, setApiIsLoaded] = useState(false)
   const [apiMessage, setApiMessage] = useState('')
   const controllerRef = useRef<AbortController | null>()
@@ -55,7 +55,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
 
     setApiIsLoaded(false)
     const requestHeaders: HeadersInit = new Headers()
-    requestHeaders.set('Accept-Language', normalizeLocale(router.locale as string))
+    requestHeaders.set('Accept-Language', normalizeLocale(locale as string))
     fetch(`${basePath}/api/hello`, {
       headers: requestHeaders,
       signal: controllerRef.current?.signal,
@@ -66,7 +66,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           const apiResponse = result as unknown as HelloApiSchema
           setApiIsLoaded(true)
           setApiMessage(apiResponse.message)
-          controllerRef.current = null
+          controllerRef.current = undefined
         },
         (apiError: DOMException) => {
           if (apiError.name !== 'AbortError') {
@@ -76,7 +76,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           }
         }
       )
-  }, [router.locale, basePath])
+  }, [locale, basePath])
 
   function showApiMessage(): JSX.Element {
     if (apiError) {
@@ -194,13 +194,13 @@ export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProp
 
   // When Next.js tries to use the default locale, try to find a better one.
   if (locale === defaultLocale) {
-    resolvedLocale = cookieLocale
-      ? cookieLocale
-      : getPreferredLocale(
-          req.headers['accept-language'],
-          actualLocales,
-          actualDefaultLocale
-        ).toLowerCase()
+    resolvedLocale =
+      cookieLocale ??
+      getPreferredLocale(
+        req.headers['accept-language'],
+        actualLocales,
+        actualDefaultLocale
+      ).toLowerCase()
   }
 
   return {

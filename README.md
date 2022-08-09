@@ -72,7 +72,7 @@ Not all configuration options are not supported by `getConfig`. If you ever happ
 If you have more advanced needs, you can use the `Config` object directly and insert the configuration required by `next-multilingual` directly in an existing `next.config.js`. The arguments of `Config` are almost identical to `getConfig` (minus the `options`) - check in your IDE (TSDoc) for details. Here is an example of how it can be used:
 
 ```js
-const { Config } = require('next-multilingual/config')
+const { Config, webpackConfigurationHandler } = require('next-multilingual/config')
 
 const config = new Config('exampleApp', ['en-US', 'fr-CA'])
 
@@ -88,24 +88,24 @@ module.exports = {
   experimental: {
     esmExternals: false,
   },
-  webpack(config, { isServer }) {
-    if (isServer) {
-      config.resolve.alias['next-multilingual/head$'] = require.resolve(
-        'next-multilingual/head/ssr'
-      )
-      config.resolve.alias['next-multilingual/link$'] = require.resolve(
-        'next-multilingual/link/ssr'
-      )
-      config.resolve.alias['next-multilingual/url$'] = require.resolve('next-multilingual/url/ssr')
-    }
-    return config
-  },
-  async rewrites() {
-    return config.getRewrites()
-  },
-  async redirects() {
-    return config.getRedirects()
-  },
+  webpack: webpackConfigurationHandler,
+}
+```
+
+If you need to customize your own Webpack configuration, we recommend extending our handler like this:
+
+```js
+import Webpack from 'webpack'
+
+import { webpackConfigurationHandler, WebpackContext } from 'next-multilingual/config'
+
+export function myWebpackConfigurationHandler(
+  config: Webpack.Configuration,
+  context: WebpackContext
+): Webpack.Configuration {
+  const myConfig = webpackConfigurationHandler(config, context)
+  // Do stuff here.
+  return myConfig
 }
 ```
 

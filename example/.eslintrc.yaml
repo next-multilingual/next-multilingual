@@ -3,6 +3,7 @@ root: true # Disables inheritance from parent config.
 extends:
   - eslint:recommended
   - next/core-web-vitals
+  - plugin:unicorn/recommended
   - plugin:prettier/recommended
 rules:
   # Increase the level to 'error' for unused variables (the default is set to 'warning')
@@ -10,6 +11,16 @@ rules:
   no-unused-vars:
     - error
     - args: all
+  # The Unicorn plugin comes with opinionated checks, including some that we prefer disabling.
+  'unicorn/no-array-for-each':
+    # Performance is no longer an issue - we prefer `forEach` for readability.
+    - off
+  'unicorn/numeric-separators-style':
+    # Doesn't add a lot of value and makes numbers look odd.
+    - off
+  'unicorn/prefer-type-error':
+    # Not really applicable when using TypeScript (mostly triggers false positives).
+    - off
 overrides:
   # TypeScript configurations
   - files:
@@ -27,7 +38,7 @@ overrides:
     rules:
       # Increase the level to 'error' for unused variables (the default is set to 'warning')
       # @see https://typescript-eslint.io/rules/no-unused-vars/
-      'no-unused-vars': 'off'
+      no-unused-vars: off
       '@typescript-eslint/no-unused-vars':
         - error
       # Show errors when missing return types are missing on relevant functions
@@ -43,3 +54,23 @@ overrides:
         - checksVoidReturn:
             arguments: false
             attributes: false
+  # Unicorn file names overrides.
+  - files:
+      - 'components/**/*'
+      - 'layout/**/*'
+    rules:
+      'unicorn/filename-case':
+        - error
+        - case: pascalCase
+  - files:
+      - '**/*'
+    rules:
+      'unicorn/prevent-abbreviations':
+        - error
+        - ignore:
+            # The acronyms `ref` is too common in React (e.g., `useRef`) to avoid using it.
+            - 'ref'
+            - 'Ref'
+            # The acronyms `props` is too common in React to avoid using it.
+            - 'props'
+            - 'Props'

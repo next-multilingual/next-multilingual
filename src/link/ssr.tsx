@@ -28,7 +28,7 @@ export default function Link({
   ...props
 }: React.PropsWithChildren<NextLinkProps>): ReactElement<typeof NextJsLink> {
   const router = useRouter()
-  const applicableLocale = locale ? locale : router.locale
+  const applicableLocale = (locale ?? router.locale) as string
   const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href
   const localizedUrl = useLocalizedUrl(url, applicableLocale)
 

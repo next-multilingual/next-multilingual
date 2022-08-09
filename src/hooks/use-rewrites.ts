@@ -33,7 +33,7 @@ export function useRewrites(): Rewrite[] {
   useEffect(() => {
     getClientBuildManifest()
       .then((clientBuildManifest) => {
-        if (!buildManifestRewrites.length) {
+        if (buildManifestRewrites.length === 0) {
           setRewrites((clientBuildManifest.__rewrites as unknown as Rewrites).afterFiles)
         }
       })

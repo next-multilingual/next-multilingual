@@ -2,7 +2,7 @@
  * Shared types.
  */
 import { Rewrite } from 'next/dist/lib/load-custom-routes'
-import { UrlObject } from 'url'
+import { UrlObject } from 'node:url'
 
 /** Type used to get localized URLs. */
 export type Url = string | UrlObject

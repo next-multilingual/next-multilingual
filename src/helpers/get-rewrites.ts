@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'node:fs'
 
 import { highlight, highlightFilePath, log } from '../'
 import { isInDebugMode } from '../config'
@@ -27,7 +27,7 @@ function setRewritesCache(rewrites: Rewrite[]): Rewrite[] {
   rewritesCache = rewrites
   if (isInDebugMode()) {
     console.log('==== SERVER SIDE REWRITES ====')
-    console.dir(rewritesCache, { depth: null })
+    console.dir(rewritesCache, { depth: undefined })
   }
   return rewritesCache
 }
@@ -84,7 +84,7 @@ export function getRewrites(): Rewrite[] {
           }
         })
       )
-    } catch (error) {
+    } catch {
       warningMessages.push(
         `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
           routesManifestPath
@@ -114,7 +114,7 @@ export function getRewrites(): Rewrite[] {
         filePath.endsWith(staticBuildManifestFilename)
       ) as string
     }`
-  } catch (error) {
+  } catch {
     warningMessages.push(
       `Unable to get the ${highlight('rewrites')}: failed to get the location of ${highlight(
         staticBuildManifestFilename
@@ -140,7 +140,7 @@ export function getRewrites(): Rewrite[] {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
     new Function('self', clientBuildManifestContent)(clientBuildManifest)
     return setRewritesCache(clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles)
-  } catch (error) {
+  } catch {
     warningMessages.push(
       `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
         staticBuildManifestPath

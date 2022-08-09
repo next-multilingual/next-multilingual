@@ -1,15 +1,15 @@
 import { IntlMessageFormat } from 'intl-messageformat'
 import React, { cloneElement, ReactElement } from 'react'
 
-import { highlight, highlightFilePath, log } from '../'
 import {
   isPlaceholderValue,
   JsxValues,
   MessageValuesByType,
   MixedValues,
   PlaceholderValues,
-} from './'
-import { Messages } from './Messages'
+} from '.'
+import { highlight, highlightFilePath, log } from '..'
+import { Messages } from './messages'
 
 /**
  * Object used to format individual localized messages of a local scope.
@@ -48,17 +48,17 @@ export class Message {
     if (values) {
       try {
         // @see https://formatjs.io/docs/core-concepts/icu-syntax/#quoting--escaping
-        this.intlMessageFormat = this.intlMessageFormat
-          ? this.intlMessageFormat
-          : new IntlMessageFormat(
-              this.message
-                .replace(/'/g, '@apostrophe@') // Escape (hide) apostrophes.
-                .replace(/</g, "'<'") // Smaller than escape.
-                .replace(/>/g, "'>'") // Greater than escape.
-                .replace(/''/g, '') // This only happens when two escapable characters are next to each other.
-                .replace(/@apostrophe@/g, "''"), // Two consecutive ASCII apostrophes represents one ASCII apostrophe.
-              this.parent.locale
-            )
+        this.intlMessageFormat =
+          this.intlMessageFormat ??
+          new IntlMessageFormat(
+            this.message
+              .replace(/'/g, '@apostrophe@') // Escape (hide) apostrophes.
+              .replace(/</g, "'<'") // Smaller than escape.
+              .replace(/>/g, "'>'") // Greater than escape.
+              .replace(/''/g, '') // This only happens when two escapable characters are next to each other.
+              .replace(/@apostrophe@/g, "''"), // Two consecutive ASCII apostrophes represents one ASCII apostrophe.
+            this.parent.locale
+          )
         return String(this.intlMessageFormat.format(values))
           .replace(/&#x7b;/gi, '{') // Unescape curly braces to avoid escaping them with `IntlMessageFormat`.
           .replace(/&#x7d;/gi, '}')
@@ -85,7 +85,7 @@ export class Message {
   public formatJsx(values: MixedValues): JSX.Element {
     const { placeholderValues, jsxValues } = this.splitValuesByType(values)
 
-    if (!Object.keys(jsxValues).length) {
+    if (Object.keys(jsxValues).length === 0) {
       log.warn(
         `unable to format message with key ${highlight(this.key)} in ${highlightFilePath(
           this.parent.messagesFilePath
@@ -159,7 +159,7 @@ export class Message {
       if (tag[1] !== '/') {
         // Check for unexpected opening tags.
         if (uniqueTags.includes(tagName)) {
-          throw Error(
+          throw new Error(
             `unexpected duplicate XML tag ${highlight(tag)}. All tag names must be unique.`
           )
         }
@@ -177,7 +177,7 @@ export class Message {
         }
 
         if (unexpectedClosing) {
-          throw Error(`unexpected closing XML tag ${highlight(tag)}`)
+          throw new Error(`unexpected closing XML tag ${highlight(tag)}`)
         }
 
         // Remove tag from index.
@@ -185,8 +185,8 @@ export class Message {
       }
     })
 
-    if (tagTracker.length) {
-      throw Error(
+    if (tagTracker.length > 0) {
+      throw new Error(
         `unexpected unclosed XML tag ${highlight(`<${tagTracker[tagTracker.length - 1]}>`)}`
       )
     }
@@ -221,7 +221,7 @@ export class Message {
     }
 
     // Check if the tag name is valid.
-    if (!/^[a-zA-Z0-9]*$/.test(tagName)) {
+    if (!/^[\dA-Za-z]*$/.test(tagName)) {
       throw new Error(
         `invalid tag name ${highlight(tagName)} in the XML tag ${highlight(
           xmlTag
@@ -254,7 +254,7 @@ export class Message {
     let messageSegment = message
     const reactNodes: React.ReactNode[] = []
 
-    while (messageSegment !== null && messageSegment.length) {
+    while (messageSegment !== null && messageSegment.length > 0) {
       // Get the next tag from the current message segment.
       const tagMatch = messageSegment.match(/[^<]*(?<tag><.*?>).*/m)
 
@@ -316,7 +316,7 @@ export class Message {
 
     const injectedElement = cloneElement(elements.pop() as JSX.Element, undefined, ...reactNodes)
 
-    if (!elements.length) {
+    if (elements.length === 0) {
       return injectedElement
     }
 
@@ -325,7 +325,7 @@ export class Message {
     do {
       const parentElement = elements.pop() as JSX.Element
       currentElement = cloneElement(parentElement, undefined, currentElement)
-    } while (elements.length)
+    } while (elements.length > 0)
 
     // Return the cloned elements with the inject message.
     return currentElement

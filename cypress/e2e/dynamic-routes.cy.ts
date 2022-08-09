@@ -20,9 +20,9 @@ describe('A dynamic route', () => {
     // Localized <Link> (SSR)
     it(`has the correct localized link (SSR) markup for '${localeName}'`, () => {
       const inputMarkupRegExp = /.*(?<input><.*parameter-input.*?>)/
-      const inputValueRegExp = /value=['"](?<parameterValue>.*?)['"]/
+      const inputValueRegExp = /value=["'](?<parameterValue>.*?)["']/
       const linkMarkupRegExp = /.*(?<link><.*link-with-parameter.*?>)/
-      const linkHrefRegExp = /href=['"](?<href>.*?)['"]/
+      const linkHrefRegExp = /href=["'](?<href>.*?)["']/
 
       cy.request({
         method: 'GET',

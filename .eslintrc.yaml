@@ -10,6 +10,7 @@ extends:
   - plugin:react/recommended
   - plugin:react/jsx-runtime
   - plugin:react-hooks/recommended
+  - plugin:unicorn/recommended
   - plugin:jsx-a11y/recommended
   - plugin:cypress/recommended
   - plugin:prettier/recommended
@@ -28,14 +29,42 @@ settings:
     typescript:
       alwaysTryTypes: true
 rules:
+  # The Unicorn plugin comes with opinionated checks, including some that we prefer disabling.
+  'unicorn/no-array-for-each':
+    # Performance is no longer an issue - we prefer `forEach` for readability.
+    - off
+  'unicorn/numeric-separators-style':
+    # Doesn't add a lot of value and makes numbers look odd.
+    - off
+  'unicorn/prefer-type-error':
+    # Not really applicable when using TypeScript (mostly triggers false positives).
+    - off
   # Increase the level to 'error' for unused variables (the default is set to 'warning')
   # @see https://typescript-eslint.io/rules/no-unused-vars/
   '@typescript-eslint/no-unused-vars':
     - error
+    - args: all
   # This check will only be enabled for TypeScript (the real configuration is in the 'overrides')
   # @see https://typescript-eslint.io/rules/explicit-function-return-type/#configuring-in-a-mixed-jsts-codebase
   '@typescript-eslint/explicit-function-return-type': 'off'
 overrides:
+  # Disable abbreviation check on Cypress' `e2e` file.
+  - files:
+      - 'cypress/support/*'
+    rules:
+      'unicorn/prevent-abbreviations':
+        - error
+        - ignore:
+            - '^e2e$'
+  # The acronyms `props` is too common in React to avoid using it.
+  - files:
+      - 'src/**/*'
+    rules:
+      'unicorn/prevent-abbreviations':
+        - error
+        - ignore:
+            - 'props'
+            - 'Props'
   # TypeScript configurations
   - files:
       - '*.ts'

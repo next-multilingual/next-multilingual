@@ -1,6 +1,8 @@
 import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
+
 import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
+
 import { useRouter } from 'next/router'
 
 import Layout from '@/layout'
@@ -63,4 +65,6 @@ const LongPage: NextPage = () => {
 
 export default LongPage
 
+// eslint-disable-next-line unicorn/prefer-export-from
 export const useLongPageMessages = useMessages
+// export { useMessages as useLongPageMessages } from 'next-multilingual/messages'

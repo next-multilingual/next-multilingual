@@ -1,6 +1,6 @@
-import { highlight, highlightFilePath, log, normalizeLocale } from '../'
-import { MessagesIndex, MixedValues, PlaceholderValues } from './'
-import { Message } from './Message'
+import { MessagesIndex, MixedValues, PlaceholderValues } from '.'
+import { highlight, highlightFilePath, log, normalizeLocale } from '..'
+import { Message } from './message'
 import { KeyValueObject } from './properties'
 
 /**
@@ -52,7 +52,7 @@ export class Messages {
    * @returns The formatted message as a string.
    */
   public format(key: string, values?: PlaceholderValues): string {
-    if (!this.messages.length) {
+    if (this.messages.length === 0) {
       // No need to log the error since it was caught when calling `useMessage()`.
       return ''
     }
@@ -80,7 +80,7 @@ export class Messages {
    * @returns The formatted message as a JSX element.
    */
   public formatJsx(key: string, values: MixedValues): JSX.Element {
-    if (!this.messages.length) {
+    if (this.messages.length === 0) {
       // No need to log the error since it was caught when calling `useMessage()`.
       return <></>
     }

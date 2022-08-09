@@ -7,9 +7,7 @@ class MyDocument extends Document {
 
     const pagePropsActualLocale: string = (props as ResolvedLocaleNextDataProps)?.pageProps
       ?.resolvedLocale
-    const actualLocale = pagePropsActualLocale
-      ? pagePropsActualLocale
-      : getActualLocale(locale, defaultLocale, locales)
+    const actualLocale = pagePropsActualLocale ?? getActualLocale(locale, defaultLocale, locales)
 
     return (
       <Html lang={normalizeLocale(actualLocale)} translate="no" className="notranslate">

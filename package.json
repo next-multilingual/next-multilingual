@@ -73,14 +73,18 @@
   },
   "type": "commonjs",
   "engines": {
-    "node": ">=14"
+    "node": ">=14.13.1"
   },
   "scripts": {
     "build": "rm -Rf ./lib && tsc",
-    "build-to-release": "npm run prettier && npm run lint && npm run build",
-    "lint": "eslint --ext .js --ext .jsx --ext .ts --ext .tsx --fix . && npm run lint-example",
+    "build-to-release": "npm run prettier && npm run lint-fix-all && npm run build",
+    "lint-fix-all": "npm run lint-fix && npm run lint-fix-example",
+    "lint-check-all": "npm run lint-check && npm run lint-check-example",
+    "lint-fix": "eslint --ext .js --ext .jsx --ext .ts --ext .tsx --fix .",
+    "lint-check": "eslint --ext .js --ext .jsx --ext .ts --ext .tsx .",
+    "lint-check-example": "cd example && npm run lint-check",
+    "lint-fix-example": "cd example && npm run lint-fix",
     "lint-print-config": "eslint --print-config ./eslintrc.yaml",
-    "lint-example": "cd example && npm run lint",
     "prettier": "prettier --write .",
     "release": "dotenv -- release-it --only-version",
     "start-example": "cd example && npm run dev",
@@ -105,7 +109,8 @@
     "messages-modules": "^1.0.0",
     "nookies": "^2.5.2",
     "properties-file": "^2.0.9",
-    "resolve-accept-language": "^1.1.14"
+    "resolve-accept-language": "^1.1.14",
+    "webpack": "^5.74.0"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^5.0.0",
@@ -133,6 +138,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-unicorn": "^43.0.2",
     "express": "^4.18.1",
     "next": "v12.2.4",
     "prettier": "^2.7.1",

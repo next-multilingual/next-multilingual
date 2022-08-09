@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs'
+import { readFileSync } from 'node:fs'
 import { propertiesToJson } from 'properties-file/content'
 
 import { highlight, highlightFilePath, log } from '../'
@@ -46,5 +46,5 @@ export function parsePropertiesFile(filePath: string): KeyValueObject {
  * @returns The content from a file, without the BOM character.
  */
 export function stripBom(fileContent: string): string {
-  return fileContent.charCodeAt(0) === 0xfeff ? fileContent.slice(1) : fileContent
+  return fileContent.codePointAt(0) === 0xfeff ? fileContent.slice(1) : fileContent
 }
