@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import Layout from '@/components/layout/Layout'
 
-import { useFruitsMessages } from '../messages/useFruitsMessages'
+import { useFruitsMessages } from '../messages/fruits/useFruitsMessages'
 import styles from './index.module.css'
 
 import type { GetServerSideProps, NextPage } from 'next'

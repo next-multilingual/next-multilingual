@@ -4,7 +4,7 @@ import { getTitle, useMessages } from 'next-multilingual/messages'
 
 import Layout from '@/components/layout/Layout'
 
-const Custom400: NextPage = () => {
+const Error404: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
   return (
@@ -17,4 +17,4 @@ const Custom400: NextPage = () => {
   )
 }
 
-export default Custom400
+export default Error404

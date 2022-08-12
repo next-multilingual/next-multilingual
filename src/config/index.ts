@@ -47,7 +47,16 @@ export const PAGE_FILE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js']
  * These are special page files used by Next.js that will not have their own routes. Extensions is excluded since they
  * can vary. The paths are relative to the `pages` directory.
  */
-export const NON_ROUTABLE_PAGE_FILES = ['index', '_app', '_document', '_error', '404', '500']
+export const NON_ROUTABLE_PAGE_FILES = [
+  'index',
+  '_app',
+  '_document',
+  '_error',
+  '404',
+  '404/index',
+  '500',
+  '500/index',
+]
 
 /**
  * Next.js did not define any types for its Webpack configs.
