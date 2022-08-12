@@ -54,14 +54,21 @@ overrides:
         - checksVoidReturn:
             arguments: false
             attributes: false
-  # Unicorn file names overrides.
+  # Unicorn overrides.
   - files:
+      # Components must be `PascalCase`
       - 'components/**/*'
-      - 'layout/**/*'
     rules:
       'unicorn/filename-case':
         - error
         - case: pascalCase
+  - files:
+      # Messages must be `camelCase`
+      - 'messages/**/*'
+    rules:
+      'unicorn/filename-case':
+        - error
+        - case: camelCase
   - files:
       - '**/*'
     rules:

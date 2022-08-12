@@ -4,7 +4,7 @@ import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useLocalizedUrl } from 'next-multilingual/url'
 import { useRouter } from 'next/router'
 
-import Layout from '@/layout'
+import Layout from '@/components/layout/Layout'
 
 import styles from './[id].module.css'
 

@@ -12,7 +12,7 @@ import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 
-import Layout from '@/layout'
+import Layout from '@/components/layout/Layout'
 
 import { useFruitsMessages } from '../messages/useFruitsMessages'
 import styles from './index.module.css'

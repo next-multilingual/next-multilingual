@@ -3,8 +3,8 @@ import Link from 'next-multilingual/link'
 import { useMessages } from 'next-multilingual/messages'
 import type { ReactNode } from 'react'
 
-import Footer from '@/components/Footer'
-import LanguagePicker from '@/components/LanguagePicker'
+import Footer from '@/components/footer/Footer'
+import LanguagePicker from '@/components/language-picker/LanguagePicker'
 
 import styles from './Layout.module.css'
 

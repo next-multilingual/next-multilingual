@@ -5,7 +5,7 @@ import { useLocalizedUrl } from 'next-multilingual/url'
 import router, { useRouter } from 'next/router'
 import { useState } from 'react'
 
-import Layout from '@/layout'
+import Layout from '@/components/layout/Layout'
 
 import styles from './index.module.css'
 

@@ -3,7 +3,7 @@ import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next/router'
 import type { FormEvent } from 'react'
 
-import Layout from '@/layout'
+import Layout from '@/components/layout/Layout'
 
 import styles from './index.module.css'
 

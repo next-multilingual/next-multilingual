@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 
-import Layout from '@/layout'
+import Layout from '@/components/layout/Layout'
 
 const MessageSent: NextPage = () => {
   const messages = useMessages()

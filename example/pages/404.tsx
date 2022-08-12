@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 
-import Layout from '@/layout'
+import Layout from '@/components/layout/Layout'
 
 const Custom400: NextPage = () => {
   const messages = useMessages()

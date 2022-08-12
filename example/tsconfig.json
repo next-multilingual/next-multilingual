@@ -4,8 +4,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/layout": ["layout/Layout"]
+      "@/components/*": ["components/*"]
     },
     "allowJs": true,
     "skipLibCheck": true,
