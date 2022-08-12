@@ -54,6 +54,16 @@ overrides:
         - checksVoidReturn:
             arguments: false
             attributes: false
+      # Checks members (classes, interfaces, types) and applies consistent ordering.
+      # @see https://typescript-eslint.io/rules/member-ordering/
+      '@typescript-eslint/member-ordering':
+        - error
+        - default:
+            # Only use basic types to avoid intrusive rules.
+            memberTypes:
+              - field
+              - constructor
+              - method
   # Unicorn overrides.
   - files:
       # Components must be `PascalCase`

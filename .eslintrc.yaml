@@ -29,6 +29,11 @@ settings:
     typescript:
       alwaysTryTypes: true
 rules:
+  # Increase the level to 'error' for unused variables (the default is set to 'warning')
+  # @see https://eslint.org/docs/latest/rules/no-unused-vars
+  no-unused-vars:
+    - error
+    - args: all
   # The Unicorn plugin comes with opinionated checks, including some that we prefer disabling.
   'unicorn/no-array-for-each':
     # Performance is no longer an issue - we prefer `forEach` for readability.
@@ -83,3 +88,13 @@ overrides:
         - error
         - allowExpressions: true
           allowConciseArrowFunctionExpressionsStartingWithVoid: true
+      # Checks members (classes, interfaces, types) and applies consistent ordering.
+      # @see https://typescript-eslint.io/rules/member-ordering/
+      '@typescript-eslint/member-ordering':
+        - error
+        - default:
+            # Only use basic types to avoid intrusive rules.
+            memberTypes:
+              - field
+              - constructor
+              - method
