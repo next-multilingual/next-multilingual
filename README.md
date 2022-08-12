@@ -94,7 +94,7 @@ module.exports = {
 
 If you need to customize your own Webpack configuration, we recommend extending our handler like this:
 
-```js
+```ts
 import Webpack from 'webpack'
 
 import { webpackConfigurationHandler, WebpackContext } from 'next-multilingual/config'
@@ -106,6 +106,17 @@ export function myWebpackConfigurationHandler(
   const myConfig = webpackConfigurationHandler(config, context)
   // Do stuff here.
   return myConfig
+}
+```
+
+Or directly in `next.config.js`:
+
+```js
+// Webpack handler wrapping next-multilingual's handler.
+function webpack(config, context) {
+  config = webpackConfigurationHandler(config, context)
+  // Do stuff here.
+  return config
 }
 ```
 
