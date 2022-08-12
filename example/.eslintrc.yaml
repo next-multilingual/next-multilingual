@@ -2,9 +2,25 @@
 root: true # Disables inheritance from parent config.
 extends:
   - eslint:recommended
+  - plugin:import/recommended
+  # Add IDE support for Next.js' linting rules
+  # Note that running `next lint` will provide different results than running `eslint` which is why we prefer to run `eslint`.
+  # @see https://github.com/vercel/next.js/issues/39565
   - next/core-web-vitals
   - plugin:unicorn/recommended
   - plugin:prettier/recommended
+settings:
+  import/resolver:
+    node:
+      extensions:
+        - '.js'
+        - '.jsx'
+        - '.ts'
+        - '.tsx'
+    # Uses `eslint-import-resolver-typescript` to support the `exports` syntax in `package.json`
+    # @see https://github.com/import-js/eslint-import-resolver-typescript
+    typescript:
+      alwaysTryTypes: true
 rules:
   # Increase the level to 'error' for unused variables (the default is set to 'warning')
   # @see https://eslint.org/docs/latest/rules/no-unused-vars
@@ -64,21 +80,21 @@ overrides:
               - field
               - constructor
               - method
-  # Unicorn overrides.
+  # Filenames: components must be `PascalCase`
   - files:
-      # Components must be `PascalCase`
       - 'components/**/*'
     rules:
       'unicorn/filename-case':
         - error
         - case: pascalCase
+  # Filenames: messages must be `camelCase`
   - files:
-      # Messages must be `camelCase`
       - 'messages/**/*'
     rules:
       'unicorn/filename-case':
         - error
         - case: camelCase
+  # Disable common acronym checks
   - files:
       - '**/*'
     rules:
@@ -91,3 +107,19 @@ overrides:
             # The acronyms `props` is too common in React to avoid using it.
             - 'props'
             - 'Props'
+  # Fix checks for `next-env.d.ts`
+  - files:
+      - 'next-env.d.ts'
+    rules:
+      'unicorn/prevent-abbreviations':
+        - error
+        - ignore:
+            # This is a Next.js file and we cannot rename `next-env.d.ts`.
+            - 'env'
+  # Fix checks for `next.config.js`
+  - files:
+      - 'next.config.js'
+    rules:
+      # `next.config.js` does not support modules.
+      'unicorn/prefer-module':
+        - off
