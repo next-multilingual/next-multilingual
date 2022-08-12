@@ -1,21 +1,16 @@
-
-
 # [1.2.0](https://github.com/Avansai/next-multilingual/compare/1.1.2...1.2.0) (2022-08-12)
-
 
 ### Code Refactoring
 
-* add `eslint-plugin-unicorn` to help increase code quality ([3f109e4](https://github.com/Avansai/next-multilingual/commit/3f109e4fd5e42b518826781ee1d2d4a472f524ba))
-
+- add `eslint-plugin-unicorn` to help increase code quality ([3f109e4](https://github.com/Avansai/next-multilingual/commit/3f109e4fd5e42b518826781ee1d2d4a472f524ba))
 
 ### Features
 
-* support `export from` syntax for shared messages ([d78a846](https://github.com/Avansai/next-multilingual/commit/d78a8467dc5a0ba28174d0244a19ae1d5c473be8))
-
+- support `export from` syntax for shared messages ([d78a846](https://github.com/Avansai/next-multilingual/commit/d78a8467dc5a0ba28174d0244a19ae1d5c473be8))
 
 ### BREAKING CHANGES
 
-* Using the `node:` scheme to better identify Node.js modules requires advanced config users to extend the new `webpackConfigurationHandler` (see README for details)
+- Using the `node:` scheme to better identify Node.js modules requires advanced config users to extend the new `webpackConfigurationHandler` (see README for details)
 
 ## [1.1.2](https://github.com/Avansai/next-multilingual/compare/1.1.1...1.1.2) (2022-08-01)
 
