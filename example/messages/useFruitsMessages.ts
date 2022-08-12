@@ -1,3 +1,1 @@
-import { useMessages } from 'next-multilingual/messages'
-
-export const useFruitsMessages = useMessages
+export { useMessages as useFruitsMessages } from 'next-multilingual/messages'

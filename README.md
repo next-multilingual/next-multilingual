@@ -551,9 +551,7 @@ For example, to keep your localization process simple, you want to avoid storing
 To illustrate this we created [one example using fruits](./example/messages/useFruitsMessages.ts). All you need to do, is create a hook that calls `useMessages` like this:
 
 ```ts
-import { useMessages } from 'next-multilingual/messages'
-
-export const useFruitsMessages = useMessages
+export { useMessages as useFruitsMessages } from 'next-multilingual/messages'
 ```
 
 Of course, you will have your messages files in the same directory:
