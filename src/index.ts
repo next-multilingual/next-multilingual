@@ -7,6 +7,7 @@ import { sep as pathSeparator } from 'node:path'
 import type { ParsedUrlQueryInput } from 'node:querystring'
 import { ParsedUrlQuery } from 'node:querystring'
 import Cookies from 'nookies'
+import { useMemo } from 'react'
 import resolveAcceptLanguage from 'resolve-accept-language'
 
 /**
@@ -109,12 +110,16 @@ export interface NextMultilingualRouter extends NextRouter {
  */
 export function useRouter(): NextMultilingualRouter {
   const router = useNextRouter()
-  const localeConfig = getLocaleConfig(router.locale, router.defaultLocale, router.locales)
-  // Automatically overwrites the locale if it's using the default locale.
-  router.locale = getActualLocale(router.locale, router.defaultLocale, router.locales)
-  // Leave the default locale intact (without `undefined`) so that we can still use the other "getActual" APIs.
-  router.defaultLocale = localeConfig.defaultLocale
-  return router as NextMultilingualRouter
+
+  // Only recomputes if the router changes (useful if `useRouter` is called multiple times on the same page).
+  return useMemo(() => {
+    const localeConfig = getLocaleConfig(router.locale, router.defaultLocale, router.locales)
+    // Automatically overwrites the locale if it's using the default locale.
+    router.locale = getActualLocale(router.locale, router.defaultLocale, router.locales)
+    // Leave the default locale intact (without `undefined`) so that we can still use the other "getActual" APIs.
+    router.defaultLocale = localeConfig.defaultLocale
+    return router as NextMultilingualRouter
+  }, [router])
 }
 
 /**
