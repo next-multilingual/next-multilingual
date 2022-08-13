@@ -1,13 +1,13 @@
 import { cyanBright } from 'colorette'
+import type { GetServerSidePropsContext, PreviewData } from 'next'
 import * as nextLog from 'next/dist/build/output/log'
+import Document from 'next/document'
+import { NextRouter, useRouter as useNextRouter } from 'next/router'
 import { sep as pathSeparator } from 'node:path'
+import type { ParsedUrlQueryInput } from 'node:querystring'
 import { ParsedUrlQuery } from 'node:querystring'
 import Cookies from 'nookies'
 import resolveAcceptLanguage from 'resolve-accept-language'
-
-import type { ParsedUrlQueryInput } from 'node:querystring'
-
-import type { GetServerSidePropsContext, PreviewData } from 'next'
 
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
@@ -50,6 +50,96 @@ export function highlightFilePath(filePath: string): string {
 }
 
 /**
+ * Locale configuration type, enforcing non-`undefined` values.
+ */
+export type LocaleConfig = {
+  /** The current locale from Next.js. */
+  locale: string
+  /** The configured i18n default locale from Next.js. */
+  defaultLocale: string
+  /** The configured i18n locales from Next.js. */
+  locales: string[]
+}
+
+/**
+ * Get the Next.js locale configuration.
+ *
+ * @param locale - The current locale from Next.js.
+ * @param defaultLocale - The configured i18n default locale from Next.js.
+ * @param locales - The configured i18n locales from Next.js.
+ *
+ * @returns A `LocaleConfig` object that contains no `undefined` values.
+ */
+export function getLocaleConfig(
+  locale?: string,
+  defaultLocale?: string,
+  locales?: string[]
+): LocaleConfig {
+  if (locales === undefined) {
+    throw new Error('locales must be configured in Next.js')
+  }
+
+  // There are edge cases (e.g. Internal Server Errors) where `defaultLocale` and `locale` are `undefined`.
+  return {
+    defaultLocale: defaultLocale ?? locales[0],
+    locale: locale ?? locales[1],
+    locales,
+  }
+}
+
+/**
+ * Wraps Next.js' `NextRouter` object into one where locale configuration is never `undefined`.
+ */
+export interface NextMultilingualRouter extends NextRouter {
+  /** The current locale from Next.js. */
+  locale: string
+  /** The configured i18n default locale from Next.js. */
+  defaultLocale: string
+  /** The configured i18n locales from Next.js. */
+  locales: string[]
+}
+
+/**
+ * Wrapper on top of Next.js' `useRouter` to:
+ *
+ * - automatically overwrite the locale if it's using the default locale.
+ * - make sure that locale configuration is never `undefined`.
+ *
+ * @returns An extended `NextRouter` using `next-multilingual`'s actual locale (and no `undefined` values).
+ */
+export function useRouter(): NextMultilingualRouter {
+  const router = useNextRouter()
+  const localeConfig = getLocaleConfig(router.locale, router.defaultLocale, router.locales)
+  // Automatically overwrites the locale if it's using the default locale.
+  router.locale = getActualLocale(router.locale, router.defaultLocale, router.locales)
+  // Leave the default locale intact (without `undefined`) so that we can still use the other "getActual" APIs.
+  router.defaultLocale = localeConfig.defaultLocale
+  return router as NextMultilingualRouter
+}
+
+/**
+ * Hook to force Next.js to use the actual (proper) locale.
+ */
+export function useActualLocale(): void {
+  void useRouter()
+}
+
+/**
+ * Get the value for the `<html>` tag `lang` attribute.
+ *
+ * @param document - A Next.js `Document` object.
+ *
+ * @returns The normalized locale value of the current page.
+ */
+export function getHtmlLang(document: Document): string {
+  const { locale, locales, defaultLocale, props } = document.props.__NEXT_DATA__
+
+  const pagePropsActualLocale: string = (props as ResolvedLocaleNextDataProps)?.pageProps
+    ?.resolvedLocale
+  return normalizeLocale(pagePropsActualLocale ?? getActualLocale(locale, defaultLocale, locales))
+}
+
+/**
  * Get the actual locale based on the current locale from Next.js.
  *
  * To get a dynamic locale resolution on `/` without redirection, we need to add a "multilingual" locale as the
@@ -68,11 +158,14 @@ export function getActualLocale(
   defaultLocale?: string,
   locales?: string[]
 ): string {
-  if (locale === undefined || defaultLocale === undefined || locales === undefined) {
-    throw new Error('locales must be configured in Next.js')
-  }
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale)
-  return locale === defaultLocale ? actualDefaultLocale : locale
+  const localeConfig = getLocaleConfig(locale, defaultLocale, locales)
+  const actualDefaultLocale = getActualDefaultLocale(
+    localeConfig.locales,
+    localeConfig.defaultLocale
+  )
+  return localeConfig.locale === localeConfig.defaultLocale
+    ? actualDefaultLocale
+    : localeConfig.locale
 }
 
 /**
@@ -89,10 +182,8 @@ export function getActualLocale(
  * @returns The list of actual locales.
  */
 export function getActualLocales(locales?: string[], defaultLocale?: string): string[] {
-  if (locales === undefined || defaultLocale === undefined) {
-    throw new Error('locales must be configured in Next.js')
-  }
-  return locales.filter((locale) => locale !== defaultLocale)
+  const localeConfig = getLocaleConfig(undefined, defaultLocale, locales)
+  return localeConfig.locales.filter((locale) => locale !== defaultLocale)
 }
 
 /**
@@ -110,10 +201,7 @@ export function getActualLocales(locales?: string[], defaultLocale?: string): st
  * @returns The actual default locale.
  */
 export function getActualDefaultLocale(locales?: string[], defaultLocale?: string): string {
-  if (locales === undefined || defaultLocale === undefined) {
-    throw new Error('locales must be configured in Next.js')
-  }
-  return getActualLocales(locales, defaultLocale)?.shift() as string
+  return getActualLocales(locales, defaultLocale).shift() as string
 }
 
 /**
@@ -198,15 +286,13 @@ const LOCALE_COOKIE_LIFETIME: number =
  * @param locale - A locale identifier.
  */
 export function setCookieLocale(locale?: string): void {
-  if (locale === undefined) {
-    throw new Error('locales must be configured in Next.js')
+  if (locale !== undefined) {
+    Cookies.set(undefined, LOCALE_COOKIE_NAME, locale, {
+      maxAge: LOCALE_COOKIE_LIFETIME,
+      path: '/',
+      sameSite: 'lax',
+    })
   }
-
-  Cookies.set(undefined, LOCALE_COOKIE_NAME, locale, {
-    maxAge: LOCALE_COOKIE_LIFETIME,
-    path: '/',
-    sameSite: 'lax',
-  })
 }
 
 /**

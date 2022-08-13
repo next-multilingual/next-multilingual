@@ -125,7 +125,7 @@ function webpack(config, context) {
 `next-multilingual/config` does 2 things leveraging Next.js' current routing capability:
 
 1. Add [Rewrites](https://nextjs.org/docs/api-reference/next.config.js/rewrites) to link localized URLs to the default language URLs.
-2. Add [Redirects](https://nextjs.org/docs/api-reference/next.config.js/redirects) to redirect all possible encoded URL [forms](https://unicode.org/reports/tr15/) to the normalized NFC URL.
+2. Add [Redirects](https://nextjs.org/docs/api-reference/next.config.js/redirects) to redirect all possible encoded URL [forms](https://unicode.org/reports/tr15/) to the normalized [NFC](https://en.wikipedia.org/wiki/Unicode_equivalence) URL.
 
 `next-multilingual/config` also handles the special Webpack configuration required for server side rendering of localized
 URLs using `next-multilingual/link/ssr` for `Link` components and `next-multilingual/head/ssr` for canonical and alternate links in the `Head` component.
@@ -154,21 +154,13 @@ We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/cus
 ```ts
 import type { AppProps } from 'next/app'
 
-import { getActualDefaultLocale, setCookieLocale } from 'next-multilingual'
-import { useRouter } from 'next/router'
+import { setCookieLocale, useRouter } from 'next-multilingual'
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+  // Calling `useRouter` here ensures that Next.js is using the actual (proper) locale.
   const router = useRouter()
-  const { locales, defaultLocale, locale } = router
-  /**
-   * Next.js always expose the default locale with URLs without prefixes. If anyone use these URLs, we want to overwrite them
-   * with the actual (default) locale.
-   */
-  if (locale === defaultLocale) {
-    router.locale = getActualDefaultLocale(locales, defaultLocale)
-  }
-  setCookieLocale(router.locale) // Persist locale on page load (will be re-used when hitting `/`).
-
+  // Persist locale on page load (will be re-used when hitting `/`).
+  setCookieLocale(router.locale)
   return <Component {...pageProps} />
 }
 ```
@@ -178,28 +170,32 @@ This basically does two things, as mentioned in the comments:
 1. Inject the actual locale in Next.js' router since we need to use a "fake default locale".
 2. Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
 
-You might have noticed the `getActualDefaultLocale` API. This API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very important, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
+If you do not want to use smart language detection to dynamically render the homepage, you can use the `useActualLocale()` hook instead like this:
+
+```ts
+import type { AppProps } from 'next/app'
+
+import { useActualLocale } from 'next-multilingual'
+
+export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+  // Calling `useActualLocale` here ensures that Next.js is using the actual (proper) locale.
+  void useActualLocale()
+  return <Component {...pageProps} />
+}
+```
 
 ### Create a custom `Document` (`_document.tsx`)
 
 We also need to create a [custom `Document`](https://nextjs.org/docs/advanced-features/custom-document) by adding [`_document.tsx`](./example/pages/_document.tsx) in the `pages` directory:
 
 ```ts
-import { getActualLocale, normalizeLocale, ResolvedLocaleNextDataProps } from 'next-multilingual'
+import { getHtmlLang } from 'next-multilingual'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 
 class MyDocument extends Document {
   render(): JSX.Element {
-    const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__
-
-    const pagePropsActualLocale: string = (props as ResolvedLocaleNextDataProps)?.pageProps
-      ?.resolvedLocale
-    const actualLocale = pagePropsActualLocale
-      ? pagePropsActualLocale
-      : getActualLocale(locale, defaultLocale, locales)
-
     return (
-      <Html lang={normalizeLocale(actualLocale)} translate="no" className="notranslate">
+      <Html lang={getHtmlLang(this)} translate="no" className="notranslate">
         <Head>
           <meta name="google" content="notranslate" />
         </Head>
@@ -215,7 +211,7 @@ class MyDocument extends Document {
 export default MyDocument
 ```
 
-This serves only 1 purpose: display the correct server side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`. The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URL prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
+This serves only 1 purpose: display the correct server side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`.
 
 ### Configure all your pages to use SEO friendly markup
 
@@ -321,6 +317,8 @@ In a nutshell, this is what is happening:
 2. The server then passes the resolved locale back to the client and:
    - The client overwrites the value on the router to make this dynamic across the application.
    - The value is also stored back in the cookie to keep the selection consistent
+
+You might have noticed the `getActual*` APIs. Theses API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very useful, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
 
 ### Creating messages
 
@@ -977,6 +975,8 @@ const SomePage: NextPage = () => {
   )
 }
 ```
+
+The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Since Next.js uses the locales as URL prefixes, they are lower-cased in the configuration and can be re-normalized as needed.
 
 ### Dynamic Routes
 

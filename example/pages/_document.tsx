@@ -1,16 +1,10 @@
-import { getActualLocale, normalizeLocale, ResolvedLocaleNextDataProps } from 'next-multilingual'
+import { getHtmlLang } from 'next-multilingual'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 
 class MyDocument extends Document {
   render(): JSX.Element {
-    const { locale, locales, defaultLocale, props } = this.props.__NEXT_DATA__
-
-    const pagePropsActualLocale: string = (props as ResolvedLocaleNextDataProps)?.pageProps
-      ?.resolvedLocale
-    const actualLocale = pagePropsActualLocale ?? getActualLocale(locale, defaultLocale, locales)
-
     return (
-      <Html lang={normalizeLocale(actualLocale)} translate="no" className="notranslate">
+      <Html lang={getHtmlLang(this)} translate="no" className="notranslate">
         <Head>
           <meta name="google" content="notranslate" />
         </Head>

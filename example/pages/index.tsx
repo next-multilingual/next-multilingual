@@ -1,3 +1,5 @@
+import Layout from '@/components/layout/Layout'
+import type { GetServerSideProps, NextPage } from 'next'
 import {
   getActualDefaultLocale,
   getActualLocale,
@@ -7,18 +9,13 @@ import {
   normalizeLocale,
   ResolvedLocaleServerSideProps,
   setCookieLocale,
+  useRouter,
 } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
-import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-
-import Layout from '@/components/layout/Layout'
-
 import { useFruitsMessages } from '../messages/fruits/useFruitsMessages'
-import styles from './index.module.css'
-
-import type { GetServerSideProps, NextPage } from 'next'
 import { HelloApiSchema } from './api/hello'
+import styles from './index.module.css'
 
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter()
@@ -55,7 +52,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
 
     setApiIsLoaded(false)
     const requestHeaders: HeadersInit = new Headers()
-    requestHeaders.set('Accept-Language', normalizeLocale(locale as string))
+    requestHeaders.set('Accept-Language', normalizeLocale(locale))
     fetch(`${basePath}/api/hello`, {
       headers: requestHeaders,
       signal: controllerRef.current?.signal,
@@ -109,7 +106,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           <tbody>
             <tr>
               <td>{messages.format('rowDefaultLocale')}</td>
-              <td>{normalizeLocale(defaultLocale as string)}</td>
+              <td>{normalizeLocale(defaultLocale)}</td>
               <td>{normalizeLocale(getActualDefaultLocale(locales, defaultLocale))}</td>
             </tr>
             <tr>
@@ -117,7 +114,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
               <td>{locales?.map((locale) => normalizeLocale(locale)).join(', ')}</td>
               <td>
                 {getActualLocales(locales, defaultLocale)
-                  ?.map((locale) => normalizeLocale(locale))
+                  .map((locale) => normalizeLocale(locale))
                   .join(', ')}
               </td>
             </tr>

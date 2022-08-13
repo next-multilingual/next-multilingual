@@ -3,6 +3,7 @@ root: true # Disables inheritance from parent config.
 extends:
   - eslint:recommended
   - plugin:import/recommended
+  - plugin:import/typescript
   # Add IDE support for Next.js' linting rules
   # Note that running `next lint` will provide different results than running `eslint` which is why we prefer to run `eslint`.
   # @see https://github.com/vercel/next.js/issues/39565
