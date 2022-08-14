@@ -1,3 +1,18 @@
+
+
+# [1.3.0](https://github.com/Avansai/next-multilingual/compare/1.2.1...1.3.0) (2022-08-14)
+
+
+### Features
+
+* add 2 new hooks to simplify integration: `useActualLocale` and `useResolvedLocale` ([abadb36](https://github.com/Avansai/next-multilingual/commit/abadb362a092582f39eb798b5d0e5a20ce03aede))
+* add new `useRouter` and `getHtmlLang` APIs ([99d10b4](https://github.com/Avansai/next-multilingual/commit/99d10b44b0f1de97ac72543a3dae063f74cd6eaf))
+
+
+### Performance Improvements
+
+* optimize `useRouter` with a `useMemo` ([fde5af0](https://github.com/Avansai/next-multilingual/commit/fde5af021073173b1acdbd5931be1d8a0ecb6d92))
+
 ## [1.2.1](https://github.com/Avansai/next-multilingual/compare/1.2.0...1.2.1) (2022-08-12)
 
 ### Features
