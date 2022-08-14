@@ -1,3 +1,17 @@
+
+
+# [1.4.0](https://github.com/Avansai/next-multilingual/compare/1.3.0...1.4.0) (2022-08-14)
+
+
+### Bug Fixes
+
+* missing argument while deleting the locale cookie ([344adf5](https://github.com/Avansai/next-multilingual/commit/344adf52f43af056b7ac73608ac0bd5931f8ebc8))
+
+
+### Features
+
+* add new argument to `useActualLocale` to simplify integration and a new `resolveLocale` API ([93b1c8e](https://github.com/Avansai/next-multilingual/commit/93b1c8ee12ad9f328249379d1875e93b4672babf))
+
 # [1.3.0](https://github.com/Avansai/next-multilingual/compare/1.2.1...1.3.0) (2022-08-14)
 
 ### Features
