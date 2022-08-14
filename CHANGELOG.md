@@ -1,17 +1,18 @@
-
-
 # [1.3.0](https://github.com/Avansai/next-multilingual/compare/1.2.1...1.3.0) (2022-08-14)
-
 
 ### Features
 
-* add 2 new hooks to simplify integration: `useActualLocale` and `useResolvedLocale` ([abadb36](https://github.com/Avansai/next-multilingual/commit/abadb362a092582f39eb798b5d0e5a20ce03aede))
-* add new `useRouter` and `getHtmlLang` APIs ([99d10b4](https://github.com/Avansai/next-multilingual/commit/99d10b44b0f1de97ac72543a3dae063f74cd6eaf))
+- add new hooks and APIs to simplify integration (details in [README](./README.md)):
 
+  - `useActualLocale`: used in `_app` for smart locale detection. ([99d10b4](https://github.com/Avansai/next-multilingual/commit/99d10b44b0f1de97ac72543a3dae063f74cd6eaf))
+  - `useResolvedLocale`: used in the homepage for smart locale detection. ([abadb36](https://github.com/Avansai/next-multilingual/commit/abadb362a092582f39eb798b5d0e5a20ce03aede))
+  - `getHtmlLang`: used in `_document` to get the `html` tag `lang` attribute value ([99d10b4](https://github.com/Avansai/next-multilingual/commit/99d10b44b0f1de97ac72543a3dae063f74cd6eaf))
+  - `useRouter`: wrapper on top of Next.js' to avoid `undefined` types on locale properties (they are never `undefined` with `next-multilingual`) ([99d10b4](https://github.com/Avansai/next-multilingual/commit/99d10b44b0f1de97ac72543a3dae063f74cd6eaf))
 
 ### Performance Improvements
 
-* optimize `useRouter` with a `useMemo` ([fde5af0](https://github.com/Avansai/next-multilingual/commit/fde5af021073173b1acdbd5931be1d8a0ecb6d92))
+- optimize `useRouter` with a `useMemo` ([fde5af0](https://github.com/Avansai/next-multilingual/commit/fde5af021073173b1acdbd5931be1d8a0ecb6d92))
+- fix `locales must be configured in Next.js` error being thrown during other unrelated Internal Server Errors. ([99d10b4](https://github.com/Avansai/next-multilingual/commit/99d10b44b0f1de97ac72543a3dae063f74cd6eaf))
 
 ## [1.2.1](https://github.com/Avansai/next-multilingual/compare/1.2.0...1.2.1) (2022-08-12)
 
