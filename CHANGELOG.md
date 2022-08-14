@@ -1,11 +1,8 @@
-
-
 ## [1.2.1](https://github.com/Avansai/next-multilingual/compare/1.2.0...1.2.1) (2022-08-12)
-
 
 ### Features
 
-* support directories for `404` and `500` error pages ([1564860](https://github.com/Avansai/next-multilingual/commit/15648607e8954fa6741914028d4346acc6ea7725))
+- support directories for `404` and `500` error pages ([1564860](https://github.com/Avansai/next-multilingual/commit/15648607e8954fa6741914028d4346acc6ea7725))
 
 # [1.2.0](https://github.com/Avansai/next-multilingual/compare/1.1.2...1.2.0) (2022-08-12)
 
