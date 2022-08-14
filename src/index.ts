@@ -1,5 +1,9 @@
 import { cyanBright } from 'colorette'
-import type { GetServerSidePropsContext, PreviewData } from 'next'
+import type {
+  GetServerSidePropsContext as NextGetServerSidePropsContext,
+  GetStaticPropsContext as NextGetStaticPropsContext,
+  PreviewData,
+} from 'next'
 import * as nextLog from 'next/dist/build/output/log'
 import Document from 'next/document'
 import { NextRouter, useRouter as useNextRouter } from 'next/router'
@@ -7,7 +11,7 @@ import { sep as pathSeparator } from 'node:path'
 import type { ParsedUrlQueryInput } from 'node:querystring'
 import { ParsedUrlQuery } from 'node:querystring'
 import Cookies from 'nookies'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import resolveAcceptLanguage from 'resolve-accept-language'
 
 /**
@@ -89,18 +93,6 @@ export function getLocaleConfig(
 }
 
 /**
- * Wraps Next.js' `NextRouter` object into one where locale configuration is never `undefined`.
- */
-export interface NextMultilingualRouter extends NextRouter {
-  /** The current locale from Next.js. */
-  locale: string
-  /** The configured i18n default locale from Next.js. */
-  defaultLocale: string
-  /** The configured i18n locales from Next.js. */
-  locales: string[]
-}
-
-/**
  * Wrapper on top of Next.js' `useRouter` to:
  *
  * - automatically overwrite the locale if it's using the default locale.
@@ -108,7 +100,7 @@ export interface NextMultilingualRouter extends NextRouter {
  *
  * @returns An extended `NextRouter` using `next-multilingual`'s actual locale (and no `undefined` values).
  */
-export function useRouter(): NextMultilingualRouter {
+export function useRouter(): NextRouter & LocaleConfig {
   const router = useNextRouter()
 
   // Only recomputes if the router changes (useful if `useRouter` is called multiple times on the same page).
@@ -118,18 +110,66 @@ export function useRouter(): NextMultilingualRouter {
     router.locale = getActualLocale(router.locale, router.defaultLocale, router.locales)
     // Leave the default locale intact (without `undefined`) so that we can still use the other "getActual" APIs.
     router.defaultLocale = localeConfig.defaultLocale
-    return router as NextMultilingualRouter
+    return router as NextRouter & LocaleConfig
   }, [router])
+}
+
+/**
+ * `GetStaticPropsContext` where `locale`, `defaultLocale` and `locales` are never `undefined`.
+ */
+export type GetStaticPropsContext = NextGetStaticPropsContext & LocaleConfig
+
+/**
+ * `GetServerSidePropsContext` where `locale`, `defaultLocale` and `locales` are never `undefined`.
+ */
+export type GetServerSidePropsContext = NextGetServerSidePropsContext & LocaleConfig
+
+/**
+ * Dynamically resolves the locale on `/`.
+ *
+ * @param context - A Next.js `GetServerSidePropsContext` object.
+ *
+ * @returns The best possible locale for a given user.
+ */
+export function resolveLocale(context: NextGetServerSidePropsContext): string {
+  const { req, locale, locales, defaultLocale } = context
+
+  const actualLocales = getActualLocales(locales, defaultLocale)
+  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale)
+  const cookieLocale = getCookieLocale(context, actualLocales)
+  let resolvedLocale = getActualLocale(locale, defaultLocale, locales)
+
+  // When Next.js tries to use the default locale, try to find a better one.
+  if (locale === defaultLocale) {
+    resolvedLocale =
+      cookieLocale ??
+      getPreferredLocale(
+        req.headers['accept-language'],
+        actualLocales,
+        actualDefaultLocale
+      ).toLowerCase()
+  }
+  return resolvedLocale
 }
 
 /**
  * Force Next.js to use the actual (proper) locale.
  *
  * This will inject the correct locale into Next.js' router so that both SSR and client side stay in sync when using
- * the default "fake" (mul) locale.
+ * the default "fake" (mul) locale. By default, locale detection is enabled and will track the locale in a cookie that
+ * `next-multilingual` can use as a "preference" when going back to the homepage.
+ *
+ * @param localeDetection - By setting this parameter to `false` the locale will not be store in the `next-multilingual` cookie.
  */
-export function useActualLocale(): void {
-  void useRouter()
+export function useActualLocale(localeDetection = true): void {
+  const router = useRouter()
+  useEffect(() => {
+    if (localeDetection) {
+      setCookieLocale(router.locale)
+    } else {
+      Cookies.destroy(LOCALE_COOKIE_NAME)
+    }
+  }, [localeDetection, router.locale])
 }
 
 /**
@@ -137,6 +177,8 @@ export function useActualLocale(): void {
  *
  * This will inject the correct locale into Next.js' router so that both SSR and client side stay in sync when using
  * a dynamic locale on the homepage.
+ *
+ * @param locale - The locale that has been resolved by the server.
  */
 export function useResolvedLocale(locale: string): void {
   const router = useNextRouter()
@@ -324,7 +366,7 @@ export function setCookieLocale(locale?: string): void {
  * @returns The locale that was saved to the locale cookie.
  */
 export function getCookieLocale(
-  serverSidePropsContext: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
+  serverSidePropsContext: NextGetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
   actualLocales: string[]
 ): string | undefined {
   const cookies = Cookies.get(serverSidePropsContext)

@@ -99,17 +99,17 @@
     "e2e-build-base-path": "cross-env CYPRESS_isProd=true BASE_PATH=/some-path CYPRESS_basePath=/some-path start-server-and-test start-example-build http://localhost:3000/some-path cypress",
     "e2e-build-headless": "cross-env CYPRESS_isProd=true start-server-and-test start-example-build http://localhost:3000 cypress-headless",
     "e2e-build-headless-base-path": "cross-env CYPRESS_isProd=true BASE_PATH=/some-path CYPRESS_basePath=/some-path start-server-and-test start-example-build http://localhost:3000/some-path cypress-headless",
-    "test": "npm run build & npm run e2e-headless && npm run e2e-headless-base-path && npm run e2e-build-headless && npm run e2e-build-headless-base-path"
+    "test": "npm run build-to-release & npm run e2e-headless && npm run e2e-headless-base-path && npm run e2e-build-headless && npm run e2e-build-headless-base-path"
   },
   "dependencies": {
     "@babel/core": "^7.18.10",
     "cheap-watch": "^1.0.4",
     "colorette": "^2.0.19",
     "intl-messageformat": "^10.1.1",
-    "messages-modules": "^1.1.2",
+    "messages-modules": "^1.1.3",
     "nookies": "^2.5.2",
-    "properties-file": "^2.1.0",
-    "resolve-accept-language": "^1.1.15",
+    "properties-file": "^2.1.1",
+    "resolve-accept-language": "^1.1.16",
     "webpack": "^5.74.0"
   },
   "devDependencies": {
@@ -127,7 +127,7 @@
     "cypress-fail-on-console-error": "^3.2.1",
     "cypress-wait-until": "^1.7.2",
     "dotenv-cli": "^6.0.0",
-    "eslint": "^8.21.0",
+    "eslint": "^8.22.0",
     "eslint-config-next": "v12.2.5",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-node": "^0.3.6",

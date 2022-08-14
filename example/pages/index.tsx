@@ -1,20 +1,24 @@
 import Layout from '@/components/layout/Layout'
 import type { GetServerSideProps, NextPage } from 'next'
+
 import {
   getActualDefaultLocale,
-  getActualLocale,
   getActualLocales,
-  getCookieLocale,
-  getPreferredLocale,
   normalizeLocale,
   ResolvedLocaleServerSideProps,
+  resolveLocale,
   useResolvedLocale,
   useRouter,
 } from 'next-multilingual'
+
 import { getTitle, useMessages } from 'next-multilingual/messages'
+
 import { useEffect, useRef, useState } from 'react'
+
 import { useFruitsMessages } from '../messages/fruits/useFruitsMessages'
+
 import { HelloApiSchema } from './api/hello'
+
 import styles from './index.module.css'
 
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
@@ -178,30 +182,12 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
 export default Home
 
 export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
-  nextPageContext
+  context
   // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
-  const { req, locale, locales, defaultLocale } = nextPageContext
-
-  const actualLocales = getActualLocales(locales, defaultLocale)
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale)
-  const cookieLocale = getCookieLocale(nextPageContext, actualLocales)
-  let resolvedLocale = getActualLocale(locale, defaultLocale, locales)
-
-  // When Next.js tries to use the default locale, try to find a better one.
-  if (locale === defaultLocale) {
-    resolvedLocale =
-      cookieLocale ??
-      getPreferredLocale(
-        req.headers['accept-language'],
-        actualLocales,
-        actualDefaultLocale
-      ).toLowerCase()
-  }
-
   return {
     props: {
-      resolvedLocale,
+      resolvedLocale: resolveLocale(context),
     },
   }
 }

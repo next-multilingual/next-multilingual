@@ -19,7 +19,7 @@ npm install next-multilingual
 - A powerful `useMessages` hook that supports [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) and JSX injection out of the box.
 - The ability to use localized URLs (e.g., `/en-us/contact-us` for U.S. English and `/fr-ca/nous-joindre` for Canadian French).
 - All page URLs will use locale prefixes (related to this [discussion](https://github.com/vercel/next.js/discussions/18419)).
-- Can easily be configured with smart language detection that dynamically renders the homepage, without using redirections.
+- Can easily be configured with smart locale detection that dynamically renders the homepage, without using redirections.
 - Automatically generate canonical and alternate links optimized for SEO.
 
 ## Before we start 💎
@@ -153,17 +153,10 @@ We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/cus
 
 ```ts
 import type { AppProps } from 'next/app'
-
-import { setCookieLocale, useActualLocale } from 'next-multilingual'
-import { useRouter } from 'next/router'
+import { useActualLocale } from 'next-multilingual'
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  // Forces Next.js to use the actual (proper) locale.
-  useActualLocale()
-  // The next two lines are optional, to enable smart locale detection on the homepage.
-  const router = useRouter()
-  // Persist locale on page load (only used on `/` when using smart locale detection).
-  setCookieLocale(router.locale)
+  useActualLocale() // Forces Next.js to use the actual (proper) locale.
   return <Component {...pageProps} />
 }
 ```
@@ -171,7 +164,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
 This basically does two things, as mentioned in the comments:
 
 1. Inject the actual locale in Next.js' router since we need to use a "fake default locale".
-2. (optional) Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
+2. By default, persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`). If you do not want to use `next-multilingual`'s locale detection you can use `useActualLocale(false)` instead.
 
 ### Create a custom `Document` (`_document.tsx`)
 
@@ -224,9 +217,9 @@ Now that everything has been configured, we can focus on using `next-multilingua
 
 ### Creating the homepage
 
-> ⚠️ Note that while we recommend using smart language detection to dynamically render the homepage, this is completely optional. By using advanced configuration with `localeDetection: true`, you will restore the default Next.js behavior without the need of using `getServerSideProps`.
+> ⚠️ Note that while we recommend using smart locale detection to dynamically render the homepage, this is completely optional. By using advanced configuration with `localeDetection: true`, you will restore the default Next.js behavior without the need of using `getServerSideProps`.
 
-The homepage is a bit more complex than other pages, because we need to implement dynamic language detection (and display) for the following reason:
+The homepage is a bit more complex than other pages, because we need to implement dynamic locale detection (and display) for the following reason:
 
 - Redirecting on `/` can have a negative impact on SEO and is not the best user experience.
 - `next-multilingual` comes with a `getPreferredLocale` API that offers smarter auto-detection than the default Next.js implementation.
@@ -234,25 +227,13 @@ The homepage is a bit more complex than other pages, because we need to implemen
 You can find a full implementation in the [example](./example/pages/index.tsx), but here is a stripped down version:
 
 ```tsx
-import {
-  getActualDefaultLocale,
-  getActualLocale,
-  getActualLocales,
-  getCookieLocale,
-  getPreferredLocale,
-  ResolvedLocaleServerSideProps,
-  useResolvedLocale,
-} from 'next-multilingual'
+import type { GetServerSideProps, NextPage } from 'next'
+import { ResolvedLocaleServerSideProps, resolveLocale, useResolvedLocale } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
-import { useRouter } from 'next/router'
 
 import Layout from '@/layout'
 
-import type { GetServerSideProps, NextPage } from 'next'
-
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
-  const router = useRouter()
-
   // Force Next.js to use a locale that was resolved dynamically on the homepage.
   useResolvedLocale(resolvedLocale)
 
@@ -271,27 +252,9 @@ export default Home
 export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
   nextPageContext
 ) => {
-  const { req, locale, locales, defaultLocale } = nextPageContext
-
-  const actualLocales = getActualLocales(locales, defaultLocale)
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale)
-  const cookieLocale = getCookieLocale(nextPageContext, actualLocales)
-  let resolvedLocale = getActualLocale(locale, defaultLocale, locales)
-
-  // When Next.js tries to use the default locale, try to find a better one.
-  if (locale === defaultLocale) {
-    resolvedLocale = cookieLocale
-      ? cookieLocale
-      : getPreferredLocale(
-          req.headers['accept-language'],
-          actualLocales,
-          actualDefaultLocale
-        ).toLowerCase()
-  }
-
   return {
     props: {
-      resolvedLocale,
+      resolvedLocale: resolveLocale(nextPageContext),
     },
   }
 }
@@ -305,8 +268,6 @@ In a nutshell, this is what is happening:
 2. The server then passes the resolved locale back to the client and:
    - The client overwrites the value on the router to make this dynamic across the application.
    - The value is also stored back in the cookie to keep the selection consistent
-
-You might have noticed the `getActual*` APIs. Theses API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very useful, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
 
 ### Creating messages
 
@@ -1060,6 +1021,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 This allows a seamless experience across localized URLs when using simple parameters such as unique identifiers (e.g., UUIDs or numerical). If your parameter itself needs to be localized, you will have to handle that logic yourself using `getServerSideProps`.
 
 We also provided a [fully working example](./example/pages/dynamic-route-test/[id].tsx) for those who want to see it in action.
+
+You might also have noticed the `getActual*` APIs. Theses API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very useful, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
 
 ## Translation Process 🈺
 
