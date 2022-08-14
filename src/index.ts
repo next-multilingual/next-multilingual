@@ -167,7 +167,7 @@ export function useActualLocale(localeDetection = true): void {
     if (localeDetection) {
       setCookieLocale(router.locale)
     } else {
-      Cookies.destroy(LOCALE_COOKIE_NAME)
+      Cookies.destroy(undefined, LOCALE_COOKIE_NAME)
     }
   }, [localeDetection, router.locale])
 }
