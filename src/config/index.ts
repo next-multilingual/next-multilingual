@@ -53,8 +53,16 @@ export const NON_ROUTABLE_PAGE_FILES = [
   '_document',
   '_error',
   '404',
-  '404/index',
   '500',
+  /**
+   * `/404/index` and `500/index` is not officially supported or tested by Next.js but we believe it makes a cleaner setup, especially
+   * when using messages files close to the pages.
+   *
+   * @see https://github.com/vercel/next.js/pull/39558
+   *
+   * Our Cypress `custom-error-pages` tests will help detect any changes to the supportability of this setup.
+   */
+  '404/index',
   '500/index',
 ]
 

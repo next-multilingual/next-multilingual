@@ -5,35 +5,37 @@ import {
   DEFAULT_LOCALE,
   LOCALES,
   LOCALE_NAMES,
+  LocalizedConstant,
+  LocalizedConstantArray,
   ORIGIN,
 } from '../constants'
 
-export const ABOUT_US_URLS = {
+export const ABOUT_US_URLS: LocalizedConstant = {
   'en-US': '/about-us',
   'fr-CA': '/%C3%A0-propos-de-nous',
 }
 
-export const HEADERS = {
+export const HEADERS: LocalizedConstant = {
   'en-US': 'English header',
   'fr-CA': 'En-tête française',
 }
 
-export const LANGUAGE_DIRECTIVES = {
+export const LANGUAGE_DIRECTIVES: LocalizedConstant = {
   'en-US': 'fr;q=0.8, en;q=0.9',
   'fr-CA': 'fr;q=0.9, en;q=0.8',
 }
 
-export const FRUITS = {
+export const FRUITS: LocalizedConstant = {
   'en-US': 'Banana',
   'fr-CA': 'Banane',
 }
 
-export const PLURAL_MESSAGES = {
+export const PLURAL_MESSAGES: LocalizedConstantArray = {
   'en-US': ['No candy left.', 'Got 1 candy left.', 'Got 2 candies left.'],
   'fr-CA': ['Il ne reste aucun bonbon.', 'Il reste 1 bonbon.', 'Il reste 2 bonbons.'],
 }
 
-export const API_RESPONSES = {
+export const API_RESPONSES: LocalizedConstant = {
   'en-US': `API response: the URL of the "Contact Us" page is: ${ORIGIN}${BASE_PATH}/en-us/contact-us`,
   'fr-CA': `Réponse de l'API: l'URL de la page "Nous joindre" est: ${ORIGIN}${BASE_PATH}/fr-ca/nous-joindre`,
 }
@@ -64,21 +66,21 @@ describe('The homepage', () => {
         Cookie: 'L=',
       },
     })
-    cy.get('#header').contains(HEADERS[ACTUAL_DEFAULT_LOCALE] as string)
+    cy.get('#header').contains(HEADERS[ACTUAL_DEFAULT_LOCALE])
   })
 
   LOCALES.forEach((locale) => {
-    const localeName = LOCALE_NAMES[locale] as string
+    const localeName = LOCALE_NAMES[locale]
     // If the default locale is being checked, expect the same result as the actual default locale.
     locale = locale === DEFAULT_LOCALE ? ACTUAL_DEFAULT_LOCALE : locale
 
     // Set localized variables
-    const localizedAboutUsUrl = ABOUT_US_URLS[locale] as string
-    const localizedHeader = HEADERS[locale] as string
-    const localizedLanguageDirective = LANGUAGE_DIRECTIVES[locale] as string
-    const localizedFruit = FRUITS[locale] as string
-    const localizedPluralMessages = PLURAL_MESSAGES[locale] as string[]
-    const localizedApiResponse = API_RESPONSES[locale] as string
+    const localizedAboutUsUrl = ABOUT_US_URLS[locale]
+    const localizedHeader = HEADERS[locale]
+    const localizedLanguageDirective = LANGUAGE_DIRECTIVES[locale]
+    const localizedFruit = FRUITS[locale]
+    const localizedPluralMessages = PLURAL_MESSAGES[locale]
+    const localizedApiResponse = API_RESPONSES[locale]
 
     let source: string
 
@@ -218,7 +220,7 @@ describe('The homepage', () => {
       cy.get('@firstLink')
         .invoke('attr', 'lang')
         .then((lang) => {
-          const localizedTargetHeader = HEADERS[lang] as string
+          const localizedTargetHeader = HEADERS[lang]
           cy.get('#language-picker').trigger('mouseover')
           cy.get('@firstLink').click({ force: true, timeout: 10000 })
           cy.get('#header').contains(localizedTargetHeader)

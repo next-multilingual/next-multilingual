@@ -1,8 +1,9 @@
 import './commands'
 
 import failOnConsoleError, { consoleType } from 'cypress-fail-on-console-error'
+import { Config } from 'cypress-fail-on-console-error/dist/types/Config'
 
-const config = {
+const config: Config = {
   excludeMessages: [
     /** These are the warning messages from the "failing" JSX injection tests. */
     'unable to format message with key missingClose',

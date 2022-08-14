@@ -1,30 +1,28 @@
-import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES } from '../constants'
+import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, LocalizedConstant } from '../constants'
 
-export const ANCHOR_LINK_TESTS_URLS = {
+export const ANCHOR_LINK_TESTS_URLS: LocalizedConstant = {
   'en-US': '/tests/anchor-links',
   'fr-CA': '/tests/liens-internes',
 }
 
-export const ANCHOR_LINK_TEST_FRAGMENTS = {
+export const ANCHOR_LINK_TEST_FRAGMENTS: LocalizedConstant = {
   'en-US': 'paragraph-3',
   'fr-CA': 'paragraphe-3',
 }
 
-export const LONG_PAGE_TEST_URLS = {
+export const LONG_PAGE_TEST_URLS: LocalizedConstant = {
   'en-US': `${ANCHOR_LINK_TESTS_URLS['en-US']}/long-page`,
   'fr-CA': `${ANCHOR_LINK_TESTS_URLS['fr-CA']}/page-longue`,
 }
 
 describe('An anchor link', () => {
   ACTUAL_LOCALES.forEach((locale) => {
-    // Set localized variables
-    const localizedAnchorLinkTestsUrl = ANCHOR_LINK_TESTS_URLS[locale] as string
-    const localizedLongPageTestUrl = LONG_PAGE_TEST_URLS[locale] as string
-    const localizedAnchorLinkTestFragment = ANCHOR_LINK_TEST_FRAGMENTS[locale] as string
-    const localeName = LOCALE_NAMES[locale] as string
-    const anchorLinkTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${localizedAnchorLinkTestsUrl}`
-    const longPageTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${localizedLongPageTestUrl}`
-    const linkWithFragment = `${longPageTestsUrl}#${localizedAnchorLinkTestFragment}`
+    const localeName = LOCALE_NAMES[locale]
+    const anchorLinkTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${
+      ANCHOR_LINK_TESTS_URLS[locale]
+    }`
+    const longPageTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${LONG_PAGE_TEST_URLS[locale]}`
+    const linkWithFragment = `${longPageTestsUrl}#${ANCHOR_LINK_TEST_FRAGMENTS[locale]}`
 
     it(`will have the correct SSR markup when using an anchor link for '${localeName}'`, () => {
       cy.request({

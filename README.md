@@ -154,12 +154,15 @@ We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/cus
 ```ts
 import type { AppProps } from 'next/app'
 
-import { setCookieLocale, useRouter } from 'next-multilingual'
+import { setCookieLocale, useActualLocale } from 'next-multilingual'
+import { useRouter } from 'next/router'
 
 export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  // Calling `useRouter` here ensures that Next.js is using the actual (proper) locale.
+  // Forces Next.js to use the actual (proper) locale.
+  useActualLocale()
+  // The next two lines are optional, to enable smart locale detection on the homepage.
   const router = useRouter()
-  // Persist locale on page load (will be re-used when hitting `/`).
+  // Persist locale on page load (only used on `/` when using smart locale detection).
   setCookieLocale(router.locale)
   return <Component {...pageProps} />
 }
@@ -168,21 +171,7 @@ export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
 This basically does two things, as mentioned in the comments:
 
 1. Inject the actual locale in Next.js' router since we need to use a "fake default locale".
-2. Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
-
-If you do not want to use smart language detection to dynamically render the homepage, you can use the `useActualLocale()` hook instead like this:
-
-```ts
-import type { AppProps } from 'next/app'
-
-import { useActualLocale } from 'next-multilingual'
-
-export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  // Calling `useActualLocale` here ensures that Next.js is using the actual (proper) locale.
-  void useActualLocale()
-  return <Component {...pageProps} />
-}
-```
+2. (optional) Persist the actual locale in the cookie so we can reuse it when hitting the homepage without a locale (`/`).
 
 ### Create a custom `Document` (`_document.tsx`)
 
@@ -252,7 +241,7 @@ import {
   getCookieLocale,
   getPreferredLocale,
   ResolvedLocaleServerSideProps,
-  setCookieLocale,
+  useResolvedLocale,
 } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next/router'
@@ -264,9 +253,8 @@ import type { GetServerSideProps, NextPage } from 'next'
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter()
 
-  // Overwrite the locale with the resolved locale.
-  router.locale = resolvedLocale
-  setCookieLocale(router.locale)
+  // Force Next.js to use a locale that was resolved dynamically on the homepage.
+  useResolvedLocale(resolvedLocale)
 
   // Load the messages in the correct locale.
   const messages = useMessages()

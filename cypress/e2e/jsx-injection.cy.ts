@@ -1,12 +1,18 @@
-import { KeyValueObject } from '../../src/messages/properties'
-import { ACTUAL_DEFAULT_LOCALE, ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES } from '../constants'
+import {
+  ACTUAL_DEFAULT_LOCALE,
+  ACTUAL_LOCALES,
+  BASE_PATH,
+  LOCALE_NAMES,
+  LocalizedConstant,
+  Messages,
+} from '../constants'
 
-export const JSX_TESTS_URLS = {
+export const JSX_TESTS_URLS: LocalizedConstant = {
   'en-US': '/tests/jsx-injection',
   'fr-CA': '/tests/injection-de-jsx',
 }
 
-export const CONTACT_US_URLS = {
+export const CONTACT_US_URLS: LocalizedConstant = {
   'en-US': '/contact-us',
   'fr-CA': '/nous-joindre',
 }
@@ -28,15 +34,13 @@ function convertHtmlEntities(markup: string): string {
 
 describe('The JSX test page', () => {
   ACTUAL_LOCALES.forEach((locale) => {
-    // Set localized variables.
-    const localeName = LOCALE_NAMES[locale] as string
-    const localizedJsxTestsUrl = JSX_TESTS_URLS[locale] as string
-    const defaultLocalizedJsxTestsUrl = JSX_TESTS_URLS[ACTUAL_DEFAULT_LOCALE] as string
-    const localizedContentUsUrl = CONTACT_US_URLS[locale] as string
-    const jsxTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${localizedJsxTestsUrl}`
+    const localeName = LOCALE_NAMES[locale]
+    const defaultLocalizedJsxTestsUrl = JSX_TESTS_URLS[ACTUAL_DEFAULT_LOCALE]
+    const localizedContentUsUrl = CONTACT_US_URLS[locale]
+    const jsxTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${JSX_TESTS_URLS[locale]}`
 
     let source: string
-    let messages: KeyValueObject
+    let messages: Messages
 
     let baseTest1Markup: string,
       baseTest2Markup: string,
@@ -50,8 +54,8 @@ describe('The JSX test page', () => {
     it(`will display the correct SSR markup when formatting a message with a single JSX element for '${localeName}'`, () => {
       const propertiesFilepath = `example/pages${defaultLocalizedJsxTestsUrl}/index.${locale}.properties`
 
-      cy.task('getMessages', propertiesFilepath).then((keyValueObject) => {
-        messages = keyValueObject as KeyValueObject
+      cy.task('getMessages', propertiesFilepath).then((fileMessages: Messages) => {
+        messages = fileMessages
       })
 
       cy.request({

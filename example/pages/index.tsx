@@ -8,7 +8,7 @@ import {
   getPreferredLocale,
   normalizeLocale,
   ResolvedLocaleServerSideProps,
-  setCookieLocale,
+  useResolvedLocale,
   useRouter,
 } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
@@ -21,9 +21,8 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   const router = useRouter()
   const { locales, defaultLocale, basePath, locale } = router
 
-  // Overwrite the locale with the resolved locale.
-  router.locale = resolvedLocale
-  setCookieLocale(locale)
+  // Force Next.js to use a locale that was resolved dynamically on the homepage.
+  useResolvedLocale(resolvedLocale)
 
   // Load the messages in the correct locale.
   const messages = useMessages()
@@ -111,7 +110,7 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
             </tr>
             <tr>
               <td>{messages.format('rowConfiguredLocales')}</td>
-              <td>{locales?.map((locale) => normalizeLocale(locale)).join(', ')}</td>
+              <td>{locales.map((locale) => normalizeLocale(locale)).join(', ')}</td>
               <td>
                 {getActualLocales(locales, defaultLocale)
                   .map((locale) => normalizeLocale(locale))

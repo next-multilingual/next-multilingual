@@ -123,10 +123,25 @@ export function useRouter(): NextMultilingualRouter {
 }
 
 /**
- * Hook to force Next.js to use the actual (proper) locale.
+ * Force Next.js to use the actual (proper) locale.
+ *
+ * This will inject the correct locale into Next.js' router so that both SSR and client side stay in sync when using
+ * the default "fake" (mul) locale.
  */
 export function useActualLocale(): void {
   void useRouter()
+}
+
+/**
+ * Force Next.js to use a locale that was resolved dynamically on the homepage.
+ *
+ * This will inject the correct locale into Next.js' router so that both SSR and client side stay in sync when using
+ * a dynamic locale on the homepage.
+ */
+export function useResolvedLocale(locale: string): void {
+  const router = useNextRouter()
+  router.locale = locale
+  setCookieLocale(locale)
 }
 
 /**
