@@ -1,3 +1,12 @@
+
+
+## [1.4.1](https://github.com/Avansai/next-multilingual/compare/1.4.0...1.4.1) (2022-08-17)
+
+
+### Features
+
+* add the new `MultilingualServerSideProps` & `MultilingualStaticProps` types ([4351938](https://github.com/Avansai/next-multilingual/commit/43519380313ebf32b929224b536d1e922939e25b))
+
 # [1.4.0](https://github.com/Avansai/next-multilingual/compare/1.3.0...1.4.0) (2022-08-14)
 
 ### Bug Fixes
