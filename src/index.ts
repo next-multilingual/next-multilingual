@@ -120,9 +120,29 @@ export function useRouter(): NextRouter & LocaleConfig {
 export type GetStaticPropsContext = NextGetStaticPropsContext & LocaleConfig
 
 /**
+ * This type is only use to derive the new `GetStaticProps` that will use a `GetStaticPropsContext`
+ * where `locale`, `defaultLocale` and `locales` are never `undefined`.
+ */
+export type MultilingualStaticProps<T> = T extends (
+  context: infer Context extends NextGetStaticPropsContext
+) => infer Return
+  ? (context: GetStaticPropsContext) => Return
+  : never
+
+/**
  * `GetServerSidePropsContext` where `locale`, `defaultLocale` and `locales` are never `undefined`.
  */
 export type GetServerSidePropsContext = NextGetServerSidePropsContext & LocaleConfig
+
+/**
+ * This type is only use to derive the new `GetServerSideProps` that will use a `GetServerSidePropsContext`
+ * where `locale`, `defaultLocale` and `locales` are never `undefined`.
+ */
+export type MultilingualServerSideProps<T> = T extends (
+  context: infer Context extends NextGetServerSidePropsContext
+) => infer Return
+  ? (context: GetServerSidePropsContext) => Return
+  : never
 
 /**
  * Dynamically resolves the locale on `/`.

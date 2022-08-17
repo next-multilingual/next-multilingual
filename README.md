@@ -1022,6 +1022,22 @@ This allows a seamless experience across localized URLs when using simple parame
 
 We also provided a [fully working example](./example/pages/dynamic-route-test/[id].tsx) for those who want to see it in action.
 
+If you ever need to use the `locale`, `defaultLocale`, `locales` properties from both `GetStaticPropsContext` or `GetServerSidePropsContext` and are tired of casting types since Next.js allows them to be `undefined`, you can use our wrappers like this:
+
+```ts
+import { MultilingualServerSideProps, MultilingualStaticProps } from 'next-multilingual/messages'
+
+export const getServerSideProps: MultilingualServerSideProps<GetServerSideProps> = async (
+  context
+) => {
+  // `context.locale`, `context.defaultLocale`, `context.locales` are never `undefined`
+}
+
+export const getStaticProps: MultilingualStaticProps<GetStaticProps> = async (context) => {
+  // `context.locale`, `context.defaultLocale`, `context.locales` are never `undefined`
+}
+```
+
 You might also have noticed the `getActual*` APIs. Theses API is part of a [set of "utility" APIs](./src/index.ts) that helps abstract some of the complexity that we configured in Next.js. These APIs are very useful, since we can no longer rely on the locales provided by Next.js. The main reason for this is that we set the default Next.js locale to `mul` (for multilingual) to allow us to do the dynamic detection on the homepage. These APIs are simple and more details are available in your IDE (JSDoc).
 
 ## Translation Process 🈺
