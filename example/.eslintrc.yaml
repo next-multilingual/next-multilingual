@@ -83,14 +83,14 @@ overrides:
               - method
   # Filenames: components must be `PascalCase`
   - files:
-      - 'components/**/*'
+      - 'src/components/**/*'
     rules:
       'unicorn/filename-case':
         - error
         - case: pascalCase
   # Filenames: messages must be `camelCase`
   - files:
-      - 'messages/**/*'
+      - 'src/messages/**/*'
     rules:
       'unicorn/filename-case':
         - error
@@ -117,10 +117,3 @@ overrides:
         - ignore:
             # This is a Next.js file and we cannot rename `next-env.d.ts`.
             - 'env'
-  # Fix checks for `next.config.js`
-  - files:
-      - 'next.config.js'
-    rules:
-      # `next.config.js` does not support modules.
-      'unicorn/prefer-module':
-        - off

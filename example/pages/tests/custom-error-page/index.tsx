@@ -1,11 +1,9 @@
 import Layout from '@/components/layout/Layout'
 import type { GetServerSideProps } from 'next'
-
 import { NextPage } from 'next'
-
 import { getTitle, useMessages } from 'next-multilingual/messages'
 
-const InternalServerError: NextPage = () => {
+const CustomErrorPage: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
 
@@ -17,7 +15,7 @@ const InternalServerError: NextPage = () => {
   )
 }
 
-export default InternalServerError
+export default CustomErrorPage
 
 export const getServerSideProps: GetServerSideProps = async (
   nextPageContext

@@ -1,11 +1,9 @@
+import Layout from '@/components/layout/Layout'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useLocalizedUrl } from 'next-multilingual/url'
 import { useRouter } from 'next/router'
-
-import Layout from '@/components/layout/Layout'
-
 import styles from './[id].module.css'
 
 const Id: NextPage = () => {

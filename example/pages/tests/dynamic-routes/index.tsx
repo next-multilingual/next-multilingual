@@ -1,12 +1,10 @@
+import Layout from '@/components/layout/Layout'
 import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useLocalizedUrl } from 'next-multilingual/url'
 import router, { useRouter } from 'next/router'
 import { useState } from 'react'
-
-import Layout from '@/components/layout/Layout'
-
 import styles from './index.module.css'
 
 const Tests: NextPage = () => {

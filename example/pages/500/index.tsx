@@ -1,8 +1,7 @@
+import Layout from '@/components/layout/Layout'
 import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, useMessages } from 'next-multilingual/messages'
-
-import Layout from '@/components/layout/Layout'
 
 const Error500: NextPage = () => {
   const messages = useMessages()

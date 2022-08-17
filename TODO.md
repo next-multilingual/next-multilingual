@@ -32,11 +32,9 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Automatically restart Next.js routes changes (e.g. use `forever`?)
 - Lorem ipsum generator?
 - schema.org markup support (e.g. breadcrumbs)
-- Waiting on @TomFreudenberg to provide details
-  - add new API to call keys by "messages" - this will be indexed by Babel
-    - also add support to fallback to the message when not found
-    - needs to be a new configurable option since it will increase bundle size because of the index
-    - add new i18.config file that will allow Jest and other tools (check fork)
+- add new API to call keys by "messages" - this will be indexed by Babel
+  - also add support to fallback to the message when not found
+  - needs to be a new configurable option since it will increase bundle size because of the index
 
 ### In Progress 🚧
 

@@ -1,24 +1,19 @@
 import Layout from '@/components/layout/Layout'
+import { useFruitsMessages } from '@/messages/fruits/useFruitsMessages'
 import type { GetServerSideProps, NextPage } from 'next'
-
 import {
   getActualDefaultLocale,
   getActualLocales,
+  MultilingualServerSideProps,
   normalizeLocale,
   ResolvedLocaleServerSideProps,
   resolveLocale,
   useResolvedLocale,
   useRouter,
 } from 'next-multilingual'
-
 import { getTitle, useMessages } from 'next-multilingual/messages'
-
 import { useEffect, useRef, useState } from 'react'
-
-import { useFruitsMessages } from '../messages/fruits/useFruitsMessages'
-
 import { HelloApiSchema } from './api/hello'
-
 import styles from './index.module.css'
 
 const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
@@ -181,7 +176,9 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
 
 export default Home
 
-export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
+export const getServerSideProps: MultilingualServerSideProps<
+  GetServerSideProps<ResolvedLocaleServerSideProps>
+> = async (
   context
   // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
