@@ -506,7 +506,7 @@ When is it good to share messages? For lists of items.
 
 For example, to keep your localization process simple, you want to avoid storing localizable strings in your database (more details on why in the [design decision document](./docs/design-decisions.md)). In your database you would identify the context using unique identifiers and you would store your messages in shared message files, where your key's identifiers would match the ones from the database.
 
-To illustrate this we created [one example using fruits](./example/messages/useFruitsMessages.ts). All you need to do, is create a hook that calls `useMessages` like this:
+To illustrate this we created [one example using fruits](./example/src/messages/fruits/useFruitsMessages.ts). All you need to do, is create a hook that calls `useMessages` like this:
 
 ```ts
 export { useMessages as useFruitsMessages } from 'next-multilingual/messages'
@@ -780,7 +780,7 @@ The API is available under `next-multilingual/head` and you can import it like t
 import Head from 'next-multilingual/head'
 ```
 
-Just like `<Link>`, `<Head>` is meant to be a drop-in replacement for Next.js' [`<Head>` component](https://nextjs.org/docs/api-reference/next/head). In our example, we are using it in the [Layout component](./example/layout/Layout.tsx), like this:
+Just like `<Link>`, `<Head>` is meant to be a drop-in replacement for Next.js' [`<Head>` component](https://nextjs.org/docs/api-reference/next/head). In our example, we are using it in the [Layout component](./example/src/components/layout/Layout.tsx), like this:
 
 ```tsx
 <Head>
@@ -797,7 +797,7 @@ All this does is insert the canonical and alternate links so that search engines
 <link rel="alternate" href="http://localhost:3000/fr-ca/%C3%A0-propos-de-nous" hreflang="fr-CA" />
 ```
 
-To fully benefit from the SEO markup, `<Head>` must be included on all pages. There are multiple ways to achieve this, but in the example, we created a `<Layout>` [component](./example/layout/Layout.tsx) that is used on all pages.
+To fully benefit from the SEO markup, `<Head>` must be included on all pages. There are multiple ways to achieve this, but in the example, we created a `<Layout>` [component](./example/src/components/layout/Layout.tsx) that is used on all pages.
 
 ### Custom Error Pages
 
@@ -1020,7 +1020,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 This allows a seamless experience across localized URLs when using simple parameters such as unique identifiers (e.g., UUIDs or numerical). If your parameter itself needs to be localized, you will have to handle that logic yourself using `getServerSideProps`.
 
-We also provided a [fully working example](./example/pages/dynamic-route-test/[id].tsx) for those who want to see it in action.
+We also provided a [fully working example](./example/pages/tests/dynamic-routes/[id].tsx) for those who want to see it in action.
 
 If you ever need to use the `locale`, `defaultLocale`, `locales` properties from both `GetStaticPropsContext` or `GetServerSidePropsContext` and are tired of casting types since Next.js allows them to be `undefined`, you can use our wrappers like this:
 
