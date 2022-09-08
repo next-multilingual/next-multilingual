@@ -6,6 +6,7 @@ export default defineConfig({
     prodBaseUrl: 'https://next-multilingual-example.vercel.app',
   },
   video: false,
+  screenshotOnRunFailure: false,
   e2e: {
     setupNodeEvents(on) {
       on('task', {

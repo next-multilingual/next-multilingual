@@ -7,9 +7,13 @@ export const ACTUAL_LOCALES = ['en-US', 'fr-CA']
 /** All locales configured in Next.js. */
 export const LOCALES = [DEFAULT_LOCALE, ...ACTUAL_LOCALES]
 
-/** String constants which are defined by locale. */
+/**
+ * String constants which are defined by locale.
+ *
+ * @example {'en-US': 'hello', 'fr-CA': 'bonjour'}
+ */
 export type LocalizedConstant = {
-  [key: string]: string
+  [locale: string]: string
 }
 
 /** String array constants which are defined by locale. */

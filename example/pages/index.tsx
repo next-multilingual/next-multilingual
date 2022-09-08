@@ -1,4 +1,4 @@
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout/Layout'
 import { useFruitsMessages } from '@/messages/fruits/useFruitsMessages'
 import type { GetServerSideProps, NextPage } from 'next'
 import {
@@ -9,9 +9,9 @@ import {
   ResolvedLocaleServerSideProps,
   resolveLocale,
   useResolvedLocale,
-  useRouter,
 } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
+import { useRouter } from 'next-multilingual/router'
 import { useEffect, useRef, useState } from 'react'
 import { HelloApiSchema } from './api/hello'
 import styles from './index.module.css'
@@ -26,6 +26,8 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   // Load the messages in the correct locale.
   const messages = useMessages()
   const fruitsMessages = useFruitsMessages()
+
+  const [fruit, setFruit] = useState(fruitsMessages.getAll()[0].key)
 
   // Counter used for ICU MessageFormat example.
   const [count, setCount] = useState(0)
@@ -132,9 +134,11 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           </div>
           <div>
             {messages.format('sharedDropDown')}
-            <select>
+            <select onChange={(event) => setFruit(event.target.value)} value={fruit}>
               {fruitsMessages.getAll().map((message) => (
-                <option key={message.format()}>{message.format()}</option>
+                <option value={message.key} key={message.key}>
+                  {message.format()}
+                </option>
               ))}
             </select>
           </div>

@@ -1,0 +1,174 @@
+import { Layout } from '@/components/layout/Layout'
+import { getCitiesMessages } from '@/messages/cities/citiesMessages'
+import { getLondonPoiMessages } from '@/messages/cities/points-of-interest/londonPoiMessages'
+import { getMontrealPoiMessages } from '@/messages/cities/points-of-interest/montrealPoiMessages'
+import { getShanghaiPoiMessages } from '@/messages/cities/points-of-interest/shanghaiPoiMessages'
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import {
+  getActualLocales,
+  MultilingualStaticPath,
+  MultilingualStaticProps,
+} from 'next-multilingual'
+import Link from 'next-multilingual/link'
+import { getMessages, getTitle, Messages, slugify, useMessages } from 'next-multilingual/messages'
+import {
+  getLocalizedRouteParameters,
+  LocalizedRouteParameters,
+  RouteParameters,
+} from 'next-multilingual/router'
+import { useLocalizedUrl } from 'next-multilingual/url'
+import { useRouter } from 'next/router'
+import styles from './[poi].module.css'
+
+type PoiProps = { localizedRouteParameters: LocalizedRouteParameters }
+
+const Poi: NextPage<PoiProps> = ({ localizedRouteParameters }) => {
+  const messages = useMessages()
+  const title = getTitle(messages)
+  const { pathname, asPath, query } = useRouter()
+
+  const localizedUrl = useLocalizedUrl({
+    pathname,
+    query,
+  })
+
+  return (
+    <Layout title={title} localizedRouteParameters={localizedRouteParameters}>
+      <h1 className={styles.headline}>{title}</h1>
+      <p>{messages.format('details')}</p>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>{messages.format('columnInformation')}</th>
+            <th>{messages.format('columnValue')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{messages.format('rowNonLocalizedPagePath')}</td>
+            <td>{pathname}</td>
+          </tr>
+          <tr>
+            <td>{messages.format('rowLocalizedWithAsPath')}</td>
+            {/**
+             * @see https://github.com/vercel/next.js/issues/32772 (why `suppressHydrationWarning` is used).
+             *
+             * If you need the `asPath` to match uniquely to each request then `getServerSideProps`
+             * should be used. `getStaticProps` is not meant to be unique per request but instead
+             * unique per-path.
+             */}
+            <td suppressHydrationWarning={true}>{asPath}</td>
+          </tr>
+          <tr>
+            <td>{messages.format('rowLocalizedWithUseLocalizedUrl')}</td>
+            <td>{localizedUrl}</td>
+          </tr>
+          <tr>
+            <td>{messages.format('rowParameterValue')}</td>
+            <td>{query['city']}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="go-back">
+        <Link href="/tests/dynamic-routes">{messages.format('goBack')}</Link>
+      </div>
+    </Layout>
+  )
+}
+
+export default Poi
+
+/**
+ * By default, Next.js does not populate the `query` value when using the `useRouter` hook.
+ *
+ * | The query string parsed to an object. It will be an empty object during prerendering if the page
+ * | doesn't have data fetching requirements. Defaults to `{}`.
+ *
+ * @see https://nextjs.org/docs/api-reference/next/router
+ *
+ * By adding `getStaticPaths` we will pre-render all parameters values at build time. { fallback: false } will
+ * display a 404 error when a value is invalid.
+ */
+// eslint-disable-next-line @typescript-eslint/require-await
+export const getStaticPaths: GetStaticPaths = async (context) => {
+  const paths: MultilingualStaticPath[] = []
+  const actualLocales = getActualLocales(context.locales, context.defaultLocale)
+  actualLocales.forEach((locale) => {
+    const citiesMessages = getCitiesMessages(locale)
+    citiesMessages.getAll().forEach((cityMessage) => {
+      let poisMessages: Messages
+
+      switch (cityMessage.key) {
+        case 'montreal': {
+          poisMessages = getMontrealPoiMessages(locale)
+          break
+        }
+        case 'london': {
+          poisMessages = getLondonPoiMessages(locale)
+          break
+        }
+        default: {
+          poisMessages = getShanghaiPoiMessages(locale)
+        }
+      }
+
+      poisMessages.getAll().forEach((poiMessage) => {
+        paths.push({
+          params: {
+            city: slugify(cityMessage.format(), locale),
+            poi: slugify(poiMessage.format(), locale),
+          },
+          locale,
+        })
+      })
+    })
+  })
+
+  return {
+    paths,
+    fallback: false,
+  }
+}
+
+/**
+ * Pre-compute localized route parameters and return them as props.
+ */
+export const getStaticProps: MultilingualStaticProps<GetStaticProps<PoiProps>> = async ({
+  locale,
+  defaultLocale,
+  locales,
+  params,
+  // eslint-disable-next-line @typescript-eslint/require-await
+}) => {
+  const routeParameters = params as RouteParameters
+  let getPoiMessages: typeof getMessages
+
+  const cityKey = getCitiesMessages(locale).getRouteParameterKey(routeParameters['city']) as string
+
+  switch (cityKey) {
+    case 'montreal': {
+      getPoiMessages = getMontrealPoiMessages
+      break
+    }
+    case 'london': {
+      getPoiMessages = getLondonPoiMessages
+      break
+    }
+    default: {
+      getPoiMessages = getShanghaiPoiMessages
+    }
+  }
+
+  const localizedRouteParameters = getLocalizedRouteParameters(
+    locale,
+    defaultLocale,
+    locales,
+    routeParameters,
+    {
+      city: getCitiesMessages,
+      poi: getPoiMessages,
+    }
+  )
+
+  return { props: { localizedRouteParameters } }
+}

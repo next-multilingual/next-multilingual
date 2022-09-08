@@ -1,8 +1,8 @@
-import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, LocalizedConstant, ORIGIN } from '../constants'
+import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, LocalizedConstant, ORIGIN } from '../../constants'
 
 export const DYNAMIC_ROUTE_URLS: LocalizedConstant = {
-  'en-US': '/tests/dynamic-routes',
-  'fr-CA': '/tests/routes-dynamiques',
+  'en-US': '/tests/dynamic-routes/identifier',
+  'fr-CA': '/tests/routes-dynamiques/identifiant',
 }
 
 describe('A dynamic route', () => {

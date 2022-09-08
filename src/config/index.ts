@@ -1,21 +1,11 @@
 import CheapWatch from 'cheap-watch'
+import type { NextConfig } from 'next'
 import type { Redirect, Rewrite } from 'next/dist/lib/load-custom-routes'
-
-import Webpack from 'webpack'
-
+import type { WebpackConfigContext } from 'next/dist/server/config-shared'
 import { existsSync, readdirSync, Stats, utimesSync } from 'node:fs'
-
 import { extname } from 'node:path'
-
-import {
-  highlight,
-  highlightFilePath,
-  isLocale,
-  log,
-  normalizeLocale,
-  queryToRewriteParameters,
-} from '../'
-
+import Webpack from 'webpack'
+import { highlight, highlightFilePath, isLocale, log, normalizeLocale } from '../'
 import {
   getMessagesFilePath,
   getSourceFilePath,
@@ -24,12 +14,8 @@ import {
   slugify,
   SLUG_KEY_ID,
 } from '../messages'
-
 import { parsePropertiesFile } from '../messages/properties'
-
-import type { WebpackConfigContext } from 'next/dist/server/config-shared'
-
-import type { NextConfig } from 'next'
+import { routeToRewriteParameters } from '../router'
 
 /**
  * Possible `pages` directories used by Next.js.
@@ -652,7 +638,7 @@ export class Config {
       normalizedUrlPath = this.encodeUrlPath(normalizedUrlPath)
     }
 
-    // Need to unescape both rewrite and query parameters since we use the same method in `getRedirects`.
+    // Need to unescape both rewrite and route parameters since we use the same method in `getRedirects`.
     normalizedUrlPath = normalizedUrlPath
       .split('/')
       .map((pathSegment) => {
@@ -660,14 +646,14 @@ export class Config {
           // Unescape rewrite parameters (e.g., `/:example`) if present.
           return `:${pathSegment.slice(3)}`
         } else if (/%5B(.+)%5D/.test(pathSegment)) {
-          // Unescape query parameters (e.g., `/[example]`) if present.
+          // Unescape route parameters (e.g., `/[example]`) if present.
           return `:${pathSegment.slice(3, -3)}`
         }
         return pathSegment
       })
       .join('/')
 
-    return queryToRewriteParameters(normalizedUrlPath)
+    return routeToRewriteParameters(normalizedUrlPath)
   }
 
   /**

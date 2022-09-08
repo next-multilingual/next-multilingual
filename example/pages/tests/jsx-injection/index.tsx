@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout/Layout'
 
 import styles from './index.module.css'
 
@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-const JsxTests: NextPage = () => {
+const JsxInjectionTests: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
 
@@ -265,4 +265,4 @@ const JsxTests: NextPage = () => {
   )
 }
 
-export default JsxTests
+export default JsxInjectionTests

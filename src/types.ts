@@ -2,6 +2,7 @@
  * Shared types.
  */
 import { Rewrite } from 'next/dist/lib/load-custom-routes'
+import { Router } from 'next/router'
 import { UrlObject } from 'node:url'
 
 /** Type used to get localized URLs. */
@@ -44,5 +45,19 @@ export type RequiredServerFiles = {
   config: {
     /** The base path normally available in `useRouter`. */
     basePath: string
+  }
+}
+
+/**
+ * Add the Next.js client to the `Window` object.
+ *
+ * @see https://github.com/vercel/next.js/blob/a6665915552caa5bd4baf3ce0a34a64e0539fc3f/packages/next/client/next.js
+ */
+declare global {
+  interface Window {
+    next: {
+      version: string
+      router: Router
+    }
   }
 }

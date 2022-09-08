@@ -38,6 +38,12 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+To complete:
+
+- Dynamic dropdown for POIs: http://localhost:3000/en-us/tests/dynamic-routes/text/london/point-of-interest
+- New tests
+- Update documentation
+
 ### Done ✔️
 
 - Post ESLint refactoring

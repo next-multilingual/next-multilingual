@@ -6,13 +6,13 @@ import type {
 } from 'next'
 import * as nextLog from 'next/dist/build/output/log'
 import Document from 'next/document'
-import { NextRouter, useRouter as useNextRouter } from 'next/router'
+import { useRouter as useNextRouter } from 'next/router'
 import { sep as pathSeparator } from 'node:path'
-import type { ParsedUrlQueryInput } from 'node:querystring'
 import { ParsedUrlQuery } from 'node:querystring'
 import Cookies from 'nookies'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import resolveAcceptLanguage from 'resolve-accept-language'
+import { useRouter } from './router'
 
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
@@ -93,28 +93,6 @@ export function getLocaleConfig(
 }
 
 /**
- * Wrapper on top of Next.js' `useRouter` to:
- *
- * - automatically overwrite the locale if it's using the default locale.
- * - make sure that locale configuration is never `undefined`.
- *
- * @returns An extended `NextRouter` using `next-multilingual`'s actual locale (and no `undefined` values).
- */
-export function useRouter(): NextRouter & LocaleConfig {
-  const router = useNextRouter()
-
-  // Only recomputes if the router changes (useful if `useRouter` is called multiple times on the same page).
-  return useMemo(() => {
-    const localeConfig = getLocaleConfig(router.locale, router.defaultLocale, router.locales)
-    // Automatically overwrites the locale if it's using the default locale.
-    router.locale = getActualLocale(router.locale, router.defaultLocale, router.locales)
-    // Leave the default locale intact (without `undefined`) so that we can still use the other "getActual" APIs.
-    router.defaultLocale = localeConfig.defaultLocale
-    return router as NextRouter & LocaleConfig
-  }, [router])
-}
-
-/**
  * `GetStaticPropsContext` where `locale`, `defaultLocale` and `locales` are never `undefined`.
  */
 export type GetStaticPropsContext = NextGetStaticPropsContext & LocaleConfig
@@ -128,6 +106,18 @@ export type MultilingualStaticProps<T> = T extends (
 ) => infer Return
   ? (context: GetStaticPropsContext) => Return
   : never
+
+/**
+ * Multilingual static path objects that can be used in `getStaticPaths`.
+ *
+ * @example { params: { city: 'paris' }, locale: 'fr-FR' }
+ */
+export type MultilingualStaticPath = {
+  /** Key/values object representing parameters. */
+  params: ParsedUrlQuery
+  /** The locale of the path. */
+  locale: string
+}
 
 /**
  * `GetServerSidePropsContext` where `locale`, `defaultLocale` and `locales` are never `undefined`.
@@ -182,7 +172,8 @@ export function resolveLocale(context: NextGetServerSidePropsContext): string {
  * @param localeDetection - By setting this parameter to `false` the locale will not be store in the `next-multilingual` cookie.
  */
 export function useActualLocale(localeDetection = true): void {
-  const router = useRouter()
+  const router = useRouter() // Normalize the Next.js router using our own `useRouter` wrapper.
+
   useEffect(() => {
     if (localeDetection) {
       setCookieLocale(router.locale)
@@ -403,143 +394,4 @@ export function getCookieLocale(
   }
 
   return cookieLocale
-}
-
-/**
- * Hydrate a path back with its query values.
- *
- * Missing query parameters will show warning messages and will be kept in their original format.
- *
- * @see https://nextjs.org/docs/routing/dynamic-routes
- *
- * @param path - A path containing "query parameters".
- * @param parsedUrlQueryInput - A `ParsedUrlQueryInput` object containing router queries.
- * @param suppressWarning - If set to true, will not display a warning message if the key is missing.
- *
- * @returns The hydrated path containing `query` values instead of placeholders.
- */
-export function hydrateQueryParameters(
-  path: string,
-  parsedUrlQueryInput: ParsedUrlQueryInput,
-  suppressWarning = false
-): string {
-  const pathSegments = path.split('/')
-  const missingParameters: string[] = []
-
-  const hydratedPath = pathSegments
-    .map((pathSegment) => {
-      if (/^\[.+]$/.test(pathSegment)) {
-        const parameterName = pathSegment.slice(1, -1)
-        if (parsedUrlQueryInput[parameterName] !== undefined) {
-          return parsedUrlQueryInput[parameterName]
-        } else {
-          missingParameters.push(parameterName)
-        }
-      }
-      return pathSegment
-    })
-    .join('/')
-
-  if (missingParameters.length > 0 && !suppressWarning) {
-    log.warn(
-      `unable to hydrate the path ${highlight(path)} because the following query parameter${
-        missingParameters.length > 1 ? 's are' : ' is'
-      } missing: ${highlight(missingParameters.join(','))}.`
-    )
-  }
-
-  return hydratedPath
-}
-
-/**
- * Convert a path using "query parameters" to "rewrite parameters".
- *
- * Next.js' router uses the bracket format (e.g., `/[example]`) to identify dynamic routes, called "query parameters". The
- * rewrite statements use the colon format (e.g., `/:example`), called "rewrite parameters".
- *
- * @see https://nextjs.org/docs/routing/dynamic-routes
- * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites
- *
- * @param path - A path containing "query parameters".
- *
- * @returns The path converted to the "rewrite parameters" format.
- */
-export function queryToRewriteParameters(path: string): string {
-  return path
-    .split('/')
-    .map((pathSegment) => {
-      if (/^\[.+]$/.test(pathSegment)) {
-        return `:${pathSegment.slice(1, -1)}`
-      }
-      return pathSegment
-    })
-    .join('/')
-}
-
-/**
- * Convert a path using "rewrite parameters" to "query parameters".
- *
- * Next.js' router uses the bracket format (e.g., `/[example]`) to identify dynamic routes, called "query parameters". The
- * rewrite statements use the colon format (e.g., `/:example`), called "rewrite parameters".
- *
- * @see https://nextjs.org/docs/routing/dynamic-routes
- * @see https://nextjs.org/docs/api-reference/next.config.js/rewrites
- *
- * @param path - A path containing "rewrite parameters".
- *
- * @returns The path converted to the "router queries" format.
- */
-export function rewriteToQueryParameters(path: string): string {
-  return path
-    .split('/')
-    .map((pathSegment) => {
-      if (pathSegment.startsWith(':')) {
-        return `[${pathSegment.slice(1)}]`
-      }
-      return pathSegment
-    })
-    .join('/')
-}
-
-/**
- * Does a given path contain "query parameters" (using the bracket syntax)?
- *
- * @param path - A path containing "query parameters".
- *
- * @returns True if the path contains "query parameters", otherwise false.
- */
-export function containsQueryParameters(path: string): boolean {
-  return path.split('/').some((pathSegment) => /^\[.+]$/.test(pathSegment))
-}
-
-/**
- * Get "query parameters" (using the bracket syntax) from a path.
- *
- * @param path - A path containing "query parameters".
- *
- * @returns An array of "query parameters" or an empty array when not found.
- */
-export function getQueryParameters(path: string): string[] {
-  const parameters = path.split('/').filter((pathSegment) => /^\[.+]$/.test(pathSegment))
-
-  if (parameters === undefined) {
-    return []
-  }
-
-  return parameters.map((parameter) => parameter.slice(1, -1))
-}
-
-/**
- * Strips the base path from a URL if present.
- *
- * @param url - The URL from which to strip the base path.
- * @param basePath - The base path to strip.
- *
- * @returns The URL without the base path if present.
- */
-export function stripBasePath(url: string, basePath: string): string {
-  if (url.startsWith(basePath)) {
-    return url.replace(basePath, '')
-  }
-  return url
 }

@@ -1,30 +1,33 @@
+import Footer from '@/components/footer/Footer'
+import { LanguagePicker } from '@/components/language-picker/LanguagePicker'
 import Head from 'next-multilingual/head'
 import Link from 'next-multilingual/link'
 import { useMessages } from 'next-multilingual/messages'
-import type { ReactNode } from 'react'
-
-import Footer from '@/components/footer/Footer'
-import LanguagePicker from '@/components/language-picker/LanguagePicker'
-
+import { LocalizedRouteParameters } from 'next-multilingual/router'
+import type { ReactElement, ReactNode } from 'react'
 import styles from './Layout.module.css'
 
 type LayoutProps = {
   /** The title of the page. */
   title: string
+  /** Route parameters, if the page is using a dynamic route. */
+  localizedRouteParameters?: LocalizedRouteParameters
   /** The child node of the `Layout` component. */
   children: ReactNode
 }
 
 /**
  * Component used for the general layout of a page.
- *
- * @param title - The title of the page.
  */
-export default function Layout({ title, children }: LayoutProps): JSX.Element {
+export const Layout: React.FC<LayoutProps> = ({
+  title,
+  localizedRouteParameters,
+  children,
+}): ReactElement => {
   const messages = useMessages()
   return (
     <>
-      <Head>
+      <Head localizedRouteParameters={localizedRouteParameters}>
         <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
         {/** Normally, this should have its own localized `description` content, but to avoid
@@ -36,7 +39,7 @@ export default function Layout({ title, children }: LayoutProps): JSX.Element {
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/">{messages.format('header')}</a>
         </div>
-        <LanguagePicker />
+        <LanguagePicker localizedRouteParameters={localizedRouteParameters} />
         <nav className={styles.nav}>
           <Link href="/">
             <a>{messages.format('home')}</a>

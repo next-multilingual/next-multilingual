@@ -1,19 +1,10 @@
 import NextJsHead from 'next/head'
 import { useRouter } from 'next/router'
-import { ReactElement } from 'react'
-
-import {
-  containsQueryParameters,
-  getActualLocale,
-  getActualLocales,
-  getQueryParameters,
-  highlight,
-  hydrateQueryParameters,
-  log,
-  normalizeLocale,
-} from '../'
+import { MultilingualHead, MultilingualHeadProps } from '.'
+import { getActualLocale, getActualLocales, highlight, log, normalizeLocale } from '../'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
-import { getRewrites } from '../helpers/get-rewrites'
+import { getSsrRewrites } from '../helpers/get-ssr-rewrites'
+import { getParametersFromPath, hydrateRouteParameters, pathContainsParameters } from '../router'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
@@ -27,11 +18,7 @@ if (typeof window !== 'undefined') {
  *
  * @returns The Next.js `Head` component, including alternative links for SEO.
  */
-export default function Head({
-  children,
-}: {
-  children: React.ReactNode
-}): ReactElement<typeof NextJsHead> {
+const Head: MultilingualHead = ({ localizedRouteParameters, children }: MultilingualHeadProps) => {
   /**
    * Next.js' `<Head>` does not allow components, so we are using hooks. Details here:
    *
@@ -45,33 +32,37 @@ export default function Head({
    */
   const { pathname, basePath, defaultLocale, locales, locale, query } = useRouter()
 
-  // Check if it's a dynamic router and if we have all the information to generate the links.
-  if (containsQueryParameters(pathname)) {
-    const hydratedUrlPath = hydrateQueryParameters(pathname, query, true)
-    if (containsQueryParameters(hydratedUrlPath)) {
-      const missingParameters = getQueryParameters(hydratedUrlPath)
-      log.warn(
-        `unable to generate canonical and alternate links for the path ${highlight(
-          pathname
-        )} because the following query parameter${
-          missingParameters.length > 1 ? 's are' : ' is'
-        } missing: ${highlight(
-          missingParameters.join(',')
-        )}. Did you forget to add a 'getStaticPaths' or 'getServerSideProps' to your page?`
-      )
-      return <NextJsHead>{children}</NextJsHead>
+  const actualLocales = getActualLocales(locales, defaultLocale)
+
+  // Check if it's a dynamic route and if we have all the information to generate the links.
+  if (pathContainsParameters(pathname)) {
+    for (const actualLocale of actualLocales) {
+      const routeParameters = localizedRouteParameters ? localizedRouteParameters[actualLocale] : {}
+      const hydratedUrlPath = hydrateRouteParameters(pathname, routeParameters, true)
+      if (pathContainsParameters(hydratedUrlPath)) {
+        const missingParameters = getParametersFromPath(hydratedUrlPath)
+        log.warn(
+          `unable to generate canonical and alternate links for the path ${highlight(
+            pathname
+          )} because the following route parameter${
+            missingParameters.length > 1 ? 's are' : ' is'
+          } missing for ${highlight(normalizeLocale(actualLocale))}: ${highlight(
+            missingParameters.join(',')
+          )}. Did you forget to use ${highlight('getLocalizedRouteParameters')} on your page?`
+        )
+        return <NextJsHead>{children}</NextJsHead>
+      }
     }
   }
 
   const actualLocale = getActualLocale(locale, defaultLocale, locales)
-  const actualLocales = getActualLocales(locales, defaultLocale)
 
   return (
     <NextJsHead>
       <link
         rel="canonical"
         href={getLocalizedUrlFromRewrites(
-          getRewrites(),
+          getSsrRewrites(),
           { pathname, query },
           actualLocale,
           true,
@@ -80,12 +71,19 @@ export default function Head({
         key="canonical-link"
       />
       {actualLocales?.map((actualLocale) => {
+        const query =
+          localizedRouteParameters && localizedRouteParameters[actualLocale]
+            ? localizedRouteParameters[actualLocale]
+            : {}
         return (
           <link
             rel="alternate"
             href={getLocalizedUrlFromRewrites(
-              getRewrites(),
-              { pathname, query },
+              getSsrRewrites(),
+              {
+                pathname,
+                query,
+              },
               actualLocale,
               true,
               basePath
@@ -99,3 +97,5 @@ export default function Head({
     </NextJsHead>
   )
 }
+
+export default Head

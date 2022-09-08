@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 
 import { getBasePath } from '../helpers/get-base-path'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
-import { getRewrites } from '../helpers/get-rewrites'
+import { getSsrRewrites } from '../helpers/get-ssr-rewrites'
 import { Url } from '../types'
 
 // Throw a clear error is this is included by mistake on the client side.
@@ -34,7 +34,7 @@ export function useLocalizedUrl(
   const router = useRouter()
   const applicableLocale = locale ?? router.locale
   return getLocalizedUrlFromRewrites(
-    getRewrites(),
+    getSsrRewrites(),
     url,
     applicableLocale,
     absolute,
@@ -55,7 +55,7 @@ export function useLocalizedUrl(
  */
 export function getLocalizedUrl(url: Url, locale: string, absolute = false): string {
   return getLocalizedUrlFromRewrites(
-    getRewrites(),
+    getSsrRewrites(),
     url,
     locale.toLowerCase(),
     absolute,
