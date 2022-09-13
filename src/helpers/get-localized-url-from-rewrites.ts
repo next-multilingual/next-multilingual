@@ -1,4 +1,5 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes'
+import { resolve } from 'node:path'
 import { UrlObject } from 'node:url'
 import { highlight, log } from '../'
 import {
@@ -36,9 +37,9 @@ export function getLocalizedUrlFromRewrites(
   basePath: string,
   includeBasePath = false
 ): string {
-  let urlPath = (
-    (url as UrlObject).pathname !== undefined ? (url as UrlObject).pathname : url
-  ) as string
+  let urlPath = resolve(
+    ((url as UrlObject).pathname !== undefined ? (url as UrlObject).pathname : url) as string
+  )
   let urlFragment = ''
   const urlComponents = urlPath.split('#')
   if (urlComponents.length !== 1) {
