@@ -1,11 +1,11 @@
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout/Layout'
 import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next/router'
 import { useLongPageMessages } from './long-page'
 
-const AnchorLinks: NextPage = () => {
+const AnchorLinksTests: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
   const { locale, pathname } = useRouter()
@@ -25,4 +25,4 @@ const AnchorLinks: NextPage = () => {
   )
 }
 
-export default AnchorLinks
+export default AnchorLinksTests

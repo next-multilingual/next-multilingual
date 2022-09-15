@@ -1,9 +1,9 @@
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout/Layout'
 import type { GetServerSideProps } from 'next'
 import { NextPage } from 'next'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 
-const CustomErrorPage: NextPage = () => {
+const CustomErrorPageTests: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
 
@@ -15,7 +15,7 @@ const CustomErrorPage: NextPage = () => {
   )
 }
 
-export default CustomErrorPage
+export default CustomErrorPageTests
 
 export const getServerSideProps: GetServerSideProps = async (
   nextPageContext

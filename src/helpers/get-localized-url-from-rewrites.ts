@@ -1,16 +1,16 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes'
-import type { ParsedUrlQueryInput } from 'node:querystring'
+import { resolve } from 'node:path'
 import { UrlObject } from 'node:url'
-
+import { highlight, log } from '../'
 import {
-  containsQueryParameters,
-  highlight,
-  hydrateQueryParameters,
-  log,
-  queryToRewriteParameters,
-  rewriteToQueryParameters,
+  getParametersFromPath,
+  hydrateRouteParameters,
+  pathContainsParameters,
+  rewriteToRouteParameters,
+  RouteParameters,
+  routeToRewriteParameters,
   stripBasePath,
-} from '../'
+} from '../router'
 import { Url } from '../types'
 import { getOrigin } from './get-origin'
 import { getRewritesIndex } from './get-rewrites-index'
@@ -37,9 +37,9 @@ export function getLocalizedUrlFromRewrites(
   basePath: string,
   includeBasePath = false
 ): string {
-  let urlPath = (
-    (url as UrlObject).pathname !== undefined ? (url as UrlObject).pathname : url
-  ) as string
+  let urlPath = resolve(
+    ((url as UrlObject).pathname !== undefined ? (url as UrlObject).pathname : url) as string
+  )
   let urlFragment = ''
   const urlComponents = urlPath.split('#')
   if (urlComponents.length !== 1) {
@@ -82,13 +82,13 @@ export function getLocalizedUrlFromRewrites(
       // Next.js automatically normalize URLs and removes trailing slashes. We need to do the same to match localized URLs.
       urlPath = urlPath.slice(0, -1)
     }
-    const isDynamicRoute = containsQueryParameters(urlPath)
-    const searchableUrlPath = isDynamicRoute ? queryToRewriteParameters(urlPath) : urlPath
+    const isDynamicRoute = pathContainsParameters(urlPath)
+    const searchableUrlPath = isDynamicRoute ? routeToRewriteParameters(urlPath) : urlPath
     const rewriteUrlMatch = getRewritesIndex(rewrites, basePath)?.[searchableUrlPath]?.[locale]
     urlPath =
       rewriteUrlMatch !== undefined
         ? isDynamicRoute
-          ? rewriteToQueryParameters(rewriteUrlMatch)
+          ? rewriteToRouteParameters(rewriteUrlMatch)
           : rewriteUrlMatch
         : `${basePath}/${locale}${urlPath}` // Fallback with the original URL path when not found.
   }
@@ -101,9 +101,21 @@ export function getLocalizedUrlFromRewrites(
 
   const localizedUrl = `${
     (url as UrlObject).query !== undefined
-      ? hydrateQueryParameters(urlPath, (url as UrlObject).query as ParsedUrlQueryInput)
+      ? hydrateRouteParameters(urlPath, (url as UrlObject).query as RouteParameters)
       : urlPath
   }${urlFragment ? `#${urlFragment}` : ''}`
+
+  // Check if it's a dynamic route and if we have all the information to generate the links.
+  if (pathContainsParameters(localizedUrl)) {
+    const missingParameters = getParametersFromPath(localizedUrl)
+    log.warn(
+      `unable to get a localized URL for ${highlight(
+        localizedUrl
+      )} because the following route parameter${
+        missingParameters.length > 1 ? 's are' : ' is'
+      } missing: ${highlight(missingParameters.join(','))}.`
+    )
+  }
 
   return absolute || includeBasePath ? localizedUrl : stripBasePath(localizedUrl, basePath)
 }

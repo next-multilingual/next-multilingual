@@ -38,8 +38,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
+- Check if we can override all locales infos and get rid of the `getActual*` APIs.
+
 ### Done ✔️
 
+- Add proper support for localized dynamic route parameters.
 - Post ESLint refactoring
 - Implement new ESLint + Prettier rules
 - Externalize the Babel plugin into a "Messages Modules" package

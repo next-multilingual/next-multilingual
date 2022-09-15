@@ -1,12 +1,22 @@
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout/Layout'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import { MultilingualStaticProps } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { getTitle, useMessages } from 'next-multilingual/messages'
+import {
+  getLocalizedRouteParameters,
+  LocalizedRouteParameters,
+  RouteParameters,
+} from 'next-multilingual/router'
 import { useLocalizedUrl } from 'next-multilingual/url'
 import { useRouter } from 'next/router'
 import styles from './[id].module.css'
 
-const Id: NextPage = () => {
+type DynamicRoutesIdTestsProps = { localizedRouteParameters: LocalizedRouteParameters }
+
+const DynamicRoutesIdTests: NextPage<DynamicRoutesIdTestsProps> = ({
+  localizedRouteParameters,
+}) => {
   const messages = useMessages()
   const title = getTitle(messages)
   const { pathname, asPath, query, locale } = useRouter()
@@ -17,7 +27,7 @@ const Id: NextPage = () => {
   })
 
   return (
-    <Layout title={title}>
+    <Layout title={title} localizedRouteParameters={localizedRouteParameters}>
       <h1 className={styles.headline}>{title}</h1>
       <p>{messages.format('details')}</p>
       <table className={styles.table}>
@@ -54,7 +64,7 @@ const Id: NextPage = () => {
         </tbody>
       </table>
       <div id="go-back">
-        <Link href="/tests/dynamic-routes" locale={locale}>
+        <Link href={`${pathname.split('/').slice(0, -1).join('/')}`} locale={locale}>
           {messages.format('goBack')}
         </Link>
       </div>
@@ -62,7 +72,7 @@ const Id: NextPage = () => {
   )
 }
 
-export default Id
+export default DynamicRoutesIdTests
 
 /**
  * By default, Next.js does not populate the `query` value when using the `useRouter` hook.
@@ -105,11 +115,28 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 /**
- * `getStaticProps` is required for `getStaticPaths` to work.
- *
- * @returns Empty properties, since we are only using this for the static paths.
+ * Pre-compute localized route parameters and return them as props.
  */
-// eslint-disable-next-line @typescript-eslint/require-await
-export const getStaticProps: GetStaticProps = async () => {
-  return { props: {} }
+export const getStaticProps: MultilingualStaticProps<
+  GetStaticProps<DynamicRoutesIdTestsProps>
+> = async ({
+  locale,
+  defaultLocale,
+  locales,
+  params,
+  // eslint-disable-next-line @typescript-eslint/require-await
+}) => {
+  const routeParameters = params as RouteParameters
+
+  const localizedRouteParameters = getLocalizedRouteParameters(
+    locale,
+    defaultLocale,
+    locales,
+    routeParameters,
+    {
+      id: routeParameters['id'],
+    }
+  )
+
+  return { props: { localizedRouteParameters } }
 }

@@ -1,11 +1,11 @@
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout/Layout'
 import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next/router'
 import styles from './long-page.module.css'
 
-const LongPage: NextPage = () => {
+const AnchorLinksLongPageTests: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
   const { locale } = useRouter()
@@ -59,6 +59,6 @@ const LongPage: NextPage = () => {
   )
 }
 
-export default LongPage
+export default AnchorLinksLongPageTests
 
 export { useMessages as useLongPageMessages } from 'next-multilingual/messages'

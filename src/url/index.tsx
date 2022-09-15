@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router'
-
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
-import { useRewrites } from '../hooks/use-rewrites'
+import { getRewrites } from '../helpers/get-rewrites'
 import { Url } from '../types'
 
 /**
@@ -26,11 +25,31 @@ export function useLocalizedUrl(
   const router = useRouter()
   const applicableLocale = locale ?? router.locale
   return getLocalizedUrlFromRewrites(
-    useRewrites(),
+    getRewrites(),
     url,
     applicableLocale,
     absolute,
     router.basePath,
     includeBasePath
+  )
+}
+
+/**
+ * Get the localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
+ *
+ * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
+ * a `UrlObject`.
+ * @param locale - The locale of the localized URL.
+ * @param absolute - Returns the absolute URL, including the protocol and domain (e.g., https://example.com/en-us/contact-us).
+ *
+ * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
+ */
+export function getLocalizedUrl(url: Url, locale: string, absolute = false): string {
+  return getLocalizedUrlFromRewrites(
+    getRewrites(),
+    url,
+    locale.toLowerCase(),
+    absolute,
+    window.next.router.basePath
   )
 }

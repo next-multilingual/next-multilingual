@@ -1,11 +1,11 @@
-import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, LocalizedConstant, ORIGIN } from '../constants'
+import { ACTUAL_LOCALES, BASE_PATH, LOCALE_NAMES, LocalizedConstant, ORIGIN } from '../../constants'
 
 export const DYNAMIC_ROUTE_URLS: LocalizedConstant = {
-  'en-US': '/tests/dynamic-routes',
-  'fr-CA': '/tests/routes-dynamiques',
+  'en-US': '/tests/dynamic-routes/identifier',
+  'fr-CA': '/tests/routes-dynamiques/identifiant',
 }
 
-describe('A dynamic route', () => {
+describe('A dynamic route using a unique number (non-localizable) as parameters', () => {
   ACTUAL_LOCALES.forEach((locale) => {
     const localeName = LOCALE_NAMES[locale]
     const dynamicRouteIndexUrl = `${BASE_PATH}/${locale.toLowerCase()}${DYNAMIC_ROUTE_URLS[locale]}`
@@ -22,14 +22,7 @@ describe('A dynamic route', () => {
       const linkMarkupRegExp = /.*(?<link><.*link-with-parameter.*?>)/
       const linkHrefRegExp = /href=["'](?<href>.*?)["']/
 
-      cy.request({
-        method: 'GET',
-        url: dynamicRouteIndexUrl,
-        headers: {
-          'Accept-Language': locale,
-          Cookie: 'L=',
-        },
-      }).then((response) => {
+      cy.request(dynamicRouteIndexUrl).then((response) => {
         const source = response.body as string
         expect(source).to.match(inputMarkupRegExp)
         const inputMarkup = source.match(inputMarkupRegExp).groups['input']
@@ -47,14 +40,7 @@ describe('A dynamic route', () => {
 
     // Localized <Link> (client-side)
     it(`has the correct localized link (client-side) markup for '${localeName}'`, () => {
-      cy.visit({
-        url: dynamicRouteIndexUrl,
-        headers: {
-          'Accept-Language': locale,
-          Cookie: 'L=',
-        },
-      })
-
+      cy.visit(dynamicRouteIndexUrl)
       cy.get(`#parameter-input`)
         .invoke('val')
         .then((value) => {
@@ -94,14 +80,7 @@ describe('A dynamic route', () => {
 
     // Localized Canonical <Head> link (SSR)
     it(`has the correct 'canonical' <Head> link (SSR) markup for '${localeName}'`, () => {
-      cy.request({
-        method: 'GET',
-        url: dynamicRouteUrl,
-        headers: {
-          'Accept-Language': locale,
-          Cookie: 'L=',
-        },
-      }).then((response) => {
+      cy.request(dynamicRouteUrl).then((response) => {
         source = response.body as string // Save it for the next test to avoid multiple calls.
         const canonicalLinkMarkup = `<link rel="canonical" href="${ORIGIN}${canonicalDynamicRouteUrl}"/>`
         expect(source).to.contain(canonicalLinkMarkup)
@@ -120,14 +99,7 @@ describe('A dynamic route', () => {
 
     // Localized Canonical <Head> link (client-side)
     it(`has the correct 'canonical' <Head> link (client-side) markup for '${localeName}'`, () => {
-      cy.visit({
-        url: dynamicRouteUrl,
-        headers: {
-          'Accept-Language': locale,
-          Cookie: 'L=',
-        },
-      })
-
+      cy.visit(dynamicRouteUrl)
       cy.get(`head link[rel=canonical]`)
         .should('have.attr', 'href')
         .then((href) => {

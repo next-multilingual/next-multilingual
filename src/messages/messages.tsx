@@ -1,4 +1,4 @@
-import { MessagesIndex, MixedValues, PlaceholderValues } from '.'
+import { MessagesIndex, MixedValues, PlaceholderValues, slugify } from '.'
 import { highlight, highlightFilePath, log, normalizeLocale } from '..'
 import { Message } from './message'
 import { KeyValueObject } from './properties'
@@ -104,10 +104,23 @@ export class Messages {
    *
    * @param key - The local scope key identifying the message.
    *
-   * @returns The message associated with the key in a given local scope.
+   * @returns The message associated with the key in a given local scope or `undefined` when not found.
    */
-  public get(key: string): Message {
+  public get(key: string): Message | undefined {
     return this.messages[this.messagesIndex[key]]
+  }
+
+  /**
+   * Get the key associated with a route parameter in a given local scope.
+   *
+   * @param routeParameter - A route parameter.
+   *
+   * @returns The key associated with a route parameter in a given local scope or `undefined` when not found.
+   */
+  public getRouteParameterKey(routeParameter: string): string | undefined {
+    return this.messages.find(
+      (message) => slugify(message.format(), this.locale) === routeParameter
+    )?.key
   }
 
   /**

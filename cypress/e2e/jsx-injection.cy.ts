@@ -4,8 +4,9 @@ import {
   BASE_PATH,
   LOCALE_NAMES,
   LocalizedConstant,
-  Messages,
+  LocalizedConstantObject,
 } from '../constants'
+import { getMessages } from '../utils'
 
 export const JSX_TESTS_URLS: LocalizedConstant = {
   'en-US': '/tests/jsx-injection',
@@ -32,15 +33,27 @@ function convertHtmlEntities(markup: string): string {
     .trim()
 }
 
+/** Get the file path for the city messages. */
+const getMessagesFilePath = (locale: string): string =>
+  `example/pages${JSX_TESTS_URLS[ACTUAL_DEFAULT_LOCALE]}/index.${locale}.properties`
+
+const JSX_INJECTION_MESSAGES: LocalizedConstantObject = {}
+
+before(() => {
+  ACTUAL_LOCALES.forEach((locale) => {
+    cy.readFile(getMessagesFilePath(locale)).then((content) => {
+      JSX_INJECTION_MESSAGES[locale] = getMessages(content as string)
+    })
+  })
+})
+
 describe('The JSX test page', () => {
   ACTUAL_LOCALES.forEach((locale) => {
     const localeName = LOCALE_NAMES[locale]
-    const defaultLocalizedJsxTestsUrl = JSX_TESTS_URLS[ACTUAL_DEFAULT_LOCALE]
     const localizedContentUsUrl = CONTACT_US_URLS[locale]
     const jsxTestsUrl = `${BASE_PATH}/${locale.toLowerCase()}${JSX_TESTS_URLS[locale]}`
 
     let source: string
-    let messages: Messages
 
     let baseTest1Markup: string,
       baseTest2Markup: string,
@@ -52,22 +65,9 @@ describe('The JSX test page', () => {
 
     // Base SSR test: one JSX element
     it(`will display the correct SSR markup when formatting a message with a single JSX element for '${localeName}'`, () => {
-      const propertiesFilepath = `example/pages${defaultLocalizedJsxTestsUrl}/index.${locale}.properties`
-
-      cy.task('getMessages', propertiesFilepath).then((fileMessages: Messages) => {
-        messages = fileMessages
-      })
-
-      cy.request({
-        method: 'GET',
-        url: jsxTestsUrl,
-        headers: {
-          'Accept-Language': locale,
-          Cookie: 'L=',
-        },
-      }).then((response) => {
+      cy.request(jsxTestsUrl).then((response) => {
         source = response.body as string
-        baseTest1Markup = messages.baseTest1
+        baseTest1Markup = JSX_INJECTION_MESSAGES[locale].baseTest1
           .replace(
             '<link>',
             `<a href="${BASE_PATH}/${locale.toLowerCase()}${localizedContentUsUrl}">`
@@ -81,7 +81,7 @@ describe('The JSX test page', () => {
 
     // Base SSR test: two child elements inside another element
     it(`will display the correct SSR markup when formatting a message with two child JSX elements inside another element for '${localeName}'`, () => {
-      baseTest2Markup = messages.baseTest2
+      baseTest2Markup = JSX_INJECTION_MESSAGES[locale].baseTest2
         .replace(
           '<link>',
           `<a href="${BASE_PATH}/${locale.toLowerCase()}${localizedContentUsUrl}">`
@@ -95,7 +95,7 @@ describe('The JSX test page', () => {
 
     // Plural + JSX SSR test: count == 0
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 0 for '${localeName}'`, () => {
-      plural0Markup = messages.plural
+      plural0Markup = JSX_INJECTION_MESSAGES[locale].plural
         .match(/=0 {(?<message>.*?)}/m)
         .groups['message'].replace('<strong>', `<strong>`)
       // Expected example: <div id="plural0">No <strong>candy</strong> left.</div>
@@ -104,7 +104,7 @@ describe('The JSX test page', () => {
 
     // Plural + JSX SSR test: count == 1
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 1 for '${localeName}'`, () => {
-      plural1Markup = messages.plural
+      plural1Markup = JSX_INJECTION_MESSAGES[locale].plural
         .match(/one {(?<message>.*?)}/m)
         .groups['message'].replace('#', '1')
         .replace('<i>', `<i>`)
@@ -114,7 +114,7 @@ describe('The JSX test page', () => {
 
     // Plural + JSX SSR test: count == 2
     it(`will display the correct SSR markup when using JSX elements inside a plural statement where the count is 2 for '${localeName}'`, () => {
-      plural2Markup = messages.plural
+      plural2Markup = JSX_INJECTION_MESSAGES[locale].plural
         .match(/other {(?<message>.*?)}/m)
         .groups['message'].replace('#', '2')
         .replace('<u>', `<u>`)
@@ -124,7 +124,7 @@ describe('The JSX test page', () => {
 
     // Escape SSR test: `formatJsx` using '<', '>', '{', '}' and quotes
     it(`will display the correct SSR markup when using JSX elements and escaping characters for '${localeName}'`, () => {
-      escapeTestMarkup = messages.escapeTest
+      escapeTestMarkup = JSX_INJECTION_MESSAGES[locale].escapeTest
         .replace(/'/g, '&#x27;')
         .replace(/&#x3c;/gi, '&lt;')
         .replace(/&#x3e;/gi, '&gt;')
@@ -144,7 +144,7 @@ describe('The JSX test page', () => {
         .strongClass
       const aClass = elementSource.match(/a class="(?<aClass>.*?)"/m).groups.aClass
 
-      styleAndEventsMarkup = messages.styleAndEvents
+      styleAndEventsMarkup = JSX_INJECTION_MESSAGES[locale].styleAndEvents
         .replace(
           '<link>',
           `<a href="${BASE_PATH}/${locale.toLowerCase()}${localizedContentUsUrl}">`

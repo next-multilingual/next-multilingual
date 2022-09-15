@@ -25,26 +25,13 @@ describe('An anchor link', () => {
     const linkWithFragment = `${longPageTestsUrl}#${ANCHOR_LINK_TEST_FRAGMENTS[locale]}`
 
     it(`will have the correct SSR markup when using an anchor link for '${localeName}'`, () => {
-      cy.request({
-        method: 'GET',
-        url: anchorLinkTestsUrl,
-        headers: {
-          'Accept-Language': locale,
-          Cookie: 'L=',
-        },
-      }).then((response) => {
+      cy.request(anchorLinkTestsUrl).then((response) => {
         expect(response.body).to.contain(`<a href="${linkWithFragment}">`)
       })
     })
 
     it(`will have the correct client side href value when using an anchor link for '${localeName}'`, () => {
-      cy.visit({
-        url: anchorLinkTestsUrl,
-        headers: {
-          'Accept-Language': locale,
-          Cookie: 'L=',
-        },
-      })
+      cy.visit(anchorLinkTestsUrl)
       cy.get('#anchor-link-test a')
         .should('have.attr', 'href')
         .then((href) => {

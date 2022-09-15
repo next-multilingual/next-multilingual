@@ -1,4 +1,4 @@
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout/Layout'
 import { NextPage } from 'next'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 import styles from './index.module.css'
