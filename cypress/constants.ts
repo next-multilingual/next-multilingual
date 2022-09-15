@@ -18,7 +18,14 @@ export type LocalizedConstant = {
 
 /** String array constants which are defined by locale. */
 export type LocalizedConstantArray = {
-  [key: string]: string[]
+  [locale: string]: string[]
+}
+
+/** Object constants which are defined by locale. */
+export type LocalizedConstantObject = {
+  [locale: string]: {
+    [key: string]: string
+  }
 }
 
 /** Localized messages. */

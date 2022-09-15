@@ -4,7 +4,7 @@ import type { Redirect, Rewrite } from 'next/dist/lib/load-custom-routes'
 import type { WebpackConfigContext } from 'next/dist/server/config-shared'
 import { existsSync, readdirSync, Stats, utimesSync } from 'node:fs'
 import { extname } from 'node:path'
-import Webpack from 'webpack'
+import type Webpack from 'webpack'
 import { highlight, highlightFilePath, isLocale, log, normalizeLocale } from '../'
 import {
   getMessagesFilePath,

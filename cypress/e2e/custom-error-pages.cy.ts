@@ -47,7 +47,6 @@ describe('A custom error', () => {
     describe(`for '${localeName}'`, () => {
       it(`will have the correct SSR markup when trying to access a URL that does not exist (404)`, () => {
         cy.request({
-          method: 'GET',
           url: notFoundUrl,
           failOnStatusCode: false,
         }).then((response) => {
@@ -65,7 +64,6 @@ describe('A custom error', () => {
 
       it('will have the correct SSR markup when a 404 is triggered by `getServerSideProps`', () => {
         cy.request({
-          method: 'GET',
           url: serverSide404Url,
           failOnStatusCode: false,
         }).then((response) => {
@@ -84,7 +82,6 @@ describe('A custom error', () => {
       if (Cypress.env('isProd')) {
         it('will have the correct SSR markup when a 500 is triggered by `getServerSideProps`', () => {
           cy.request({
-            method: 'GET',
             url: serverSide500Url,
             failOnStatusCode: false,
           }).then((response) => {

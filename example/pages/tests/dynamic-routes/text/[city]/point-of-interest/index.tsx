@@ -4,12 +4,12 @@ import { useLondonPoiMessages } from '@/messages/cities/points-of-interest/londo
 import { useMontrealPoiMessages } from '@/messages/cities/points-of-interest/montrealPoiMessages'
 import { useShanghaiPoiMessages } from '@/messages/cities/points-of-interest/shanghaiPoiMessages'
 import { NextPage } from 'next'
-import { getActualLocale } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { getTitle, Messages, slugify, useMessages } from 'next-multilingual/messages'
+import { useRouter } from 'next-multilingual/router'
 import { getLocalizedUrl } from 'next-multilingual/url'
-import router, { useRouter } from 'next/router'
-import { useCallback, useEffect, useState } from 'react'
+import router from 'next/router'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { DynamicRoutesCityTestsProps } from './..'
 import styles from './index.module.css'
 
@@ -17,77 +17,65 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
   localizedRouteParameters,
 }) => {
   const messages = useMessages()
-  const { pathname, locale, locales, defaultLocale, query } = useRouter()
-  const actualLocale = getActualLocale(locale, defaultLocale, locales)
+  const { pathname, locale, query } = useRouter()
   const title = getTitle(messages)
   const citiesMessages = useCitiesMessages()
   const montrealPoiMessages = useMontrealPoiMessages()
   const londonPoiMessages = useLondonPoiMessages()
   const shanghaiPoiMessages = useShanghaiPoiMessages()
 
-  const [city, setCity] = useState(citiesMessages.getAll()[0].key)
-  const getCityParameter = useCallback(
-    (): string => slugify(citiesMessages.format(city), actualLocale),
-    [actualLocale, citiesMessages, city]
+  const [city, setCity] = useState(
+    citiesMessages.getRouteParameterKey(localizedRouteParameters[locale].city) as string
   )
-  const [cityParameter, setCityParameter] = useState(getCityParameter())
 
-  const getPoiMessages = useCallback((): Messages => {
-    switch (city) {
-      case 'montreal': {
-        return montrealPoiMessages
+  const getPoiMessages = useCallback(
+    (newCity?: string): Messages => {
+      switch (newCity ?? city) {
+        case 'london': {
+          return londonPoiMessages
+        }
+        case 'shanghai': {
+          return shanghaiPoiMessages
+        }
+        default: {
+          // Defaults to the first option in the dropdown.
+          return montrealPoiMessages
+        }
       }
-      case 'london': {
-        return londonPoiMessages
-      }
-      default: {
-        return shanghaiPoiMessages
-      }
-    }
-  }, [city, londonPoiMessages, montrealPoiMessages, shanghaiPoiMessages])
-
-  const getPoi = useCallback((): string => getPoiMessages().getAll()[0].key, [getPoiMessages])
-  const [poi, setPoi] = useState(getPoi())
-
-  const getPoiParameter = useCallback(
-    (): string => slugify(getPoiMessages().format(poi), actualLocale),
-    [actualLocale, getPoiMessages, poi]
+    },
+    [city, londonPoiMessages, montrealPoiMessages, shanghaiPoiMessages]
   )
-  const [poiParameter, setPoiParameter] = useState(getPoiParameter())
 
-  const getPoiOptions = useCallback((): JSX.Element[] => {
-    return getPoiMessages()
-      .getAll()
-      .map((message) => {
-        return (
-          <option value={message.key} key={message.key}>
-            {message.format()}
-          </option>
-        )
-      })
-  }, [getPoiMessages])
-  const [poiOptions, setPoiOptions] = useState(getPoiOptions())
+  const [poi, setPoi] = useState(getPoiMessages().getAll()[0].key)
 
-  const getTargetUrl = useCallback(
+  const handleCityChange = (event: ChangeEvent<HTMLSelectElement>): void => {
+    const newCity = event.target.value
+    setCity(newCity)
+    const poiMessages = getPoiMessages(newCity)
+    setPoi(poiMessages.getAll()[0].key)
+  }
+
+  const cityParameter = useMemo(
+    (): string => slugify(citiesMessages.format(city), locale),
+    [locale, citiesMessages, city]
+  )
+
+  const poiParameter = useMemo(
+    (): string => slugify(getPoiMessages().format(poi), locale),
+    [locale, getPoiMessages, poi]
+  )
+
+  const targetUrl = useMemo(
     (): string =>
       getLocalizedUrl(
         {
           pathname: `${pathname}/[poi]`,
           query: { city: cityParameter, poi: poiParameter },
         },
-        actualLocale
+        locale
       ),
-    [actualLocale, cityParameter, pathname, poiParameter]
+    [locale, cityParameter, pathname, poiParameter]
   )
-  const [targetUrl, setTargetUrl] = useState(getTargetUrl())
-
-  useEffect(() => {
-    setCityParameter(getCityParameter())
-    setPoiOptions(getPoiOptions())
-    setPoi(getPoi())
-    setPoiParameter(getPoiParameter())
-    setTargetUrl(getTargetUrl())
-  }, [actualLocale, pathname, poi, poiParameter])
 
   return (
     <Layout title={title} localizedRouteParameters={localizedRouteParameters}>
@@ -98,8 +86,8 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
         <ul>
           <li>
             <label>
-              City:
-              <select onChange={(event) => setCity(event.target.value)} value={city}>
+              {messages.format('cityLabel')}
+              <select onChange={handleCityChange} value={city}>
                 {citiesMessages.getAll().map((message) => {
                   return (
                     <option value={message.key} key={message.key}>
@@ -112,9 +100,17 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
           </li>
           <li>
             <label>
-              Point of interest:
-              <select onChange={(event) => setPoi(event.target.value)} value={poi}>
-                {poiOptions}
+              {messages.format('poiLabel')}
+              <select onChange={(event) => setPoi(event.target.value)}>
+                {getPoiMessages()
+                  .getAll()
+                  .map((message) => {
+                    return (
+                      <option value={message.key} key={message.key}>
+                        {message.format()}
+                      </option>
+                    )
+                  })}
               </select>
             </label>
           </li>
@@ -123,16 +119,21 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
       <div>
         {messages.formatJsx('preview', {
           localizedUrl: targetUrl,
-          code: <code className={styles.code}></code>,
+          code: <code id="url-preview" className={styles.code}></code>,
           strong: <strong></strong>,
         })}
       </div>
       <p>{messages.format('2links')}</p>
       <ul>
         <li>
-          <Link href={{ pathname: `${pathname}/[city]`, query: { city: cityParameter } }}>
+          <Link
+            href={{
+              pathname: `${pathname}/[poi]`,
+              query: { city: cityParameter, poi: poiParameter },
+            }}
+          >
             <a id="link-with-parameter">{messages.format('link1Text')}</a>
-          </Link>{' '}
+          </Link>
         </li>
         <li>
           <button id="route-push-button" onClick={() => router.push(targetUrl)}>
@@ -142,9 +143,7 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
       </ul>
       <p>{messages.format('instructions')}</p>
       <div id="go-back">
-        <Link href={{ pathname: `${pathname.split('/').slice(0, -1).join('/')}`, query }}>
-          {messages.format('goBack')}
-        </Link>
+        <Link href={{ pathname: `${pathname}/..`, query }}>{messages.format('goBack')}</Link>
       </div>
     </Layout>
   )

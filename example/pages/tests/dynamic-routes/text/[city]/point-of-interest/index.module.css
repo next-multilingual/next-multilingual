@@ -9,10 +9,6 @@
   font-family: 'Courier New', Courier, monospace;
 }
 
-.inlinePick {
-  margin-right: 0.5rem;
-}
-
 .picker label {
   font-weight: bold;
 }

@@ -74,9 +74,7 @@ const DynamicRoutesCityTests: NextPage<DynamicRoutesCityTestsProps> = ({
         </Link>
       </div>
       <div id="go-back">
-        <Link href={`${pathname.split('/').slice(0, -1).join('/')}`}>
-          {messages.format('goBack')}
-        </Link>
+        <Link href={`${pathname}/..`}>{messages.format('goBack')}</Link>
       </div>
     </Layout>
   )
@@ -110,17 +108,15 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
       })
     })
   })
-
   return {
     paths,
-    fallback: false,
+    /** @todo: set back to `false` once https://github.com/vercel/next.js/issues/40591 is fixed */
+    fallback: 'blocking',
   }
 }
 
 /**
- * `getStaticProps` is required for `getStaticPaths` to work.
- *
- * @returns Empty properties, since we are only using this for the static paths.
+ * Pre-compute the localized route parameters and return them as props.
  */
 export const getStaticProps: MultilingualStaticProps<
   GetStaticProps<DynamicRoutesCityTestsProps>

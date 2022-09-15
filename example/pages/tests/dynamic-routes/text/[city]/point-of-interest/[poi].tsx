@@ -20,9 +20,11 @@ import { useLocalizedUrl } from 'next-multilingual/url'
 import { useRouter } from 'next/router'
 import styles from './[poi].module.css'
 
-type PoiProps = { localizedRouteParameters: LocalizedRouteParameters }
+type DynamicRoutesPoiTestsProps = { localizedRouteParameters: LocalizedRouteParameters }
 
-const Poi: NextPage<PoiProps> = ({ localizedRouteParameters }) => {
+const DynamicRoutesPoiTests: NextPage<DynamicRoutesPoiTestsProps> = ({
+  localizedRouteParameters,
+}) => {
   const messages = useMessages()
   const title = getTitle(messages)
   const { pathname, asPath, query } = useRouter()
@@ -64,19 +66,23 @@ const Poi: NextPage<PoiProps> = ({ localizedRouteParameters }) => {
             <td>{localizedUrl}</td>
           </tr>
           <tr>
-            <td>{messages.format('rowParameterValue')}</td>
-            <td>{query['city']}</td>
+            <td>{messages.format('rowCityParameterValue')}</td>
+            <td id="city-parameter">{query['city']}</td>
+          </tr>
+          <tr>
+            <td>{messages.format('rowPoiParameterValue')}</td>
+            <td id="poi-parameter">{query['poi']}</td>
           </tr>
         </tbody>
       </table>
       <div id="go-back">
-        <Link href="/tests/dynamic-routes">{messages.format('goBack')}</Link>
+        <Link href={{ pathname: `${pathname}/..`, query }}>{messages.format('goBack')}</Link>
       </div>
     </Layout>
   )
 }
 
-export default Poi
+export default DynamicRoutesPoiTests
 
 /**
  * By default, Next.js does not populate the `query` value when using the `useRouter` hook.
@@ -126,14 +132,17 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 
   return {
     paths,
-    fallback: false,
+    /** @todo: set back to `false` once https://github.com/vercel/next.js/issues/40591 is fixed */
+    fallback: 'blocking',
   }
 }
 
 /**
- * Pre-compute localized route parameters and return them as props.
+ * Pre-compute the localized route parameters and return them as props.
  */
-export const getStaticProps: MultilingualStaticProps<GetStaticProps<PoiProps>> = async ({
+export const getStaticProps: MultilingualStaticProps<
+  GetStaticProps<DynamicRoutesPoiTestsProps>
+> = async ({
   locale,
   defaultLocale,
   locales,

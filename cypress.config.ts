@@ -1,5 +1,4 @@
 import { defineConfig } from 'cypress'
-import { KeyValueObject, parsePropertiesFile } from './src/messages/properties'
 
 export default defineConfig({
   env: {
@@ -20,25 +19,6 @@ export default defineConfig({
         log(message: string): true {
           console.log(message)
           return true
-        },
-        /**
-         * Get messages from a .properties file.
-         *
-         * @param filePath - A .properties file path.
-         *
-         * @returns The key/value object containing the messages, where the key is the message identifier.
-         */
-        getMessages(filePath: string): KeyValueObject {
-          const keyValueObject = parsePropertiesFile(filePath)
-          const messages = {}
-
-          for (const [key, value] of Object.entries(keyValueObject)) {
-            const compactedKey = key.split('.').pop()
-            if (compactedKey !== undefined) {
-              messages[compactedKey] = value
-            }
-          }
-          return messages
         },
       })
     },

@@ -46,7 +46,6 @@ describe('The homepage', () => {
   const htmlTagMarkup = `<html lang="${ACTUAL_DEFAULT_LOCALE}"`
   it(`returns SSR html that contains '${htmlTagMarkup}' (actual default locale) when a client locale is invalid`, () => {
     cy.request({
-      method: 'GET',
       url: `${BASE_PATH}/`,
       headers: {
         'Accept-Language': invalidLocale,
@@ -88,7 +87,6 @@ describe('The homepage', () => {
     const htmlTagMarkup = `<html lang="${locale}"`
     it(`returns SSR html that contains '${htmlTagMarkup}' for '${localeName}'`, () => {
       cy.request({
-        method: 'GET',
         url: `${BASE_PATH}/${locale.toLowerCase()}`,
         headers: {
           'Accept-Language': locale,
