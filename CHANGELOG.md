@@ -1,3 +1,24 @@
+
+
+# [1.5.0](https://github.com/Avansai/next-multilingual/compare/1.4.2...1.5.0) (2022-09-15)
+
+
+### Bug Fixes
+
+* fix broken links ([c9333dc](https://github.com/Avansai/next-multilingual/commit/c9333dc7c548289a01ed6c61f90a849b2f6c1346))
+
+
+### Features
+
+* support localized dynamic route ([159e0b2](https://github.com/Avansai/next-multilingual/commit/159e0b26b44bf8dc3eeef442f6bbcf9cee0b0794))
+* support the `..` syntax in localized URL APIs ([bad63d5](https://github.com/Avansai/next-multilingual/commit/bad63d5db248f60d56796aff775a4338b9d34834))
+
+
+### BREAKING CHANGES
+
+* - Move `useRouter` to `next-multilingual/router`
+- Dynamic routes no longer works without using `getLocalizedRouteParameters`
+
 ## [1.4.2](https://github.com/Avansai/next-multilingual/compare/1.4.1...1.4.2) (2022-08-23)
 
 ## [1.4.1](https://github.com/Avansai/next-multilingual/compare/1.4.0...1.4.1) (2022-08-17)
