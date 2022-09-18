@@ -1,35 +1,27 @@
+import { GetServerSidePropsContext, GetStaticPropsContext } from 'next'
 import { NextRouter, useRouter as useNextRouter } from 'next/router'
 import { useMemo } from 'react'
-import {
-  getActualLocale,
-  getActualLocales,
-  getLocaleConfig,
-  highlight,
-  LocaleConfig,
-  log,
-} from '..'
+import { getLocalesState, getNextLocalesState, highlight, LocalesState, log } from '..'
 import { getMessages, slugify } from '../messages'
 
 /**
- * Wrapper on top of Next.js' `useRouter` to:
+ * Wrapper on top of Next.js' `useRouter` that returns the locales state used by `next-multilingual`.
  *
- * - automatically overwrite the locale if it's using the default locale.
- * - make sure that locale configuration is never `undefined`.
- *
- * @returns An extended `NextRouter` using `next-multilingual`'s actual locale (and no `undefined` values).
+ * @returns An extended `NextRouter` using `next-multilingual`'s locales state.
  */
-export function useRouter(): NextRouter & LocaleConfig {
-  const router = useNextRouter()
+export function useRouter(): NextRouter & LocalesState {
+  const nextRouter = useNextRouter()
 
   // Only recomputes if the router changes (useful if `useRouter` is called multiple times on the same page).
   return useMemo(() => {
-    const localeConfig = getLocaleConfig(router.locale, router.defaultLocale, router.locales)
-    // Automatically overwrites the locale if it's using the default locale.
-    router.locale = getActualLocale(router.locale, router.defaultLocale, router.locales)
-    // Leave the default locale intact (without `undefined`) so that we can still use the other "getActual" APIs.
-    router.defaultLocale = localeConfig.defaultLocale
-    return router as NextRouter & LocaleConfig
-  }, [router])
+    const router = { ...nextRouter } // Clone the object.
+    const { locale, locales, defaultLocale } = getLocalesState(getNextLocalesState(router))
+    // Override the router with real values so that they can be used everywhere transparently.
+    router.locale = locale
+    router.locales = locales
+    router.defaultLocale = defaultLocale
+    return router as NextRouter & LocalesState
+  }, [nextRouter])
 }
 
 /**
@@ -180,34 +172,28 @@ export type RouteParameterMessages = { [parameter: string]: typeof getMessages |
 /**
  * Get route parameters for all configured locales.
  *
- * @param locale - The current locale from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js.
- * @param locales - The configured i18n locales from Next.js.
- * @param routeParameters - The route parameters.
+ * @param context - The context coming from `getStaticProps` or `getServerSideProps`.
  * @param routeParameterMessages - Messages functions for each route parameter.
  *
  * @returns A route parameters object.
  */
 export function getLocalizedRouteParameters(
-  locale: string,
-  defaultLocale: string,
-  locales: string[],
-  routeParameters: RouteParameters,
+  context: GetStaticPropsContext | GetServerSidePropsContext,
   routeParameterMessages: RouteParameterMessages
 ): LocalizedRouteParameters {
+  const { locale, locales } = getLocalesState(context as LocalesState)
+  const routeParameters = context.params as RouteParameters
   const localizedRouteParameters: LocalizedRouteParameters = {}
-  const actualLocale = getActualLocale(locale, defaultLocale, locales)
-  const actualLocales = getActualLocales(locales, defaultLocale)
 
   Object.entries(routeParameterMessages).forEach(([parameter, messages]) => {
     if (messages instanceof Function) {
-      const key = messages(actualLocale).getRouteParameterKey(routeParameters[parameter]) as string
-      actualLocales.forEach((locale) => {
+      const key = messages(locale).getRouteParameterKey(routeParameters[parameter]) as string
+      locales.forEach((locale) => {
         localizedRouteParameters[locale] = localizedRouteParameters[locale] ?? {}
         localizedRouteParameters[locale][parameter] = slugify(messages(locale).format(key), locale)
       })
     } else {
-      actualLocales.forEach((locale) => {
+      locales.forEach((locale) => {
         localizedRouteParameters[locale] = localizedRouteParameters[locale] ?? {}
         localizedRouteParameters[locale][parameter] = messages
       })

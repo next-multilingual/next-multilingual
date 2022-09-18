@@ -1,13 +1,8 @@
 import { Layout } from '@/components/layout/Layout'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import { MultilingualStaticProps } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { getTitle, useMessages } from 'next-multilingual/messages'
-import {
-  getLocalizedRouteParameters,
-  LocalizedRouteParameters,
-  RouteParameters,
-} from 'next-multilingual/router'
+import { getLocalizedRouteParameters, LocalizedRouteParameters } from 'next-multilingual/router'
 import { useLocalizedUrl } from 'next-multilingual/url'
 import { useRouter } from 'next/router'
 import styles from './[id].module.css'
@@ -117,26 +112,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 /**
  * Pre-compute localized route parameters and return them as props.
  */
-export const getStaticProps: MultilingualStaticProps<
-  GetStaticProps<DynamicRoutesIdTestsProps>
-> = async ({
-  locale,
-  defaultLocale,
-  locales,
-  params,
-  // eslint-disable-next-line @typescript-eslint/require-await
-}) => {
-  const routeParameters = params as RouteParameters
-
-  const localizedRouteParameters = getLocalizedRouteParameters(
-    locale,
-    defaultLocale,
-    locales,
-    routeParameters,
-    {
-      id: routeParameters['id'],
-    }
-  )
+// eslint-disable-next-line @typescript-eslint/require-await
+export const getStaticProps: GetStaticProps<DynamicRoutesIdTestsProps> = async (context) => {
+  const localizedRouteParameters = getLocalizedRouteParameters(context, {
+    id: context.params?.id as string,
+  })
 
   return { props: { localizedRouteParameters } }
 }

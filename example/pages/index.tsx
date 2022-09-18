@@ -2,9 +2,6 @@ import { Layout } from '@/components/layout/Layout'
 import { useFruitsMessages } from '@/messages/fruits/useFruitsMessages'
 import type { GetServerSideProps, NextPage } from 'next'
 import {
-  getActualDefaultLocale,
-  getActualLocales,
-  MultilingualServerSideProps,
   normalizeLocale,
   ResolvedLocaleServerSideProps,
   resolveLocale,
@@ -12,16 +9,16 @@ import {
 } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next-multilingual/router'
+import { useRouter as useNextRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { HelloApiSchema } from './api/hello'
 import styles from './index.module.css'
 
-const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
-  const router = useRouter()
-  const { locales, defaultLocale, basePath, locale } = router
-
-  // Force Next.js to use a locale that was resolved dynamically on the homepage.
+const Homepage: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
+  // Force Next.js to use a locale that was resolved dynamically on the homepage (this must be the first action on the homepage).
   useResolvedLocale(resolvedLocale)
+  const { locale, locales, defaultLocale, basePath } = useRouter()
+  const nextRouter = useNextRouter()
 
   // Load the messages in the correct locale.
   const messages = useMessages()
@@ -106,17 +103,17 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
           <tbody>
             <tr>
               <td>{messages.format('rowDefaultLocale')}</td>
+              <td>{normalizeLocale(nextRouter.defaultLocale as string)}</td>
               <td>{normalizeLocale(defaultLocale)}</td>
-              <td>{normalizeLocale(getActualDefaultLocale(locales, defaultLocale))}</td>
             </tr>
             <tr>
               <td>{messages.format('rowConfiguredLocales')}</td>
-              <td>{locales.map((locale) => normalizeLocale(locale)).join(', ')}</td>
               <td>
-                {getActualLocales(locales, defaultLocale)
+                {(nextRouter.locales as string[])
                   .map((locale) => normalizeLocale(locale))
                   .join(', ')}
               </td>
+              <td>{locales.map((locale) => normalizeLocale(locale)).join(', ')}</td>
             </tr>
           </tbody>
         </table>
@@ -178,11 +175,9 @@ const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   )
 }
 
-export default Home
+export default Homepage
 
-export const getServerSideProps: MultilingualServerSideProps<
-  GetServerSideProps<ResolvedLocaleServerSideProps>
-> = async (
+export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
   context
   // eslint-disable-next-line @typescript-eslint/require-await
 ) => {

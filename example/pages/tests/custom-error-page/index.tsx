@@ -18,16 +18,16 @@ const CustomErrorPageTests: NextPage = () => {
 export default CustomErrorPageTests
 
 export const getServerSideProps: GetServerSideProps = async (
-  nextPageContext
+  context
   // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
   // Simulate an internal server error.
-  if (nextPageContext.query.error === '500') {
+  if (context.query.error === '500') {
     throw new Error('internal server error')
   }
 
   // Simulate a page not found.
-  if (nextPageContext.query.error === '404') {
+  if (context.query.error === '404') {
     return {
       notFound: true,
     }

@@ -1,4 +1,4 @@
-import { getActualLocales, normalizeLocale, setCookieLocale } from 'next-multilingual'
+import { normalizeLocale, setCookieLocale } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { KeyValueObject } from 'next-multilingual/messages'
 import { LocalizedRouteParameters, useRouter } from 'next-multilingual/router'
@@ -16,8 +16,7 @@ type LanguagePickerProps = {
 export const LanguagePicker: React.FC<LanguagePickerProps> = ({
   localizedRouteParameters,
 }): ReactElement => {
-  const { pathname, locale, locales, defaultLocale, query } = useRouter()
-  const actualLocales = getActualLocales(locales, defaultLocale)
+  const { pathname, locale: currentLocale, locales, query } = useRouter()
 
   const [isOver, setIsOver] = useState(false)
 
@@ -29,12 +28,12 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = ({
       onMouseOut={() => setIsOver(false)}
     >
       <button>
-        {(localeStrings as KeyValueObject)[normalizeLocale(locale)]}
+        {(localeStrings as KeyValueObject)[normalizeLocale(currentLocale)]}
         <i></i>
       </button>
       <div className={isOver ? styles.over : ''}>
-        {actualLocales
-          .filter((actualLocale) => actualLocale !== locale)
+        {locales
+          .filter((locale) => locale !== currentLocale)
           .map((locale) => {
             const parameters =
               (localizedRouteParameters && localizedRouteParameters[locale]) ?? query

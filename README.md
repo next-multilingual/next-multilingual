@@ -215,6 +215,65 @@ Regardless of the environment, `next-multilingual` will look for a variable call
 
 Now that everything has been configured, we can focus on using `next-multilingual`!
 
+### Getting the correct locales values
+
+In order to get `next-multilingual` to work as designed, we had to find solutions to 2 problems:
+
+1. `undefined` values: because Next.js support sites without locales, it's native types allows to have `undefined` values, which for our case is more of an annoyance and requires extra casting.
+2. wrong values: because [Next.js does not allow to have locale prefix for the default locale](https://github.com/vercel/next.js/discussions/18419), `next-multilingual` has to create a default locale that we never use. This means that to access the relevant locale information, we cannot rely on Next.js' APIs. We created the following APIs to allow consistent locales values across your application:
+
+#### `useRouter`
+
+This is a simple wrapper on top of Next.js' `useRouter` which both provides the correct locales but also never returns `undefined`.
+
+```ts
+import { NextPage } from 'next'
+import { useRouter } from 'next-multilingual/router'
+
+const Page: NextPage = () => {
+  const router = useRouter()
+  return <>{router.locale}</>
+}
+
+export default Page
+```
+
+#### `getStaticPropsLocales`
+
+```ts
+import { getStaticPropsLocales } from 'next-multilingual'
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  const { locale, locales, defaultLocale } = getStaticPropsLocales(context)
+  // do stuff
+  return { props: {} }
+}
+```
+
+#### `getStaticPathsLocales`
+
+```ts
+import { getStaticPathsLocales } from 'next-multilingual'
+
+export const getStaticPaths: GetStaticProps = async (context) => {
+  const { locales, defaultLocale } = getStaticPathsLocales(context)
+  // do stuff
+  return { props: {} }
+}
+```
+
+#### `getServerSidePropsLocales`
+
+```ts
+import { getServerSidePropsLocales } from 'next-multilingual'
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { locale, locales, defaultLocale } = getServerSidePropsLocales(context)
+  // do stuff
+  return { props: {} }
+}
+```
+
 ### Creating the homepage
 
 > ⚠️ Note that while we recommend using smart locale detection to dynamically render the homepage, this is completely optional. By using advanced configuration with `localeDetection: true`, you will restore the default Next.js behavior without the need of using `getServerSideProps`.
@@ -229,32 +288,24 @@ You can find a full implementation in the [example](./example/pages/index.tsx), 
 ```tsx
 import type { GetServerSideProps, NextPage } from 'next'
 import { ResolvedLocaleServerSideProps, resolveLocale, useResolvedLocale } from 'next-multilingual'
-import { getTitle, useMessages } from 'next-multilingual/messages'
+import { useRouter } from 'next-multilingual/router'
 
-import Layout from '@/layout'
-
-const Home: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
-  // Force Next.js to use a locale that was resolved dynamically on the homepage.
+const Homepage: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
+  // Force Next.js to use a locale that was resolved dynamically on the homepage (this must be the first action on the homepage).
   useResolvedLocale(resolvedLocale)
+  const { locale } = useRouter()
 
-  // Load the messages in the correct locale.
-  const messages = useMessages()
-
-  return (
-    <Layout title={getTitle(messages)}>
-      <h1>{messages.format('headline')}</h1>
-    </Layout>
-  )
+  return <h1>{locale}</h1>
 }
 
-export default Home
+export default Homepage
 
 export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProps> = async (
-  nextPageContext
+  context
 ) => {
   return {
     props: {
-      resolvedLocale: resolveLocale(nextPageContext),
+      resolvedLocale: resolveLocale(context),
     },
   }
 }
@@ -266,7 +317,7 @@ In a nutshell, this is what is happening:
    - Checking if a previously used locale is available in the `next-multilingual`'s locale cookie.
    - Otherwise, use smart locale detection based on the user's browsers settings.
 2. The server then passes the resolved locale back to the client and:
-   - The client overwrites the value on the router to make this dynamic across the application.
+   - The client overwrites the value on the router using `useResolvedLocale` to make this dynamic across the application.
    - The value is also stored back in the cookie to keep the selection consistent
 
 ### Creating messages
@@ -944,13 +995,12 @@ First you need to tell Next.js which predefined paths will be valid by using `ge
 ```tsx
 import { getCitiesMessages } from '@/messages/cities/citiesMessages'
 import { GetStaticPaths } from 'next'
-import { getActualLocales, MultilingualStaticPath } from 'next-multilingual'
 import { slugify } from 'next-multilingual/messages'
 
 export const getStaticPaths: GetStaticPaths = async (context) => {
   const paths: MultilingualStaticPath[] = []
-  const actualLocales = getActualLocales(context.locales, context.defaultLocale)
-  actualLocales.forEach((locale) => {
+  const { locales } = getStaticPathsLocales(context)
+  locales.forEach((locale) => {
     const citiesMessages = getCitiesMessages(locale)
     citiesMessages.getAll().forEach((cityMessage) => {
       paths.push({
@@ -973,22 +1023,10 @@ Then you have to pre-compute the localized route parameters and return them as p
 ```ts
 export type CityPageProps = { localizedRouteParameters: LocalizedRouteParameters }
 
-export const getStaticProps: MultilingualStaticProps<GetStaticProps<CityPageProps>> = async ({
-  locale,
-  defaultLocale,
-  locales,
-  params,
-}) => {
-  const routeParameters = params as RouteParameters
-  const localizedRouteParameters = getLocalizedRouteParameters(
-    locale,
-    defaultLocale,
-    locales,
-    routeParameters,
-    {
-      city: getCitiesMessages,
-    }
-  )
+export const getStaticProps: GetStaticProps<CityPageProps> = async (context) => {
+  const localizedRouteParameters = getLocalizedRouteParameters(context, {
+    city: getCitiesMessages,
+  })
 
   return { props: { localizedRouteParameters } }
 }
@@ -1015,7 +1053,7 @@ export default CityPage
 The only part missing now is the language picker which needs to leverage the localized route parameters:
 
 ```ts
-import { getActualLocales, normalizeLocale, setCookieLocale } from 'next-multilingual'
+import { normalizeLocale, setCookieLocale } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { KeyValueObject } from 'next-multilingual/messages'
 import { LocalizedRouteParameters, useRouter } from 'next-multilingual/router'
@@ -1035,14 +1073,13 @@ type LanguagePickerProps = {
 export const LanguagePicker: React.FC<LanguagePickerProps> = ({
   localizedRouteParameters,
 }): ReactElement => {
-  const { pathname, locale, locales, defaultLocale, query } = useRouter()
-  const actualLocales = getActualLocales(locales, defaultLocale)
+  const { pathname, locale: currentLocale, locales, defaultLocale, query } = useRouter()
 
   return (
     <div id="language-picker">
       <ul>
-        {actualLocales
-          .filter((actualLocale) => actualLocale !== locale)
+        {locales
+          .filter((locale) => locale !== currentLocale)
           .map((locale) => {
             const parameters =
               (localizedRouteParameters && localizedRouteParameters[locale]) ?? query
@@ -1080,47 +1117,6 @@ Check out our fully working examples:
 
 - [Non-localizable dynamic route using a unique identifier](./example/pages/tests/dynamic-routes/identifier/[id].tsx)
 - [Multi-level dynamic routes localized texts](./example/pages/tests/dynamic-routes/text/[city]/index.tsx[id].tsx)
-
-## Other APIs 🧰
-
-### Getting the correct locales values
-
-Because [Next.js does not allow to have locale prefix for the default locale](https://github.com/vercel/next.js/discussions/18419), `next-multilingual` has to create a default locale that we never use. This means that to access the relevant locale information (other than `locale` which we overwrite in the router), we need to use the `getActualLocales` and `getActualDefaultLocale` APIs (usage details available in the TSDoc).
-
-### Non-undefined locale variables
-
-Because Next.js support sites without locales, it's native type allows to have `undefined` values, which for our case is more of an annoyance and requires extra casting. We are providing a few APIs to work around that that are simple "wrappers" meaning, we are still using Next.js' API under the hood:
-
-#### `MultilingualServerSideProps` and `MultilingualStaticProps`:
-
-```ts
-import { MultilingualServerSideProps, MultilingualStaticProps } from 'next-multilingual/messages'
-
-export const getServerSideProps: MultilingualServerSideProps<GetServerSideProps> = async (
-  context
-) => {
-  // `context.locale`, `context.defaultLocale`, `context.locales` are never `undefined`
-}
-
-export const getStaticProps: MultilingualStaticProps<GetStaticProps> = async (context) => {
-  // `context.locale`, `context.defaultLocale`, `context.locales` are never `undefined`
-}
-```
-
-#### `next-multilingual/router`
-
-```ts
-import { NextPage } from 'next'
-import { useRouter } from 'next-multilingual/router'
-
-const Page: NextPage = () => {
-  const router = useRouter()
-  // `router.locale`, `router.defaultLocale`, `router.locales` are never `undefined`
-  return <>{router.locale}</>
-}
-
-export default Page
-```
 
 ## Translation Process 🈺
 

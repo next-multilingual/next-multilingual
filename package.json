@@ -110,10 +110,10 @@
     "cheap-watch": "^1.0.4",
     "colorette": "^2.0.19",
     "intl-messageformat": "^10.1.4",
-    "messages-modules": "^1.1.6",
+    "messages-modules": "^1.1.7",
     "nookies": "^2.5.2",
-    "properties-file": "^2.1.4",
-    "resolve-accept-language": "^1.1.19",
+    "properties-file": "^2.1.5",
+    "resolve-accept-language": "^1.1.20",
     "webpack": "^5.74.0"
   },
   "devDependencies": {

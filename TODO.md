@@ -38,10 +38,11 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- Check if we can override all locales infos and get rid of the `getActual*` APIs.
+- Disable `/mul` pages by adding middleware https://github.com/vercel/next.js/discussions/18419
 
 ### Done ✔️
 
+- Improve overall locales values access with new APIs
 - Add proper support for localized dynamic route parameters.
 - Post ESLint refactoring
 - Implement new ESLint + Prettier rules
@@ -81,7 +82,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Fix nested directory localized URL bug
 - Support Next.js API
 - Bug: intermittent 500 internal server error when using the API
-- Change minimum 3 char key too 1 char
+- Change minimum 3 char key to 1 char
 - Remove erroneous API warning
 - Make separation between `slug` and `title`
 - Make it work with Netlify (looks like their Next.js script does not support our configs)
@@ -114,5 +115,5 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Fix bug when / SSR lang on HTML tag is wrong
 - Understand/tweak/document `MulLink`
 - Understand/tweak/document `MulRouter`
-- Fix console error when loading non-english pages: Warning: Prop `href` did not match. Server: "/fr-ca/%C3%A0-propos-de-nous" Client: "/fr-ca/about-us"s
+- Fix console error when loading non-english pages: Warning: Prop `href` did not match. Server: "/fr-ca/%C3%A0-propos-de-nous" Client: "/fr-ca/about-us"
 - Fix `npm run build`
