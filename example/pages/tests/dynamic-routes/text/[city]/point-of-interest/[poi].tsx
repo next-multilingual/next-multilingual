@@ -5,9 +5,9 @@ import { getMontrealPoiMessages } from '@/messages/cities/points-of-interest/mon
 import { getShanghaiPoiMessages } from '@/messages/cities/points-of-interest/shanghaiPoiMessages'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import {
-  getActualLocales,
+  getStaticPathsLocales,
+  getStaticPropsLocales,
   MultilingualStaticPath,
-  MultilingualStaticProps,
 } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { getMessages, getTitle, Messages, slugify, useMessages } from 'next-multilingual/messages'
@@ -98,8 +98,8 @@ export default DynamicRoutesPoiTests
 // eslint-disable-next-line @typescript-eslint/require-await
 export const getStaticPaths: GetStaticPaths = async (context) => {
   const paths: MultilingualStaticPath[] = []
-  const actualLocales = getActualLocales(context.locales, context.defaultLocale)
-  actualLocales.forEach((locale) => {
+  const { locales } = getStaticPathsLocales(context)
+  locales.forEach((locale) => {
     const citiesMessages = getCitiesMessages(locale)
     citiesMessages.getAll().forEach((cityMessage) => {
       let poisMessages: Messages
@@ -140,19 +140,13 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 /**
  * Pre-compute the localized route parameters and return them as props.
  */
-export const getStaticProps: MultilingualStaticProps<
-  GetStaticProps<DynamicRoutesPoiTestsProps>
-> = async ({
-  locale,
-  defaultLocale,
-  locales,
-  params,
-  // eslint-disable-next-line @typescript-eslint/require-await
-}) => {
-  const routeParameters = params as RouteParameters
+// eslint-disable-next-line @typescript-eslint/require-await
+export const getStaticProps: GetStaticProps<DynamicRoutesPoiTestsProps> = async (context) => {
+  const { locale } = getStaticPropsLocales(context)
+  const routeParameters = context.params as RouteParameters
   let getPoiMessages: typeof getMessages
 
-  const cityKey = getCitiesMessages(locale).getRouteParameterKey(routeParameters['city']) as string
+  const cityKey = getCitiesMessages(locale).getRouteParameterKey(routeParameters.city) as string
 
   switch (cityKey) {
     case 'montreal': {
@@ -168,16 +162,10 @@ export const getStaticProps: MultilingualStaticProps<
     }
   }
 
-  const localizedRouteParameters = getLocalizedRouteParameters(
-    locale,
-    defaultLocale,
-    locales,
-    routeParameters,
-    {
-      city: getCitiesMessages,
-      poi: getPoiMessages,
-    }
-  )
+  const localizedRouteParameters = getLocalizedRouteParameters(context, {
+    city: getCitiesMessages,
+    poi: getPoiMessages,
+  })
 
   return { props: { localizedRouteParameters } }
 }

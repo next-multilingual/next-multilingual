@@ -1,18 +1,18 @@
 import { cyanBright } from 'colorette'
 import type {
-  GetServerSidePropsContext as NextGetServerSidePropsContext,
-  GetStaticPropsContext as NextGetStaticPropsContext,
+  GetServerSidePropsContext,
+  GetStaticPathsContext,
+  GetStaticPropsContext,
   PreviewData,
 } from 'next'
 import * as nextLog from 'next/dist/build/output/log'
 import Document from 'next/document'
-import { useRouter as useNextRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { sep as pathSeparator } from 'node:path'
 import { ParsedUrlQuery } from 'node:querystring'
 import Cookies from 'nookies'
 import { useEffect } from 'react'
 import resolveAcceptLanguage from 'resolve-accept-language'
-import { useRouter } from './router'
 
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
@@ -55,57 +55,117 @@ export function highlightFilePath(filePath: string): string {
 }
 
 /**
- * Locale configuration type, enforcing non-`undefined` values.
+ * The locales state that includes both the current locale and the locales configuration.
  */
-export type LocaleConfig = {
-  /** The current locale from Next.js. */
-  locale: string
-  /** The configured i18n default locale from Next.js. */
-  defaultLocale: string
-  /** The configured i18n locales from Next.js. */
-  locales: string[]
+export type LocalesState = LocalesConfig & {
+  /** The current locale. */
+  readonly locale: string
 }
 
 /**
- * Get the Next.js locale configuration.
- *
- * @param locale - The current locale from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js.
- * @param locales - The configured i18n locales from Next.js.
- *
- * @returns A `LocaleConfig` object that contains no `undefined` values.
+ * The Next.js locales state that includes both the current locale and the locales configuration.
  */
-export function getLocaleConfig(
-  locale?: string,
-  defaultLocale?: string,
-  locales?: string[]
-): LocaleConfig {
+export type NextLocalesState = Partial<LocalesState>
+
+/**
+ * The locale configuration.
+ */
+export type LocalesConfig = {
+  /** The supported locales. */
+  readonly locales: string[]
+  /** The default locale. */
+  readonly defaultLocale: string
+}
+
+/**
+ * The Next.js locales configuration.
+ */
+export type NextLocalesConfig = Partial<LocalesConfig>
+
+/**
+ * Get the Next.js locales state.
+ *
+ * There are edge cases (e.g. Internal Server Errors) where `defaultLocale` and `locale` are `undefined`. This
+ * API will ensure that no locales details are left `undefined`.
+ *
+ * @param rawLocalesState - The "raw" Next.js locales state.
+ *
+ * @returns The Next.js locale state without `undefined` values.
+ */
+export function getNextLocalesState(rawLocalesState: NextLocalesState): LocalesState {
+  const { locale, locales, defaultLocale } = rawLocalesState
   if (locales === undefined) {
     throw new Error('locales must be configured in Next.js')
   }
 
-  // There are edge cases (e.g. Internal Server Errors) where `defaultLocale` and `locale` are `undefined`.
   return {
-    defaultLocale: defaultLocale ?? locales[0],
-    locale: locale ?? locales[1],
+    locale: locale ?? locales[1], // Fallback on the actual default locale.
     locales,
+    defaultLocale: defaultLocale ?? locales[0], // Fallback on the fake default locale.
   }
 }
 
 /**
- * `GetStaticPropsContext` where `locale`, `defaultLocale` and `locales` are never `undefined`.
+ * Get the locales state being used by `next-multilingual`.
+ *
+ * @param nextLocalesState - The state of the locales used by Next.js.
+ *
+ * @returns The locales state being used by `next-multilingual`.
  */
-export type GetStaticPropsContext = NextGetStaticPropsContext & LocaleConfig
+export function getLocalesState(nextLocalesState: LocalesState): LocalesState {
+  return {
+    locale: getActualLocale(nextLocalesState),
+    locales: getActualLocales(nextLocalesState),
+    defaultLocale: getActualDefaultLocale(nextLocalesState),
+  }
+}
 
 /**
- * This type is only use to derive the new `GetStaticProps` that will use a `GetStaticPropsContext`
- * where `locale`, `defaultLocale` and `locales` are never `undefined`.
+ * Get the locales config being used by `next-multilingual`.
+ *
+ * @param nextLocalesConfig - The Next.js locales configuration.
+ *
+ * @returns The locales config being used by `next-multilingual`.
  */
-export type MultilingualStaticProps<T> = T extends (
-  context: infer Context extends NextGetStaticPropsContext
-) => infer Return
-  ? (context: GetStaticPropsContext) => Return
-  : never
+export function getLocalesConfig(nextLocalesConfig: LocalesConfig): LocalesConfig {
+  return {
+    locales: getActualLocales(nextLocalesConfig),
+    defaultLocale: getActualDefaultLocale(nextLocalesConfig),
+  }
+}
+
+/**
+ * Get the locales state being used by `next-multilingual`.
+ *
+ * @param context - The `GetStaticProps` context containing the "raw" Next.js locales.
+ *
+ * @returns The actual locales state being used by `next-multilingual`.
+ */
+export function getStaticPropsLocales(context: GetStaticPropsContext): LocalesState {
+  return getLocalesState(context as LocalesState)
+}
+
+/**
+ * Get the locales config being used by `next-multilingual`.
+ *
+ * @param context - The `GetStaticPaths` context containing the "raw" Next.js locales.
+ *
+ * @returns The actual locales config being used by `next-multilingual`.
+ */
+export function getStaticPathsLocales(context: GetStaticPathsContext): LocalesConfig {
+  return getLocalesConfig(context as LocalesConfig)
+}
+
+/**
+ * Get the locales state being used by `next-multilingual`.
+ *
+ * @param context - The `GetServerSideProps` context containing the "raw" Next.js locales.
+ *
+ * @returns The actual locales state being used by `next-multilingual`.
+ */
+export function getServerSidePropsLocales(context: GetServerSidePropsContext): LocalesState {
+  return getLocalesState(context as LocalesState)
+}
 
 /**
  * Multilingual static path objects that can be used in `getStaticPaths`.
@@ -120,43 +180,25 @@ export type MultilingualStaticPath = {
 }
 
 /**
- * `GetServerSidePropsContext` where `locale`, `defaultLocale` and `locales` are never `undefined`.
- */
-export type GetServerSidePropsContext = NextGetServerSidePropsContext & LocaleConfig
-
-/**
- * This type is only use to derive the new `GetServerSideProps` that will use a `GetServerSidePropsContext`
- * where `locale`, `defaultLocale` and `locales` are never `undefined`.
- */
-export type MultilingualServerSideProps<T> = T extends (
-  context: infer Context extends NextGetServerSidePropsContext
-) => infer Return
-  ? (context: GetServerSidePropsContext) => Return
-  : never
-
-/**
  * Dynamically resolves the locale on `/`.
  *
  * @param context - A Next.js `GetServerSidePropsContext` object.
  *
  * @returns The best possible locale for a given user.
  */
-export function resolveLocale(context: NextGetServerSidePropsContext): string {
-  const { req, locale, locales, defaultLocale } = context
-
-  const actualLocales = getActualLocales(locales, defaultLocale)
-  const actualDefaultLocale = getActualDefaultLocale(locales, defaultLocale)
-  const cookieLocale = getCookieLocale(context, actualLocales)
-  let resolvedLocale = getActualLocale(locale, defaultLocale, locales)
+export function resolveLocale(context: GetServerSidePropsContext): string {
+  const { locale, locales, defaultLocale } = getServerSidePropsLocales(context)
+  const cookieLocale = getCookieLocale(context, locales)
+  let resolvedLocale = locale
 
   // When Next.js tries to use the default locale, try to find a better one.
-  if (locale === defaultLocale) {
+  if (context.locale === context.defaultLocale) {
     resolvedLocale =
       cookieLocale ??
       getPreferredLocale(
-        req.headers['accept-language'],
-        actualLocales,
-        actualDefaultLocale
+        context.req.headers['accept-language'],
+        locales,
+        defaultLocale
       ).toLowerCase()
   }
   return resolvedLocale
@@ -172,7 +214,18 @@ export function resolveLocale(context: NextGetServerSidePropsContext): string {
  * @param localeDetection - By setting this parameter to `false` the locale will not be store in the `next-multilingual` cookie.
  */
 export function useActualLocale(localeDetection = true): void {
-  const router = useRouter() // Normalize the Next.js router using our own `useRouter` wrapper.
+  /**
+   * Note that because some of the Next.js router properties are "readonly", we can only inject the `locale` property while
+   * slightly modifying the other properties to avoid `undefined` without causing React hydration error. This is also why we
+   * have our own `useRouter` wrapper which has for main goal to provide the correct locales state.
+   */
+  const router = useRouter()
+  const nextLocalesState = getNextLocalesState(router)
+
+  // Automatically overwrites the locale if it's using the default locale.
+  router.locale = getLocalesState(nextLocalesState).locale
+  // Leave the default locale intact (without `undefined`) to avoid hydration issue while being to use other wrapper APIs.
+  router.defaultLocale = nextLocalesState.defaultLocale
 
   useEffect(() => {
     if (localeDetection) {
@@ -189,12 +242,11 @@ export function useActualLocale(localeDetection = true): void {
  * This will inject the correct locale into Next.js' router so that both SSR and client side stay in sync when using
  * a dynamic locale on the homepage.
  *
- * @param locale - The locale that has been resolved by the server.
+ * @param resolvedLocale - The locale that has been resolved by the server.
  */
-export function useResolvedLocale(locale: string): void {
-  const router = useNextRouter()
-  router.locale = locale
-  setCookieLocale(locale)
+export function useResolvedLocale(resolvedLocale: string): void {
+  useRouter().locale = resolvedLocale
+  setCookieLocale(resolvedLocale)
 }
 
 /**
@@ -205,76 +257,63 @@ export function useResolvedLocale(locale: string): void {
  * @returns The normalized locale value of the current page.
  */
 export function getHtmlLang(document: Document): string {
-  const { locale, locales, defaultLocale, props } = document.props.__NEXT_DATA__
-
-  const pagePropsActualLocale: string = (props as ResolvedLocaleNextDataProps)?.pageProps
-    ?.resolvedLocale
-  return normalizeLocale(pagePropsActualLocale ?? getActualLocale(locale, defaultLocale, locales))
+  // Try to get the resolved locale if dynamic resolution is enabled.
+  const resolvedLocale = (document.props.__NEXT_DATA__.props as ResolvedLocaleNextDataProps)
+    ?.pageProps?.resolvedLocale as string | undefined
+  // The actual locale currently used by Next.js.
+  const { locale } = getLocalesState(getNextLocalesState(document.props.__NEXT_DATA__))
+  return normalizeLocale(resolvedLocale ?? locale)
 }
 
 /**
- * Get the actual locale based on the current locale from Next.js.
+ * Get locale used by `next-multilingual`.
  *
  * To get a dynamic locale resolution on `/` without redirection, we need to add a "multilingual" locale as the
  * default locale so that we can identify when the homepage is requested without a locale. With this setup it
- * also means that we can no longer easily know what is the current locale. This function is meant to return the
- * actual current of locale by replacing the "multilingual" default locale by the actual default locale.
+ * also means that we can no longer use Next.js' `locale`. This function is meant to return the locale
+ * used by `next-multilingual` by removing the "fake" default locale.
  *
- * @param locale - The current locale from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js.
- * @param locales - The configured i18n locales from Next.js.
+ * @param nextLocalesState - The state of the locales used by Next.js.
  *
- * @returns The list of actual locales.
+ * @returns The locales used by `next-multilingual`.
  */
-export function getActualLocale(
-  locale?: string,
-  defaultLocale?: string,
-  locales?: string[]
-): string {
-  const localeConfig = getLocaleConfig(locale, defaultLocale, locales)
-  const actualDefaultLocale = getActualDefaultLocale(
-    localeConfig.locales,
-    localeConfig.defaultLocale
-  )
-  return localeConfig.locale === localeConfig.defaultLocale
-    ? actualDefaultLocale
-    : localeConfig.locale
+export function getActualLocale(nextLocalesState: LocalesState): string {
+  return nextLocalesState.locale === nextLocalesState.defaultLocale
+    ? getActualDefaultLocale(nextLocalesState)
+    : nextLocalesState.locale
 }
 
 /**
- * Get the actual locales based on the Next.js i18n locale configuration.
+ * Get the locales used by `next-multilingual`.
  *
  * To get a dynamic locale resolution on `/` without redirection, we need to add a "multilingual" locale as the
  * default locale so that we can identify when the homepage is requested without a locale. With this setup it
- * also means that we can no longer use `locales`. This function is meant to return the actual list of locale
- * by removing the "multilingual" default locale.
+ * also means that we can no longer use Next.js' `locales`. This function is meant to return the list of locale
+ * used by `next-multilingual` by removing the "fake" default locale.
  *
- * @param locales - The configured i18n locales from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js.
+ * @param nextLocalesConfig - The Next.js locales configuration.
  *
- * @returns The list of actual locales.
+ * @returns The list of locales used by `next-multilingual`.
  */
-export function getActualLocales(locales?: string[], defaultLocale?: string): string[] {
-  const localeConfig = getLocaleConfig(undefined, defaultLocale, locales)
-  return localeConfig.locales.filter((locale) => locale !== defaultLocale)
+export function getActualLocales(nextLocalesConfig: LocalesConfig): string[] {
+  return nextLocalesConfig.locales.filter((locale) => locale !== nextLocalesConfig.defaultLocale)
 }
 
 /**
- * Get the actual default locale based on the Next.js i18n locale configuration.
+ * Get the default locale used by `next-multilingual`.
  *
  * To get a dynamic locale resolution on `/` without redirection, we need to add a "multilingual" locale as the
  * default locale so that we can identify when the homepage is requested without a locale. With this setup it
- * also means that we can no longer use `defaultLocale`. This function is meant to return the actual default
- * locale (excluding the "multilingual" default locale). By convention (and for simplicity), the first
- * `actualLocales` will be used as the actual default locale.
+ * also means that we can no longer use Next.js' `defaultLocale`. This function is meant to return the default locale
+ * used by `next-multilingual` by removing the "fake" default locale. By convention (and for simplicity), the
+ * first `locale` provided in the configuration is used as the default locale.
  *
- * @param locales - The configured i18n locales from Next.js.
- * @param defaultLocale - The configured i18n default locale from Next.js.
+ * @param nextLocalesConfig - The Next.js locales configuration.
  *
- * @returns The actual default locale.
+ * @returns The default locale used by `next-multilingual`.
  */
-export function getActualDefaultLocale(locales?: string[], defaultLocale?: string): string {
-  return getActualLocales(locales, defaultLocale).shift() as string
+export function getActualDefaultLocale(nextLocalesConfig: LocalesConfig): string {
+  return getActualLocales(nextLocalesConfig).shift() as string
 }
 
 /**
@@ -318,7 +357,7 @@ export type ResolvedLocaleServerSideProps = {
 }
 
 /**
- * Generic type when using trying to access `pageProps` to get the locale during dynamic detection.
+ * This is use to type `document.props.__NEXT_DATA__.props` to get the locale during dynamic detection.
  */
 export type ResolvedLocaleNextDataProps = {
   pageProps: ResolvedLocaleServerSideProps
@@ -377,7 +416,7 @@ export function setCookieLocale(locale?: string): void {
  * @returns The locale that was saved to the locale cookie.
  */
 export function getCookieLocale(
-  serverSidePropsContext: NextGetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
+  serverSidePropsContext: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
   actualLocales: string[]
 ): string | undefined {
   const cookies = Cookies.get(serverSidePropsContext)

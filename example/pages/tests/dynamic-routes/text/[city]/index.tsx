@@ -1,17 +1,12 @@
 import { Layout } from '@/components/layout/Layout'
 import { getCitiesMessages } from '@/messages/cities/citiesMessages'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import {
-  getActualLocales,
-  MultilingualStaticPath,
-  MultilingualStaticProps,
-} from 'next-multilingual'
+import { getStaticPathsLocales, MultilingualStaticPath } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
 import {
   getLocalizedRouteParameters,
   LocalizedRouteParameters,
-  RouteParameters,
   useRouter,
 } from 'next-multilingual/router'
 import { useLocalizedUrl } from 'next-multilingual/url'
@@ -96,8 +91,8 @@ export default DynamicRoutesCityTests
 // eslint-disable-next-line @typescript-eslint/require-await
 export const getStaticPaths: GetStaticPaths = async (context) => {
   const paths: MultilingualStaticPath[] = []
-  const actualLocales = getActualLocales(context.locales, context.defaultLocale)
-  actualLocales.forEach((locale) => {
+  const { locales } = getStaticPathsLocales(context)
+  locales.forEach((locale) => {
     const citiesMessages = getCitiesMessages(locale)
     citiesMessages.getAll().forEach((cityMessage) => {
       paths.push({
@@ -118,25 +113,12 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 /**
  * Pre-compute the localized route parameters and return them as props.
  */
-export const getStaticProps: MultilingualStaticProps<
-  GetStaticProps<DynamicRoutesCityTestsProps>
-> = async ({
-  locale,
-  defaultLocale,
-  locales,
-  params,
+export const getStaticProps: GetStaticProps<DynamicRoutesCityTestsProps> =
   // eslint-disable-next-line @typescript-eslint/require-await
-}) => {
-  const routeParameters = params as RouteParameters
-  const localizedRouteParameters = getLocalizedRouteParameters(
-    locale,
-    defaultLocale,
-    locales,
-    routeParameters,
-    {
+  async (context) => {
+    const localizedRouteParameters = getLocalizedRouteParameters(context, {
       city: getCitiesMessages,
-    }
-  )
+    })
 
-  return { props: { localizedRouteParameters } }
-}
+    return { props: { localizedRouteParameters } }
+  }
