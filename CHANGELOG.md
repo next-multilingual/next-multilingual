@@ -1,20 +1,16 @@
-
-
 # [2.0.0](https://github.com/Avansai/next-multilingual/compare/1.5.0...2.0.0) (2022-09-18)
-
 
 ### Features
 
-* new simplified APIs to access locale values ([ac2dcb3](https://github.com/Avansai/next-multilingual/commit/ac2dcb3f69674f11e1fdcca3793874ac4cd26be4))
-
+- simplified APIs to access locale values ([ac2dcb3](https://github.com/Avansai/next-multilingual/commit/ac2dcb3f69674f11e1fdcca3793874ac4cd26be4))
 
 ### BREAKING CHANGES
 
-* - Replaced the first few `getLocalizedRouteParameters` arguments to take directly the `getStaticProps` or `getServerSideProps` contexts.
+- replaced the first few `getLocalizedRouteParameters` arguments to take directly the `getStaticProps` or `getServerSideProps` contexts.
 - `useRouter` will now return the locales used by `next-multilingual` instead of those used by Next.js:
-	- `getActualLocale`, `getActualLocales` and `getActualDefaultLocale` should not longer be required
-- Replacing `MultilingualStaticProps` by `getStaticPropsLocales`
-- Replacing `MultilingualServerSideProps` by `getServerSidePropsLocales`
+  - `getActualLocale`, `getActualLocales` and `getActualDefaultLocale` should not longer be required
+- replacing `MultilingualStaticProps` by `getStaticPropsLocales`
+- replacing `MultilingualServerSideProps` by `getServerSidePropsLocales`
 
 # [1.5.0](https://github.com/Avansai/next-multilingual/compare/1.4.2...1.5.0) (2022-09-15)
 
@@ -25,9 +21,8 @@
 
 ### BREAKING CHANGES
 
-- - Move `useRouter` to `next-multilingual/router`
-
-* Dynamic routes no longer works without using `getLocalizedRouteParameters`
+- Move `useRouter` to `next-multilingual/router`
+- Dynamic routes no longer works without using `getLocalizedRouteParameters`
 
 ## [1.4.2](https://github.com/Avansai/next-multilingual/compare/1.4.1...1.4.2) (2022-08-23)
 
