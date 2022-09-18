@@ -181,13 +181,13 @@ export function getLocalizedRouteParameters(
   context: GetStaticPropsContext | GetServerSidePropsContext,
   routeParameterMessages: RouteParameterMessages
 ): LocalizedRouteParameters {
-  const { locale, locales } = getLocalesState(context as LocalesState)
+  const { locale: currentLocale, locales } = getLocalesState(context as LocalesState)
   const routeParameters = context.params as RouteParameters
   const localizedRouteParameters: LocalizedRouteParameters = {}
 
   Object.entries(routeParameterMessages).forEach(([parameter, messages]) => {
     if (messages instanceof Function) {
-      const key = messages(locale).getRouteParameterKey(routeParameters[parameter]) as string
+      const key = messages(currentLocale).getRouteParameterKey(routeParameters[parameter]) as string
       locales.forEach((locale) => {
         localizedRouteParameters[locale] = localizedRouteParameters[locale] ?? {}
         localizedRouteParameters[locale][parameter] = slugify(messages(locale).format(key), locale)

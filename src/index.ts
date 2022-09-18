@@ -242,12 +242,11 @@ export function useActualLocale(localeDetection = true): void {
  * This will inject the correct locale into Next.js' router so that both SSR and client side stay in sync when using
  * a dynamic locale on the homepage.
  *
- * @param locale - The locale that has been resolved by the server.
+ * @param resolvedLocale - The locale that has been resolved by the server.
  */
-export function useResolvedLocale(locale: string): void {
-  const router = useRouter()
-  router.locale = locale
-  setCookieLocale(locale)
+export function useResolvedLocale(resolvedLocale: string): void {
+  useRouter().locale = resolvedLocale
+  setCookieLocale(resolvedLocale)
 }
 
 /**
