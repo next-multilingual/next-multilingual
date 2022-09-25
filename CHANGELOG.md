@@ -1,3 +1,7 @@
+
+
+## [2.0.1](https://github.com/Avansai/next-multilingual/compare/2.0.0...2.0.1) (2022-09-25)
+
 # [2.0.0](https://github.com/Avansai/next-multilingual/compare/1.5.0...2.0.0) (2022-09-18)
 
 ### Features
