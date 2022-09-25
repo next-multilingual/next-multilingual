@@ -220,7 +220,9 @@ Now that everything has been configured, we can focus on using `next-multilingua
 In order to get `next-multilingual` to work as designed, we had to find solutions to 2 problems:
 
 1. `undefined` values: because Next.js support sites without locales, it's native types allows to have `undefined` values, which for our case is more of an annoyance and requires extra casting.
-2. wrong values: because [Next.js does not allow to have locale prefix for the default locale](https://github.com/vercel/next.js/discussions/18419), `next-multilingual` has to create a default locale that we never use. This means that to access the relevant locale information, we cannot rely on Next.js' APIs. We created the following APIs to allow consistent locales values across your application:
+2. wrong values: because [Next.js does not allow to have locale prefix for the default locale](https://github.com/vercel/next.js/discussions/18419), `next-multilingual` has to create a default locale that we never use. This means that to access the relevant locale information, we cannot rely on Next.js' APIs.
+
+We created the following APIs to allow consistent locales values across your application:
 
 #### `useRouter`
 
