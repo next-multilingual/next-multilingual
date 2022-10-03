@@ -6,7 +6,8 @@
     "release": true
   },
   "hooks": {
-    "before:init": ["npm run build-to-release"]
+    "before:init": ["npm run build-to-release"],
+    "after:conventional-changelog:release": ["npx prettier --write ./CHANGELOG.md"]
   },
   "plugins": {
     "@release-it/conventional-changelog": {

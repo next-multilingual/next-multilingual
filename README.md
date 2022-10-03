@@ -152,13 +152,15 @@ If you do not configure the plugin you will get an error when trying to use `use
 We need to create a [custom `App`](https://nextjs.org/docs/advanced-features/custom-app) by adding [`_app.tsx`](./example/pages/_app.tsx) in the `pages` directory:
 
 ```ts
-import type { AppProps } from 'next/app'
 import { useActualLocale } from 'next-multilingual'
+import type { AppProps } from 'next/app'
 
-export default function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+const ExampleApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   useActualLocale() // Forces Next.js to use the actual (proper) locale.
   return <Component {...pageProps} />
 }
+
+export default ExampleApp
 ```
 
 This basically does two things, as mentioned in the comments:
