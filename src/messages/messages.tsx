@@ -57,6 +57,15 @@ export class Messages {
       return ''
     }
 
+    if (!key) {
+      log.warn(
+        `trying to call ${highlight('format')} with an empty key identifier in ${highlightFilePath(
+          this.sourceFilePath
+        )}`
+      )
+      return ''
+    }
+
     const message = this.messages[this.messagesIndex[key]]
 
     if (message === undefined) {
@@ -82,6 +91,15 @@ export class Messages {
   public formatJsx(key: string, values: MixedValues): JSX.Element {
     if (this.messages.length === 0) {
       // No need to log the error since it was caught when calling `useMessage()`.
+      return <></>
+    }
+
+    if (!key) {
+      log.warn(
+        `trying to call ${highlight(
+          'formatJsx'
+        )} with an empty key identifier in ${highlightFilePath(this.sourceFilePath)}`
+      )
       return <></>
     }
 
