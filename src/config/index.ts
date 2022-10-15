@@ -769,7 +769,7 @@ export function webpackConfigurationHandler(
 export function getConfig(
   applicationId: string,
   locales: string[],
-  options?: NextConfig | ((phase: string, defaultConfig: NextConfig) => void)
+  options?: (NextConfig & { debug?: true }) | ((phase: string, defaultConfig: NextConfig) => void)
 ): NextConfig {
   if (options instanceof Function) {
     throw new Error('Function config is not supported. Please use the `Config` object instead')
@@ -787,8 +787,14 @@ export function getConfig(
     })
   }
 
-  const nextConfig: NextConfig = options ?? {}
-  const debug = typeof options?.debug !== 'undefined' ? true : false
+  const nextConfig = { ...options } ?? {} // Clone options or create an empty config.
+  const debug = ((): boolean => {
+    if (nextConfig.debug) {
+      delete nextConfig.debug // Delete this from the config since it's not a valid option.
+      return true
+    }
+    return false
+  })()
   const config = new Config(applicationId, locales, debug)
 
   // Sets lowercase locales used as URL prefixes, including the default 'mul' locale used for language detection.
