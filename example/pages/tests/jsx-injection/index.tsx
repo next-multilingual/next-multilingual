@@ -34,11 +34,7 @@ const JsxInjectionTests: NextPage = () => {
         {/* Base test: two child elements inside another element */}
         <div id="baseTest2">
           {messages.formatJsx('baseTest2', {
-            link: (
-              <Link href="/contact-us">
-                <a></a>
-              </Link>
-            ),
+            link: <Link href="/contact-us"></Link>,
             strong: <strong></strong>,
             i: <i></i>,
           })}
@@ -84,28 +80,26 @@ const JsxInjectionTests: NextPage = () => {
           {messages.formatJsx('styleAndEvents', {
             strong: <strong className={styles.strong}></strong>,
             link: (
-              <Link href="/contact-us">
-                <a
-                  className={styles.link}
-                  onClick={(event) => {
-                    event.preventDefault()
-                    if (typeof window !== 'undefined') {
-                      if (typeof window['_styleAndEventsClickCount'] === 'undefined') {
-                        window['_styleAndEventsClickCount'] = 1
-                      } else {
-                        window['_styleAndEventsClickCount']++
-                      }
-                      console.log(
-                        messages.format('styleAndEventsConsole', {
-                          clickCount: window['_styleAndEventsClickCount'],
-                        })
-                      )
+              <Link
+                href="/contact-us"
+                className={styles.link}
+                onClick={(event: MouseEvent) => {
+                  event.preventDefault()
+                  if (typeof window !== 'undefined') {
+                    if (typeof window['_styleAndEventsClickCount'] === 'undefined') {
+                      window['_styleAndEventsClickCount'] = 1
+                    } else {
+                      window['_styleAndEventsClickCount']++
                     }
-
-                    return false
-                  }}
-                ></a>
-              </Link>
+                    console.log(
+                      messages.format('styleAndEventsConsole', {
+                        clickCount: window['_styleAndEventsClickCount'],
+                      })
+                    )
+                  }
+                  return false
+                }}
+              ></Link>
             ),
           })}
         </div>

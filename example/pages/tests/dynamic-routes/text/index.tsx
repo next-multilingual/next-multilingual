@@ -51,8 +51,8 @@ const DynamicRoutesTextTests: NextPage = () => {
       <p>{messages.format('2links')}</p>
       <ul>
         <li>
-          <Link href={`${pathname}/${cityParameter}`}>
-            <a id="link-with-parameter">{messages.format('link1Text')}</a>
+          <Link id="link-with-parameter" href={`${pathname}/${cityParameter}`}>
+            {messages.format('link1Text')}
           </Link>
         </li>
         <li>

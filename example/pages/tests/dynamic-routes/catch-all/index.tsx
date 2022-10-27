@@ -40,15 +40,15 @@ const CatchAllDynamicRoutesTests: NextPage = () => {
       <p>{messages.format('details')}</p>
       <ul>
         <li>
-          <Link href={categoryUrlPath}>
-            <a id="category-link">{messages.format('categoryLinkLabel')}</a>
+          <Link id="category-link" href={categoryUrlPath}>
+            {messages.format('categoryLinkLabel')}
           </Link>
           <input type="hidden" id="category-hidden-input" value={localizedCategoryUrl} />
         </li>
         <li>
           <strong>{messages.format('countryLinkLabel')}</strong>&nbsp;
-          <Link href={countryUrlPath}>
-            <a id="country-link">{firstCountry}</a>
+          <Link href={countryUrlPath} id="country-link">
+            {firstCountry}
           </Link>
           <input type="hidden" id="country-hidden-input" value={localizedCountryUrl} />
         </li>

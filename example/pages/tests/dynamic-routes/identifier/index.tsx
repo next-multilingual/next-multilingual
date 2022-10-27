@@ -39,8 +39,8 @@ const DynamicRoutesIdentifierTests: NextPage = () => {
       </div>
       <ul>
         <li>
-          <Link href={`${asPath}/${parameter}`}>
-            <a id="link-with-parameter">{messages.format('link1Text')}</a>
+          <Link id="link-with-parameter" href={`${asPath}/${parameter}`}>
+            {messages.format('link1Text')}
           </Link>{' '}
         </li>
         <li>

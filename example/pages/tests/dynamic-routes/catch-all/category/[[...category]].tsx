@@ -46,11 +46,12 @@ const CategoryCatchAllTests: NextPage<CategoryCatchAllTestsProps> = ({
       <p>
         <strong>{messages.format('categoryLinkLabel')}</strong>&nbsp;
         <Link
+          id="link-with-2-parameters"
           href={`${hydrateRouteParameters(pathname, {
             category: [slugify(firstCategory, locale), slugify(secondCategory, locale)],
           })}`}
         >
-          <a id="link-with-2-parameters">{`${firstCategory} / ${secondCategory}`}</a>
+          {`${firstCategory} / ${secondCategory}`}
         </Link>
       </p>
       <div id="go-back">

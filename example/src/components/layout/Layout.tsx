@@ -41,16 +41,10 @@ export const Layout: React.FC<LayoutProps> = ({
         </div>
         <LanguageSwitcher localizedRouteParameters={localizedRouteParameters} />
         <nav className={styles.nav}>
-          <Link href="/">
-            <a>{messages.format('home')}</a>
-          </Link>
+          <Link href="/">{messages.format('home')}</Link>
           {/* The link below uses a trailing slash by design to test that the behavior is the same as Next.js (no impact). */}
-          <Link href="/about-us">
-            <a>{messages.format('aboutUs')}</a>
-          </Link>
-          <Link href="/contact-us">
-            <a>{messages.format('contactUs')}</a>
-          </Link>
+          <Link href="/about-us">{messages.format('aboutUs')}</Link>
+          <Link href="/contact-us">{messages.format('contactUs')}</Link>
         </nav>
       </header>
       <main className={styles.main}>{children}</main>

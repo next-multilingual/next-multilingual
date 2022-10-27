@@ -9,9 +9,7 @@ const Error404: NextPage = () => {
   return (
     <Layout title={title}>
       <h1>{title}</h1>
-      <Link href="/">
-        <a>{messages.format('goBack')}</a>
-      </Link>
+      <Link href="/">{messages.format('goBack')}</Link>
     </Layout>
   )
 }

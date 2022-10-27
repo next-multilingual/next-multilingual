@@ -42,16 +42,13 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
               href={href}
               locale={locale}
               localizedRouteParameters={localizedRouteParameters}
+              data-cy="language-switcher-link"
+              onClick={() => {
+                setCookieLocale(locale)
+              }}
+              lang={normalizeLocale(locale)}
             >
-              <a
-                data-cy="language-switcher-link"
-                onClick={() => {
-                  setCookieLocale(locale)
-                }}
-                lang={normalizeLocale(locale)}
-              >
-                {(localeStrings as KeyValueObject)[normalizeLocale(locale)]}
-              </a>
+              {(localeStrings as KeyValueObject)[normalizeLocale(locale)]}
             </Link>
           ))}
       </div>

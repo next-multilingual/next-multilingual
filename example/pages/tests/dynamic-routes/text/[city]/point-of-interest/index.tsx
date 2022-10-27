@@ -123,8 +123,8 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
       <p>{messages.format('2links')}</p>
       <ul>
         <li>
-          <Link href={`${asPath}/${poiParameter}`}>
-            <a id="link-with-parameter">{messages.format('link1Text')}</a>
+          <Link id="link-with-parameter" href={`${asPath}/${poiParameter}`}>
+            {messages.format('link1Text')}
           </Link>
         </li>
         <li>

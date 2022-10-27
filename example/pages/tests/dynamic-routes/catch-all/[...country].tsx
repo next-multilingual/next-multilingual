@@ -42,11 +42,12 @@ const CountryCatchAllTests: NextPage<CountryCatchAllTestsProps> = ({
       <p>
         <strong>{messages.format('countryLinkLabel')}</strong>&nbsp;
         <Link
+          id="link-with-2-parameters"
           href={`${hydrateRouteParameters(pathname, {
             country: [slugify(firstCategory, locale), slugify(secondCategory, locale)],
           })}`}
         >
-          <a id="link-with-2-parameters">{`${firstCategory} / ${secondCategory}`}</a>
+          {`${firstCategory} / ${secondCategory}`}
         </Link>
       </p>
       <div id="go-back">
