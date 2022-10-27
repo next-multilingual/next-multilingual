@@ -6,12 +6,11 @@
 
 ### BREAKING CHANGES
 
-- - The configuration now requires a new `defaultLocale` parameter (it used to be implicit).
-
-* `getHtmlLang` now takes a `DocumentProps` object as an argument to better align with functional components.
-* `getLocalizedRouteParameters` takes new parameter: `import.meta.url`
-  `<Link>`, `useLocalizedUrl`, `getLocalizedUrl` no longer allow `UrlObject` to be passed in argument. Only strings are supported to simplify the API types. `UrlObject.href` can easily be used instead of passing the object directly. - `useRouter().query` is no longer used to pass dynamic route parameters. Full URLs should be provided instead.
-* `useLocalizedUrl` and `getLocalizedUrl` have a new 3rd parameter: `localizedRouteParameters` - meaning the existing parameters will shift by 1 position.
+- The configuration now requires a new `defaultLocale` parameter (it used to be implicit).
+- `getHtmlLang` now takes a `DocumentProps` object as an argument to better align with functional components.
+- `getLocalizedRouteParameters` takes new parameter: `import.meta.url`
+  - `<Link>`, `useLocalizedUrl`, `getLocalizedUrl` no longer allow `UrlObject` to be passed in argument. Only strings are supported to simplify the API types. `UrlObject.href` can easily be used instead of passing the object directly. - `useRouter().query` is no longer used to pass dynamic route parameters. Full URLs should be provided instead.
+- `useLocalizedUrl` and `getLocalizedUrl` have a new 3rd parameter: `localizedRouteParameters` - meaning the existing parameters will shift by 1 position.
 
 ## [2.0.4](https://github.com/Avansai/next-multilingual/compare/2.0.3...2.0.4) (2022-10-13)
 
