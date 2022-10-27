@@ -1,11 +1,11 @@
 import { ClientBuildManifest } from 'next/dist/build/webpack/plugins/build-manifest-plugin'
 import { Rewrite } from 'next/dist/lib/load-custom-routes'
-import type { Rewrites } from '../types'
+import type { Rewrites } from '../../types'
 
 // Throw a clear error is this is included by mistake on the server side.
 if (typeof window === 'undefined') {
   throw new Error(
-    '`getRewrites` must only be used on the client side, please use `getSsrRewrites` instead'
+    '`getRewrites` must only be used on the client side, please use `server/getRewrites` instead'
   )
 }
 

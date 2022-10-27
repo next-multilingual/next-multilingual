@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { isLocale } from 'next-multilingual'
 import { getMessages } from 'next-multilingual/messages'
-import { getLocalizedUrl } from 'next-multilingual/url/ssr'
+import { getLocalizedUrl } from 'next-multilingual/url'
 
 /**
  * Example API schema.
@@ -40,7 +40,7 @@ export default async function handler(
   await delay(2000)
   response.status(200).json({
     message: messages.format('message', {
-      contactUsUrl: getLocalizedUrl('/contact-us', locale, true),
+      contactUsUrl: getLocalizedUrl('/contact-us', locale, undefined, true),
     }),
   })
 }

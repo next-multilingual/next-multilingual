@@ -1,29 +1,20 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes'
-import { resolve } from 'node:path'
-import { UrlObject } from 'node:url'
-import { highlight, log } from '../'
-import {
-  getParametersFromPath,
-  hydrateRouteParameters,
-  pathContainsParameters,
-  rewriteToRouteParameters,
-  RouteParameters,
-  routeToRewriteParameters,
-  stripBasePath,
-} from '../router'
-import { Url } from '../types'
+import { normalize } from 'node:path'
+import { highlight, log } from '..'
+import { LocalizedRouteParameters, routeToRewriteParameters } from '../router'
 import { getOrigin } from './get-origin'
-import { getRewritesIndex } from './get-rewrites-index'
+import { normalizePathSlashes, removeTrailingSlash } from './paths-utils'
+import { getLocalizedDynamicUrl, getLocalizedStaticUrl } from './rewrites-urls'
 
 /**
  * Get the localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  *
  * @param rewrites - An array of Next.js rewrite objects.
- * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
- * a `UrlObject`.
+ * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`).
  * @param locale - The locale of the localized URL.
- * @param absolute - Returns the absolute URL, including the protocol and domain (e.g., https://example.com/en-us/contact-us).
  * @param basePath - A path prefix for the Next.js application.
+ * @param localizedRouteParameters - Localized route parameters, if the page is using a dynamic route.
+ * @param absolute - Returns the absolute URL, including the protocol and domain (e.g., https://example.com/en-us/contact-us).
  * @param includeBasePath - Include Next.js' `basePath` in the returned URL. By default Next.js does not require it, but
  * if `absolute` is used, this will be forced to `true`.
  *
@@ -31,91 +22,112 @@ import { getRewritesIndex } from './get-rewrites-index'
  */
 export function getLocalizedUrlFromRewrites(
   rewrites: Rewrite[],
-  url: Url,
-  locale: string | undefined,
-  absolute = false,
+  url: string,
+  locale: string,
   basePath: string,
+  localizedRouteParameters?: LocalizedRouteParameters,
+  absolute = false,
   includeBasePath = false
 ): string {
-  let urlPath = resolve(
-    ((url as UrlObject).pathname !== undefined ? (url as UrlObject).pathname : url) as string
-  )
-  let urlFragment = ''
-  const urlComponents = urlPath.split('#')
-  if (urlComponents.length !== 1) {
-    urlPath = urlComponents.shift() as string
-    // No need to use `encodeURIComponent` as it is already handled by Next.js' <Link>.
-    urlFragment = urlComponents.join('#')
-  }
+  const origin = getOrigin()
+  // Build a URL object to avoid parsing URLs.
+  const urlObject = (() => {
+    try {
+      return new URL(url)
+    } catch {
+      try {
+        return new URL(url, origin)
+      } catch {
+        return
+      }
+    }
+  })()
 
-  /**
-   * Non-localizable links.
-   */
-  if (/^(tel:|mailto:|https?:\/\/)/i.test(urlPath)) {
+  // Non-routable (localizable) URLs.
+  if (!urlObject || urlObject.origin != origin) {
+    const nonRoutableUrl = urlObject?.href || url
     /**
-     * Using URLs that do not require the router is not recommended by Next.js.
+     * Using URLs that do not require the router with `<Link>` is not recommended by Next.js.
      *
      * @see https://github.com/vercel/next.js/issues/8555
      */
     log.warn(
-      'using URLs that do not require the router is not recommended. Consider using a traditional <a> link instead to avoid Next.js issues.'
+      `used a ${highlight(
+        '<Link>'
+      )} component for a URL that does not require the router: ${highlight(
+        nonRoutableUrl
+      )}. Consider using a ${highlight('<a>')} HTML link instead to avoid unexpected issues.`
     )
-    return urlPath
+    // Let Next.js handle non-routable URLs.
+    return nonRoutableUrl
   }
 
-  if (locale === undefined) {
-    log.warn(
-      `a locale was not provided when trying to localize the following URL: ${highlight(urlPath)}`
-    )
-    return urlPath // Next.js locales can be undefined when not configured.
-  }
+  // We remove the trailing slash if present so that we can use the index.
+  // Next.js' <Link> can add it back if the `trailingSlash` option is used.
+  urlObject.pathname = removeTrailingSlash(urlObject.pathname)
 
-  // Set base path (https://nextjs.org/docs/api-reference/next.config.js/basepath) if present.
-  if (basePath !== undefined && basePath !== '' && basePath[0] !== '/') {
-    throw new Error(`Specified basePath has to start with a /, found "${basePath}"`)
-  }
+  // Normalize the base path when configured.
+  const normalizedBasePath =
+    !basePath || basePath === '/' ? '' : normalizePathSlashes(normalize(basePath))
 
-  if (urlPath === '/') {
-    urlPath = `${basePath}/${locale}` // Special rule for the homepage.
-  } else {
-    if (urlPath.endsWith('/')) {
-      // Next.js automatically normalize URLs and removes trailing slashes. We need to do the same to match localized URLs.
-      urlPath = urlPath.slice(0, -1)
+  // This is the applicable base path returned in the final URL.
+  const applicableBasePath = !includeBasePath && !absolute ? '' : normalizedBasePath
+
+  // The URL object already resolves the URL, so below are extra checks.
+  const normalizedUrlPath = (() => {
+    let pathname = urlObject.pathname
+    /**
+     * This is a "hack" to work around inconsistent client/server `asPath` values
+     *
+     * @see https://github.com/vercel/next.js/issues/41728
+     */
+    if (normalizedBasePath && typeof window === 'undefined') {
+      const unexpectedPrefix = `${normalizedBasePath}/${locale}`
+      if (pathname.startsWith(unexpectedPrefix)) {
+        pathname = pathname.slice(unexpectedPrefix.length)
+      }
     }
-    const isDynamicRoute = pathContainsParameters(urlPath)
-    const searchableUrlPath = isDynamicRoute ? routeToRewriteParameters(urlPath) : urlPath
-    const rewriteUrlMatch = getRewritesIndex(rewrites, basePath)?.[searchableUrlPath]?.[locale]
-    urlPath =
-      rewriteUrlMatch !== undefined
-        ? isDynamicRoute
-          ? rewriteToRouteParameters(rewriteUrlMatch)
-          : rewriteUrlMatch
-        : `${basePath}/${locale}${urlPath}` // Fallback with the original URL path when not found.
-  }
+    return pathname === '/' ? '' : pathname // We never use "/" since we will add locale prefixes.
+  })()
 
-  // Set origin if an absolute URL is requested.
-  if (absolute) {
-    const origin = getOrigin()
-    urlPath = `${origin}${urlPath}`
-  }
+  const localizedUrlPath = (() => {
+    if (!normalizedUrlPath) {
+      return '' // No need to search the index for the homepage.
+    }
 
-  const localizedUrl = `${
-    (url as UrlObject).query !== undefined
-      ? hydrateRouteParameters(urlPath, (url as UrlObject).query as RouteParameters)
-      : urlPath
-  }${urlFragment ? `#${urlFragment}` : ''}`
-
-  // Check if it's a dynamic route and if we have all the information to generate the links.
-  if (pathContainsParameters(localizedUrl)) {
-    const missingParameters = getParametersFromPath(localizedUrl)
-    log.warn(
-      `unable to get a localized URL for ${highlight(
-        localizedUrl
-      )} because the following route parameter${
-        missingParameters.length > 1 ? 's are' : ' is'
-      } missing: ${highlight(missingParameters.join(','))}.`
+    const localizedStaticUrlPath = getLocalizedStaticUrl(
+      normalizedUrlPath,
+      locale,
+      rewrites,
+      basePath
     )
-  }
 
-  return absolute || includeBasePath ? localizedUrl : stripBasePath(localizedUrl, basePath)
+    if (localizedStaticUrlPath) {
+      return localizedStaticUrlPath
+    }
+    return getLocalizedDynamicUrl(
+      routeToRewriteParameters(normalizedUrlPath),
+      locale,
+      rewrites,
+      localizedRouteParameters,
+      basePath
+    )
+  })()
+
+  /**
+   * Check if we found a URL in the index, otherwise use a fallback non-localized URL.
+   *
+   * Note that even if Next.js does not support non-ascii characters in filesystem routes,
+   * it would be possible to have a site with multiple English variants that would all use
+   * the non-localized routes and not required rewrite rules.
+   *
+   * This means that we cannot rely on the presence of a rewrite directive to know if a
+   * localizable route is missing or not. Hence why we have no warning or errors below.
+   */
+  const applicableUrlPath = localizedUrlPath || `/${locale}${normalizedUrlPath}`
+
+  // @todo: add query (?page=1) params (encodeURI because Next.js does not encode strings on its `<Link>` component)
+  return `${absolute ? urlObject.origin : ''}${applicableBasePath}${applicableUrlPath}${
+    urlObject.hash
+  }`
 }

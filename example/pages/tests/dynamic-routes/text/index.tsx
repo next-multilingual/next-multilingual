@@ -22,14 +22,7 @@ const DynamicRoutesTextTests: NextPage = () => {
   )
 
   const targetUrl = useMemo(
-    (): string =>
-      getLocalizedUrl(
-        {
-          pathname: `${pathname}/[city]`,
-          query: { city: cityParameter },
-        },
-        locale
-      ),
+    (): string => getLocalizedUrl(`${pathname}/${cityParameter}`, locale),
     [locale, cityParameter, pathname]
   )
 
@@ -58,7 +51,7 @@ const DynamicRoutesTextTests: NextPage = () => {
       <p>{messages.format('2links')}</p>
       <ul>
         <li>
-          <Link href={{ pathname: `${pathname}/[city]`, query: { city: cityParameter } }}>
+          <Link href={`${pathname}/${cityParameter}`}>
             <a id="link-with-parameter">{messages.format('link1Text')}</a>
           </Link>
         </li>

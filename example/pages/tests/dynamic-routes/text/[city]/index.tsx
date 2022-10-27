@@ -20,11 +20,7 @@ const DynamicRoutesCityTests: NextPage<DynamicRoutesCityTestsProps> = ({
   const messages = useMessages()
   const title = getTitle(messages)
   const { pathname, asPath, query } = useRouter()
-
-  const localizedUrl = useLocalizedUrl({
-    pathname,
-    query,
-  })
+  const localizedUrl = useLocalizedUrl(asPath)
 
   return (
     <Layout title={title} localizedRouteParameters={localizedRouteParameters}>
@@ -45,11 +41,8 @@ const DynamicRoutesCityTests: NextPage<DynamicRoutesCityTestsProps> = ({
           <tr>
             <td>{messages.format('rowLocalizedWithAsPath')}</td>
             {/**
-             * @see https://github.com/vercel/next.js/issues/32772 (why `suppressHydrationWarning` is used).
-             *
-             * If you need the `asPath` to match uniquely to each request then `getServerSideProps`
-             * should be used. `getStaticProps` is not meant to be unique per request but instead
-             * unique per-path.
+             * Using `suppressHydrationWarning` until we get more details from Next.js.
+             * @see https://github.com/vercel/next.js/issues/41741
              */}
             <td suppressHydrationWarning={true}>{asPath}</td>
           </tr>
@@ -64,12 +57,10 @@ const DynamicRoutesCityTests: NextPage<DynamicRoutesCityTestsProps> = ({
         </tbody>
       </table>
       <div id="go-to-poi">
-        <Link href={{ pathname: `${pathname}/point-of-interest`, query }}>
-          {messages.format('goToPoi')}
-        </Link>
+        <Link href={`${asPath}/point-of-interest`}>{messages.format('goToPoi')}</Link>
       </div>
       <div id="go-back">
-        <Link href={`${pathname}/..`}>{messages.format('goBack')}</Link>
+        <Link href={`${asPath}/..`}>{messages.format('goBack')}</Link>
       </div>
     </Layout>
   )
@@ -116,9 +107,13 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 export const getStaticProps: GetStaticProps<DynamicRoutesCityTestsProps> =
   // eslint-disable-next-line @typescript-eslint/require-await
   async (context) => {
-    const localizedRouteParameters = getLocalizedRouteParameters(context, {
-      city: getCitiesMessages,
-    })
+    const localizedRouteParameters = getLocalizedRouteParameters(
+      context,
+      {
+        city: getCitiesMessages,
+      },
+      import.meta.url
+    )
 
     return { props: { localizedRouteParameters } }
   }

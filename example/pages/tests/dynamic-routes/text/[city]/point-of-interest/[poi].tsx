@@ -10,7 +10,13 @@ import {
   MultilingualStaticPath,
 } from 'next-multilingual'
 import Link from 'next-multilingual/link'
-import { getMessages, getTitle, Messages, slugify, useMessages } from 'next-multilingual/messages'
+import {
+  GetMessagesFunction,
+  getTitle,
+  Messages,
+  slugify,
+  useMessages,
+} from 'next-multilingual/messages'
 import {
   getLocalizedRouteParameters,
   LocalizedRouteParameters,
@@ -28,11 +34,7 @@ const DynamicRoutesPoiTests: NextPage<DynamicRoutesPoiTestsProps> = ({
   const messages = useMessages()
   const title = getTitle(messages)
   const { pathname, asPath, query } = useRouter()
-
-  const localizedUrl = useLocalizedUrl({
-    pathname,
-    query,
-  })
+  const localizedUrl = useLocalizedUrl(asPath)
 
   return (
     <Layout title={title} localizedRouteParameters={localizedRouteParameters}>
@@ -53,11 +55,8 @@ const DynamicRoutesPoiTests: NextPage<DynamicRoutesPoiTestsProps> = ({
           <tr>
             <td>{messages.format('rowLocalizedWithAsPath')}</td>
             {/**
-             * @see https://github.com/vercel/next.js/issues/32772 (why `suppressHydrationWarning` is used).
-             *
-             * If you need the `asPath` to match uniquely to each request then `getServerSideProps`
-             * should be used. `getStaticProps` is not meant to be unique per request but instead
-             * unique per-path.
+             * Using `suppressHydrationWarning` until we get more details from Next.js.
+             * @see https://github.com/vercel/next.js/issues/41741
              */}
             <td suppressHydrationWarning={true}>{asPath}</td>
           </tr>
@@ -76,7 +75,7 @@ const DynamicRoutesPoiTests: NextPage<DynamicRoutesPoiTestsProps> = ({
         </tbody>
       </table>
       <div id="go-back">
-        <Link href={{ pathname: `${pathname}/..`, query }}>{messages.format('goBack')}</Link>
+        <Link href={`${asPath}/..`}>{messages.format('goBack')}</Link>
       </div>
     </Layout>
   )
@@ -144,9 +143,11 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 export const getStaticProps: GetStaticProps<DynamicRoutesPoiTestsProps> = async (context) => {
   const { locale } = getStaticPropsLocales(context)
   const routeParameters = context.params as RouteParameters
-  let getPoiMessages: typeof getMessages
+  let getPoiMessages: GetMessagesFunction
 
-  const cityKey = getCitiesMessages(locale).getRouteParameterKey(routeParameters.city) as string
+  const cityKey = getCitiesMessages(locale).getRouteParameterKey(
+    routeParameters.city as string
+  ) as string
 
   switch (cityKey) {
     case 'montreal': {
@@ -162,10 +163,14 @@ export const getStaticProps: GetStaticProps<DynamicRoutesPoiTestsProps> = async 
     }
   }
 
-  const localizedRouteParameters = getLocalizedRouteParameters(context, {
-    city: getCitiesMessages,
-    poi: getPoiMessages,
-  })
+  const localizedRouteParameters = getLocalizedRouteParameters(
+    context,
+    {
+      city: getCitiesMessages,
+      poi: getPoiMessages,
+    },
+    import.meta.url
+  )
 
   return { props: { localizedRouteParameters } }
 }

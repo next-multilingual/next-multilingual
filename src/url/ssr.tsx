@@ -1,9 +1,9 @@
-import { useRouter } from 'next/router'
-
-import { getBasePath } from '../helpers/get-base-path'
+import { highlight, log, normalizeLocale } from '..'
+import { getConfiguredLocales } from '../config'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
-import { getSsrRewrites } from '../helpers/get-ssr-rewrites'
-import { Url } from '../types'
+import { getBasePath } from '../helpers/server/get-base-path'
+import { getRewrites } from '../helpers/server/get-rewrites'
+import { hydrateRouteParameters, LocalizedRouteParameters, useRouter } from '../router'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
@@ -13,11 +13,38 @@ if (typeof window !== 'undefined') {
 }
 
 /**
+ * Get the correct URL to be used by a language switcher component.
+ *
+ * @param router - A `next-multilingual` `useRouter` object.
+ * @param localizedRouteParameters - The localized route parameters, if the page is using a dynamic route.
+ *
+ * @returns The correct URL to be used by a language switcher component.
+ */
+export const getLanguageSwitcherUrl = (
+  router: ReturnType<typeof useRouter>,
+  localizedRouteParameters?: LocalizedRouteParameters
+): string => {
+  const { asPath, pathname, locale, defaultLocale } = router
+  // Special rule for 404 pages to avoid hydration issues related to https://github.com/vercel/next.js/issues/41741
+  if (pathname === '/404') {
+    return pathname
+  }
+  if (locale !== defaultLocale) {
+    return !localizedRouteParameters
+      ? // We presume it's a static route so we can use `pathname` directly (if there are missing parameters it will show errors later).
+        pathname
+      : // Hydrate back the dynamic route into the default locale URL to allow proper fallback.
+        hydrateRouteParameters(pathname, localizedRouteParameters[defaultLocale])
+  }
+  return asPath
+}
+
+/**
  * React hook to get the localized URL specific to a Next.js context.
  *
- * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
- * a `UrlObject`.
+ * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`).
  * @param locale - The locale of the localized URL. When not specified, the current locale is used.
+ * @param localizedRouteParameters - Localized route parameters, if the page is using a dynamic route.
  * @param absolute - Returns the absolute URL, including the protocol and
  * domain (e.g., https://example.com/en-us/contact-us). By default relative URLs are used.
  * @param includeBasePath - Include Next.js' `basePath` in the returned URL. By default Next.js does not require it, but
@@ -26,19 +53,33 @@ if (typeof window !== 'undefined') {
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
 export function useLocalizedUrl(
-  url: Url,
-  locale?: string | undefined,
+  url: string,
+  locale?: string,
+  localizedRouteParameters?: LocalizedRouteParameters,
   absolute = false,
   includeBasePath = false
 ): string {
   const router = useRouter()
-  const applicableLocale = locale ?? router.locale
+  const applicableLocale = locale?.toLowerCase() ?? router.locale
+
+  // Make sure the locale is valid.
+  if (!router.locales.includes(applicableLocale)) {
+    log.warn(
+      `invalid locale ${highlight(applicableLocale)} specified for ${highlight(
+        url
+      )}. Valid values are ${router.locales
+        .map((locale) => highlight(normalizeLocale(locale)))
+        .join(', ')}`
+    )
+  }
+
   return getLocalizedUrlFromRewrites(
-    getSsrRewrites(),
+    getRewrites(),
     url,
     applicableLocale,
-    absolute,
     router.basePath,
+    localizedRouteParameters,
+    absolute,
     includeBasePath
   )
 }
@@ -46,19 +87,42 @@ export function useLocalizedUrl(
 /**
  * Get the localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  *
- * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
- * a `UrlObject`.
+ * @param url - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`).
  * @param locale - The locale of the localized URL.
+ * @param localizedRouteParameters - Localized route parameters, if the page is using a dynamic route.
  * @param absolute - Returns the absolute URL, including the protocol and domain (e.g., https://example.com/en-us/contact-us).
+ * @param includeBasePath - Include Next.js' `basePath` in the returned URL. By default Next.js does not require it, but
+ * if `absolute` is used, this will be forced to `true`.
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export function getLocalizedUrl(url: Url, locale: string, absolute = false): string {
+export function getLocalizedUrl(
+  url: string,
+  locale: string,
+  localizedRouteParameters?: LocalizedRouteParameters,
+  absolute = false,
+  includeBasePath = false
+): string {
+  const applicableLocale = locale.toLowerCase()
+
+  // Make sure the locale is valid.
+  if (!getConfiguredLocales().locales.includes(applicableLocale)) {
+    log.warn(
+      `invalid locale ${highlight(locale)} specified for ${highlight(
+        url
+      )}. Valid values are ${getConfiguredLocales()
+        .locales.map((locale) => highlight(normalizeLocale(locale)))
+        .join(', ')}`
+    )
+  }
+
   return getLocalizedUrlFromRewrites(
-    getSsrRewrites(),
+    getRewrites(),
     url,
-    locale.toLowerCase(),
+    applicableLocale,
+    getBasePath(),
+    localizedRouteParameters,
     absolute,
-    getBasePath()
+    includeBasePath
   )
 }

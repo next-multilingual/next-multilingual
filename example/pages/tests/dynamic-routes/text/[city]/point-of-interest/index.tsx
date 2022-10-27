@@ -6,7 +6,7 @@ import { useShanghaiPoiMessages } from '@/messages/cities/points-of-interest/sha
 import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, Messages, slugify, useMessages } from 'next-multilingual/messages'
-import { useRouter } from 'next-multilingual/router'
+import { hydrateRouteParameters, useRouter } from 'next-multilingual/router'
 import { getLocalizedUrl } from 'next-multilingual/url'
 import router from 'next/router'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
@@ -17,7 +17,7 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
   localizedRouteParameters,
 }) => {
   const messages = useMessages()
-  const { pathname, locale, query } = useRouter()
+  const { pathname, asPath, locale } = useRouter()
   const title = getTitle(messages)
   const citiesMessages = useCitiesMessages()
   const montrealPoiMessages = useMontrealPoiMessages()
@@ -25,7 +25,7 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
   const shanghaiPoiMessages = useShanghaiPoiMessages()
 
   const [city, setCity] = useState(
-    citiesMessages.getRouteParameterKey(localizedRouteParameters[locale].city) as string
+    citiesMessages.getRouteParameterKey(localizedRouteParameters[locale].city as string) as string
   )
 
   const getPoiMessages = useCallback(
@@ -68,10 +68,7 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
   const targetUrl = useMemo(
     (): string =>
       getLocalizedUrl(
-        {
-          pathname: `${pathname}/[poi]`,
-          query: { city: cityParameter, poi: poiParameter },
-        },
+        hydrateRouteParameters(`${pathname}/[poi]`, { city: cityParameter, poi: poiParameter }),
         locale
       ),
     [locale, cityParameter, pathname, poiParameter]
@@ -126,12 +123,7 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
       <p>{messages.format('2links')}</p>
       <ul>
         <li>
-          <Link
-            href={{
-              pathname: `${pathname}/[poi]`,
-              query: { city: cityParameter, poi: poiParameter },
-            }}
-          >
+          <Link href={`${asPath}/${poiParameter}`}>
             <a id="link-with-parameter">{messages.format('link1Text')}</a>
           </Link>
         </li>
@@ -143,7 +135,7 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
       </ul>
       <p>{messages.format('instructions')}</p>
       <div id="go-back">
-        <Link href={{ pathname: `${pathname}/..`, query }}>{messages.format('goBack')}</Link>
+        <Link href={`${asPath}/..`}>{messages.format('goBack')}</Link>
       </div>
     </Layout>
   )

@@ -3,10 +3,9 @@
  */
 import { Rewrite } from 'next/dist/lib/load-custom-routes'
 import { Router } from 'next/router'
-import { UrlObject } from 'node:url'
 
 /** Type used to get localized URLs. */
-export type Url = string | UrlObject
+export type Url = string | URL
 
 /**
  * Rewrites (type is not available in Next.js)

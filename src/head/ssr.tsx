@@ -2,10 +2,11 @@ import NextJsHead from 'next/head'
 import { MultilingualHead, MultilingualHeadProps } from '.'
 import { highlight, log, normalizeLocale } from '../'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
-import { getSsrRewrites } from '../helpers/get-ssr-rewrites'
+import { getRewrites } from '../helpers/server/get-rewrites'
 import {
-  getParametersFromPath,
+  getParameterNames,
   hydrateRouteParameters,
+  missingParameterIsOptional,
   pathContainsParameters,
   useRouter,
 } from '../router'
@@ -23,15 +24,15 @@ if (typeof window !== 'undefined') {
  * @returns The Next.js `Head` component, including alternative links for SEO.
  */
 const Head: MultilingualHead = ({ localizedRouteParameters, children }: MultilingualHeadProps) => {
-  const { pathname, basePath, locale, locales, query } = useRouter()
+  const { pathname, basePath, locale, locales } = useRouter()
 
   // Check if it's a dynamic route and if we have all the information to generate the links.
   if (pathContainsParameters(pathname)) {
     for (const locale of locales) {
       const routeParameters = localizedRouteParameters ? localizedRouteParameters[locale] : {}
       const hydratedUrlPath = hydrateRouteParameters(pathname, routeParameters, true)
-      if (pathContainsParameters(hydratedUrlPath)) {
-        const missingParameters = getParametersFromPath(hydratedUrlPath)
+      if (pathContainsParameters(hydratedUrlPath) && !missingParameterIsOptional(hydratedUrlPath)) {
+        const missingParameters = getParameterNames(hydratedUrlPath)
         log.warn(
           `unable to generate canonical and alternate links for the path ${highlight(
             pathname
@@ -61,31 +62,26 @@ const Head: MultilingualHead = ({ localizedRouteParameters, children }: Multilin
       <link
         rel="canonical"
         href={getLocalizedUrlFromRewrites(
-          getSsrRewrites(),
-          { pathname, query },
+          getRewrites(),
+          pathname,
           locale,
-          true,
-          basePath
+          basePath,
+          localizedRouteParameters,
+          true
         )}
         key="canonical-link"
       />
       {locales?.map((locale) => {
-        const query =
-          localizedRouteParameters && localizedRouteParameters[locale]
-            ? localizedRouteParameters[locale]
-            : {}
         return (
           <link
             rel="alternate"
             href={getLocalizedUrlFromRewrites(
-              getSsrRewrites(),
-              {
-                pathname,
-                query,
-              },
+              getRewrites(),
+              pathname,
               locale,
-              true,
-              basePath
+              basePath,
+              localizedRouteParameters,
+              true
             )}
             hrefLang={normalizeLocale(locale)}
             key={`alternate-link-${locale}`}

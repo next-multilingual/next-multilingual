@@ -6,7 +6,7 @@ import type {
   PreviewData,
 } from 'next'
 import * as nextLog from 'next/dist/build/output/log'
-import Document from 'next/document'
+import { DocumentProps } from 'next/document'
 import { useRouter } from 'next/router'
 import { sep as pathSeparator } from 'node:path'
 import { ParsedUrlQuery } from 'node:querystring'
@@ -39,7 +39,7 @@ export const log = {
  *
  * @returns The highlighted segment of a log message.
  */
-export function highlight(segment: string): string {
+export function highlight(segment: string | number): string {
   return cyanBright(segment)
 }
 
@@ -252,16 +252,16 @@ export function useResolvedLocale(resolvedLocale: string): void {
 /**
  * Get the value for the `<html>` tag `lang` attribute.
  *
- * @param document - A Next.js `Document` object.
+ * @param documentProps - A Next.js `Document` object.
  *
  * @returns The normalized locale value of the current page.
  */
-export function getHtmlLang(document: Document): string {
+export function getHtmlLang(documentProps: DocumentProps): string {
   // Try to get the resolved locale if dynamic resolution is enabled.
-  const resolvedLocale = (document.props.__NEXT_DATA__.props as ResolvedLocaleNextDataProps)
+  const resolvedLocale = (documentProps.__NEXT_DATA__.props as ResolvedLocaleNextDataProps)
     ?.pageProps?.resolvedLocale as string | undefined
   // The actual locale currently used by Next.js.
-  const { locale } = getLocalesState(getNextLocalesState(document.props.__NEXT_DATA__))
+  const { locale } = getLocalesState(getNextLocalesState(documentProps.__NEXT_DATA__))
   return normalizeLocale(resolvedLocale ?? locale)
 }
 
@@ -305,8 +305,8 @@ export function getActualLocales(nextLocalesConfig: LocalesConfig): string[] {
  * To get a dynamic locale resolution on `/` without redirection, we need to add a "multilingual" locale as the
  * default locale so that we can identify when the homepage is requested without a locale. With this setup it
  * also means that we can no longer use Next.js' `defaultLocale`. This function is meant to return the default locale
- * used by `next-multilingual` by removing the "fake" default locale. By convention (and for simplicity), the
- * first `locale` provided in the configuration is used as the default locale.
+ * used by `next-multilingual` by removing the "fake" default locale. By convention, the first `locale` provided in
+ * the configuration is used as the default locale.
  *
  * @param nextLocalesConfig - The Next.js locales configuration.
  *

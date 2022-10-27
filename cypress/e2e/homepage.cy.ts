@@ -205,7 +205,7 @@ describe('The homepage', () => {
     })
 
     // Persist the locale preference when changing language.
-    it(`persists locale preferences when clicking on the first language picker link for '${localeName}'`, () => {
+    it(`persists locale preferences when clicking on the first language switcher link for '${localeName}'`, () => {
       cy.visit({
         url: `${BASE_PATH}/`,
         headers: {
@@ -214,12 +214,12 @@ describe('The homepage', () => {
         },
       })
 
-      cy.get('#language-picker a').first().as('firstLink')
+      cy.get('#language-switcher a').first().as('firstLink')
       cy.get('@firstLink')
         .invoke('attr', 'lang')
         .then((lang) => {
           const localizedTargetHeader = HEADERS[lang]
-          cy.get('#language-picker').trigger('mouseover')
+          cy.get('#language-switcher').trigger('mouseover')
           cy.get('@firstLink').click({ force: true, timeout: 10000 })
           cy.get('#header').contains(localizedTargetHeader)
           cy.visit(`${BASE_PATH}/`)

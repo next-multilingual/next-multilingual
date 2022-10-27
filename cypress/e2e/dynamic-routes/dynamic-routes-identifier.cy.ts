@@ -123,11 +123,11 @@ describe('A dynamic route using a unique number (non-localizable) as parameters'
 
     const otherLocales = ACTUAL_LOCALES.filter((otherLocale) => otherLocale != locale)
 
-    // Language picker (client-side)
-    it(`has the correct language picker links (client-side) markup for '${localeName}'`, () => {
+    // Language switcher (client-side)
+    it(`has the correct language switcher links (client-side) markup for '${localeName}'`, () => {
       otherLocales.forEach((otherLocale) => {
         const otherLocalizedRouteUrl = DYNAMIC_ROUTE_URLS[otherLocale]
-        cy.get(`#language-picker a[lang=${otherLocale}]`)
+        cy.get(`#language-switcher a[lang=${otherLocale}]`)
           .should('have.attr', 'href')
           .then((href) => {
             expect(href).eq(
@@ -143,10 +143,10 @@ describe('A dynamic route using a unique number (non-localizable) as parameters'
     const otherLocalizedRouteUrl = DYNAMIC_ROUTE_URLS[otherLocale]
 
     it(`has the correct '<Link>' value when picking another language (${otherLocaleName}) (client-side) for '${localeName}'`, () => {
-      cy.get(`#language-picker`).trigger('mouseover')
-      cy.get(`#language-picker a[lang=${otherLocale}]`).should('be.visible')
-      cy.get(`#language-picker a[lang=${otherLocale}]`).click()
-      cy.get(`#language-picker`).trigger('mouseout')
+      cy.get(`#language-switcher`).trigger('mouseover')
+      cy.get(`#language-switcher a[lang=${otherLocale}]`).should('be.visible')
+      cy.get(`#language-switcher a[lang=${otherLocale}]`).click()
+      cy.get(`#language-switcher`).trigger('mouseout')
       cy.get(`#go-back a`)
         .should('have.attr', 'href')
         .should('eq', `${BASE_PATH}/${otherLocale.toLowerCase()}${otherLocalizedRouteUrl}`)

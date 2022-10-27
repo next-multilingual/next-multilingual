@@ -1,5 +1,5 @@
 import NextJsLink from 'next/link'
-import { MultilingualLink, MultilingualLinkProps } from '.'
+import type { MultilingualLink, MultilingualLinkProps } from '.'
 import { useRouter } from '../router'
 import { useLocalizedUrl } from '../url/ssr'
 
@@ -13,18 +13,19 @@ if (typeof window !== 'undefined') {
 /**
  * Link is a wrapper around Next.js' `Link` that provides localized URLs.
  *
- * @param props.href - A non-localized Next.js URL path without a locale prefix (e.g., `/contact-us`) or its equivalent using
- * a `UrlObject`.
- * @param props.locale - The locale to grab the correct localized path.
- * @param props.props - Any property available on the `LinkProps` (properties of the Next.js' `Link` component).
- *
  * @returns The Next.js `Link` component with the correct localized URLs.
  */
-const Link: MultilingualLink = ({ href, locale, children, ...props }: MultilingualLinkProps) => {
+const Link: MultilingualLink = ({
+  href,
+  locale,
+  localizedRouteParameters,
+  children,
+  ...props
+}: MultilingualLinkProps) => {
   const router = useRouter()
   const applicableLocale = locale || router.locale
   const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href
-  const localizedUrl = useLocalizedUrl(url, applicableLocale)
+  const localizedUrl = useLocalizedUrl(url, applicableLocale, localizedRouteParameters)
 
   return (
     <NextJsLink href={localizedUrl} locale={applicableLocale} {...props}>

@@ -2,7 +2,7 @@ import { Layout } from '@/components/layout/Layout'
 import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next-multilingual/router'
 import { useLongPageMessages } from './long-page'
 
 const AnchorLinksTests: NextPage = () => {

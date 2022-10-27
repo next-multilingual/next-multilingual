@@ -16,10 +16,7 @@ const DynamicRoutesIdTests: NextPage<DynamicRoutesIdTestsProps> = ({
   const title = getTitle(messages)
   const { pathname, asPath, query, locale } = useRouter()
 
-  const localizedUrl = useLocalizedUrl({
-    pathname,
-    query,
-  })
+  const localizedUrl = useLocalizedUrl(`${asPath}`)
 
   return (
     <Layout title={title} localizedRouteParameters={localizedRouteParameters}>
@@ -40,11 +37,8 @@ const DynamicRoutesIdTests: NextPage<DynamicRoutesIdTestsProps> = ({
           <tr>
             <td>{messages.format('rowLocalizedWithAsPath')}</td>
             {/**
-             * @see https://github.com/vercel/next.js/issues/32772 (why `suppressHydrationWarning` is used).
-             *
-             * If you need the `asPath` to match uniquely to each request then `getServerSideProps`
-             * should be used. `getStaticProps` is not meant to be unique per request but instead
-             * unique per-path.
+             * Using `suppressHydrationWarning` until we get more details from Next.js.
+             * @see https://github.com/vercel/next.js/issues/41741
              */}
             <td suppressHydrationWarning={true}>{asPath}</td>
           </tr>
@@ -59,7 +53,7 @@ const DynamicRoutesIdTests: NextPage<DynamicRoutesIdTestsProps> = ({
         </tbody>
       </table>
       <div id="go-back">
-        <Link href={`${pathname.split('/').slice(0, -1).join('/')}`} locale={locale}>
+        <Link href={`${asPath}/..`} locale={locale}>
           {messages.format('goBack')}
         </Link>
       </div>
@@ -114,9 +108,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
  */
 // eslint-disable-next-line @typescript-eslint/require-await
 export const getStaticProps: GetStaticProps<DynamicRoutesIdTestsProps> = async (context) => {
-  const localizedRouteParameters = getLocalizedRouteParameters(context, {
-    id: context.params?.id as string,
-  })
+  const localizedRouteParameters = getLocalizedRouteParameters(
+    context,
+    {
+      id: context.params?.id as string,
+    },
+    import.meta.url
+  )
 
   return { props: { localizedRouteParameters } }
 }

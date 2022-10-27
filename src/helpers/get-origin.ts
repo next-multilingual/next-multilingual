@@ -13,30 +13,31 @@ export function getOrigin(): string {
 
   if (!nextPublicOrigin) {
     throw new Error(
-      'Please add NEXT_PUBLIC_ORIGIN in your current environment variable with a fully-qualified URL (protocol + domain)'
+      'Please add NEXT_PUBLIC_ORIGIN in your current environment variable with a fully-qualified URL (e.g., https://example.com)'
     )
   }
 
-  const matches = nextPublicOrigin.match(/^https?:\/\/.+$/)
+  const urlObject = (() => {
+    try {
+      return new URL(nextPublicOrigin)
+    } catch {
+      throw new Error(
+        'Invalid NEXT_PUBLIC_ORIGIN environment variable. Make sure it is a fully-qualified URL (e.g., https://example.com)'
+      )
+    }
+  })()
 
-  if (!matches) {
+  if (!['http:', 'https:'].includes(urlObject.protocol)) {
     throw new Error(
-      'Please make sure that your NEXT_PUBLIC_ORIGIN includes either the `http` or `https` protocol and is a fully-qualified URL (e.g., https://example.com) without any path'
+      'Invalid NEXT_PUBLIC_ORIGIN environment variable. The URL must either use the `http` or `https` protocol'
     )
   }
 
-  const normalizedOrigin = nextPublicOrigin.endsWith('/')
-    ? nextPublicOrigin.slice(0, -1)
-    : nextPublicOrigin
-
-  const slashCount = (normalizedOrigin.match(/\//g) || []).length
-
-  if (slashCount > 2) {
+  if (urlObject.pathname && urlObject.pathname !== '/') {
     throw new Error(
-      'Please remove any path from your NEXT_PUBLIC_ORIGIN fully-qualified URL (e.g., https://example.com)'
+      'Invalid NEXT_PUBLIC_ORIGIN environment variable. The URL must not contain a path'
     )
   }
 
-  origin = normalizedOrigin
-  return origin
+  return urlObject.origin
 }

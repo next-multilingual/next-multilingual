@@ -1,11 +1,12 @@
 import NextJsHead from 'next/head'
 import { highlight, log, normalizeLocale } from '../'
+import { getRewrites } from '../helpers/client/get-rewrites'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
-import { getRewrites } from '../helpers/get-rewrites'
 import {
-  getParametersFromPath,
+  getParameterNames,
   hydrateRouteParameters,
   LocalizedRouteParameters,
+  missingParameterIsOptional,
   pathContainsParameters,
   useRouter,
 } from '../router'
@@ -27,15 +28,15 @@ export type MultilingualHead = typeof NextJsHead extends (...props: infer P) => 
  * @returns The Next.js `Head` component, including alternative links for SEO.
  */
 const Head: MultilingualHead = ({ localizedRouteParameters, children }: MultilingualHeadProps) => {
-  const { pathname, basePath, locale, locales, query } = useRouter()
+  const { pathname, basePath, locale, locales } = useRouter()
 
   // Check if it's a dynamic route and if we have all the information to generate the links.
   if (pathContainsParameters(pathname)) {
     for (const locale of locales) {
       const routeParameters = localizedRouteParameters ? localizedRouteParameters[locale] : {}
       const hydratedUrlPath = hydrateRouteParameters(pathname, routeParameters, true)
-      if (pathContainsParameters(hydratedUrlPath)) {
-        const missingParameters = getParametersFromPath(hydratedUrlPath)
+      if (pathContainsParameters(hydratedUrlPath) && !missingParameterIsOptional(hydratedUrlPath)) {
+        const missingParameters = getParameterNames(hydratedUrlPath)
         log.warn(
           `unable to generate canonical and alternate links for the path ${highlight(
             pathname
@@ -49,8 +50,6 @@ const Head: MultilingualHead = ({ localizedRouteParameters, children }: Multilin
       }
     }
   }
-
-  const rewrites = getRewrites() // Setting a variable here since React hooks can't be used in a callback.
 
   /**
    * Next.js' `<Head>` does not allow nested components, so we are using simple JSX. Details here:
@@ -66,26 +65,27 @@ const Head: MultilingualHead = ({ localizedRouteParameters, children }: Multilin
     <NextJsHead>
       <link
         rel="canonical"
-        href={getLocalizedUrlFromRewrites(rewrites, { pathname, query }, locale, true, basePath)}
+        href={getLocalizedUrlFromRewrites(
+          getRewrites(),
+          pathname,
+          locale,
+          basePath,
+          localizedRouteParameters,
+          true
+        )}
         key="canonical-link"
       />
       {locales?.map((locale) => {
-        const query =
-          localizedRouteParameters && localizedRouteParameters[locale]
-            ? localizedRouteParameters[locale]
-            : {}
         return (
           <link
             rel="alternate"
             href={getLocalizedUrlFromRewrites(
-              rewrites,
-              {
-                pathname,
-                query,
-              },
+              getRewrites(),
+              pathname,
               locale,
-              true,
-              basePath
+              basePath,
+              localizedRouteParameters,
+              true
             )}
             hrefLang={normalizeLocale(locale)}
             key={`alternate-link-${locale}`}

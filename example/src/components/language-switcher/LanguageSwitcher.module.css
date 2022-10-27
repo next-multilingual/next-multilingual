@@ -1,10 +1,10 @@
-.languagePicker {
+.languageSwitcher {
   margin: 0 0.5rem 0 0;
   padding: 0;
   order: 42;
 }
 
-.languagePicker > button > i {
+.languageSwitcher > button > i {
   box-sizing: border-box;
   position: absolute;
   display: inline;
@@ -16,7 +16,7 @@
   border-radius: 100px;
 }
 
-.languagePicker > button > i::after {
+.languageSwitcher > button > i::after {
   content: '';
   display: block;
   box-sizing: border-box;
@@ -30,15 +30,15 @@
   top: 0.125rem;
 }
 
-.languagePicker > button {
+.languageSwitcher > button {
   width: 13.875rem;
 }
 
-.languagePicker > button + div a {
+.languageSwitcher > button + div a {
   width: 11.875rem;
 }
 
-.languagePicker > button {
+.languageSwitcher > button {
   text-align: left;
   background-color: #1a2588;
   color: white;
@@ -47,7 +47,7 @@
   border: none;
 }
 
-.languagePicker > button + div {
+.languageSwitcher > button + div {
   display: none;
   position: absolute;
   background-color: #f1f1f1;
@@ -55,7 +55,7 @@
   z-index: 1;
 }
 
-.languagePicker > button + div a {
+.languageSwitcher > button + div a {
   text-align: left;
   color: black;
   padding: 1rem;
@@ -64,7 +64,7 @@
 }
 
 /* Change color of dropdown links on hover */
-.languagePicker > button + div a:hover {
+.languageSwitcher > button + div a:hover {
   background-color: #ddd;
 }
 
@@ -75,6 +75,6 @@
 }
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
-.languagePicker:hover > button {
+.languageSwitcher:hover > button {
   background-color: #2130b6;
 }

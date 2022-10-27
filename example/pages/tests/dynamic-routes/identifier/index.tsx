@@ -9,15 +9,12 @@ import styles from './index.module.css'
 
 const DynamicRoutesIdentifierTests: NextPage = () => {
   const messages = useMessages()
-  const { pathname } = useRouter()
+  const { asPath } = useRouter()
   const title = getTitle(messages)
 
   const [parameter, setParameter] = useState('123')
 
-  const localizedUrl = useLocalizedUrl({
-    pathname: `${pathname}/[id]`,
-    query: { id: parameter },
-  })
+  const localizedUrl = useLocalizedUrl(`${asPath}/${parameter}`)
 
   return (
     <Layout title={title}>
@@ -42,7 +39,7 @@ const DynamicRoutesIdentifierTests: NextPage = () => {
       </div>
       <ul>
         <li>
-          <Link href={{ pathname: `${pathname}/[id]`, query: { id: parameter } }}>
+          <Link href={`${asPath}/${parameter}`}>
             <a id="link-with-parameter">{messages.format('link1Text')}</a>
           </Link>{' '}
         </li>

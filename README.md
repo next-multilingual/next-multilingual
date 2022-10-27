@@ -48,7 +48,9 @@ We offer two APIs to simplify this step:
 This function will generate a Next.js config that will meet most use cases. `getConfig` takes the following arguments:
 
 - `applicationId` — The unique application identifier that will be used as a messages key prefix.
-- `locales` — The actual desired locales of the multilingual application. The first locale will be the default locale. Only BCP 47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](./docs/design-decisions.md) document.
+- `locales` — The locales of your application.
+- `defaultLocale` - The default locale of your application (it must also be included in `locales`)
+  > ❗ Only BCP 47 language tags following the `language`-`country` format are accepted. For more details on why, refer to the [design decisions](./docs/design-decisions.md) document.
 - `options` (optional) — Options part of a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
 
 `getConfig` will return a [Next.js configuration](https://nextjs.org/docs/api-reference/next.config.js/introduction) object.
@@ -58,7 +60,7 @@ To use it, simply add the following code in your application's `next.config.js`:
 ```js
 const { getConfig } = require('next-multilingual/config')
 
-const config = getConfig('exampleApp', ['en-US', 'fr-CA'], {
+const config = getConfig('exampleApp', ['en-US', 'fr-CA'], 'en-US', {
   poweredByHeader: false,
 })
 
@@ -74,7 +76,7 @@ If you have more advanced needs, you can use the `Config` object directly and in
 ```js
 const { Config, webpackConfigurationHandler } = require('next-multilingual/config')
 
-const config = new Config('exampleApp', ['en-US', 'fr-CA'])
+const config = new Config('exampleApp', ['en-US', 'fr-CA'], 'en-US')
 
 module.exports = {
   reactStrictMode: true,
@@ -174,25 +176,23 @@ We also need to create a [custom `Document`](https://nextjs.org/docs/advanced-fe
 
 ```ts
 import { getHtmlLang } from 'next-multilingual'
-import Document, { Head, Html, Main, NextScript } from 'next/document'
+import { DocumentProps, Head, Html, Main, NextScript } from 'next/document'
 
-class MyDocument extends Document {
-  render(): JSX.Element {
-    return (
-      <Html lang={getHtmlLang(this)} translate="no" className="notranslate">
-        <Head>
-          <meta name="google" content="notranslate" />
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    )
-  }
+const Document: React.FC<DocumentProps> = (documentProps) => {
+  return (
+    <Html lang={getHtmlLang(documentProps)} translate="no" className="notranslate">
+      <Head>
+        <meta name="google" content="notranslate" />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  )
 }
 
-export default MyDocument
+export default Document
 ```
 
 This serves only 1 purpose: display the correct server side locale in the `<html>` tag. Since we are using a "fake" default locale, it's important to keep the correct SSR markup, especially when resolving a dynamic locale on `/`.
@@ -360,6 +360,10 @@ Creating and managing those files is as simple as creating a style sheet, but he
 
 Also, make sure to check your console log for warnings about potential issues with your messages. It can be tricky to get used to how it works first, but we tried to make it easy to detect and fix problems. Note that those logs will only show in non-production environments.
 
+#### Using messages outside of hooks
+
+It's not uncommon to need localized messages while being unable to use hooks. An example would be while using one of Next.js' core features is its [builtin API support](https://nextjs.org/docs/api-routes/introduction). In that context, instead of using `useMessage` we can simply use `getMessages` while specifying the `locale` argument.
+
 #### Using messages for localized URLs
 
 As mentioned previously, there is one special key for `pages`, where the `id` is `slug`. Unlike traditional slugs that look like `this-is-a-page`, we ask you to write the slug as a normal and human readable sentence, so that it can be translated like any other string. This avoids having special processes for slugs which can be costly and complex to manage in multiple languages.
@@ -367,7 +371,7 @@ As mentioned previously, there is one special key for `pages`, where the `id` is
 Basically, the `slug` is the human readable "short description" of your page, and represents a segment (part between `/` or at the end of the path) of a URL. When used as a URL segment, the following transformation is applied:
 
 - all characters will be lowercased
-- spaces will be replaced by `-`
+- any character that is not a letter or number in all languages will be replaced by `-`
 
 For example, `About Us` will become `about-us`.
 
@@ -488,17 +492,18 @@ const Tests: NextPage = () => {
 export default Tests
 ```
 
-### Server side localized URLs
+### Getting localized URLs without a hook
 
-There could be cases where you need to use localized URLs on the server side and hooks (`useLocalizedUrl`) cannot be used. Imagine using Next.js' API to send transactional emails and wanting to leverage `next-multilingual`'s localized URLs without having to hardcode them in a configuration. This is where `getLocalizedUrl` comes in. `getLocalizedUrl` is only usable on the server side which is why it is imported directly from `next-multilingual/url/ssr`. Here is an example of how it can be used:
+You might run into situation where you also need to get a localized URL but using a hook is not an option. This is where `getLocalizedUrl` in `next-multilingual/url` comes in. It acts the same as `useLocalizedUrl` but its `locale` argument is mandatory.
+
+Imagine using Next.js' API to send transactional emails and wanting to leverage `next-multilingual`'s localized URLs without having to hardcode them in a configuration. Here is an example of how it can be used:
 
 ```ts
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { isLocale } from 'next-multilingual'
-import { getLocalizedUrl } from 'next-multilingual/url/ssr'
+import { getLocalizedUrl } from 'next-multilingual/url'
 import { getMessages } from 'next-multilingual/messages'
-
-import { sendEmail } from '../send-email/'
+import { sendEmail } from 'send-email'
 
 /**
  * The "/api/send-email" handler.
@@ -551,7 +556,7 @@ And its messages file:
 exampleApp.footerComponent.footerMessage = © Footer
 ```
 
-Also make sure to look at the [language picker component example](./example/components/LanguagePicker.tsx) that is a must in all multilingual applications.
+Also make sure to look at the [language switcher component example](./example/components/LanguageSwitcher.tsx) that is a must in all multilingual applications.
 
 ### Creating shared messages
 
@@ -566,6 +571,8 @@ To illustrate this we created [one example using fruits](./example/src/messages/
 ```ts
 export { useMessages as useFruitsMessages } from 'next-multilingual/messages'
 ```
+
+> ❗ If you need to access your messages outside of hooks, you need to also export `getMessages`.
 
 Of course, you will have your messages files in the same directory:
 
@@ -865,7 +872,7 @@ import { getTitle, useMessages } from 'next-multilingual/messages'
 
 import Layout from '@/layout'
 
-const Custom400: NextPage = () => {
+const Error404: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
   return (
@@ -878,7 +885,7 @@ const Custom400: NextPage = () => {
   )
 }
 
-export default Custom400
+export default Error404
 ```
 
 And of course, your messages, for example `404.en-US.properties`:
@@ -890,9 +897,9 @@ exampleApp.pageNotFoundError.title = 404 - Page Not Found
 exampleApp.pageNotFoundError.goBack = Go back home
 ```
 
-### Localized API Routes
+### Using messages in APIs
 
-One of Next.js' core features is its [builtin API support](https://nextjs.org/docs/api-routes/introduction). It's not uncommon for APIs to return content in different languages. `next-multilingual` has an equivalent API just for this use case: `getMessages`. Unlike the `useMessages` hook, `getMessages` can be used in API Routes. Here is an "Hello API" example on how to use it:
+APIs often need to be localized. Here is an "Hello API" example:
 
 ```ts
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -984,11 +991,19 @@ The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Si
 
 ### Dynamic Routes
 
-[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. For simplicity, `next-multilingual` currently only supports [path matching](https://nextjs.org/docs/api-reference/next.config.js/rewrites#path-matching) which is also the most common dynamic route use case. To make dynamic routes work with `next-multilingual` we use `UrlObject` instead of `string` when passing URLs. Just like any other links, we want to pass the non-localized path used by the Next.js' router (`pathname`) but we also need to include the route parameters by using the `query` properties like this:
+> ❗ Dynamic routes are complex and localizing them adds even more complexity. Make sure you are familiar with how this Next.js feature works before trying to add localization.
 
-```tsx
-<Link href={{ pathname: '/user/[id]', query: { id: '123' } }} />
-```
+[Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. Since version 3.0, `next-multilingual` provides the same supports as Next.js in terms of dynamic routes. To make dynamic routes work with `next-multilingual` we have a few patterns to follow:
+
+- The `<Link>`'s `href` attribute and the `useLocalizedUrl`/`getLocalizedUrl` `url` argument only accept string URLs.
+  - Unlike Next.js' `<Link>` component which accepts a `UrlObject`, we preferred to streamline our types since `urlObject.href` can easily be used instead.
+- Unlike static links where we expect the URL to be non-localized, the parameters always need to be localized inside the URL string by either using:
+  - `userRouter().asPath` (most common scenario) by providing localized parameters directly in the URL. By using `asPath` you are using the localized URL which means that the URL you will use will be fully localized.
+  - `userRouter().pathname` is conjunction with `hydrateRouteParameters` by providing localized parameters. By using `pathname` you are using the non-localized URL which means that the URL you will use might be a mix of non-localized segments plus the localized parameters. This can be useful in cases where you have nested dynamic routes.
+
+We provided several examples of on on to use dynamic routes in our [dynamic route test pages](./example/pages/tests/dynamic-routes/).
+
+#### Switching languages when using dynamic routes
 
 The main challenge with dynamic routes, is that if the value of the parameter needs to be localized, we need to keep a relation between languages so that we can correctly switch languages. `next-multilingual` solves this problem with its `getLocalizedRouteParameters` API that creates a `LocalizedRouteParameters` object used as a page props. This can work both with `getStaticProps` and `getServerSideProps`.
 
@@ -1022,21 +1037,42 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 }
 ```
 
-Then you have to pre-compute the localized route parameters and return them as props using `getStaticProps`:
+Then you have to pre-compute the localized route parameters and return them as props using `getStaticProps` and `getLocalizedRouteParameters`:
 
 ```ts
 export type CityPageProps = { localizedRouteParameters: LocalizedRouteParameters }
 
 export const getStaticProps: GetStaticProps<CityPageProps> = async (context) => {
-  const localizedRouteParameters = getLocalizedRouteParameters(context, {
-    city: getCitiesMessages,
-  })
+  const localizedRouteParameters = getLocalizedRouteParameters(
+    context,
+    {
+      city: getCitiesMessages,
+    },
+    import.meta.url
+  )
 
   return { props: { localizedRouteParameters } }
 }
 ```
 
-Finally you have to pass down your localized route parameters down to your language picker component when you create your page:
+If you are using a catch-all dynamic route, you will need to pass your parameters as an array, for each URL segment that you want to support. For example, if you want to support 2 levels:
+
+```ts
+const localizedRouteParameters = getLocalizedRouteParameters(context, {
+  city: [getCitiesMessages, getCitiesMessages],
+})
+```
+
+Note that since we need to use the `getMessages` API instead of the `useMessages` hook, you will also need to export it in the message file:
+
+```ts
+export {
+  getMessages as getCitiesMessages,
+  useMessages as useCitiesMessages,
+} from 'next-multilingual/messages'
+```
+
+Finally you have to pass down your localized route parameters down to your language switcher component when you create your page:
 
 ```ts
 const CityPage: NextPage<CityPageProps> = ({ localizedRouteParameters }) => {
@@ -1054,13 +1090,14 @@ const CityPage: NextPage<CityPageProps> = ({ localizedRouteParameters }) => {
 export default CityPage
 ```
 
-The only part missing now is the language picker which needs to leverage the localized route parameters:
+The only part missing now is the language switcher which needs to leverage the localized route parameters by using `getLanguageSwitcherUrl`:
 
 ```ts
 import { normalizeLocale, setCookieLocale } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { KeyValueObject } from 'next-multilingual/messages'
 import { LocalizedRouteParameters, useRouter } from 'next-multilingual/router'
+import { getLanguageSwitcherUrl } from 'next-multilingual/url'
 import { ReactElement } from 'react'
 
 // Locales don't need to be localized.
@@ -1069,27 +1106,27 @@ const localeStrings: KeyValueObject = {
   'fr-CA': 'Français (Canada)',
 }
 
-type LanguagePickerProps = {
+type LanguageSwitcherProps = {
   /** Route parameters, if the page is using a dynamic route. */
   localizedRouteParameters?: LocalizedRouteParameters
 }
 
-export const LanguagePicker: React.FC<LanguagePickerProps> = ({
+export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   localizedRouteParameters,
 }): ReactElement => {
+  const router = useRouter()
   const { pathname, locale: currentLocale, locales, defaultLocale, query } = useRouter()
+  const href = getLanguageSwitcherUrl(router, localizedRouteParameters)
 
   return (
-    <div id="language-picker">
+    <div id="language-switcher">
       <ul>
         {locales
           .filter((locale) => locale !== currentLocale)
           .map((locale) => {
-            const parameters =
-              (localizedRouteParameters && localizedRouteParameters[locale]) ?? query
             return (
               <li key={locale}>
-                <Link href={{ pathname, query: parameters }} locale={locale}>
+                <Link href={href} locale={locale}>
                   <a
                     onClick={() => {
                       setCookieLocale(locale)
@@ -1108,19 +1145,11 @@ export const LanguagePicker: React.FC<LanguagePickerProps> = ({
 }
 ```
 
-Note that since we need to use the `getMessages` API instead of the `useMessages` hook, you will also need to export it in the message file:
-
-```ts
-export {
-  getMessages as getCitiesMessages,
-  useMessages as useCitiesMessages,
-} from 'next-multilingual/messages'
-```
-
 Check out our fully working examples:
 
 - [Non-localizable dynamic route using a unique identifier](./example/pages/tests/dynamic-routes/identifier/[id].tsx)
 - [Multi-level dynamic routes localized texts](./example/pages/tests/dynamic-routes/text/[city]/index.tsx[id].tsx)
+- [Catch-all dynamic routes localized texts](./example/pages/tests/dynamic-routes/catch-all)
 
 ## Translation Process 🈺
 

@@ -5,7 +5,7 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
-const multilingualConfig = getConfig('exampleApp', ['en-US', 'fr-CA'], {
+const multilingualConfig = getConfig('exampleApp', ['en-US', 'fr-CA'], 'en-US', {
   reactStrictMode: true,
   poweredByHeader: false,
   // basePath: '/some-path',

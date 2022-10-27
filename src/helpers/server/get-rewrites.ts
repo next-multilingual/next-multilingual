@@ -1,13 +1,13 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes'
 import { existsSync, readFileSync } from 'node:fs'
-import { highlight, highlightFilePath, log } from '..'
-import { isInDebugMode } from '../config'
-import type { BuildManifest, Rewrites, RoutesManifest } from '../types'
+import { highlight, highlightFilePath, log } from '../..'
+import { isInDebugMode } from '../../config'
+import type { BuildManifest, Rewrites, RoutesManifest } from '../../types'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
   throw new Error(
-    '`getSsrRewrites` must only be used on the server side, please use the `getRewrites` instead'
+    '`getRewrites` must only be used on the server side, please use the `client/getRewrites` instead'
   )
 }
 
@@ -56,7 +56,7 @@ function setEmptyCacheAndShowWarnings(warningMessages: string[]): Rewrite[] {
  *
  * @returns An array of `Rewrite` objects.
  */
-export function getSsrRewrites(): Rewrite[] {
+export function getRewrites(): Rewrite[] {
   if (rewritesCache) return rewritesCache
 
   const warningMessages: string[] = []

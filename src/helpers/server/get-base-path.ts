@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { highlight, highlightFilePath, log } from '../'
-import { isInDebugMode } from '../config'
-import type { BuildManifest, RequiredServerFiles, RoutesManifest } from '../types'
+import { highlight, highlightFilePath, log } from '../..'
+import { isInDebugMode } from '../../config'
+import type { BuildManifest, RequiredServerFiles, RoutesManifest } from '../../types'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {

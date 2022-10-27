@@ -1,8 +1,12 @@
 import { InjectedMessages } from 'messages-modules'
 import { useRouter } from 'next/router'
 import { extname, parse as parsePath, resolve } from 'node:path'
-
 import { highlight, highlightFilePath, log, normalizeLocale } from '../'
+import {
+  getLastPathSegment,
+  getPathWithoutLastSegment,
+  normalizePagesFilePath,
+} from '../helpers/paths-utils'
 import { Messages } from './messages'
 
 // Make message classes available without adding their files to the package exports.
@@ -72,10 +76,7 @@ export function getTitle(messages: Messages, values?: PlaceholderValues): string
  *
  * @returns The "slugified" version of a localized message.
  */
-export function slugify(message: string, locale?: string): string {
-  if (locale === undefined) {
-    log.warn('calling `slugify` without a locale can lead to mistranslated slugs')
-  }
+export function slugify(message: string, locale: string): string {
   /**
    * To stay ES5 compatible, and support all Unicode letters and numbers, we are using this very long regular
    * expression that has been generated using the `regexpu-core` npm package which is also used by
@@ -237,9 +238,14 @@ export function getMessages(locale: string): Messages {
 }
 
 /**
+ * The type of a `getMessage` function.
+ */
+export type GetMessagesFunction = typeof getMessages
+
+/**
  * Handles messages coming from both `useMessages` and `getMessages`.
  *
- * @param injectedMessages - The "babelified" messages object.
+ * @param injectedMessages - The injected messages object.
  * @param caller - The function calling the message handler.
  * @param locale - The locale of the message file.
  *
@@ -261,10 +267,9 @@ export function handleMessages(
   }
 
   const sourceFilePath = injectedMessages.sourceFilePath
-  const sourceBasename = sourceFilePath.split('/').pop() as string
-  const sourceFilename = sourceBasename.split('.').slice(0, -1).join('.')
-  const sourceFileDirectoryPath = sourceFilePath.split('/').slice(0, -1).join('/')
-  const messagesFilename = `${sourceFilename}.${normalizeLocale(locale)}.properties`
+  const sourceLastUrlPathSegment = getLastPathSegment(sourceFilePath)
+  const sourceFileDirectoryPath = getPathWithoutLastSegment(normalizePagesFilePath(sourceFilePath))
+  const messagesFilename = `${sourceLastUrlPathSegment}.${normalizeLocale(locale)}.properties`
   const messagesFilePath =
     sourceFileDirectoryPath.length > 0
       ? `${sourceFileDirectoryPath}/${messagesFilename}`
