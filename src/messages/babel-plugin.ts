@@ -38,7 +38,7 @@ export const hijackTargets: HijackTarget[] = [
  *
  * @returns A "key/value" object storing messages where the key only contains the identifier segment of the key.
  */
-export function getMessages(propertiesFilePath: string): KeyValueObject {
+export const getMessages = (propertiesFilePath: string): KeyValueObject => {
   const properties = getProperties(propertiesFilePath)
   let context: string | undefined
   const compactedKeyValueObject: KeyValueObject = {}
@@ -144,6 +144,4 @@ export function getMessages(propertiesFilePath: string): KeyValueObject {
  *
  * @returns A Babel plugin object.
  */
-export default function plugin(): PluginObj {
-  return messageModulePlugin(hijackTargets, 'properties', getMessages)
-}
+export default (): PluginObj => messageModulePlugin(hijackTargets, 'properties', getMessages)

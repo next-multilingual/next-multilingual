@@ -72,7 +72,7 @@ const Homepage: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) =
       )
   }, [locale, basePath])
 
-  function showApiMessage(): JSX.Element {
+  const showApiMessage: React.FC = () => {
     if (apiError) {
       return (
         <>
@@ -168,7 +168,7 @@ const Homepage: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) =
         <br />
         <div>
           <h2>{messages.format('apiHeader')}</h2>
-          <div id="api-response">{showApiMessage()}</div>
+          <div id="api-response">{showApiMessage({})}</div>
         </div>
       </div>
     </Layout>

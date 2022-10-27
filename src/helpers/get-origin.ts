@@ -6,7 +6,7 @@ let origin: string
  *
  * @returns The normalized (lowercase, without a trailing slash) URL origin used to generate fully-qualified URLs.
  */
-export function getOrigin(): string {
+export const getOrigin = (): string => {
   if (origin !== undefined) return origin
 
   const nextPublicOrigin = process.env.NEXT_PUBLIC_ORIGIN

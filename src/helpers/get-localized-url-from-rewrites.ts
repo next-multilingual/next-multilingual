@@ -20,7 +20,7 @@ import { getLocalizedDynamicUrl, getLocalizedStaticUrl } from './rewrites-urls'
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export function getLocalizedUrlFromRewrites(
+export const getLocalizedUrlFromRewrites = (
   rewrites: Rewrite[],
   url: string,
   locale: string,
@@ -28,7 +28,7 @@ export function getLocalizedUrlFromRewrites(
   localizedRouteParameters?: LocalizedRouteParameters,
   absolute = false,
   includeBasePath = false
-): string {
+): string => {
   const origin = getOrigin()
   // Build a URL object to avoid parsing URLs.
   const urlObject = (() => {

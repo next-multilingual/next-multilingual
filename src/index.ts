@@ -25,7 +25,7 @@ export const log = {
    *
    * @param message - The warning message to log.
    */
-  warn(message: string): void {
+  warn: (message: string): void => {
     if (process.env.NODE_ENV !== 'production') {
       nextLog.warn(message)
     }
@@ -39,9 +39,7 @@ export const log = {
  *
  * @returns The highlighted segment of a log message.
  */
-export function highlight(segment: string | number): string {
-  return cyanBright(segment)
-}
+export const highlight = (segment: string | number): string => cyanBright(segment)
 
 /**
  * Highlight a file path segment of a log message, normalized with the current file system path separator
@@ -50,9 +48,8 @@ export function highlight(segment: string | number): string {
  *
  * @returns The highlighted file path segment of a log message.
  */
-export function highlightFilePath(filePath: string): string {
-  return highlight(pathSeparator !== '/' ? filePath.replace(/\//g, pathSeparator) : filePath)
-}
+export const highlightFilePath = (filePath: string): string =>
+  highlight(pathSeparator !== '/' ? filePath.replace(/\//g, pathSeparator) : filePath)
 
 /**
  * The locales state that includes both the current locale and the locales configuration.
@@ -92,7 +89,7 @@ export type NextLocalesConfig = Partial<LocalesConfig>
  *
  * @returns The Next.js locale state without `undefined` values.
  */
-export function getNextLocalesState(rawLocalesState: NextLocalesState): LocalesState {
+export const getNextLocalesState = (rawLocalesState: NextLocalesState): LocalesState => {
   const { locale, locales, defaultLocale } = rawLocalesState
   if (locales === undefined) {
     throw new Error('locales must be configured in Next.js')
@@ -112,13 +109,11 @@ export function getNextLocalesState(rawLocalesState: NextLocalesState): LocalesS
  *
  * @returns The locales state being used by `next-multilingual`.
  */
-export function getLocalesState(nextLocalesState: LocalesState): LocalesState {
-  return {
-    locale: getActualLocale(nextLocalesState),
-    locales: getActualLocales(nextLocalesState),
-    defaultLocale: getActualDefaultLocale(nextLocalesState),
-  }
-}
+export const getLocalesState = (nextLocalesState: LocalesState): LocalesState => ({
+  locale: getActualLocale(nextLocalesState),
+  locales: getActualLocales(nextLocalesState),
+  defaultLocale: getActualDefaultLocale(nextLocalesState),
+})
 
 /**
  * Get the locales config being used by `next-multilingual`.
@@ -127,12 +122,10 @@ export function getLocalesState(nextLocalesState: LocalesState): LocalesState {
  *
  * @returns The locales config being used by `next-multilingual`.
  */
-export function getLocalesConfig(nextLocalesConfig: LocalesConfig): LocalesConfig {
-  return {
-    locales: getActualLocales(nextLocalesConfig),
-    defaultLocale: getActualDefaultLocale(nextLocalesConfig),
-  }
-}
+export const getLocalesConfig = (nextLocalesConfig: LocalesConfig): LocalesConfig => ({
+  locales: getActualLocales(nextLocalesConfig),
+  defaultLocale: getActualDefaultLocale(nextLocalesConfig),
+})
 
 /**
  * Get the locales state being used by `next-multilingual`.
@@ -141,9 +134,8 @@ export function getLocalesConfig(nextLocalesConfig: LocalesConfig): LocalesConfi
  *
  * @returns The actual locales state being used by `next-multilingual`.
  */
-export function getStaticPropsLocales(context: GetStaticPropsContext): LocalesState {
-  return getLocalesState(context as LocalesState)
-}
+export const getStaticPropsLocales = (context: GetStaticPropsContext): LocalesState =>
+  getLocalesState(context as LocalesState)
 
 /**
  * Get the locales config being used by `next-multilingual`.
@@ -152,9 +144,8 @@ export function getStaticPropsLocales(context: GetStaticPropsContext): LocalesSt
  *
  * @returns The actual locales config being used by `next-multilingual`.
  */
-export function getStaticPathsLocales(context: GetStaticPathsContext): LocalesConfig {
-  return getLocalesConfig(context as LocalesConfig)
-}
+export const getStaticPathsLocales = (context: GetStaticPathsContext): LocalesConfig =>
+  getLocalesConfig(context as LocalesConfig)
 
 /**
  * Get the locales state being used by `next-multilingual`.
@@ -163,9 +154,8 @@ export function getStaticPathsLocales(context: GetStaticPathsContext): LocalesCo
  *
  * @returns The actual locales state being used by `next-multilingual`.
  */
-export function getServerSidePropsLocales(context: GetServerSidePropsContext): LocalesState {
-  return getLocalesState(context as LocalesState)
-}
+export const getServerSidePropsLocales = (context: GetServerSidePropsContext): LocalesState =>
+  getLocalesState(context as LocalesState)
 
 /**
  * Multilingual static path objects that can be used in `getStaticPaths`.
@@ -186,7 +176,7 @@ export type MultilingualStaticPath = {
  *
  * @returns The best possible locale for a given user.
  */
-export function resolveLocale(context: GetServerSidePropsContext): string {
+export const resolveLocale = (context: GetServerSidePropsContext): string => {
   const { locale, locales, defaultLocale } = getServerSidePropsLocales(context)
   const cookieLocale = getCookieLocale(context, locales)
   let resolvedLocale = locale
@@ -213,7 +203,7 @@ export function resolveLocale(context: GetServerSidePropsContext): string {
  *
  * @param localeDetection - By setting this parameter to `false` the locale will not be store in the `next-multilingual` cookie.
  */
-export function useActualLocale(localeDetection = true): void {
+export const useActualLocale = (localeDetection = true): void => {
   /**
    * Note that because some of the Next.js router properties are "readonly", we can only inject the `locale` property while
    * slightly modifying the other properties to avoid `undefined` without causing React hydration error. This is also why we
@@ -244,7 +234,7 @@ export function useActualLocale(localeDetection = true): void {
  *
  * @param resolvedLocale - The locale that has been resolved by the server.
  */
-export function useResolvedLocale(resolvedLocale: string): void {
+export const useResolvedLocale = (resolvedLocale: string): void => {
   useRouter().locale = resolvedLocale
   setCookieLocale(resolvedLocale)
 }
@@ -256,7 +246,7 @@ export function useResolvedLocale(resolvedLocale: string): void {
  *
  * @returns The normalized locale value of the current page.
  */
-export function getHtmlLang(documentProps: DocumentProps): string {
+export const getHtmlLang = (documentProps: DocumentProps): string => {
   // Try to get the resolved locale if dynamic resolution is enabled.
   const resolvedLocale = (documentProps.__NEXT_DATA__.props as ResolvedLocaleNextDataProps)
     ?.pageProps?.resolvedLocale as string | undefined
@@ -277,11 +267,10 @@ export function getHtmlLang(documentProps: DocumentProps): string {
  *
  * @returns The locales used by `next-multilingual`.
  */
-export function getActualLocale(nextLocalesState: LocalesState): string {
-  return nextLocalesState.locale === nextLocalesState.defaultLocale
+export const getActualLocale = (nextLocalesState: LocalesState): string =>
+  nextLocalesState.locale === nextLocalesState.defaultLocale
     ? getActualDefaultLocale(nextLocalesState)
     : nextLocalesState.locale
-}
 
 /**
  * Get the locales used by `next-multilingual`.
@@ -295,9 +284,8 @@ export function getActualLocale(nextLocalesState: LocalesState): string {
  *
  * @returns The list of locales used by `next-multilingual`.
  */
-export function getActualLocales(nextLocalesConfig: LocalesConfig): string[] {
-  return nextLocalesConfig.locales.filter((locale) => locale !== nextLocalesConfig.defaultLocale)
-}
+export const getActualLocales = (nextLocalesConfig: LocalesConfig): string[] =>
+  nextLocalesConfig.locales.filter((locale) => locale !== nextLocalesConfig.defaultLocale)
 
 /**
  * Get the default locale used by `next-multilingual`.
@@ -312,9 +300,8 @@ export function getActualLocales(nextLocalesConfig: LocalesConfig): string[] {
  *
  * @returns The default locale used by `next-multilingual`.
  */
-export function getActualDefaultLocale(nextLocalesConfig: LocalesConfig): string {
-  return getActualLocales(nextLocalesConfig).shift() as string
-}
+export const getActualDefaultLocale = (nextLocalesConfig: LocalesConfig): string =>
+  getActualLocales(nextLocalesConfig).shift() as string
 
 /**
  * Is a given string a locale identifier following the `language`-`country` format?
@@ -324,7 +311,7 @@ export function getActualDefaultLocale(nextLocalesConfig: LocalesConfig): string
  *
  * @returns `true` if the string is a locale identifier following the `language`-`country`, otherwise `false`.
  */
-export function isLocale(locale: string, checkNormalizedCase = false): boolean {
+export const isLocale = (locale: string, checkNormalizedCase = false): boolean => {
   const regexp = new RegExp(/^[a-z]{2}-[A-Z]{2}$/, !checkNormalizedCase ? 'i' : '')
   return regexp.test(locale)
 }
@@ -340,7 +327,7 @@ export function isLocale(locale: string, checkNormalizedCase = false): boolean {
  *
  * @returns The normalized locale identifier following the ISO 3166 convention.
  */
-export function normalizeLocale(locale: string): string {
+export const normalizeLocale = (locale: string): string => {
   if (!isLocale(locale)) {
     return locale
   }
@@ -372,11 +359,11 @@ export type ResolvedLocaleNextDataProps = {
  *
  * @returns The preferred locale identifier.
  */
-export function getPreferredLocale(
+export const getPreferredLocale = (
   acceptLanguageHeader: string | undefined,
   actualLocales: string[],
   actualDefaultLocale: string
-): string {
+): string => {
   if (acceptLanguageHeader === undefined) {
     return actualDefaultLocale
   }
@@ -397,7 +384,7 @@ const LOCALE_COOKIE_LIFETIME: number =
  *
  * @param locale - A locale identifier.
  */
-export function setCookieLocale(locale?: string): void {
+export const setCookieLocale = (locale?: string): void => {
   if (locale !== undefined) {
     Cookies.set(undefined, LOCALE_COOKIE_NAME, locale, {
       maxAge: LOCALE_COOKIE_LIFETIME,
@@ -415,10 +402,10 @@ export function setCookieLocale(locale?: string): void {
  *
  * @returns The locale that was saved to the locale cookie.
  */
-export function getCookieLocale(
+export const getCookieLocale = (
   serverSidePropsContext: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
   actualLocales: string[]
-): string | undefined {
+): string | undefined => {
   const cookies = Cookies.get(serverSidePropsContext)
 
   if (!Object.keys(cookies).includes(LOCALE_COOKIE_NAME)) {

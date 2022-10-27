@@ -21,7 +21,7 @@ let rewritesCache: Rewrite[]
  *
  * @returns The `rewritesCache` value.
  */
-function setRewritesCache(rewrites: Rewrite[]): Rewrite[] {
+const setRewritesCache = (rewrites: Rewrite[]): Rewrite[] => {
   rewritesCache = rewrites
   if (isInDebugMode()) {
     console.log('==== SERVER SIDE REWRITES ====')
@@ -37,7 +37,7 @@ function setRewritesCache(rewrites: Rewrite[]): Rewrite[] {
  *
  * @returns An empty string since `rewrites` cannot be found.
  */
-function setEmptyCacheAndShowWarnings(warningMessages: string[]): Rewrite[] {
+const setEmptyCacheAndShowWarnings = (warningMessages: string[]): Rewrite[] => {
   warningMessages.forEach((warningMessage) => {
     log.warn(warningMessage)
   })
@@ -56,7 +56,7 @@ function setEmptyCacheAndShowWarnings(warningMessages: string[]): Rewrite[] {
  *
  * @returns An array of `Rewrite` objects.
  */
-export function getRewrites(): Rewrite[] {
+export const getRewrites = (): Rewrite[] => {
   if (rewritesCache) return rewritesCache
 
   const warningMessages: string[] = []

@@ -20,7 +20,7 @@ let basePathCache: string | undefined
  *
  * @returns The `basePathCache` value.
  */
-function setBasePathCache(basePath: string): string {
+const setBasePathCache = (basePath: string): string => {
   basePathCache = basePath
   if (isInDebugMode()) {
     console.log('==== SERVER SIDE BASE PATH ====')
@@ -36,7 +36,7 @@ function setBasePathCache(basePath: string): string {
  *
  * @returns An empty string since `basePath` cannot be found.
  */
-function setEmptyCacheAndShowWarnings(warningMessages: string[]): string {
+const setEmptyCacheAndShowWarnings = (warningMessages: string[]): string => {
   warningMessages.forEach((warningMessage) => {
     log.warn(warningMessage)
   })
@@ -57,7 +57,7 @@ function setEmptyCacheAndShowWarnings(warningMessages: string[]): string {
  *
  * @returns The base path value.
  */
-export function getBasePath(): string {
+export const getBasePath = (): string => {
   if (basePathCache !== undefined) return basePathCache
 
   const warningMessages: string[] = []

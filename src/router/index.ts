@@ -22,7 +22,7 @@ import { GetMessagesFunction, slugify } from '../messages'
  *
  * @returns An extended `NextRouter` using `next-multilingual`'s locales state.
  */
-export function useRouter(): NextRouter & LocalesState {
+export const useRouter = (): NextRouter & LocalesState => {
   const nextRouter = useNextRouter()
 
   // Only recomputes if the router changes (useful if `useRouter` is called multiple times on the same page).
@@ -50,11 +50,11 @@ export function useRouter(): NextRouter & LocalesState {
  *
  * @returns The hydrated path containing route parameters values instead of placeholders.
  */
-export function hydrateRouteParameters(
+export const hydrateRouteParameters = (
   pathname: string,
   routeParameters: RouteParameters,
   suppressWarning = false
-): string {
+): string => {
   const pathSegments = pathname.split('/')
   const missingParameters: string[] = []
 
@@ -160,8 +160,8 @@ export const missingParameterIsOptional = (pathname: string): boolean => {
  *
  * @returns The path converted to the "rewrite parameters" format.
  */
-export function routeToRewriteParameters(path: string): string {
-  return path
+export const routeToRewriteParameters = (path: string): string =>
+  path
     .split('/')
     .map((pathSegment) => {
       if (isDynamicRoute(pathSegment)) {
@@ -174,7 +174,6 @@ export function routeToRewriteParameters(path: string): string {
       return pathSegment
     })
     .join('/')
-}
 
 /**
  * Get the dynamic router parameter name of a URL path's last segment.
@@ -221,8 +220,8 @@ export const getDynamicRouteParameterName = (urlPath: string): string => {
  *
  * @returns The path converted to the "router queries" format.
  */
-export function rewriteToRouteParameters(path: string): string {
-  return path
+export const rewriteToRouteParameters = (path: string): string =>
+  path
     .split('/')
     .map((pathSegment) => {
       if (pathSegment.startsWith(':')) {
@@ -234,7 +233,6 @@ export function rewriteToRouteParameters(path: string): string {
       return pathSegment
     })
     .join('/')
-}
 
 /**
  * Does a given path contain route parameters (using the bracket syntax)?
@@ -243,9 +241,8 @@ export function rewriteToRouteParameters(path: string): string {
  *
  * @returns True if the path contains route parameters, otherwise false.
  */
-export function pathContainsParameters(path: string): boolean {
-  return path.split('/').some((pathSegment) => isDynamicRoute(pathSegment))
-}
+export const pathContainsParameters = (path: string): boolean =>
+  path.split('/').some((pathSegment) => isDynamicRoute(pathSegment))
 
 /**
  * Route parameters.
@@ -282,7 +279,7 @@ export type LocalizedRouteParameters = { [locale: string]: RouteParameters }
  *
  * @returns An array of parameters name or an empty array when not found.
  */
-export function getParameterNames(pathname: string): string[] {
+export const getParameterNames = (pathname: string): string[] => {
   const segmentsWithParameter = pathname
     .split('/')
     .filter((pathSegment) => isDynamicRoute(pathSegment))
@@ -385,11 +382,11 @@ const getLocalizedRouteParameter = (
  *
  * @returns A route parameters object.
  */
-export function getLocalizedRouteParameters(
+export const getLocalizedRouteParameters = (
   context: GetStaticPropsContext | GetServerSidePropsContext,
   routeParameterMessages: RouteParameterMessages,
   importMetaUrl: string
-): LocalizedRouteParameters {
+): LocalizedRouteParameters => {
   const { locale: currentLocale, locales } = getLocalesState(context as LocalesState)
   const routeParameters = context.params as RouteParameters
   const localizedRouteParameters: LocalizedRouteParameters = {}

@@ -14,7 +14,5 @@ if (typeof window === 'undefined') {
  *
  * @returns An array of `Rewrite` objects.
  */
-export function getRewrites(): Rewrite[] {
-  return ((window.__BUILD_MANIFEST as ClientBuildManifest).__rewrites as unknown as Rewrites)
-    .afterFiles
-}
+export const getRewrites = (): Rewrite[] =>
+  ((window.__BUILD_MANIFEST as ClientBuildManifest).__rewrites as unknown as Rewrites).afterFiles

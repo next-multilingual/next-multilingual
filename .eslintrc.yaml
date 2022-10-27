@@ -4,6 +4,8 @@ env:
   browser: true
   node: true
   es6: true
+plugins:
+  - prefer-arrow-functions
 extends:
   - eslint:recommended
   - plugin:import/recommended
@@ -45,6 +47,14 @@ rules:
   'unicorn/prefer-type-error':
     # Not really applicable when using TypeScript (mostly triggers false positives).
     - off
+  'prefer-arrow-functions/prefer-arrow-functions':
+    # There is no recommended configuration to extend so we have to set it here to enforce arrow functions.
+    # @see https://github.com/JamieMason/eslint-plugin-prefer-arrow-functions
+    - warn
+    - classPropertiesAllowed: false
+      disallowPrototype: false
+      returnStyle: unchanged
+      singleReturnOnly: false
 overrides:
   # Disable abbreviation check on Cypress' `e2e` file.
   - files:

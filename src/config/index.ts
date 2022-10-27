@@ -27,7 +27,7 @@ export interface WebpackContext extends WebpackConfigContext {
  *
  * @returns True when running in debug mode, otherwise false.
  */
-export function isInDebugMode(): boolean {
+export const isInDebugMode = (): boolean => {
   if (typeof process !== 'undefined' && process?.env?.nextMultilingualDebug) {
     return true
   }
@@ -315,10 +315,10 @@ export class Config {
  *
  * @returns A Webpack configuration object.
  */
-export function webpackConfigurationHandler(
+export const webpackConfigurationHandler = (
   config: Webpack.Configuration,
   context: WebpackContext
-): Webpack.Configuration {
+): Webpack.Configuration => {
   if (context.isServer) {
     // Override APIs with SSR-specific versions that use different ways to get URLs.
     const alias = config.resolve?.alias as { [index: string]: string }
@@ -359,12 +359,12 @@ export function webpackConfigurationHandler(
  *
  * @throws Error when one of the arguments is invalid.
  */
-export function getConfig(
+export const getConfig = (
   applicationId: string,
   locales: string[],
   defaultLocale: string,
   options?: (NextConfig & { debug?: true }) | ((phase: string, defaultConfig: NextConfig) => void)
-): NextConfig {
+): NextConfig => {
   if (options instanceof Function) {
     throw new Error('Function config is not supported. Please use the `Config` object instead')
   }

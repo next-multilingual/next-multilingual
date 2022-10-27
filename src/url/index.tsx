@@ -45,13 +45,13 @@ export const getLanguageSwitcherUrl = (
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export function useLocalizedUrl(
+export const useLocalizedUrl = (
   url: string,
   locale?: string,
   localizedRouteParameters?: LocalizedRouteParameters,
   absolute = false,
   includeBasePath = false
-): string {
+): string => {
   const router = useRouter()
   const applicableLocale = locale?.toLowerCase() ?? router.locale
 
@@ -89,13 +89,13 @@ export function useLocalizedUrl(
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export function getLocalizedUrl(
+export const getLocalizedUrl = (
   url: string,
   locale: string,
   localizedRouteParameters?: LocalizedRouteParameters,
   absolute = false,
   includeBasePath = false
-): string {
+): string => {
   const applicableLocale = locale.toLowerCase()
   locales = locales ?? (window.next.router.locales?.map((locale) => locale.toLowerCase()) || [])
 

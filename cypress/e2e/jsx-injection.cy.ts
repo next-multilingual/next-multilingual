@@ -25,13 +25,12 @@ export const CONTACT_US_URLS: LocalizedConstant = {
  *
  * @returns The equivalent markup with original characters instead of HTML entities.
  */
-function convertHtmlEntities(markup: string): string {
-  return markup
+const convertHtmlEntities = (markup: string): string =>
+  markup
     .replace(/&#x27;/gi, "'")
     .replace(/&nbsp;/gi, ' ')
     .replace(/\s/g, ' ')
     .trim()
-}
 
 /** Get the file path for the city messages. */
 const getMessagesFilePath = (locale: string): string =>

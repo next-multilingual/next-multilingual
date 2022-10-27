@@ -7,7 +7,7 @@ export default defineConfig({
   video: false,
   screenshotOnRunFailure: false,
   e2e: {
-    setupNodeEvents(on) {
+    setupNodeEvents: (on) => {
       on('task', {
         /**
          * Task to log a message on the console whe running in headless mode.
@@ -16,7 +16,7 @@ export default defineConfig({
          *
          * @returns `true` because Cypress tasks must always return a value to indicate that the task was handled.
          */
-        log(message: string): true {
+        log: (message: string): true => {
           console.log(message)
           return true
         },

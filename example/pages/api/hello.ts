@@ -17,7 +17,7 @@ export type HelloApiSchema = {
  *
  * @returns An empty promise.
  */
-function delay(milliseconds: number): Promise<void> {
+const delay = (milliseconds: number): Promise<void> => {
   return new Promise((resolve) => {
     setTimeout(resolve, milliseconds)
   })
@@ -26,10 +26,10 @@ function delay(milliseconds: number): Promise<void> {
 /**
  * The "hello API" handler.
  */
-export default async function handler(
+const handler = async (
   request: NextApiRequest,
   response: NextApiResponse<HelloApiSchema>
-): Promise<void> {
+): Promise<void> => {
   const locale = request.headers['accept-language']
   if (locale === undefined || !isLocale(locale)) {
     response.status(400)
@@ -44,3 +44,5 @@ export default async function handler(
     }),
   })
 }
+
+export default handler

@@ -3,7 +3,7 @@ import Link from 'next-multilingual/link'
 import { KeyValueObject } from 'next-multilingual/messages'
 import { LocalizedRouteParameters, useRouter } from 'next-multilingual/router'
 import { getLanguageSwitcherUrl } from 'next-multilingual/url'
-import { ReactElement, useState } from 'react'
+import { useState } from 'react'
 
 import styles from './LanguageSwitcher.module.css'
 // Locales are not localized which is why it uses a JSON file.
@@ -14,9 +14,7 @@ type LanguageSwitcherProps = {
   localizedRouteParameters?: LocalizedRouteParameters
 }
 
-export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
-  localizedRouteParameters,
-}): ReactElement => {
+export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ localizedRouteParameters }) => {
   const router = useRouter()
   const { locale: currentLocale, locales } = router
   const [isOver, setIsOver] = useState(false)

@@ -24,7 +24,7 @@ export type KeyValueObjectCollection = {
  *
  * @returns The "raw" representation of a `.properties` fille in a simple "key/value" object.
  */
-export function parsePropertiesFile(filePath: string): KeyValueObject {
+export const parsePropertiesFile = (filePath: string): KeyValueObject => {
   const fileContent = stripBom(readFileSync(filePath, 'utf8'))
 
   if (fileContent.includes('�')) {
@@ -45,6 +45,5 @@ export function parsePropertiesFile(filePath: string): KeyValueObject {
  *
  * @returns The content from a file, without the BOM character.
  */
-export function stripBom(fileContent: string): string {
-  return fileContent.codePointAt(0) === 0xfeff ? fileContent.slice(1) : fileContent
-}
+export const stripBom = (fileContent: string): string =>
+  fileContent.codePointAt(0) === 0xfeff ? fileContent.slice(1) : fileContent

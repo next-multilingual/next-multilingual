@@ -10,7 +10,7 @@ const ContactUs: NextPage = () => {
   const messages = useMessages()
   const title = getTitle(messages)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault() // Don't redirect the page.
     void router.push('/contact-us/message-sent')
   }

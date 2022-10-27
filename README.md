@@ -101,10 +101,10 @@ import Webpack from 'webpack'
 
 import { webpackConfigurationHandler, WebpackContext } from 'next-multilingual/config'
 
-export function myWebpackConfigurationHandler(
+export const myWebpackConfigurationHandler = (
   config: Webpack.Configuration,
   context: WebpackContext
-): Webpack.Configuration {
+): Webpack.Configuration => {
   const myConfig = webpackConfigurationHandler(config, context)
   // Do stuff here.
   return myConfig
@@ -115,7 +115,7 @@ Or directly in `next.config.js`:
 
 ```js
 // Webpack handler wrapping next-multilingual's handler.
-function webpack(config, context) {
+const webpack = (config, context) => {
   config = webpackConfigurationHandler(config, context)
   // Do stuff here.
   return config
@@ -448,9 +448,8 @@ The API is available under `next-multilingual/link` and you can use it like this
 import Link from 'next-multilingual/link'
 import { useMessages } from 'next-multilingual/messages'
 
-export default function Menu(): JSX.Element {
+const Menu: React.FC = () => {
   const messages = useMessages()
-
   return (
     <nav>
       <Link href="/">
@@ -465,6 +464,8 @@ export default function Menu(): JSX.Element {
     </nav>
   )
 }
+
+export default Menu
 ```
 
 Each of these links will be automatically localized when the `slug` key is specified in that page's message file. For example, in U.S. English the "Contact Us" URL path will be `/en-us/contact-us` while in Canadian French it will be `/fr-ca/nous-joindre`.
@@ -508,10 +509,7 @@ import { sendEmail } from 'send-email'
 /**
  * The "/api/send-email" handler.
  */
-export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
-): Promise<void> {
+const handler = (request: NextApiRequest, response: NextApiResponse): Promise<void> => {
   const locale = request.headers['accept-language']
   let emailAddress = ''
 
@@ -534,6 +532,8 @@ export default async function handler(
   )
   response.status(200)
 }
+
+export default handler
 ```
 
 ### Creating components
@@ -543,10 +543,12 @@ Creating components is the same as pages but they live outside the `pages` direc
 ```tsx
 import { useMessages } from 'next-multilingual/messages'
 
-export default function Footer(): JSX.Element {
+const Footer: React.FC = () => {
   const messages = useMessages()
   return <footer>{messages.format('footerMessage')}</footer>
 }
+
+export default Footer
 ```
 
 And its messages file:
@@ -592,7 +594,7 @@ And to use it, simple import this hook from anywhere you might need these values
 ```tsx
 import { useFruitsMessages } from '../messages/useFruitsMessages'
 
-export default function FruitList(): JSX.Element {
+const FruitList: React.FC () => {
   const fruitsMessages = useFruitsMessages()
   return (
     <>
@@ -603,6 +605,8 @@ export default function FruitList(): JSX.Element {
     </>
   )
 }
+
+export default FruitList
 ```
 
 You can also call individual messages like this:
@@ -915,7 +919,7 @@ type Schema = {
 /**
  * The "hello API" handler.
  */
-export default function handler(request: NextApiRequest, response: NextApiResponse<Schema>): void {
+const handler = (request: NextApiRequest, response: NextApiResponse<Schema>): void => {
   const locale = request.headers['accept-language']
 
   if (locale === undefined || !isLocale(locale)) {
@@ -963,7 +967,7 @@ const SomePage: NextPage = () => {
       )
   }, [router.locale])
 
-  function showApiMessage(): JSX.Element {
+  const showApiMessage: React.FC = () => {
     if (apiError) {
       return (
         <>
@@ -981,7 +985,7 @@ const SomePage: NextPage = () => {
   return (
     <div>
       <h2>{messages.format('apiHeader')}</h2>
-      <div>{showApiMessage()}</div>
+      <div>{showApiMessage({})}</div>
     </div>
   )
 }
@@ -1111,9 +1115,7 @@ type LanguageSwitcherProps = {
   localizedRouteParameters?: LocalizedRouteParameters
 }
 
-export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
-  localizedRouteParameters,
-}): ReactElement => {
+export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ localizedRouteParameters }) => {
   const router = useRouter()
   const { pathname, locale: currentLocale, locales, defaultLocale, query } = useRouter()
   const href = getLanguageSwitcherUrl(router, localizedRouteParameters)
