@@ -34,21 +34,25 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ localizedRou
       <div className={isOver ? styles.over : ''}>
         {locales
           .filter((locale) => locale !== currentLocale)
-          .map((locale) => (
-            <Link
-              key={locale}
-              href={href}
-              locale={locale}
-              localizedRouteParameters={localizedRouteParameters}
-              data-cy="language-switcher-link"
-              onClick={() => {
-                setCookieLocale(locale)
-              }}
-              lang={normalizeLocale(locale)}
-            >
-              {(localeStrings as KeyValueObject)[normalizeLocale(locale)]}
-            </Link>
-          ))}
+          .map((locale) => {
+            const normalizedLocale = normalizeLocale(locale)
+            return (
+              <Link
+                key={locale}
+                href={href}
+                locale={locale}
+                localizedRouteParameters={localizedRouteParameters}
+                data-cy="language-switcher-link"
+                onClick={() => {
+                  setCookieLocale(locale)
+                }}
+                lang={normalizedLocale}
+                hrefLang={normalizedLocale}
+              >
+                {(localeStrings as KeyValueObject)[normalizedLocale]}
+              </Link>
+            )
+          })}
       </div>
     </div>
   )

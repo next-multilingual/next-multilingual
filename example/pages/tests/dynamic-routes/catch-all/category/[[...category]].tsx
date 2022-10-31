@@ -79,6 +79,14 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
   const paths: MultilingualStaticPath[] = []
   const { locales } = getStaticPathsLocales(context)
   locales.forEach((locale) => {
+    // Create paths without parameters (this is an optional catch-all route).
+    paths.push({
+      params: {
+        category: [],
+      },
+      locale,
+    })
+    // Create localized paths.
     const messages = getMessages(locale)
     messages.getAll().forEach((firstMessages) => {
       if (firstMessages.key.startsWith('categoryParameter')) {

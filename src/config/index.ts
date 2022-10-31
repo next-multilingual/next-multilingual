@@ -8,7 +8,7 @@ import { isLocale, LocalesConfig, log, normalizeLocale } from '../'
 import { PAGE_FILE_EXTENSIONS, sortUrlByDepth } from '../helpers/paths-utils'
 import { getMultilingualRoutes, MultilingualRoute } from '../helpers/server/get-multilingual-routes'
 import { getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription } from '../messages'
-import { routeToRewriteParameters } from '../router'
+import { isDynamicRoute, routeToRewriteParameters } from '../router'
 
 /**
  * Next.js did not define any types for its Webpack configs.
@@ -220,9 +220,19 @@ export class Config {
     encode = false,
     normalizeForm: 'NFC' | 'NFD' | 'NFKC' | 'NFKD' = 'NFC'
   ): string {
-    let normalizedUrlPath = `${locale ? `/${locale}` : ''}${urlPath.normalize(
-      normalizeForm
-    )}`.toLocaleLowerCase(locale)
+    let normalizedUrlPath = (() => {
+      const normalizedSegments: string[] = []
+      urlPath.split('/').forEach((urlPathSegment) => {
+        if (!isDynamicRoute) {
+          // Normalize the form and also the casing.
+          normalizedSegments.push(urlPathSegment.normalize(normalizeForm).toLocaleLowerCase(locale))
+        } else {
+          // Preserve casing for dynamic route variable names.
+          normalizedSegments.push(urlPathSegment)
+        }
+      })
+      return `${locale ? `/${locale.toLowerCase()}` : ''}${normalizedSegments.join('/')}`
+    })()
 
     if (encode) {
       normalizedUrlPath = encodeURI(normalizedUrlPath)

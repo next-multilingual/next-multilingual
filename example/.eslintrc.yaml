@@ -81,6 +81,15 @@ overrides:
               - field
               - constructor
               - method
+  # Filenames: Next.js pages must be `kebabCase` other than dynamic routes
+  - files:
+      - 'pages/**/*'
+    rules:
+      'unicorn/filename-case':
+        - error
+        - case: kebabCase
+          ignore:
+            - ^(.*\/)?(\[.+\])\.(jsx|tsx)$
   # Filenames: components must be `PascalCase`
   - files:
       - 'src/components/**/*'
