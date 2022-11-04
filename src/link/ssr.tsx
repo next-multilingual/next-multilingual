@@ -1,4 +1,5 @@
 import NextJsLink from 'next/link'
+import React from 'react'
 import type { MultilingualLink, MultilingualLinkProps } from '.'
 import { useRouter } from '../router'
 import { useLocalizedUrl } from '../url/ssr'
@@ -15,23 +16,21 @@ if (typeof window !== 'undefined') {
  *
  * @returns The Next.js `Link` component with the correct localized URLs.
  */
-const Link: MultilingualLink = ({
-  href,
-  locale,
-  localizedRouteParameters,
-  children,
-  ...props
-}: MultilingualLinkProps) => {
+// eslint-disable-next-line prefer-arrow-functions/prefer-arrow-functions
+const Link: MultilingualLink = React.forwardRef(function LinkWrapper(
+  props: MultilingualLinkProps,
+  reference
+) {
+  const { href, locale, localizedRouteParameters, children, ...parentProps } = props
   const router = useRouter()
   const applicableLocale = locale || router.locale
   const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href
   const localizedUrl = useLocalizedUrl(url, applicableLocale, localizedRouteParameters)
-
   return (
-    <NextJsLink href={localizedUrl} locale={applicableLocale} {...props}>
+    <NextJsLink href={localizedUrl} locale={applicableLocale} ref={reference} {...parentProps}>
       {children}
     </NextJsLink>
   )
-}
+})
 
 export default Link

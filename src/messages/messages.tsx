@@ -57,6 +57,17 @@ export class Messages {
       return ''
     }
 
+    // Safety check in case of bad user type assertion.
+    if (typeof key !== 'string') {
+      log.warn(
+        `trying to call ${highlight(
+          'format'
+        )} with an key identifier that is not a string in ${highlightFilePath(this.sourceFilePath)}`
+      )
+      return ''
+    }
+
+    // Empty keys are not expected.
     if (!key) {
       log.warn(
         `trying to call ${highlight('format')} with an empty key identifier in ${highlightFilePath(
@@ -66,8 +77,8 @@ export class Messages {
       return ''
     }
 
-    const message = this.messages[this.messagesIndex[key]]
-
+    // Empty messages are not expected.
+    const message = this.messages?.[this.messagesIndex?.[key]]
     if (message === undefined) {
       log.warn(
         `unable to format key with identifier ${highlight(key)} in ${highlightFilePath(

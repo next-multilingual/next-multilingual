@@ -1,10 +1,12 @@
 # ![next-multilingual](./assets/next-multilingual-banner.svg)
 
-`next-multilingual` is an opinionated end-to-end solution for Next.js applications that requires multiple languages.
+`next-multilingual` is an opinionated end-to-end solution for Next.js applications **✱** that requires multiple languages.
 
 Check out our [demo app](https://next-multilingual-example.vercel.app)!
 
 [![Try me](https://img.shields.io/badge/-Try%20me!-green?style=for-the-badge)](https://next-multilingual-example.vercel.app)
+
+**✱** `next-multilingual` only works with 📁 `pages` directory. We are still ironing out our solution to support the new 📁 `app` directory since the [`i18n` support remains unplanned](https://beta.nextjs.org/docs/app-directory-roadmap#not-planned-features).
 
 ## Installation 💻
 
