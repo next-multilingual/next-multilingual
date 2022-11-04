@@ -1,3 +1,9 @@
+## [3.0.2](https://github.com/Avansai/next-multilingual/compare/3.0.1...3.0.2) (2022-11-04)
+
+### Features
+
+- add ref support on `Link` components ([8400b5b](https://github.com/Avansai/next-multilingual/commit/8400b5b3fdfd21b0c4d58514285f9214ff414f98))
+
 ## [3.0.1](https://github.com/Avansai/next-multilingual/compare/3.0.0...3.0.1) (2022-10-31)
 
 ### Bug Fixes
