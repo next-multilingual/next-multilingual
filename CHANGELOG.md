@@ -4,7 +4,7 @@
 
 ### Features
 
-- add ref support on `Link` components ([8400b5b](https://github.com/Avansai/next-multilingual/commit/8400b5b3fdfd21b0c4d58514285f9214ff414f98))
+- add `ref` support on our `Link` component. This will enable using the `as={Link}` on many popular UI frameworks following the Next.js 13 `Link` breaking change ([8400b5b](https://github.com/Avansai/next-multilingual/commit/8400b5b3fdfd21b0c4d58514285f9214ff414f98))
 
 ## [3.0.1](https://github.com/Avansai/next-multilingual/compare/3.0.0...3.0.1) (2022-10-31)
 
