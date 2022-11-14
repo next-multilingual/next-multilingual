@@ -18,8 +18,15 @@ semi: false
 trailingComma: es5
 singleQuote: true
 
-# Add support for Next.js environment files
 overrides:
+  # Add support for Next.js environment files
   - files: '.env.*'
     options:
       parser: sh
+  # Remove line wrap for .properties file
+  - files: '*.properties'
+    options:
+      printWidth: 0
+  - files: '*.md'
+    options:
+      printWidth: 0

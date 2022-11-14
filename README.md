@@ -393,6 +393,7 @@ By default, `next-multilingual` will exclude some files like custom error pages,
 
 You can always look into the [example](./example) to see message files in action, but here is a sample that could be used on the homepage:
 
+<!-- prettier-ignore -->
 ```properties
 # Homepage title
 exampleApp.homepage.title = Homepage
@@ -428,6 +429,7 @@ export default AboutUs
 
 And of course you would have this message file `about-us.en-US.properties`:
 
+<!-- prettier-ignore -->
 ```properties
 # Page localized URL segment (slug) in (translatable) human readable format.
 # This key will be "slugified" (e.g, "About Us" will become "about-us"). All non-alphanumeric characters will be replaced by "-".
@@ -647,6 +649,7 @@ One of the main benefits of ICU MessageFormat is to use Unicode's tools and stan
 
 To ensure that your sentence will stay fluent in all languages, you can use the following message:
 
+<!-- prettier-ignore -->
 ```properties
 exampleApp.homepage.mfPlural = {count, plural, =0 {No candy left.} one {Got # candy left.} other {Got # candies left.}}
 ```
@@ -663,6 +666,7 @@ There is a lot to learn on this topic. Make sure to read the Unicode documentati
 
 In a rare event where you would need to use both placeholders using the `{placeholder}` syntax and also display the `{` and `}` characters in a message, you will need to replace them by the `&#x7b;` (for `{`) and `&#x7d;` (for `}`) HTML entities which are recognized by translation tools like this:
 
+<!-- prettier-ignore -->
 ```properties
 exampleApp.debuggingPage.variableInfo = Your variable contains the following values: &#x7b;{values}&#x7d;
 ```
@@ -697,6 +701,7 @@ There are 2 problems with this approach:
 
 This is actually an anti-pattern called _concatenation_ and should always be avoided. This is the correct way to do this, using `formatJsx`:
 
+<!-- prettier-ignore -->
 ```properties
 exampleApp.homepage.createAccount = Please <link>create your account</link> today for free.
 ```
@@ -729,6 +734,7 @@ When using `formatJsx` you will still need to [escape curly brackets](#user-cont
 
 In a rare event where you would need to inject JSX in a message using the `<element></element>` (XML) syntax and also display the `<` and `>` characters in a message, you will need to replace them by the `&#x3c;` (for `<`) and `&#x3e;` (for `>`) HTML entities which are recognized by translation tools like this:
 
+<!-- prettier-ignore -->
 ```properties
 exampleApp.statsPage.targetAchieved = You achieved your weekly target (&#x3c;5) and are eligible for a <link>reward</link>.
 ```
@@ -745,6 +751,7 @@ There are two type of anchor links:
 
 If the anchor links are on the same page, and not referred on any other pages, you can simply add them in the `.properties` file associate with that page like this:
 
+<!-- prettier-ignore -->
 ```properties
 # Table of content header
 exampleApp.longPage.tableOfContent = Table of Content
