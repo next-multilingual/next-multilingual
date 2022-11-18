@@ -84,6 +84,9 @@ export const useLocalizedUrl = (
   )
 }
 
+// Locale cache to avoid recomputing the values multiple times by page.
+let locales: string[] | undefined
+
 /**
  * Get the localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  *
@@ -105,8 +108,9 @@ export const getLocalizedUrl = (
 ): string => {
   const applicableLocale = locale.toLowerCase()
 
-  // Make sure the locale is valid.
-  if (!getConfiguredLocales().locales.includes(applicableLocale)) {
+  // Best effort locale validation (`locales` can be sometimes `undefined` on Vercel and Netlify's deployments)
+  locales = locales ?? getConfiguredLocales().locales
+  if (locales && !locales.includes(applicableLocale)) {
     log.warn(
       `invalid locale ${highlight(locale)} specified for ${highlight(
         url

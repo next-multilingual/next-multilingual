@@ -83,7 +83,7 @@ const JsxInjectionTests: NextPage = () => {
               <Link
                 href="/contact-us"
                 className={styles.link}
-                onClick={(event: MouseEvent) => {
+                onClick={(event) => {
                   event.preventDefault()
                   if (typeof window !== 'undefined') {
                     if (typeof window['_styleAndEventsClickCount'] === 'undefined') {

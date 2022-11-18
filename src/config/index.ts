@@ -461,6 +461,10 @@ export const sortRewritesDirectives = (
   return sortUrlByDepth(referenceRewrite.destination, comparedRewrite.destination)
 }
 
+// Locale cache to avoid recomputing the values multiple times by page.
+let LOCALES: string[]
+let DEFAULT_LOCALE: string
+
 /**
  * Get the configured locales.
  *
@@ -475,6 +479,3 @@ export const getConfiguredLocales = (): LocalesConfig => {
     defaultLocale: DEFAULT_LOCALE,
   }
 }
-
-let LOCALES: string[]
-let DEFAULT_LOCALE: string
