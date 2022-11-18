@@ -1,3 +1,9 @@
+## [3.0.7-0](https://github.com/Avansai/next-multilingual/compare/3.0.6...3.0.7-0) (2022-11-18)
+
+### Bug Fixes
+
+- add extra logs to troubleshoot Netlify deployment issues ([8736128](https://github.com/Avansai/next-multilingual/commit/87361285b18ed274cba8f4fa9939ee2280df40a0))
+
 ## [3.0.6](https://github.com/Avansai/next-multilingual/compare/3.0.5...3.0.6) (2022-11-18)
 
 ### Bug Fixes
