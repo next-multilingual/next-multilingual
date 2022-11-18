@@ -1,3 +1,9 @@
+## [3.0.7-1](https://github.com/Avansai/next-multilingual/compare/3.0.7-0...3.0.7-1) (2022-11-18)
+
+### Bug Fixes
+
+- fix internal server errors on the homepage when deployed on Vercel and Netlify ([7ceb610](https://github.com/Avansai/next-multilingual/commit/7ceb6108819301e72543d2c22d354c07bf77785c))
+
 ## [3.0.7-0](https://github.com/Avansai/next-multilingual/compare/3.0.6...3.0.7-0) (2022-11-18)
 
 ### Bug Fixes
