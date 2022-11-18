@@ -20,7 +20,16 @@ export const PAGES_DIRECTORY = (() => {
       return pageDirectory
     }
   }
-  throw new Error('cannot find the Next.js pages directory')
+
+  // This should never happen, so we are providing detailed logs just in case.
+  const currentDirectory = readdirSync('.', { withFileTypes: true }).map(
+    (directoryEntry) => directoryEntry.name
+  )
+  throw new Error(
+    `cannot find the Next.js pages directory. Entries in the current directory (${process.cwd()}):\n\n - ${currentDirectory.join(
+      '\n - '
+    )}\n`
+  )
 })()
 
 /**
