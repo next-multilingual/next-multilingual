@@ -1,5 +1,4 @@
 import { highlight, log, normalizeLocale } from '..'
-import { getConfiguredLocales } from '../config'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
 import { getBasePath } from '../helpers/server/get-base-path'
 import { getRewrites } from '../helpers/server/get-rewrites'
@@ -85,7 +84,7 @@ export const useLocalizedUrl = (
 }
 
 // Locale cache to avoid recomputing the values multiple times by page.
-let locales: string[] | undefined
+// let locales: string[] | undefined
 
 /**
  * Get the localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
@@ -108,17 +107,17 @@ export const getLocalizedUrl = (
 ): string => {
   const applicableLocale = locale.toLowerCase()
 
-  // Best effort locale validation (`locales` can be sometimes `undefined` on Vercel and Netlify's deployments)
-  locales = locales ?? getConfiguredLocales().locales
-  if (locales && !locales.includes(applicableLocale)) {
-    log.warn(
-      `invalid locale ${highlight(locale)} specified for ${highlight(
-        url
-      )}. Valid values are ${getConfiguredLocales()
-        .locales.map((locale) => highlight(normalizeLocale(locale)))
-        .join(', ')}`
-    )
-  }
+  // // Best effort locale validation (`locales` can be sometimes `undefined` on Vercel and Netlify's deployments)
+  // locales = locales ?? getConfiguredLocales().locales
+  // if (locales && !locales.includes(applicableLocale)) {
+  //   log.warn(
+  //     `invalid locale ${highlight(locale)} specified for ${highlight(
+  //       url
+  //     )}. Valid values are ${getConfiguredLocales()
+  //       .locales.map((locale) => highlight(normalizeLocale(locale)))
+  //       .join(', ')}`
+  //   )
+  // }
 
   return getLocalizedUrlFromRewrites(
     getRewrites(),
