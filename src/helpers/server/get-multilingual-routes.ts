@@ -14,23 +14,36 @@ import {
 } from '../paths-utils'
 
 /** The `pages` directory currently used by Next.js. */
-export const PAGES_DIRECTORY = (() => {
+const PAGES_DIRECTORY = (() => {
   for (const pageDirectory of PAGES_DIRECTORIES) {
     if (existsSync(pageDirectory)) {
       return pageDirectory
     }
   }
-
-  // This should never happen, so we are providing detailed logs just in case.
-  const currentDirectory = readdirSync('.', { withFileTypes: true }).map(
-    (directoryEntry) => directoryEntry.name
-  )
-  throw new Error(
-    `cannot find the Next.js pages directory. Entries in the current directory (${process.cwd()}):\n\n - ${currentDirectory.join(
-      '\n - '
-    )}\n`
-  )
 })()
+
+/**
+ * Get the pages directory if it exists, otherwise throw an error.
+ *
+ * ⚠ This needs to be used instead of the `PAGES_DIRECTORY` constant, so that the check is done asynchronously to
+ * avoid triggered false error on Netlify and Vercel.
+ *
+ * @returns The pages directory if it exists.
+ */
+export const getPagesDirectory = (): string => {
+  if (!PAGES_DIRECTORY) {
+    // This should never happen, so we are providing detailed logs just in case.
+    const currentDirectory = readdirSync('.', { withFileTypes: true }).map(
+      (directoryEntry) => directoryEntry.name
+    )
+    throw new Error(
+      `cannot find the Next.js pages directory. Entries in the current directory (${process.cwd()}):\n\n - ${currentDirectory.join(
+        '\n - '
+      )}\n`
+    )
+  }
+  return PAGES_DIRECTORY
+}
 
 /**
  * All possible permutations of the non-routable app-root-relative pages file paths. Pre-generating these will
@@ -214,7 +227,7 @@ export type LocalizedUrlPath = {
  */
 export const getMultilingualRoutes = (
   locales: string[],
-  directoryPath = PAGES_DIRECTORY,
+  directoryPath = getPagesDirectory(),
   routes: MultilingualRoute[] = []
 ): MultilingualRoute[] => {
   const nonLocalizedUrlPath = getNonLocalizedUrlPath(directoryPath)
