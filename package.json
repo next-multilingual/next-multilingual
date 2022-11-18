@@ -91,6 +91,7 @@
     "lint-print-config": "eslint --print-config ./eslintrc.yaml",
     "prettier": "prettier --write .",
     "release": "dotenv -- release-it --only-version",
+    "pre-release": "dotenv -- release-it --only-version --preRelease",
     "start-example": "cd example && npm run dev",
     "start-example-build": "cd example && npm run build && npm run start",
     "cypress": "cypress open",
