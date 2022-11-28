@@ -30,11 +30,11 @@ export const getLanguageSwitcherUrl = (
     return pathname
   }
   if (locale !== defaultLocale) {
-    return !localizedRouteParameters
-      ? // We presume it's a static route so we can use `pathname` directly (if there are missing parameters it will show errors later).
-        pathname
-      : // Hydrate back the dynamic route into the default locale URL to allow proper fallback.
+    return localizedRouteParameters
+      ? // Hydrate back the dynamic route into the default locale URL to allow proper fallback.
         hydrateRouteParameters(pathname, localizedRouteParameters[defaultLocale])
+      : // We presume it's a static route so we can use `pathname` directly (if there are missing parameters it will show errors later).
+        pathname
   }
   return asPath
 }

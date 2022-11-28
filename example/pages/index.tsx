@@ -80,10 +80,10 @@ const Homepage: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) =
           {apiError.message}
         </>
       )
-    } else if (!isApiLoaded) {
-      return <>{messages.format('apiLoading')}</>
-    } else {
+    } else if (isApiLoaded) {
       return <>{apiMessage}</>
+    } else {
+      return <>{messages.format('apiLoading')}</>
     }
   }
 

@@ -223,12 +223,12 @@ export class Config {
     let normalizedUrlPath = (() => {
       const normalizedSegments: string[] = []
       urlPath.split('/').forEach((urlPathSegment) => {
-        if (!isDynamicRoute) {
-          // Normalize the form and also the casing.
-          normalizedSegments.push(urlPathSegment.normalize(normalizeForm).toLocaleLowerCase(locale))
-        } else {
+        if (isDynamicRoute(urlPathSegment)) {
           // Preserve casing for dynamic route variable names.
           normalizedSegments.push(urlPathSegment)
+        } else {
+          // Normalize the form and also the casing.
+          normalizedSegments.push(urlPathSegment.normalize(normalizeForm).toLocaleLowerCase(locale))
         }
       })
       return `${locale ? `/${locale.toLowerCase()}` : ''}${normalizedSegments.join('/')}`

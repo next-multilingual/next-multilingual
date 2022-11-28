@@ -156,16 +156,7 @@ export class Message {
     tagsMatch.forEach((tag, position) => {
       const tagName = this.getXmlTagName(tag)
 
-      if (tag[1] !== '/') {
-        // Check for unexpected opening tags.
-        if (uniqueTags.includes(tagName)) {
-          throw new Error(
-            `unexpected duplicate XML tag ${highlight(tag)}. All tag names must be unique.`
-          )
-        }
-        tagTracker.push(tagName)
-        uniqueTags.push(tagName)
-      } else {
+      if (tag[1] === '/') {
         // Check for unexpected closing tags.
         let unexpectedClosing = false
         if (position === 0) {
@@ -182,6 +173,15 @@ export class Message {
 
         // Remove tag from index.
         tagTracker.pop()
+      } else {
+        // Check for unexpected opening tags.
+        if (uniqueTags.includes(tagName)) {
+          throw new Error(
+            `unexpected duplicate XML tag ${highlight(tag)}. All tag names must be unique.`
+          )
+        }
+        tagTracker.push(tagName)
+        uniqueTags.push(tagName)
       }
     })
 

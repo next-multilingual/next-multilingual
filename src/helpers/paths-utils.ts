@@ -153,7 +153,7 @@ export const removeLeadingSlash = (path: string): string => {
  * @returns The path with a leading slash.
  */
 export const addLeadingSlash = (path: string): string => {
-  return !path.startsWith('/') ? `/${path}` : path
+  return path.startsWith('/') ? path : `/${path}`
 }
 
 /**

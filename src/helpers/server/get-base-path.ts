@@ -65,13 +65,7 @@ export const getBasePath = (): string => {
   // Try to get the content of the routes-manifest (.next/routes-manifest.json) first - this is only available on builds.
   const routesManifestPath = '.next/routes-manifest.json'
 
-  if (!existsSync(routesManifestPath)) {
-    warningMessages.push(
-      `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
-        routesManifestPath
-      )} because the file does not exist.`
-    )
-  } else {
+  if (existsSync(routesManifestPath)) {
     try {
       const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest
       return setBasePathCache(routesManifest.basePath)
@@ -82,18 +76,18 @@ export const getBasePath = (): string => {
         )} due to an unexpected file parsing error.`
       )
     }
+  } else {
+    warningMessages.push(
+      `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
+        routesManifestPath
+      )} because the file does not exist.`
+    )
   }
 
   // If the routes-manifest is not available, then get can get the base path from the required server files - this is only available on builds.
   const requiredServerFilesPath = '.next/required-server-files.json'
 
-  if (!existsSync(requiredServerFilesPath)) {
-    warningMessages.push(
-      `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
-        requiredServerFilesPath
-      )} because the file does not exist.`
-    )
-  } else {
+  if (existsSync(requiredServerFilesPath)) {
     try {
       const requiredServerFiles = JSON.parse(
         readFileSync(requiredServerFilesPath, 'utf8')
@@ -106,6 +100,12 @@ export const getBasePath = (): string => {
         )} due to an unexpected file parsing error.`
       )
     }
+  } else {
+    warningMessages.push(
+      `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
+        requiredServerFilesPath
+      )} because the file does not exist.`
+    )
   }
 
   // If everything else fails, we can look for the base path in the AMP file - this seems the best option in development mode.
@@ -149,12 +149,7 @@ export const getBasePath = (): string => {
     const ampFileContent = readFileSync(ampFilePath, 'utf8')
     const basePathMatch = ampFileContent.match(/var basePath =(?<basePath>.+?)\|\|/)
 
-    if (!basePathMatch?.groups) {
-      warningMessages.push(
-        `Could not find ${highlight('basePath')} from ${highlightFilePath(ampFilePath)}.`
-      )
-      return setEmptyCacheAndShowWarnings(warningMessages)
-    } else {
+    if (basePathMatch?.groups) {
       const basePath = basePathMatch.groups.basePath.trim()
 
       if (basePath === 'false') {
@@ -172,6 +167,11 @@ export const getBasePath = (): string => {
           return setEmptyCacheAndShowWarnings(warningMessages)
         }
       }
+    } else {
+      warningMessages.push(
+        `Could not find ${highlight('basePath')} from ${highlightFilePath(ampFilePath)}.`
+      )
+      return setEmptyCacheAndShowWarnings(warningMessages)
     }
   } catch {
     warningMessages.push(

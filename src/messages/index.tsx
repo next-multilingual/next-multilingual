@@ -45,7 +45,7 @@ export const getTitle = (messages: Messages, values?: PlaceholderValues): string
   const titleMessage = messages.get(TITLE_KEY_ID)
   const slugMessage = messages.get(SLUG_KEY_ID)
 
-  const applicableTitle = titleMessage !== undefined ? titleMessage : slugMessage
+  const applicableTitle = titleMessage === undefined ? slugMessage : titleMessage
 
   if (applicableTitle === undefined) {
     log.warn(

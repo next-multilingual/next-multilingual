@@ -220,25 +220,7 @@ export const getLocalizedDynamicUrl = (
           : urlSegment.slice(1)
         const localizedRouteParameter = localizedRouteParameters?.[locale]?.[parameterName]
 
-        if (!localizedRouteParameter) {
-          if (localizedRouteParameters && !urlSegment.endsWith('*')) {
-            /**
-             * Localized route parameters should only be used in language switchers, because we have 1 source URLs that we need
-             * to translate into multiple languages. But in other cases, like <Link> components, we can specify the correctly
-             * localized parameters directly in the non-localized URL.
-             *
-             * Note: catch all routes don't require parameters.
-             */
-            missingParameters.push(parameterName)
-          }
-          const parameterValue = indexMatch.shift() as string
-
-          // Remove unused optional catch-all route if present.
-          localizedDynamicUrl +=
-            parameterValue && !(parameterValue.startsWith(':') && parameterValue.endsWith('*'))
-              ? `/${parameterValue}`
-              : ''
-        } else {
+        if (localizedRouteParameter) {
           // A localized route parameter has been found (most likely this is a URL from a language switcher).
           if (urlSegment.endsWith('*') && !Array.isArray(localizedRouteParameter)) {
             // The segment is a catch-all route but a 'string' was provided instead of an array.
@@ -270,6 +252,24 @@ export const getLocalizedDynamicUrl = (
               ? localizedRouteParameter.join('/')
               : localizedRouteParameter
           }`
+        } else {
+          if (localizedRouteParameters && !urlSegment.endsWith('*')) {
+            /**
+             * Localized route parameters should only be used in language switchers, because we have 1 source URLs that we need
+             * to translate into multiple languages. But in other cases, like <Link> components, we can specify the correctly
+             * localized parameters directly in the non-localized URL.
+             *
+             * Note: catch all routes don't require parameters.
+             */
+            missingParameters.push(parameterName)
+          }
+          const parameterValue = indexMatch.shift() as string
+
+          // Remove unused optional catch-all route if present.
+          localizedDynamicUrl +=
+            parameterValue && !(parameterValue.startsWith(':') && parameterValue.endsWith('*'))
+              ? `/${parameterValue}`
+              : ''
         }
       } else {
         localizedDynamicUrl += `/${urlSegment}`

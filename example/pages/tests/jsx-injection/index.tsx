@@ -86,7 +86,7 @@ const JsxInjectionTests: NextPage = () => {
                 onClick={(event) => {
                   event.preventDefault()
                   if (typeof window !== 'undefined') {
-                    if (typeof window['_styleAndEventsClickCount'] === 'undefined') {
+                    if (window['_styleAndEventsClickCount'] === undefined) {
                       window['_styleAndEventsClickCount'] = 1
                     } else {
                       window['_styleAndEventsClickCount']++

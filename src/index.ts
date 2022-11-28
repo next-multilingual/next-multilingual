@@ -49,7 +49,7 @@ export const highlight = (segment: string | number): string => cyanBright(segmen
  * @returns The highlighted file path segment of a log message.
  */
 export const highlightFilePath = (filePath: string): string =>
-  highlight(pathSeparator !== '/' ? filePath.replace(/\//g, pathSeparator) : filePath)
+  highlight(pathSeparator === '/' ? filePath : filePath.replace(/\//g, pathSeparator))
 
 /**
  * The locales state that includes both the current locale and the locales configuration.
@@ -312,7 +312,7 @@ export const getActualDefaultLocale = (nextLocalesConfig: LocalesConfig): string
  * @returns `true` if the string is a locale identifier following the `language`-`country`, otherwise `false`.
  */
 export const isLocale = (locale: string, checkNormalizedCase = false): boolean => {
-  const regexp = new RegExp(/^[a-z]{2}-[A-Z]{2}$/, !checkNormalizedCase ? 'i' : '')
+  const regexp = new RegExp(/^[a-z]{2}-[A-Z]{2}$/, checkNormalizedCase ? '' : 'i')
   return regexp.test(locale)
 }
 
@@ -375,9 +375,9 @@ const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME ?? 'L'
 
 // The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
 const LOCALE_COOKIE_LIFETIME: number =
-  process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME !== undefined
-    ? +process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
-    : 60 * 60 * 24 * 365 * 10
+  process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME === undefined
+    ? 60 * 60 * 24 * 365 * 10
+    : +process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
 
 /**
  * Save the current user's locale to the locale cookie.

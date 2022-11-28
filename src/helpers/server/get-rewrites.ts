@@ -64,13 +64,7 @@ export const getRewrites = (): Rewrite[] => {
   // Try to get the content of the routes-manifest (.next/routes-manifest.json) first - this is only available on builds.
   const routesManifestPath = '.next/routes-manifest.json'
 
-  if (!existsSync(routesManifestPath)) {
-    warningMessages.push(
-      `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
-        routesManifestPath
-      )} because the file does not exist.`
-    )
-  } else {
+  if (existsSync(routesManifestPath)) {
     try {
       const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest
       return setRewritesCache(
@@ -89,6 +83,12 @@ export const getRewrites = (): Rewrite[] => {
         )} due to an unexpected file parsing error.`
       )
     }
+  } else {
+    warningMessages.push(
+      `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
+        routesManifestPath
+      )} because the file does not exist.`
+    )
   }
 
   // If the routes-manifest is not available, then get can get the rewrites from the build manifest.

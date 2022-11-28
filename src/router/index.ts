@@ -420,22 +420,7 @@ export const getLocalizedRouteParameters = (
       continue
     }
 
-    // Patch-matching (non-catch-all) dynamic routes.
-    if (!Array.isArray(parameterValue)) {
-      locales.forEach((locale) => {
-        localizedRouteParameters[locale] = localizedRouteParameters[locale] ?? {}
-        const localizedRouteParameter = getLocalizedRouteParameter(
-          currentLocale,
-          locale,
-          parameterName,
-          parameterValue,
-          parameterMessagesValue
-        )
-        if (localizedRouteParameter) {
-          localizedRouteParameters[locale][parameterName] = localizedRouteParameter
-        }
-      })
-    } else {
+    if (Array.isArray(parameterValue)) {
       // Catch-all Dynamic routes.
       if (!Array.isArray(parameterMessagesValue)) {
         log.warn(
@@ -484,6 +469,21 @@ export const getLocalizedRouteParameters = (
           }
         })
       }
+    } else {
+      // Patch-matching (non-catch-all) dynamic routes.
+      locales.forEach((locale) => {
+        localizedRouteParameters[locale] = localizedRouteParameters[locale] ?? {}
+        const localizedRouteParameter = getLocalizedRouteParameter(
+          currentLocale,
+          locale,
+          parameterName,
+          parameterValue,
+          parameterMessagesValue
+        )
+        if (localizedRouteParameter) {
+          localizedRouteParameters[locale][parameterName] = localizedRouteParameter
+        }
+      })
     }
   }
 

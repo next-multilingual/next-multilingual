@@ -50,5 +50,5 @@ export const ORIGIN: string = (
 
 /** The base path of the Next.js application. (set manually when testing `basePath`) */
 export const BASE_PATH: string = (
-  Cypress.env('basePath') !== undefined ? Cypress.env('basePath') : ''
+  Cypress.env('basePath') === undefined ? '' : Cypress.env('basePath')
 ) as string
