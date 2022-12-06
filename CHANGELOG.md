@@ -1,3 +1,9 @@
+## [3.0.11-0](https://github.com/Avansai/next-multilingual/compare/3.0.10...3.0.11-0) (2022-12-06)
+
+### Performance Improvements
+
+- cache `useMessage` to make it more performant ([e3996b1](https://github.com/Avansai/next-multilingual/commit/e3996b115080596f57759d66280d939f2fe2afb8))
+
 ## [3.0.10](https://github.com/Avansai/next-multilingual/compare/3.0.10-2...3.0.10) (2022-12-06)
 
 ### Bug Fixes
