@@ -106,38 +106,48 @@ export const removePagesFileExtension = (filesystemPath: string): string => {
 /**
  * Sort URLs in the order expected by Next.js.
  *
+ * The rules are simple: sort by number of segments first, dynamic segments last and otherwise alphabetical.
+ *
  * @param referenceUrl - The reference URL.
  * @param comparedUrl - The URL being compared.
  *
  * @returns The values expected by a sorting callback function.
  */
 export const sortUrls = (referenceUrl: string, comparedUrl: string): number => {
-  const referenceUrlDepth = referenceUrl.split('/').length
-  const comparedUrlDepth = comparedUrl.split('/').length
-  if (referenceUrlDepth < comparedUrlDepth) {
+  const referenceUrlSegments = referenceUrl.split('/')
+  const comparedUrlSegments = comparedUrl.split('/')
+  if (referenceUrlSegments.length < comparedUrlSegments.length) {
     // `referenceUrl` is sorted after `comparedUrl`.
     return 1
   }
-  if (referenceUrlDepth > comparedUrlDepth) {
+  if (referenceUrlSegments.length > comparedUrlSegments.length) {
     // `comparedUrl` is sorted after `referenceUrl`.
     return -1
   }
 
-  if (referenceUrl.startsWith(':')) {
-    return comparedUrl.startsWith(':')
+  const lastReferenceUrlSegment = referenceUrlSegments.pop()
+  const lastComparedUrlSegment = comparedUrlSegments.pop()
+
+  // If there are no segments, the sort order stays the same.
+  if (!lastReferenceUrlSegment || !lastComparedUrlSegment) {
+    return 0
+  }
+
+  if (lastReferenceUrlSegment.startsWith(':')) {
+    return lastComparedUrlSegment.startsWith(':')
       ? // Sort in alphabetical order since both URLs are dynamic.
-        referenceUrl.localeCompare(comparedUrl)
+        lastReferenceUrlSegment.localeCompare(lastComparedUrlSegment)
       : // `referenceUrl` is sorted after `comparedUrl` since it's a dynamic route.
         1
   }
 
-  if (comparedUrl.startsWith(':')) {
+  if (lastComparedUrlSegment.startsWith(':')) {
     // `comparedUrl` is sorted after `referenceUrl` since it's a dynamic route.
     return -1
   }
 
   // None of the URLs are dynamic, so we can sort them in alphabetical order
-  return referenceUrl.localeCompare(comparedUrl)
+  return lastReferenceUrlSegment.localeCompare(lastComparedUrlSegment)
 }
 
 /**
