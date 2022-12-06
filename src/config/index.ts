@@ -8,7 +8,7 @@ import { isLocale, LocalesConfig, log, normalizeLocale } from '../'
 import { PAGE_FILE_EXTENSIONS, sortUrls } from '../helpers/paths-utils'
 import { getMultilingualRoutes, MultilingualRoute } from '../helpers/server/get-multilingual-routes'
 import { getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription } from '../messages'
-import { isDynamicRoute, routeToRewriteParameters } from '../router'
+import { routeToRewriteParameters } from '../router'
 
 /**
  * Next.js did not define any types for its Webpack configs.
@@ -223,7 +223,7 @@ export class Config {
     let normalizedUrlPath = (() => {
       const normalizedSegments: string[] = []
       urlPath.split('/').forEach((urlPathSegment) => {
-        if (isDynamicRoute(urlPathSegment)) {
+        if (urlPathSegment.startsWith(':')) {
           // Preserve casing for dynamic route variable names.
           normalizedSegments.push(urlPathSegment)
         } else {
