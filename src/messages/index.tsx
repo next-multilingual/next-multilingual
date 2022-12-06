@@ -1,6 +1,7 @@
 import { InjectedMessages } from 'messages-modules'
 import { useRouter } from 'next/router'
 import { extname, parse as parsePath, resolve } from 'node:path'
+import { useMemo } from 'react'
 import { highlight, highlightFilePath, log, normalizeLocale } from '../'
 import {
   getLastPathSegment,
@@ -217,7 +218,7 @@ export function useMessages(): Messages {
   const { locale } = useRouter()
   // @ts-expect-error: `this` is injected using `bind` and will trigger a false compilation error.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  return handleMessages(this, 'useMessages', locale)
+  return useMemo(() => handleMessages(this, 'useMessages', locale), [locale])
 }
 
 /**
