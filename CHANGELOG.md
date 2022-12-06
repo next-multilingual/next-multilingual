@@ -1,3 +1,9 @@
+## [3.0.10-0](https://github.com/Avansai/next-multilingual/compare/3.0.9...3.0.10-0) (2022-12-06)
+
+### Bug Fixes
+
+- fix a routing issue where localized dynamic routes would intercept static routes ([e83b639](https://github.com/Avansai/next-multilingual/commit/e83b639687472708fcadb1ba967c3bab191675bc))
+
 ## [3.0.9](https://github.com/Avansai/next-multilingual/compare/3.0.8...3.0.9) (2022-12-04)
 
 ## [3.0.8](https://github.com/Avansai/next-multilingual/compare/3.0.7...3.0.8) (2022-11-28)
