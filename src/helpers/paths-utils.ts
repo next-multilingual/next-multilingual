@@ -104,23 +104,40 @@ export const removePagesFileExtension = (filesystemPath: string): string => {
 }
 
 /**
- * Sort URLs by depth in descending order.
+ * Sort URLs in the order expected by Next.js.
  *
  * @param referenceUrl - The reference URL.
  * @param comparedUrl - The URL being compared.
  *
  * @returns The values expected by a sorting callback function.
  */
-export const sortUrlByDepth = (referenceUrl: string, comparedUrl: string): number => {
+export const sortUrls = (referenceUrl: string, comparedUrl: string): number => {
   const referenceUrlDepth = referenceUrl.split('/').length
   const comparedUrlDepth = comparedUrl.split('/').length
   if (referenceUrlDepth < comparedUrlDepth) {
+    // `referenceUrl` is sorted after `comparedUrl`.
     return 1
   }
   if (referenceUrlDepth > comparedUrlDepth) {
+    // `comparedUrl` is sorted after `referenceUrl`.
     return -1
   }
-  return 0
+
+  if (referenceUrl.startsWith(':')) {
+    return comparedUrl.startsWith(':')
+      ? // Sort in alphabetical order since both URLs are dynamic.
+        referenceUrl.localeCompare(comparedUrl)
+      : // `referenceUrl` is sorted after `comparedUrl` since it's a dynamic route.
+        1
+  }
+
+  if (comparedUrl.startsWith(':')) {
+    // `comparedUrl` is sorted after `referenceUrl` since it's a dynamic route.
+    return -1
+  }
+
+  // None of the URLs are dynamic, so we can sort them in alphabetical order
+  return referenceUrl.localeCompare(comparedUrl)
 }
 
 /**

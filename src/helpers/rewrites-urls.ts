@@ -1,7 +1,7 @@
 import type { Rewrite } from 'next/dist/lib/load-custom-routes'
 import { highlight, isLocale, log } from '..'
 import { LocalizedRouteParameters } from '../router'
-import { getLastPathSegment, getPathWithoutLastSegment, sortUrlByDepth } from './paths-utils'
+import { getLastPathSegment, getPathWithoutLastSegment, sortUrls } from './paths-utils'
 
 /** Track the `rewrites` arguments used when calling `getRewritesIndex` to automatically flush the cache. */
 let lastRewrites: Rewrite[]
@@ -102,7 +102,7 @@ const buildIndexes = (rewrites: Rewrite[], basePath?: string): void => {
   // Make sure the index is in the right order when trying to match catch-all routes.
   const sortedRewritesIndex: RewriteIndex = {}
   Object.keys(rewritesIndex)
-    .sort(sortUrlByDepth)
+    .sort(sortUrls)
     .map((key) => (sortedRewritesIndex[key] = rewritesIndex[key]))
 
   // Split indexes by static and dynamic routes.

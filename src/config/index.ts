@@ -5,7 +5,7 @@ import type { WebpackConfigContext } from 'next/dist/server/config-shared'
 import { existsSync, Stats, utimesSync } from 'node:fs'
 import type Webpack from 'webpack'
 import { isLocale, LocalesConfig, log, normalizeLocale } from '../'
-import { PAGE_FILE_EXTENSIONS, sortUrlByDepth } from '../helpers/paths-utils'
+import { PAGE_FILE_EXTENSIONS, sortUrls } from '../helpers/paths-utils'
 import { getMultilingualRoutes, MultilingualRoute } from '../helpers/server/get-multilingual-routes'
 import { getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription } from '../messages'
 import { isDynamicRoute, routeToRewriteParameters } from '../router'
@@ -458,7 +458,7 @@ export const sortRewritesDirectives = (
   referenceRewrite: Rewrite,
   comparedRewrite: Rewrite
 ): number => {
-  return sortUrlByDepth(referenceRewrite.destination, comparedRewrite.destination)
+  return sortUrls(referenceRewrite.destination, comparedRewrite.destination)
 }
 
 // Locale cache to avoid recomputing the values multiple times by page.
