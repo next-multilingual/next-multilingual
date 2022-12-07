@@ -1,10 +1,8 @@
 ## [3.0.12](https://github.com/Avansai/next-multilingual/compare/3.0.12-1...3.0.12) (2022-12-07)
 
-## [3.0.12-1](https://github.com/Avansai/next-multilingual/compare/3.0.12-0...3.0.12-1) (2022-12-07)
-
 ### Bug Fixes
 
-- try to fix Watchpack error ([d0a6aa6](https://github.com/Avansai/next-multilingual/commit/d0a6aa6ffaeb7db935ad1d68963c4ea892fb277a))
+- Fix Watchpack errors that could occur in large projects ([d0a6aa6](https://github.com/Avansai/next-multilingual/commit/d0a6aa6ffaeb7db935ad1d68963c4ea892fb277a))
 
 ## [3.0.12-0](https://github.com/Avansai/next-multilingual/compare/3.0.11...3.0.12-0) (2022-12-07)
 
