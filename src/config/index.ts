@@ -1,7 +1,8 @@
 import type { NextConfig } from 'next'
 import type { Redirect, Rewrite } from 'next/dist/lib/load-custom-routes'
 import type { WebpackConfigContext } from 'next/dist/server/config-shared'
-import { existsSync, Stats, utimesSync } from 'node:fs'
+import { existsSync, statSync, utimesSync } from 'node:fs'
+import Watchpack from 'watchpack'
 import type Webpack from 'webpack'
 import { isLocale, LocalesConfig, log, normalizeLocale } from '../'
 import { PAGE_FILE_EXTENSIONS, sortUrls } from '../helpers/paths-utils'
@@ -108,26 +109,56 @@ export class Config {
 
     this.routes = getMultilingualRoutes(this.locales)
 
-    // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
-    // if (process.env.NODE_ENV === 'development') {
-    //   let routesSnapshot = this.routes
+    if (process.env.NODE_ENV === 'development') {
+      let routesSnapshot = this.routes
 
-    //   const watch = new CheapWatch({
-    //     dir: process.cwd(),
-    //     filter: ({ path, stats }: { path: string; stats: Stats }) =>
-    //       (stats.isFile() && path.includes('.properties')) ||
-    //       (stats.isDirectory() && !path.includes('node_modules') && !path.includes('.next')),
-    //   })
+      const watchpack = new Watchpack({
+        aggregateTimeout: 500,
+        poll: true,
+        followSymlinks: true,
+        ignored: (path) => {
+          // Ignore Node modules
+          if (path.startsWith('node_modules') || path.includes('/node_modules/')) {
+            return true
+          }
+          // Ignore Git files
+          if (path.startsWith('.git')) {
+            return true
+          }
+          // Ignore Next.js files
+          if (path.startsWith('.next')) {
+            return true
+          }
 
-    //   void watch.init()
+          // Make sure `.properties` files are not ignored since they are the trigger point.
+          if (path.endsWith('.properties') && statSync(path).isFile()) {
+            return false
+          }
 
-    //   watch.on('+', ({ path, stats }: { path: string; stats: Stats }) => {
-    //     routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
-    //   })
-    //   watch.on('-', ({ path, stats }: { path: string; stats: Stats }) => {
-    //     routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
-    //   })
-    // }
+          // Directories are included to allow recursive crawling.
+          if (path === '.' || statSync(path).isDirectory()) {
+            return false
+          }
+
+          // Everything else is ignored.
+          return true
+        },
+      })
+
+      watchpack.watch({
+        files: ['.'],
+        directories: ['.'],
+        startTime: Date.now() - 10000,
+      })
+
+      watchpack.on('change', (filePath) => {
+        routesSnapshot = this.recompileSourceFile(filePath, routesSnapshot)
+      })
+
+      watchpack.on('remove', (filePath) => {
+        routesSnapshot = this.recompileSourceFile(filePath, routesSnapshot)
+      })
+    }
 
     // Check if debug mode was enabled.
     if (debug) {
@@ -152,11 +183,8 @@ export class Config {
    */
   private recompileSourceFile(
     messagesFilePath: string,
-    messagesFileStats: Stats,
     routesSnapshot: MultilingualRoute[]
   ): MultilingualRoute[] {
-    if (!messagesFileStats.isFile()) return routesSnapshot
-
     for (const pageFileExtension of PAGE_FILE_EXTENSIONS) {
       const sourceFilePath = getSourceFilePath(messagesFilePath, pageFileExtension)
 
