@@ -1,4 +1,3 @@
-import CheapWatch from 'cheap-watch'
 import type { NextConfig } from 'next'
 import type { Redirect, Rewrite } from 'next/dist/lib/load-custom-routes'
 import type { WebpackConfigContext } from 'next/dist/server/config-shared'
@@ -110,25 +109,25 @@ export class Config {
     this.routes = getMultilingualRoutes(this.locales)
 
     // During development, add an extra watcher to trigger recompile when a `.properties` file changes.
-    if (process.env.NODE_ENV === 'development') {
-      let routesSnapshot = this.routes
+    // if (process.env.NODE_ENV === 'development') {
+    //   let routesSnapshot = this.routes
 
-      const watch = new CheapWatch({
-        dir: process.cwd(),
-        filter: ({ path, stats }: { path: string; stats: Stats }) =>
-          (stats.isFile() && path.includes('.properties')) ||
-          (stats.isDirectory() && !path.includes('node_modules') && !path.includes('.next')),
-      })
+    //   const watch = new CheapWatch({
+    //     dir: process.cwd(),
+    //     filter: ({ path, stats }: { path: string; stats: Stats }) =>
+    //       (stats.isFile() && path.includes('.properties')) ||
+    //       (stats.isDirectory() && !path.includes('node_modules') && !path.includes('.next')),
+    //   })
 
-      void watch.init()
+    //   void watch.init()
 
-      watch.on('+', ({ path, stats }: { path: string; stats: Stats }) => {
-        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
-      })
-      watch.on('-', ({ path, stats }: { path: string; stats: Stats }) => {
-        routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
-      })
-    }
+    //   watch.on('+', ({ path, stats }: { path: string; stats: Stats }) => {
+    //     routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
+    //   })
+    //   watch.on('-', ({ path, stats }: { path: string; stats: Stats }) => {
+    //     routesSnapshot = this.recompileSourceFile(path, stats, routesSnapshot)
+    //   })
+    // }
 
     // Check if debug mode was enabled.
     if (debug) {
