@@ -1,3 +1,9 @@
+## [3.0.13-0](https://github.com/Avansai/next-multilingual/compare/3.0.12...3.0.13-0) (2022-12-09)
+
+### Bug Fixes
+
+- fix incorrect handling of casing in dynamic route parameters ([36af5f1](https://github.com/Avansai/next-multilingual/commit/36af5f1e9f34edc44e6905ad165a022630fe0702))
+
 ## [3.0.12](https://github.com/Avansai/next-multilingual/compare/3.0.12-1...3.0.12) (2022-12-07)
 
 ### Bug Fixes

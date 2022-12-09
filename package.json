@@ -1,7 +1,7 @@
 {
   "name": "next-multilingual",
   "description": "An opinionated end-to-end solution for Next.js applications that requires multiple languages.",
-  "version": "3.0.12",
+  "version": "3.0.13-0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
