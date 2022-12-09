@@ -10,7 +10,7 @@ import { hydrateRouteParameters, useRouter } from 'next-multilingual/router'
 import { getLocalizedUrl } from 'next-multilingual/url'
 import router from 'next/router'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
-import { DynamicRoutesCityTestsProps } from './..'
+import { DynamicRoutesCityTestsProps } from '..'
 import styles from './index.module.css'
 
 const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> = ({
@@ -25,7 +25,9 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
   const shanghaiPoiMessages = useShanghaiPoiMessages()
 
   const [city, setCity] = useState(
-    citiesMessages.getRouteParameterKey(localizedRouteParameters[locale].city as string) as string
+    citiesMessages.getRouteParameterKey(
+      localizedRouteParameters[locale].cityName as string
+    ) as string
   )
 
   const getPoiMessages = useCallback(
@@ -68,7 +70,7 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
   const targetUrl = useMemo(
     (): string =>
       getLocalizedUrl(
-        hydrateRouteParameters(`${pathname}/[poi]`, { city: cityParameter, poi: poiParameter }),
+        hydrateRouteParameters(`${pathname}/[poi]`, { cityName: cityParameter, poi: poiParameter }),
         locale
       ),
     [locale, cityParameter, pathname, poiParameter]
@@ -123,7 +125,10 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
       <p>{messages.format('2links')}</p>
       <ul>
         <li>
-          <Link id="link-with-parameter" href={`${asPath}/${poiParameter}`}>
+          <Link
+            id="link-with-parameter"
+            href={`${pathname}/../../${cityParameter}/point-of-interest/${poiParameter}`}
+          >
             {messages.format('link1Text')}
           </Link>
         </li>
@@ -143,4 +148,4 @@ const DynamicRoutesPointOfInterestTests: NextPage<DynamicRoutesCityTestsProps> =
 
 export default DynamicRoutesPointOfInterestTests
 
-export { getStaticPaths, getStaticProps } from './..'
+export { getStaticPaths, getStaticProps } from '..'

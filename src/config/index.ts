@@ -8,7 +8,7 @@ import { isLocale, LocalesConfig, log, normalizeLocale } from '../'
 import { PAGE_FILE_EXTENSIONS, sortUrls } from '../helpers/paths-utils'
 import { getMultilingualRoutes, MultilingualRoute } from '../helpers/server/get-multilingual-routes'
 import { getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription } from '../messages'
-import { routeToRewriteParameters } from '../router'
+import { isDynamicRoute, rewriteToRouteParameters, routeToRewriteParameters } from '../router'
 
 /**
  * Next.js did not define any types for its Webpack configs.
@@ -247,41 +247,18 @@ export class Config {
     encode = false,
     normalizeForm: 'NFC' | 'NFD' | 'NFKC' | 'NFKD' = 'NFC'
   ): string {
-    let normalizedUrlPath = (() => {
-      const normalizedSegments: string[] = []
-      urlPath.split('/').forEach((urlPathSegment) => {
-        if (urlPathSegment.startsWith(':')) {
-          // Preserve casing for dynamic route variable names.
-          normalizedSegments.push(urlPathSegment)
-        } else {
-          // Normalize the form and also the casing.
-          normalizedSegments.push(urlPathSegment.normalize(normalizeForm).toLocaleLowerCase(locale))
-        }
-      })
-      return `${locale ? `/${locale.toLowerCase()}` : ''}${normalizedSegments.join('/')}`
-    })()
-
-    if (encode) {
-      normalizedUrlPath = encodeURI(normalizedUrlPath)
-    }
-
-    // Need to unescape both rewrite and route parameters since we use the same method in `getRedirects`.
-    normalizedUrlPath = normalizedUrlPath
-      .split('/')
-      .map((pathSegment) => {
-        const decodedPathSegment = decodeURI(pathSegment)
-        // Unescape both rewrite parameters (e.g., `/:example`) or route parameters (e.g., `/[example]`) if present.
-        if (
-          decodedPathSegment.startsWith(':') ||
-          (decodedPathSegment.startsWith('[') && decodedPathSegment.endsWith(']'))
-        ) {
-          return decodedPathSegment
-        }
-        return pathSegment
-      })
-      .join('/')
-
-    return routeToRewriteParameters(normalizedUrlPath)
+    const normalizedSegments: string[] = []
+    urlPath.split('/').forEach((urlPathSegment) => {
+      if (isDynamicRoute(urlPathSegment)) {
+        // Preserve casing for dynamic route variable names.
+        normalizedSegments.push(routeToRewriteParameters(urlPathSegment))
+      } else {
+        // Normalize the form and also the casing.
+        const normalizedSegment = urlPathSegment.normalize(normalizeForm).toLocaleLowerCase(locale)
+        normalizedSegments.push(encode ? encodeURIComponent(normalizedSegment) : normalizedSegment)
+      }
+    })
+    return `${locale ? `/${locale.toLowerCase()}` : ''}${normalizedSegments.join('/')}`
   }
 
   /**
@@ -319,20 +296,20 @@ export class Config {
 
     const rewrites = this.getRewrites()
     for (const rewrite of rewrites) {
-      const canonical = rewrite.source
-      const decodedSource = decodeURI(canonical).normalize('NFC')
-      const alreadyIncluded = [canonical]
+      const decodedSource = decodeURI(rewriteToRouteParameters(rewrite.source)).normalize('NFC')
+
+      const alreadyIncluded = [rewrite.source]
 
       for (const alternative of [
-        decodedSource, // UTF-8
+        routeToRewriteParameters(decodedSource), // UTF-8
         this.getRewritePath(decodedSource, undefined, true, 'NFD'),
         this.getRewritePath(decodedSource, undefined, true, 'NFKC'),
         this.getRewritePath(decodedSource, undefined, true, 'NFKD'),
       ]) {
-        if (!alreadyIncluded.includes(alternative) && canonical !== alternative) {
+        if (!alreadyIncluded.includes(alternative) && rewrite.source !== alternative) {
           redirects.push({
             source: alternative,
-            destination: canonical,
+            destination: rewrite.source,
             locale: false,
             permanent: true,
           })
