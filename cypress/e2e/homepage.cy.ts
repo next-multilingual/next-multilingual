@@ -46,7 +46,7 @@ describe('The homepage', () => {
   const htmlTagMarkup = `<html lang="${ACTUAL_DEFAULT_LOCALE}"`
   it(`returns SSR html that contains '${htmlTagMarkup}' (actual default locale) when a client locale is invalid`, () => {
     cy.request({
-      url: `${BASE_PATH}/`,
+      url: `${BASE_PATH || '/'}`,
       headers: {
         'Accept-Language': invalidLocale,
         Cookie: 'L=',
@@ -59,7 +59,7 @@ describe('The homepage', () => {
   // Check that the content renders using the default locale on the client side.
   it(`dynamically renders content with the actual default locale when a client locale is invalid`, () => {
     cy.visit({
-      url: `${BASE_PATH}/`,
+      url: `${BASE_PATH || '/'}`,
       headers: {
         'Accept-Language': invalidLocale,
         Cookie: 'L=',
@@ -121,7 +121,7 @@ describe('The homepage', () => {
     // Check that the content renders dynamically on the client side.
     it(`dynamically renders content with the correct 'Accept-Language' header for '${localeName}'`, () => {
       cy.visit({
-        url: `${BASE_PATH}/`,
+        url: `${BASE_PATH || '/'}`,
         headers: {
           'Accept-Language': localizedLanguageDirective,
           Cookie: 'L=',

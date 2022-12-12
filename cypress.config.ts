@@ -7,6 +7,8 @@ export default defineConfig({
   video: false,
   screenshotOnRunFailure: false,
   e2e: {
+    // Test isolation is enabled by default since Cypress 12 - on our side it would slow down the tests so we disable it.
+    // testIsolation: false,
     setupNodeEvents: (on) => {
       on('task', {
         /**
