@@ -67,7 +67,7 @@ const Head: MultilingualHead = ({ localizedRouteParameters, children }: Multilin
       <link
         rel="canonical"
         href={getLocalizedUrlFromRewrites(
-          rewrites,
+          rewrites ?? [],
           pathname,
           locale,
           basePath,
@@ -81,7 +81,7 @@ const Head: MultilingualHead = ({ localizedRouteParameters, children }: Multilin
           <link
             rel="alternate"
             href={getLocalizedUrlFromRewrites(
-              rewrites,
+              rewrites ?? [],
               pathname,
               locale,
               basePath,

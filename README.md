@@ -507,7 +507,7 @@ import router from 'next/router'
 
 const Tests: NextPage = () => {
   const messages = useMessages()
-  const getLocalizedUrl = useGetLocalizedUrl()
+  const { getLocalizedUrl } = useGetLocalizedUrl()
   return (
     <button onClick={() => router.push(getLocalizedUrl('/about-us'))}>
       {messages.format('clickMe')}
@@ -518,7 +518,7 @@ const Tests: NextPage = () => {
 export default Tests
 ```
 
-> ⚠ Be careful, if you want to use the string value of the URL inside React elements, you will have errors because the URLs differ between pre-rendering and the browser. The reason for this is that on the client, on first render, Next.js doesn't have access to the rewrites data, and therefore uses "semi-localized" URL paths (e.g. `/fr-ca/about-us`). Since this is a native Next.js behavior, the simplest way to work around this for now is by adding `suppressHydrationWarning={true}` to your element.
+> ⚠ Be careful, if you want to use the string value of the URL inside React elements, you will have errors because the URLs differ between pre-rendering and the browser. The reason for this is that on the client, on first render, Next.js doesn't have access to the rewrites data, and therefore uses "semi-localized" URL paths (e.g. `/fr-ca/about-us`). Since this is a native Next.js behavior, the simplest way to work around this for now is by adding `suppressHydrationWarning={true}` to your element. To work around this, `useGetLocalizedUrl` also returns a `isLoading` property that can be used to track when the localized URLs are available to use on the client.
 
 ### Getting localized URLs without a hook
 

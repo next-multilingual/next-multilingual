@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { highlight, log, normalizeLocale } from '..'
 import { getRewrites } from '../helpers/client/get-rewrites'
 import { useRewrites } from '../helpers/client/use-rewrites'
@@ -51,7 +52,7 @@ export const useLocalizedUrl = (
   absolute = false,
   includeBasePath = false
 ): string => {
-  const getLocalizedUrl = useGetLocalizedUrl()
+  const { getLocalizedUrl } = useGetLocalizedUrl()
   return getLocalizedUrl(url, locale, localizedRouteParameters, absolute, includeBasePath)
 }
 
@@ -60,46 +61,55 @@ export const useLocalizedUrl = (
  *
  * @returns A `getLocalizedUrl` function that allows to get localized URLs.
  */
-export const useGetLocalizedUrl = (): ((
-  url: string,
-  locale?: string,
-  localizedRouteParameters?: LocalizedRouteParameters,
-  absolute?: boolean,
-  includeBasePath?: boolean
-) => string) => {
-  const router = useRouter()
-  const rewrites = useRewrites()
-
-  return (
+export const useGetLocalizedUrl = (): {
+  getLocalizedUrl: (
     url: string,
     locale?: string,
     localizedRouteParameters?: LocalizedRouteParameters,
-    absolute = false,
-    includeBasePath = false
-  ) => {
-    const applicableLocale = locale?.toLowerCase() ?? router.locale
+    absolute?: boolean,
+    includeBasePath?: boolean
+  ) => string
+  isLoading: boolean
+} => {
+  const router = useRouter()
+  const rewrites = useRewrites()
 
-    // Make sure the locale is valid.
-    if (!router.locales.includes(applicableLocale)) {
-      log.warn(
-        `invalid locale ${highlight(applicableLocale)} specified for ${highlight(
-          url
-        )}. Valid values are ${router.locales
-          .map((locale) => highlight(normalizeLocale(locale)))
-          .join(', ')}`
-      )
-    }
+  return useMemo(
+    () => ({
+      getLocalizedUrl: (
+        url: string,
+        locale?: string,
+        localizedRouteParameters?: LocalizedRouteParameters,
+        absolute = false,
+        includeBasePath = false
+      ) => {
+        const applicableLocale = locale?.toLowerCase() ?? router.locale
 
-    return getLocalizedUrlFromRewrites(
-      rewrites,
-      url,
-      applicableLocale,
-      router.basePath,
-      localizedRouteParameters,
-      absolute,
-      includeBasePath
-    )
-  }
+        // Make sure the locale is valid.
+        if (!router.locales.includes(applicableLocale)) {
+          log.warn(
+            `invalid locale ${highlight(applicableLocale)} specified for ${highlight(
+              url
+            )}. Valid values are ${router.locales
+              .map((locale) => highlight(normalizeLocale(locale)))
+              .join(', ')}`
+          )
+        }
+
+        return getLocalizedUrlFromRewrites(
+          rewrites ?? [],
+          url,
+          applicableLocale,
+          router.basePath,
+          localizedRouteParameters,
+          absolute,
+          includeBasePath
+        )
+      },
+      isLoading: rewrites === null,
+    }),
+    [rewrites, router.basePath, router.locale, router.locales, router]
+  )
 }
 
 // Locale cache to avoid recomputing the values multiple times by page.

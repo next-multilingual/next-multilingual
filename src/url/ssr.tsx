@@ -59,7 +59,7 @@ export const useLocalizedUrl = (
   absolute = false,
   includeBasePath = false
 ): string => {
-  const getLocalizedUrl = useGetLocalizedUrl()
+  const { getLocalizedUrl } = useGetLocalizedUrl()
   return getLocalizedUrl(url, locale, localizedRouteParameters, absolute, includeBasePath)
 }
 
@@ -68,44 +68,50 @@ export const useLocalizedUrl = (
  *
  * @returns A `getLocalizedUrl` function that allows to get localized URLs.
  */
-export const useGetLocalizedUrl = (): ((
-  url: string,
-  locale?: string,
-  localizedRouteParameters?: LocalizedRouteParameters,
-  absolute?: boolean,
-  includeBasePath?: boolean
-) => string) => {
-  const router = useRouter()
-
-  return (
+export const useGetLocalizedUrl = (): {
+  getLocalizedUrl: (
     url: string,
     locale?: string,
     localizedRouteParameters?: LocalizedRouteParameters,
-    absolute = false,
-    includeBasePath = false
-  ) => {
-    const applicableLocale = locale?.toLowerCase() ?? router.locale
+    absolute?: boolean,
+    includeBasePath?: boolean
+  ) => string
+  isLoading: boolean
+} => {
+  const router = useRouter()
 
-    // Make sure the locale is valid.
-    if (!router.locales.includes(applicableLocale)) {
-      log.warn(
-        `invalid locale ${highlight(applicableLocale)} specified for ${highlight(
-          url
-        )}. Valid values are ${router.locales
-          .map((locale) => highlight(normalizeLocale(locale)))
-          .join(', ')}`
+  return {
+    getLocalizedUrl: (
+      url: string,
+      locale?: string,
+      localizedRouteParameters?: LocalizedRouteParameters,
+      absolute = false,
+      includeBasePath = false
+    ) => {
+      const applicableLocale = locale?.toLowerCase() ?? router.locale
+
+      // Make sure the locale is valid.
+      if (!router.locales.includes(applicableLocale)) {
+        log.warn(
+          `invalid locale ${highlight(applicableLocale)} specified for ${highlight(
+            url
+          )}. Valid values are ${router.locales
+            .map((locale) => highlight(normalizeLocale(locale)))
+            .join(', ')}`
+        )
+      }
+
+      return getLocalizedUrlFromRewrites(
+        getRewrites(),
+        url,
+        applicableLocale,
+        router.basePath,
+        localizedRouteParameters,
+        absolute,
+        includeBasePath
       )
-    }
-
-    return getLocalizedUrlFromRewrites(
-      getRewrites(),
-      url,
-      applicableLocale,
-      router.basePath,
-      localizedRouteParameters,
-      absolute,
-      includeBasePath
-    )
+    },
+    isLoading: false,
   }
 }
 

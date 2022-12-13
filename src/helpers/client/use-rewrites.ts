@@ -17,10 +17,11 @@ export type ManifestRewrites = {
  * @param locale - The locale of the localized URL.
  * @param urlPath - The non-localized URL path (e.g. `/contact-us`).
  *
- * @returns The localized URL.
+ * @returns The localized URL or null when they are still loading.
  */
-export const useRewrites = (): Rewrite[] => {
-  const [rewrites, setRewrites] = useState<Rewrite[]>([])
+export const useRewrites = (): null | Rewrite[] => {
+  // eslint-disable-next-line unicorn/no-null
+  const [rewrites, setRewrites] = useState<null | Rewrite[]>(null)
 
   useEffect(() => {
     getClientBuildManifest()
