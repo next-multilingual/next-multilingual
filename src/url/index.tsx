@@ -1,5 +1,6 @@
 import { highlight, log, normalizeLocale } from '..'
 import { getRewrites } from '../helpers/client/get-rewrites'
+import { useRewrites } from '../helpers/client/use-rewrites'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
 import { hydrateRouteParameters, LocalizedRouteParameters, useRouter } from '../router'
 
@@ -51,6 +52,7 @@ export const useLocalizedUrl = (
   includeBasePath = false
 ): string => {
   const router = useRouter()
+  const rewrites = useRewrites()
   const applicableLocale = locale?.toLowerCase() ?? router.locale
 
   // Make sure the locale is valid.
@@ -65,7 +67,7 @@ export const useLocalizedUrl = (
   }
 
   return getLocalizedUrlFromRewrites(
-    getRewrites(),
+    rewrites,
     url,
     applicableLocale,
     router.basePath,
@@ -90,13 +92,13 @@ let locales: string[] | undefined
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export const getLocalizedUrl = (
+export const getLocalizedUrl = async (
   url: string,
   locale: string,
   localizedRouteParameters?: LocalizedRouteParameters,
   absolute = false,
   includeBasePath = false
-): string => {
+): Promise<string> => {
   const applicableLocale = locale.toLowerCase()
 
   // Best effort locale validation (`locales` can be sometimes `undefined` on Vercel and Netlify's deployments)
@@ -111,8 +113,10 @@ export const getLocalizedUrl = (
     )
   }
 
+  const rewrites = await getRewrites()
+
   return getLocalizedUrlFromRewrites(
-    getRewrites(),
+    rewrites,
     url,
     applicableLocale,
     window.next.router.basePath,

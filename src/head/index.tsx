@@ -1,6 +1,6 @@
 import NextJsHead from 'next/head'
 import { highlight, log, normalizeLocale } from '../'
-import { getRewrites } from '../helpers/client/get-rewrites'
+import { useRewrites } from '../helpers/client/use-rewrites'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
 import {
   getParameterNames,
@@ -29,6 +29,7 @@ export type MultilingualHead = typeof NextJsHead extends (...props: infer P) => 
  */
 const Head: MultilingualHead = ({ localizedRouteParameters, children }: MultilingualHeadProps) => {
   const { pathname, basePath, locale, locales } = useRouter()
+  const rewrites = useRewrites()
 
   // Check if it's a dynamic route and if we have all the information to generate the links.
   if (pathContainsParameters(pathname)) {
@@ -66,7 +67,7 @@ const Head: MultilingualHead = ({ localizedRouteParameters, children }: Multilin
       <link
         rel="canonical"
         href={getLocalizedUrlFromRewrites(
-          getRewrites(),
+          rewrites,
           pathname,
           locale,
           basePath,
@@ -80,7 +81,7 @@ const Head: MultilingualHead = ({ localizedRouteParameters, children }: Multilin
           <link
             rel="alternate"
             href={getLocalizedUrlFromRewrites(
-              getRewrites(),
+              rewrites,
               pathname,
               locale,
               basePath,

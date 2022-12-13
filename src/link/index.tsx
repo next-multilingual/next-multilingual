@@ -31,8 +31,21 @@ const Link: MultilingualLink = React.forwardRef(function LinkWrapper(
   const applicableLocale = locale || router.locale
   const url = typeof href === 'string' && href[0] === '#' ? `${router.pathname}${href}` : href
   const localizedUrl = useLocalizedUrl(url, applicableLocale, localizedRouteParameters)
+
   return (
-    <NextJsLink href={localizedUrl} locale={applicableLocale} ref={reference} {...parentProps}>
+    <NextJsLink
+      href={localizedUrl}
+      locale={applicableLocale}
+      ref={reference}
+      {...parentProps}
+      /**
+       * On the client, on first render, Next.js doesn't have access to the rewrites data,
+       * and therefore uses "semi-localized" URL paths (e.g. `/fr-ca/about-us`). We suppress React's warning
+       * about the difference with the data provided by the server, as a proper resolution to this would require
+       * either including the rewrite data twice, or deeply refactoring how Next.js works.
+       */
+      suppressHydrationWarning={true}
+    >
       {children}
     </NextJsLink>
   )

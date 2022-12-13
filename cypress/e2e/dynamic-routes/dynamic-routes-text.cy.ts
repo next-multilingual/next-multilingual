@@ -156,7 +156,6 @@ describe('A dynamic route using localized text as parameters', () => {
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
       cy.get(`#link-with-parameter`).click({ force: true, timeout: 10000 })
-
       cy.waitUntil(() => cy.url().should('eq', `${Cypress.config().baseUrl}${poiUrl}`), {
         errorMsg: 'Could not find the correct URL',
         timeout: Cypress.config('defaultCommandTimeout'),
@@ -261,10 +260,9 @@ describe('A dynamic route using localized text as parameters', () => {
     const otherLocale = otherLocales[0]
     const otherLocaleName = LOCALE_NAMES[otherLocale]
     it(`has the correct '<Link>' value when picking another language (${otherLocaleName}) (client-side) for '${localeName}'`, () => {
-      cy.get(`#language-switcher`).trigger('mouseover')
-      cy.get(`#language-switcher a[lang=${otherLocale}]`).should('be.visible')
-      cy.get(`#language-switcher a[lang=${otherLocale}]`).click()
-      cy.get(`#language-switcher`).trigger('mouseout')
+      cy.get(`#language-switcher a[lang=${otherLocale}]`).as('languageSwitcher')
+      cy.get('#language-switcher').trigger('mouseover')
+      cy.get('@languageSwitcher').click({ force: true, timeout: 10000 })
       cy.get(`#go-back a`)
         .should('have.attr', 'href')
         .should('eq', `${getCityUrl(otherLocale)}`)

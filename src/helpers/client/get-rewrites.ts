@@ -14,5 +14,17 @@ if (typeof window === 'undefined') {
  *
  * @returns An array of `Rewrite` objects.
  */
-export const getRewrites = (): Rewrite[] =>
-  ((window.__BUILD_MANIFEST as ClientBuildManifest).__rewrites as unknown as Rewrites).afterFiles
+export const getRewrites = (): Promise<Rewrite[]> => {
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      const rewrites = (
+        (window?.__BUILD_MANIFEST as ClientBuildManifest)?.__rewrites as unknown as Rewrites
+      )?.afterFiles
+
+      if (rewrites) {
+        clearInterval(interval)
+        resolve(rewrites)
+      }
+    }, 10)
+  })
+}

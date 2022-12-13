@@ -40,7 +40,7 @@ const handler = async (
   await delay(2000)
   response.status(200).json({
     message: messages.format('message', {
-      contactUsUrl: getLocalizedUrl('/contact-us', locale, undefined, true),
+      contactUsUrl: await getLocalizedUrl('/contact-us', locale, undefined, true),
     }),
   })
 }

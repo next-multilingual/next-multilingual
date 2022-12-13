@@ -99,13 +99,14 @@ let locales: string[] | undefined
  *
  * @returns The localized URL path when available, otherwise fallback to a standard non-localized Next.js URL.
  */
-export const getLocalizedUrl = (
+export const getLocalizedUrl = async (
   url: string,
   locale: string,
   localizedRouteParameters?: LocalizedRouteParameters,
   absolute = false,
   includeBasePath = false
-): string => {
+  // eslint-disable-next-line @typescript-eslint/require-await
+): Promise<string> => {
   const applicableLocale = locale.toLowerCase()
 
   // Best effort locale validation (`locales` can be sometimes `undefined` on Vercel and Netlify's deployments)

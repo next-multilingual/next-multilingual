@@ -4,7 +4,7 @@ import { NextPage } from 'next'
 import Link from 'next-multilingual/link'
 import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next-multilingual/router'
-import { getLocalizedUrl } from 'next-multilingual/url'
+import { useLocalizedUrl } from 'next-multilingual/url'
 import router from 'next/router'
 import { useMemo, useState } from 'react'
 import styles from './index.module.css'
@@ -21,10 +21,7 @@ const DynamicRoutesTextTests: NextPage = () => {
     [locale, citiesMessages, city]
   )
 
-  const targetUrl = useMemo(
-    (): string => getLocalizedUrl(`${pathname}/${cityParameter}`, locale),
-    [locale, cityParameter, pathname]
-  )
+  const targetUrl = useLocalizedUrl(`${pathname}/${cityParameter}`)
 
   return (
     <Layout title={title}>
