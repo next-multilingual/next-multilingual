@@ -1,3 +1,9 @@
+# [4.1.0](https://github.com/Avansai/next-multilingual/compare/4.0.0...4.1.0) (2022-12-13)
+
+### Features
+
+- add the new `useGetLocalizedUrl` hook ([6f87152](https://github.com/Avansai/next-multilingual/commit/6f87152a565ae4ad9bb5cd713b58f9e5ebb3fdf3))
+
 # [4.0.0](https://github.com/Avansai/next-multilingual/compare/3.0.13-0...4.0.0) (2022-12-13)
 
 ### Bug Fixes
