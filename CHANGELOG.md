@@ -1,3 +1,13 @@
+# [4.2.0](https://github.com/Avansai/next-multilingual/compare/4.1.0...4.2.0) (2022-12-13)
+
+### Features
+
+- add a `isLoading` property to `useGetLocalizedUrl` ([5e35b5d](https://github.com/Avansai/next-multilingual/commit/5e35b5dc2294d748643cd025e56ce3aa83ca428c))
+
+### BREAKING CHANGES
+
+- `useGetLocalizedUrl` no longer returns a function. It needs to be decomposed using `{ getLocalizedUrl }` to also support the new `isLoading` property.
+
 # [4.1.0](https://github.com/Avansai/next-multilingual/compare/4.0.0...4.1.0) (2022-12-13)
 
 ### Features
