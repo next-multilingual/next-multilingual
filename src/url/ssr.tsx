@@ -59,29 +59,54 @@ export const useLocalizedUrl = (
   absolute = false,
   includeBasePath = false
 ): string => {
-  const router = useRouter()
-  const applicableLocale = locale?.toLowerCase() ?? router.locale
+  const getLocalizedUrl = useGetLocalizedUrl()
+  return getLocalizedUrl(url, locale, localizedRouteParameters, absolute, includeBasePath)
+}
 
-  // Make sure the locale is valid.
-  if (!router.locales.includes(applicableLocale)) {
-    log.warn(
-      `invalid locale ${highlight(applicableLocale)} specified for ${highlight(
-        url
-      )}. Valid values are ${router.locales
-        .map((locale) => highlight(normalizeLocale(locale)))
-        .join(', ')}`
+/**
+ * React hook to get a function to get the localized URL specific to a Next.js context.
+ *
+ * @returns A `getLocalizedUrl` function that allows to get localized URLs.
+ */
+export const useGetLocalizedUrl = (): ((
+  url: string,
+  locale?: string,
+  localizedRouteParameters?: LocalizedRouteParameters,
+  absolute?: boolean,
+  includeBasePath?: boolean
+) => string) => {
+  const router = useRouter()
+
+  return (
+    url: string,
+    locale?: string,
+    localizedRouteParameters?: LocalizedRouteParameters,
+    absolute = false,
+    includeBasePath = false
+  ) => {
+    const applicableLocale = locale?.toLowerCase() ?? router.locale
+
+    // Make sure the locale is valid.
+    if (!router.locales.includes(applicableLocale)) {
+      log.warn(
+        `invalid locale ${highlight(applicableLocale)} specified for ${highlight(
+          url
+        )}. Valid values are ${router.locales
+          .map((locale) => highlight(normalizeLocale(locale)))
+          .join(', ')}`
+      )
+    }
+
+    return getLocalizedUrlFromRewrites(
+      getRewrites(),
+      url,
+      applicableLocale,
+      router.basePath,
+      localizedRouteParameters,
+      absolute,
+      includeBasePath
     )
   }
-
-  return getLocalizedUrlFromRewrites(
-    getRewrites(),
-    url,
-    applicableLocale,
-    router.basePath,
-    localizedRouteParameters,
-    absolute,
-    includeBasePath
-  )
 }
 
 // Locale cache to avoid recomputing the values multiple times by page.

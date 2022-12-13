@@ -497,6 +497,29 @@ const Tests: NextPage = () => {
 export default Tests
 ```
 
+If you prefer to define your URLs inline instead than at the top of the component, or if you need to do more advanced URL manipulations, you can also use the `useGetLocalizedUrl` hook that returns a function to get URLs:
+
+```tsx
+import { NextPage } from 'next'
+import { useMessages } from 'next-multilingual/messages'
+import { useGetLocalizedUrl } from 'next-multilingual/url'
+import router from 'next/router'
+
+const Tests: NextPage = () => {
+  const messages = useMessages()
+  const getLocalizedUrl = useGetLocalizedUrl()
+  return (
+    <button onClick={() => router.push(getLocalizedUrl('/about-us'))}>
+      {messages.format('clickMe')}
+    </button>
+  )
+}
+
+export default Tests
+```
+
+> ⚠ Be careful, if you want to use the string value of the URL inside React elements, you will have errors because the URLs differ between pre-rendering and the browser. The reason for this is that on the client, on first render, Next.js doesn't have access to the rewrites data, and therefore uses "semi-localized" URL paths (e.g. `/fr-ca/about-us`). Since this is a native Next.js behavior, the simplest way to work around this for now is by adding `suppressHydrationWarning={true}` to your element.
+
 ### Getting localized URLs without a hook
 
 You might run into situation where you also need to get a localized URL but using a hook is not an option. This is where `getLocalizedUrl` in `next-multilingual/url` comes in. It acts the same as `useLocalizedUrl` but its `locale` argument is mandatory.
@@ -1008,7 +1031,7 @@ The `normalizeLocale` is not mandatory but a recommended ISO 3166 convention. Si
 
 [Dynamic routes](https://nextjs.org/docs/routing/dynamic-routes) are very common and supported out of the box by Next.js. Since version 3.0, `next-multilingual` provides the same supports as Next.js in terms of dynamic routes. To make dynamic routes work with `next-multilingual` we have a few patterns to follow:
 
-- The `<Link>`'s `href` attribute and the `useLocalizedUrl`/`getLocalizedUrl` `url` argument only accept string URLs.
+- The `<Link>`'s `href` attribute and the `useLocalizedUrl`/`useGetLocalizedUrl`/`getLocalizedUrl` `url` argument only accept string URLs.
   - Unlike Next.js' `<Link>` component which accepts a `UrlObject`, we preferred to streamline our types since `urlObject.href` can easily be used instead.
 - Unlike static links where we expect the URL to be non-localized, the parameters always need to be localized inside the URL string by either using:
   - `userRouter().asPath` (most common scenario) by providing localized parameters directly in the URL. By using `asPath` you are using the localized URL which means that the URL you will use will be fully localized.
