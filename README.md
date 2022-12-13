@@ -532,7 +532,7 @@ const handler = (request: NextApiRequest, response: NextApiResponse): Promise<vo
   const messages = getMessages(locale)
   sendEmail(
     emailAddress,
-    messages.format('welcome', { loginUrl: getLocalizedUrl('/login', locale, true) })
+    messages.format('welcome', { loginUrl: await getLocalizedUrl('/login', locale, true) })
   )
   response.status(200)
 }
