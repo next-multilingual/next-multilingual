@@ -1,3 +1,13 @@
+# [4.0.0](https://github.com/Avansai/next-multilingual/compare/3.0.13-0...4.0.0) (2022-12-13)
+
+### Bug Fixes
+
+- fix `TypeError: Cannot read properties of undefined (reading '__rewrites')` ([dd688ee](https://github.com/Avansai/next-multilingual/commit/dd688eed402bb0c8d415dbc683eef89d3cfa051b))
+
+### BREAKING CHANGES
+
+- `getLocalizedUrl` is now `async` to avoid triggering a rare error (`TypeError: Cannot read properties of undefined (reading '__rewrites')`) because of how Next.js works.. This only occurred when performing fast operations on the site and was amplified while upgrading to Cypress 12 which seems to be much faster at running tests.
+
 ## [3.0.13-0](https://github.com/Avansai/next-multilingual/compare/3.0.12...3.0.13-0) (2022-12-09)
 
 ### Bug Fixes
