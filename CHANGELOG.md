@@ -3,28 +3,17 @@
 ### Bug Fixes
 
 - fix `TypeError: Cannot read properties of undefined (reading '__rewrites')` ([dd688ee](https://github.com/Avansai/next-multilingual/commit/dd688eed402bb0c8d415dbc683eef89d3cfa051b))
+- fix incorrect handling of casing in dynamic route parameters ([36af5f1](https://github.com/Avansai/next-multilingual/commit/36af5f1e9f34edc44e6905ad165a022630fe0702))
 
 ### BREAKING CHANGES
 
 - `getLocalizedUrl` is now `async` to avoid triggering a rare error (`TypeError: Cannot read properties of undefined (reading '__rewrites')`) because of how Next.js works.. This only occurred when performing fast operations on the site and was amplified while upgrading to Cypress 12 which seems to be much faster at running tests.
-
-## [3.0.13-0](https://github.com/Avansai/next-multilingual/compare/3.0.12...3.0.13-0) (2022-12-09)
-
-### Bug Fixes
-
-- fix incorrect handling of casing in dynamic route parameters ([36af5f1](https://github.com/Avansai/next-multilingual/commit/36af5f1e9f34edc44e6905ad165a022630fe0702))
 
 ## [3.0.12](https://github.com/Avansai/next-multilingual/compare/3.0.12-1...3.0.12) (2022-12-07)
 
 ### Bug Fixes
 
 - Fix Watchpack errors that could occur in large projects ([d0a6aa6](https://github.com/Avansai/next-multilingual/commit/d0a6aa6ffaeb7db935ad1d68963c4ea892fb277a))
-
-## [3.0.12-0](https://github.com/Avansai/next-multilingual/compare/3.0.11...3.0.12-0) (2022-12-07)
-
-### Bug Fixes
-
-- try to fix Watchpack error ([2ad50dd](https://github.com/Avansai/next-multilingual/commit/2ad50dd6e6669b293467b18681fa71ab4df226b1))
 
 ## [3.0.11](https://github.com/Avansai/next-multilingual/compare/3.0.11-0...3.0.11) (2022-12-07)
 
