@@ -108,7 +108,7 @@ export const useGetLocalizedUrl = (): {
       },
       isLoading: rewrites === null,
     }),
-    [rewrites, router.basePath, router.locale, router.locales, router]
+    [rewrites, router]
   )
 }
 
