@@ -10,9 +10,17 @@ import { DocumentProps } from 'next/document'
 import { useRouter } from 'next/router'
 import { sep as pathSeparator } from 'node:path'
 import { ParsedUrlQuery } from 'node:querystring'
-import Cookies from 'nookies'
 import { useEffect } from 'react'
 import resolveAcceptLanguage from 'resolve-accept-language'
+
+// The name of the cookie used to store the user locale, can be overwritten in an `.env` file.
+const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME ?? 'L'
+
+// The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
+const LOCALE_COOKIE_LIFETIME: number =
+  process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME === undefined
+    ? 60 * 60 * 24 * 365 * 10
+    : Number(process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME)
 
 /**
  * Wrapper in front of Next.js' log to only show messages in non-production environments.
@@ -220,8 +228,9 @@ export const useActualLocale = (localeDetection = true): void => {
   useEffect(() => {
     if (localeDetection) {
       setCookieLocale(router.locale)
-    } else {
-      Cookies.destroy(undefined, LOCALE_COOKIE_NAME)
+    } else if (typeof document !== 'undefined') {
+      // eslint-disable-next-line unicorn/no-document-cookie
+      document.cookie = `${LOCALE_COOKIE_NAME}=router.locale; Path=/; Max-Age:0;`
     }
   }, [localeDetection, router.locale])
 }
@@ -370,27 +379,15 @@ export const getPreferredLocale = (
   return resolveAcceptLanguage(acceptLanguageHeader, actualLocales, actualDefaultLocale)
 }
 
-// The name of the cookie used to store the user locale, can be overwritten in an `.env` file.
-const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME ?? 'L'
-
-// The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
-const LOCALE_COOKIE_LIFETIME: number =
-  process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME === undefined
-    ? 60 * 60 * 24 * 365 * 10
-    : +process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME
-
 /**
- * Save the current user's locale to the locale cookie.
+ * Save the current user's locale to the locale cookie (client-side).
  *
  * @param locale - A locale identifier.
  */
 export const setCookieLocale = (locale?: string): void => {
-  if (locale !== undefined) {
-    Cookies.set(undefined, LOCALE_COOKIE_NAME, locale, {
-      maxAge: LOCALE_COOKIE_LIFETIME,
-      path: '/',
-      sameSite: 'lax',
-    })
+  if (locale !== undefined && typeof document !== 'undefined') {
+    // eslint-disable-next-line unicorn/no-document-cookie
+    document.cookie = `${LOCALE_COOKIE_NAME}=${locale}; Path=/; Max-Age:${LOCALE_COOKIE_LIFETIME}; SameSite: Lax`
   }
 }
 
@@ -406,18 +403,6 @@ export const getCookieLocale = (
   serverSidePropsContext: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>,
   actualLocales: string[]
 ): string | undefined => {
-  const cookies = Cookies.get(serverSidePropsContext)
-
-  if (!Object.keys(cookies).includes(LOCALE_COOKIE_NAME)) {
-    return undefined
-  }
-  const cookieLocale = cookies[LOCALE_COOKIE_NAME]
-
-  if (!actualLocales.includes(cookieLocale)) {
-    // Delete the cookie if the value is invalid (e.g., been tampered with).
-    Cookies.destroy(serverSidePropsContext, LOCALE_COOKIE_NAME)
-    return undefined
-  }
-
-  return cookieLocale
+  const locale = serverSidePropsContext.req.cookies?.[LOCALE_COOKIE_NAME]
+  return locale && actualLocales.includes(locale) ? locale : undefined
 }
