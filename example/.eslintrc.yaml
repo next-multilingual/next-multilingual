@@ -18,16 +18,24 @@ settings:
         - '.jsx'
         - '.ts'
         - '.tsx'
-    # Uses `eslint-import-resolver-typescript` to support the `exports` syntax in `package.json`
+    # Uses `eslint-import-resolver-typescript` to support the `exports` syntax in `package.json`.
     # @see https://github.com/import-js/eslint-import-resolver-typescript
     typescript:
       alwaysTryTypes: true
 rules:
-  # Increase the level to 'error' for unused variables (the default is set to 'warning')
+  # Increase the level to 'error' for unused variables (the default is set to 'warning').
   # @see https://eslint.org/docs/latest/rules/no-unused-vars
   no-unused-vars:
     - error
     - args: all
+  # Make sure there is always a space before comments.
+  # @see https://eslint.org/docs/latest/rules/spaced-comment
+  spaced-comment:
+    - error
+  # Enforce multiline comments to use the /* syntax.
+  # #see https://eslint.org/docs/latest/rules/multiline-comment-style
+  multiline-comment-style:
+    - error
   # The Unicorn plugin comes with opinionated checks, including some that we prefer disabling.
   'unicorn/no-array-for-each':
     # Performance is no longer an issue - we prefer `forEach` for readability.
@@ -53,18 +61,18 @@ overrides:
       - plugin:@typescript-eslint/recommended
       - plugin:@typescript-eslint/recommended-requiring-type-checking
     rules:
-      # Increase the level to 'error' for unused variables (the default is set to 'warning')
+      # Increase the level to 'error' for unused variables (the default is set to 'warning').
       # @see https://typescript-eslint.io/rules/no-unused-vars/
       no-unused-vars: off
       '@typescript-eslint/no-unused-vars':
         - error
-      # Show errors when missing return types are missing on relevant functions
+      # Show errors when missing return types are missing on relevant functions.
       # @see https://typescript-eslint.io/rules/explicit-function-return-type/
       '@typescript-eslint/explicit-function-return-type':
         - error
         - allowExpressions: true
           allowConciseArrowFunctionExpressionsStartingWithVoid: true
-      # React-only config: allow passing a callback function in React (e.g. click events) while checking for promises
+      # React-only config: allow passing a callback function in React (e.g. click events) while checking for promises.
       # @see https://typescript-eslint.io/rules/no-misused-promises/
       '@typescript-eslint/no-misused-promises':
         - error
@@ -81,7 +89,7 @@ overrides:
               - field
               - constructor
               - method
-  # Filenames: Next.js pages must be `kebabCase` other than dynamic routes
+  # Filenames: Next.js pages must be `kebabCase` other than dynamic routes.
   - files:
       - 'pages/**/*'
     rules:
@@ -90,21 +98,21 @@ overrides:
         - case: kebabCase
           ignore:
             - ^(.*\/)?(\[.+\])\.(jsx|tsx)$
-  # Filenames: components must be `PascalCase`
+  # Filenames: components must be `PascalCase`.
   - files:
       - 'src/components/**/*'
     rules:
       'unicorn/filename-case':
         - error
         - case: pascalCase
-  # Filenames: messages must be `camelCase`
+  # Filenames: messages must be `camelCase`.
   - files:
       - 'src/messages/**/*'
     rules:
       'unicorn/filename-case':
         - error
         - case: camelCase
-  # Disable common acronym checks
+  # Disable common acronym checks.
   - files:
       - '**/*'
     rules:

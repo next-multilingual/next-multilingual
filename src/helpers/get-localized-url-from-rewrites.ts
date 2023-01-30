@@ -62,8 +62,10 @@ export const getLocalizedUrlFromRewrites = (
     return nonRoutableUrl
   }
 
-  // We remove the trailing slash if present so that we can use the index.
-  // Next.js' <Link> can add it back if the `trailingSlash` option is used.
+  /*
+   * We remove the trailing slash if present so that we can use the index.
+   * Next.js' <Link> can add it back if the `trailingSlash` option is used.
+   */
   urlObject.pathname = removeTrailingSlash(urlObject.pathname)
 
   // Normalize the base path when configured.
