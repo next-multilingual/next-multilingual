@@ -1,3 +1,9 @@
+## [4.2.9](https://github.com/Avansai/next-multilingual/compare/4.2.8...4.2.9) (2023-01-30)
+
+### Reverts
+
+- Revert `esmExternals` as it is causing build issues ([bfb5a5f](https://github.com/Avansai/next-multilingual/commit/bfb5a5fc18bb1ce4c0adea81de27b7334f70bfcd))
+
 ## [4.2.8](https://github.com/Avansai/next-multilingual/compare/4.2.7...4.2.8) (2023-01-30)
 
 ## [4.2.7](https://github.com/Avansai/next-multilingual/compare/4.2.6...4.2.7) (2023-01-29)
