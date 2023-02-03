@@ -109,10 +109,10 @@
   "dependencies": {
     "@babel/core": "^7.20.12",
     "colorette": "^2.0.19",
-    "intl-messageformat": "^10.2.6",
-    "messages-modules": "^1.1.29",
-    "properties-file": "^2.1.25",
-    "resolve-accept-language": "^1.1.40",
+    "intl-messageformat": "^10.3.0",
+    "messages-modules": "^1.1.30",
+    "properties-file": "^2.1.26",
+    "resolve-accept-language": "^1.1.41",
     "watchpack": "^2.4.0",
     "webpack": "^5.75.0"
   },
@@ -124,14 +124,14 @@
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@types/watchpack": "^2.4.0",
-    "@typescript-eslint/eslint-plugin": "^5.49.0",
-    "@typescript-eslint/parser": "^5.49.0",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
     "cross-env": "^7.0.3",
-    "cypress": "^12.4.1",
+    "cypress": "^12.5.1",
     "cypress-fail-on-console-error": "^4.0.2",
     "cypress-wait-until": "^1.7.2",
     "dotenv-cli": "^7.0.0",
-    "eslint": "^8.32.0",
+    "eslint": "^8.33.0",
     "eslint-config-next": "v13.1.6",
     "eslint-config-prettier": "^8.6.0",
     "eslint-import-resolver-node": "^0.3.7",
@@ -141,7 +141,7 @@
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prefer-arrow-functions": "^3.1.4",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.32.1",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-tsdoc": "^0.2.17",
     "eslint-plugin-unicorn": "^45.0.2",
@@ -154,7 +154,7 @@
     "react-dom": "^18.2.0",
     "release-it": "^15.6.0",
     "start-server-and-test": "^1.15.3",
-    "typescript": "4.9.4"
+    "typescript": "4.9.5"
   },
   "bugs": {
     "url": "https://github.com/Avansai/next-multilingual/issues"

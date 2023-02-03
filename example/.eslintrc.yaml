@@ -47,7 +47,7 @@ rules:
     # Not really applicable when using TypeScript (mostly triggers false positives).
     - off
 overrides:
-  # TypeScript configurations
+  # TypeScript configurations.
   - files:
       - '*.ts'
       - '*.mts'
