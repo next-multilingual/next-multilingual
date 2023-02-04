@@ -2,6 +2,9 @@
 .idea
 .vscode
 
+# macOS directory attributes
+.DS_Store
+
 # Node dependencies
 node_modules/
 
