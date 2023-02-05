@@ -7,6 +7,7 @@ env:
 plugins:
   - prefer-arrow-functions
   - eslint-plugin-tsdoc
+  - json-files
 extends:
   - eslint:recommended
   - plugin:import/recommended
@@ -28,6 +29,7 @@ settings:
         - '.jsx'
         - '.ts'
         - '.tsx'
+        - '.json'
     # Uses `eslint-import-resolver-typescript` to support the `exports` syntax in `package.json`.
     # @see https://github.com/import-js/eslint-import-resolver-typescript
     typescript:
@@ -43,8 +45,23 @@ rules:
   spaced-comment:
     - error
   # Enforce multiline comments to use the /* syntax.
-  # #see https://eslint.org/docs/latest/rules/multiline-comment-style
+  # @see https://eslint.org/docs/latest/rules/multiline-comment-style
   multiline-comment-style:
+    - error
+  # Requires the `engines` field in package.json.
+  # @see https://github.com/kellyselden/eslint-plugin-json-files/blob/master/docs/rules/require-engines.md
+  'json-files/require-engines':
+    - error
+  # Requires the `license` field in package.json.
+  # @see https://github.com/kellyselden/eslint-plugin-json-files/blob/master/docs/rules/require-license.md
+  'json-files/require-license':
+    - error
+  # Prevents dependency collisions between `dependencies` and `devDependencies` in package.json.
+  'json-files/require-unique-dependency-names':
+    - error
+  # Use sort-package-json to keep your keys in a predictable order.
+  # @see https://github.com/kellyselden/eslint-plugin-json-files/blob/master/docs/rules/sort-package-json.md
+  'json-files/sort-package-json':
     - error
   # The Unicorn plugin comes with opinionated checks, including some that we prefer disabling.
   'unicorn/no-array-for-each':
