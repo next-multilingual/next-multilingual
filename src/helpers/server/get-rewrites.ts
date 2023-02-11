@@ -57,7 +57,9 @@ const setEmptyCacheAndShowWarnings = (warningMessages: string[]): Rewrite[] => {
  * @returns An array of `Rewrite` objects.
  */
 export const getRewrites = (): Rewrite[] => {
-  if (rewritesCache) return rewritesCache
+  if (rewritesCache) {
+    return rewritesCache
+  }
 
   const warningMessages: string[] = []
 

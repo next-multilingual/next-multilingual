@@ -58,7 +58,9 @@ const setEmptyCacheAndShowWarnings = (warningMessages: string[]): string => {
  * @returns The base path value.
  */
 export const getBasePath = (): string => {
-  if (basePathCache !== undefined) return basePathCache
+  if (basePathCache !== undefined) {
+    return basePathCache
+  }
 
   const warningMessages: string[] = []
 

@@ -195,19 +195,39 @@ export type MessagesIndex = {
  *
  * @param value - The value of a message (placeholder and/or JSX).
  *
- * @returns True is the value is a JSX element, otherwise false.
+ * @returns True if the value is a JSX element, otherwise false.
  */
 export const isJsxValue = (value: MixedValue): value is JsxValue => !isPlaceholderValue(value)
+
+/**
+ * Type guard to check if values of messages contain some JSX.
+ *
+ * @param values - The values of the message's placeholders and/or JSX elements.
+ *
+ * @returns True if the values contain JSX, otherwise false.
+ */
+export const isJsxValues = (values: MixedValues): values is PlaceholderValues =>
+  Object.values(values).some((value) => isJsxValue(value))
 
 /**
  * Type guard to check if a message value is a placeholder.
  *
  * @param value - The value of a message (placeholder and/or JSX).
  *
- * @returns True is the value is a placeholder, otherwise false.
+ * @returns True if the value is a placeholder, otherwise false.
  */
 export const isPlaceholderValue = (value: MixedValue): value is PlaceholderValue =>
   ['string', 'number'].includes(typeof value)
+
+/**
+ * Type guard to check if values of messages are all of for placeholders.
+ *
+ * @param values - The values of the message's placeholders and/or JSX elements.
+ *
+ * @returns True if the values are all for placeholders (no JSX is present), otherwise false.
+ */
+export const isPlaceholderValues = (values: MixedValues): values is PlaceholderValues =>
+  !isJsxValues(values)
 
 /**
  * React hook to get the localized messages specific to a Next.js context.

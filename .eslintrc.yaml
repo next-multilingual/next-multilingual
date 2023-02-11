@@ -48,6 +48,10 @@ rules:
   # @see https://eslint.org/docs/latest/rules/multiline-comment-style
   multiline-comment-style:
     - error
+  # Prevent omission of curly brace (e.g. same-line if/return).
+  # @see https://eslint.org/docs/latest/rules/curly
+  curly:
+    - error
   # Requires the `engines` field in package.json.
   # @see https://github.com/kellyselden/eslint-plugin-json-files/blob/master/docs/rules/require-engines.md
   'json-files/require-engines':
@@ -57,6 +61,7 @@ rules:
   'json-files/require-license':
     - error
   # Prevents dependency collisions between `dependencies` and `devDependencies` in package.json.
+  # @see https://github.com/kellyselden/eslint-plugin-json-files/blob/master/docs/rules/require-unique-dependency-names.md
   'json-files/require-unique-dependency-names':
     - error
   # Use sort-package-json to keep your keys in a predictable order.
