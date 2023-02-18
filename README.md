@@ -6,7 +6,7 @@ Check out our [demo app](https://next-multilingual-example.vercel.app)!
 
 [![Try me](https://img.shields.io/badge/-Try%20me!-green?style=for-the-badge)](https://next-multilingual-example.vercel.app)
 
-**✱** `next-multilingual` only works with 📁 `pages` directory. We are still ironing out our solution to support the new 📁 `app` directory since the [`i18n` support remains unplanned](https://beta.nextjs.org/docs/app-directory-roadmap#not-planned-features).
+**✱** `next-multilingual` only works with 📁 `pages` directory. We are still ironing out our solution to support the new 📁 `app` directory since [internationalization](https://beta.nextjs.org/docs/guides/internationalization) is no longer part of Next.js' config.
 
 ## Installation 💻
 
