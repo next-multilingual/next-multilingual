@@ -34,7 +34,8 @@ export const useRouter = (): NextRouter & LocalesState => {
     router.locales = locales
     router.defaultLocale = defaultLocale
     return router as NextRouter & LocalesState
-  }, [nextRouter])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextRouter, nextRouter.locale, nextRouter.defaultLocale])
 }
 
 /**
