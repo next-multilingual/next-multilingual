@@ -1,3 +1,9 @@
+## [4.2.14-0](https://github.com/Avansai/next-multilingual/compare/4.2.13...4.2.14-0) (2023-02-27)
+
+### Bug Fixes
+
+- fix race condition where the actual locale is not updated ([454ae01](https://github.com/Avansai/next-multilingual/commit/454ae0122f86b47621a27f0eaa6f937453f6b54d))
+
 ## [4.2.13](https://github.com/Avansai/next-multilingual/compare/4.2.12...4.2.13) (2023-02-25)
 
 ## [4.2.12](https://github.com/Avansai/next-multilingual/compare/4.2.11...4.2.12) (2023-02-18)
