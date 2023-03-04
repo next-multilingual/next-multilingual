@@ -1,3 +1,5 @@
+## [4.2.15](https://github.com/Avansai/next-multilingual/compare/4.2.14...4.2.15) (2023-03-04)
+
 ## [4.2.14](https://github.com/Avansai/next-multilingual/compare/4.2.14-0...4.2.14) (2023-02-27)
 
 ## [4.2.14-0](https://github.com/Avansai/next-multilingual/compare/4.2.13...4.2.14-0) (2023-02-27)
