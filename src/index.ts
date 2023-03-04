@@ -222,7 +222,7 @@ export const useActualLocale = (localeDetection = true): void => {
 
   // Automatically overwrites the locale if it's using the default locale.
   router.locale = getLocalesState(nextLocalesState).locale
-  // Leave the default locale intact (without `undefined`) to avoid hydration issue while being to use other wrapper APIs.
+  // Leave the default locale intact (without `undefined`) to avoid hydration issues.
   router.defaultLocale = nextLocalesState.defaultLocale
 
   useEffect(() => {
