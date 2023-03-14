@@ -16,7 +16,11 @@ import resolveAcceptLanguage from 'resolve-accept-language'
 // The name of the cookie used to store the user locale, can be overwritten in an `.env` file.
 const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME ?? 'L'
 
-// The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
+/**
+ * The lifetime of the cookie used to store the user locale, can be overwritten in an `.env` file.
+ *
+ * ⚠ Some browsers have set a maximum cookie lifetime values (e.g. Chrome is 400 days)
+ */
 const LOCALE_COOKIE_LIFETIME: number =
   process.env.NEXT_PUBLIC_LOCALE_COOKIE_LIFETIME === undefined
     ? 60 * 60 * 24 * 365 * 10
@@ -230,7 +234,7 @@ export const useActualLocale = (localeDetection = true): void => {
       setCookieLocale(router.locale)
     } else if (typeof document !== 'undefined') {
       // eslint-disable-next-line unicorn/no-document-cookie
-      document.cookie = `${LOCALE_COOKIE_NAME}=router.locale; Path=/; Max-Age:0;`
+      document.cookie = `${LOCALE_COOKIE_NAME}=; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; Path=/;`
     }
   }, [localeDetection, router.locale])
 }
@@ -385,9 +389,11 @@ export const getPreferredLocale = (
  * @param locale - A locale identifier.
  */
 export const setCookieLocale = (locale?: string): void => {
-  if (locale !== undefined && typeof document !== 'undefined') {
+  if (locale && typeof document !== 'undefined') {
     // eslint-disable-next-line unicorn/no-document-cookie
-    document.cookie = `${LOCALE_COOKIE_NAME}=${locale}; Path=/; Max-Age:${LOCALE_COOKIE_LIFETIME}; SameSite: Lax`
+    document.cookie = `${LOCALE_COOKIE_NAME}=${locale}; Expires=${new Date(
+      Date.now() + LOCALE_COOKIE_LIFETIME * 1000
+    ).toUTCString()}; Max-Age=${LOCALE_COOKIE_LIFETIME}; Path=/; SameSite=Lax`
   }
 }
 
