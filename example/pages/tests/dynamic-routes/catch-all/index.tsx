@@ -4,8 +4,8 @@ import Link from 'next-multilingual/link'
 import { getTitle, slugify, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next-multilingual/router'
 import { useLocalizedUrl } from 'next-multilingual/url'
-import styles from './index.module.css'
 import { getCountryMessages } from './[...country]'
+import styles from './index.module.css'
 
 const CatchAllDynamicRoutesTests: NextPage = () => {
   const messages = useMessages()

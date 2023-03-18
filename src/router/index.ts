@@ -3,11 +3,11 @@ import { NextRouter, useRouter as useNextRouter } from 'next/router'
 import { fileURLToPath } from 'node:url'
 import { useMemo } from 'react'
 import {
+  LocalesState,
   getLocalesState,
   getNextLocalesState,
   highlight,
   highlightFilePath,
-  LocalesState,
   log,
 } from '..'
 import {

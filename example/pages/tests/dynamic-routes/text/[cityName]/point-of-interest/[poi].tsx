@@ -5,22 +5,22 @@ import { getMontrealPoiMessages } from '@/messages/cities/points-of-interest/mon
 import { getShanghaiPoiMessages } from '@/messages/cities/points-of-interest/shanghaiPoiMessages'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import {
+  MultilingualStaticPath,
   getStaticPathsLocales,
   getStaticPropsLocales,
-  MultilingualStaticPath,
 } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import {
   GetMessagesFunction,
-  getTitle,
   Messages,
+  getTitle,
   slugify,
   useMessages,
 } from 'next-multilingual/messages'
 import {
-  getLocalizedRouteParameters,
   LocalizedRouteParameters,
   RouteParameters,
+  getLocalizedRouteParameters,
 } from 'next-multilingual/router'
 import { useLocalizedUrl } from 'next-multilingual/url'
 import { useRouter } from 'next/router'

@@ -2,8 +2,8 @@ import { Layout } from '@/components/layout/Layout'
 import { useFruitsMessages } from '@/messages/fruits/useFruitsMessages'
 import type { GetServerSideProps, NextPage } from 'next'
 import {
-  normalizeLocale,
   ResolvedLocaleServerSideProps,
+  normalizeLocale,
   resolveLocale,
   useResolvedLocale,
 } from 'next-multilingual'

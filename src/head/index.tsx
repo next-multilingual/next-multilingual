@@ -3,9 +3,9 @@ import { highlight, log, normalizeLocale } from '../'
 import { useRewrites } from '../helpers/client/use-rewrites'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
 import {
+  LocalizedRouteParameters,
   getParameterNames,
   hydrateRouteParameters,
-  LocalizedRouteParameters,
   missingParameterIsOptional,
   pathContainsParameters,
   useRouter,

@@ -3,7 +3,7 @@ import { getConfiguredLocales } from '../config'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
 import { getBasePath } from '../helpers/server/get-base-path'
 import { getRewrites } from '../helpers/server/get-rewrites'
-import { hydrateRouteParameters, LocalizedRouteParameters, useRouter } from '../router'
+import { LocalizedRouteParameters, hydrateRouteParameters, useRouter } from '../router'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {

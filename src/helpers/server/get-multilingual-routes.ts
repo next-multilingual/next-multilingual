@@ -1,15 +1,15 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { extname } from 'node:path'
 import { highlight, highlightFilePath, log, normalizeLocale } from '../..'
-import { getMessagesFilePath, slugify, SLUG_KEY_ID } from '../../messages'
+import { SLUG_KEY_ID, getMessagesFilePath, slugify } from '../../messages'
 import { parsePropertiesFile } from '../../messages/properties'
 import { isDynamicRoute, isOptionalCatchAllDynamicRoute } from '../../router'
 import {
-  getLastPathSegment,
   NON_ROUTABLE_PAGE_FILES,
-  pagesFilePathToUrlPath,
   PAGES_DIRECTORIES,
   PAGE_FILE_EXTENSIONS,
+  getLastPathSegment,
+  pagesFilePathToUrlPath,
   removePagesFileExtension,
 } from '../paths-utils'
 

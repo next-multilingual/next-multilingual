@@ -3,7 +3,7 @@ import { highlight, log, normalizeLocale } from '..'
 import { getRewrites } from '../helpers/client/get-rewrites'
 import { useRewrites } from '../helpers/client/use-rewrites'
 import { getLocalizedUrlFromRewrites } from '../helpers/get-localized-url-from-rewrites'
-import { hydrateRouteParameters, LocalizedRouteParameters, useRouter } from '../router'
+import { LocalizedRouteParameters, hydrateRouteParameters, useRouter } from '../router'
 
 /**
  * Get the correct URL to be used by a language switcher component.

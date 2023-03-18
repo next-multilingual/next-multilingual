@@ -1,12 +1,12 @@
 import { Layout } from '@/components/layout/Layout'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import { getStaticPathsLocales, MultilingualStaticPath } from 'next-multilingual'
+import { MultilingualStaticPath, getStaticPathsLocales } from 'next-multilingual'
 import Link from 'next-multilingual/link'
 import { getMessages, getTitle, slugify, useMessages } from 'next-multilingual/messages'
 import {
+  LocalizedRouteParameters,
   getLocalizedRouteParameters,
   hydrateRouteParameters,
-  LocalizedRouteParameters,
   useRouter,
 } from 'next-multilingual/router'
 import styles from './[...country].module.css'
