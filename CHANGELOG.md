@@ -1,3 +1,9 @@
+## [4.2.17](https://github.com/Avansai/next-multilingual/compare/4.2.16...4.2.17) (2023-03-18)
+
+### Bug Fixes
+
+- locale cookie being set as a session cookie ([a46a311](https://github.com/Avansai/next-multilingual/commit/a46a3114c2e41816207d6e10316bd038a2b85222))
+
 ## [4.2.16](https://github.com/Avansai/next-multilingual/compare/4.2.15...4.2.16) (2023-03-11)
 
 ## [4.2.15](https://github.com/Avansai/next-multilingual/compare/4.2.14...4.2.15) (2023-03-04)
