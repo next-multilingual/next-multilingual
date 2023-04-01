@@ -169,7 +169,10 @@ describe('The homepage', () => {
       cy.get('#plural-messages-output').contains(localizedPluralMessages[1])
       cy.get('#plural-messages-add').click()
       cy.get('#plural-messages-output').contains(localizedPluralMessages[2])
-      cy.get('#plural-messages-subtract').click().click().click().click()
+      cy.get('#plural-messages-subtract').click()
+      cy.get('#plural-messages-subtract').click()
+      cy.get('#plural-messages-subtract').click()
+      cy.get('#plural-messages-subtract').click()
       cy.get('#plural-messages-output').contains(localizedPluralMessages[0])
     })
 

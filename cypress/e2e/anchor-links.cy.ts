@@ -40,15 +40,9 @@ describe('An anchor link', () => {
     })
 
     it(`will redirect to the correct page and position when clicked for '${localeName}'`, () => {
-      cy.get(`#anchor-link-test a`)
-        .click({ timeout: 10000 })
-        .then(() => {
-          cy.url().should('eq', `${Cypress.config().baseUrl}${linkWithFragment}`)
-
-          cy.window().then(($window) => {
-            expect($window.scrollY).to.not.equal('0')
-          })
-        })
+      cy.get(`#anchor-link-test a`).click({ timeout: 10000 })
+      cy.url().should('eq', `${Cypress.config().baseUrl}${linkWithFragment}`)
+      cy.window().its('scrollY').should('not.equal', '0')
     })
   })
 })

@@ -258,14 +258,9 @@ describe('The JSX test page', () => {
 
     // Client side test that checks if events are correctly applied to JSX elements
     it(`will have the correct events when using JSX with events for '${localeName}'`, () => {
-      cy.get('#styleAndEvents a')
-        .click()
-        .click()
-        .then(() => {
-          cy.window().then((window) => {
-            expect(window['_styleAndEventsClickCount']).to.eq(2)
-          })
-        })
+      cy.get('#styleAndEvents a').click()
+      cy.get('#styleAndEvents a').click()
+      cy.window().its('_styleAndEventsClickCount').should('equal', 2)
     })
 
     // All failing `formatJsx` calls should return empty client side markup

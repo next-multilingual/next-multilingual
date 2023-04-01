@@ -69,13 +69,10 @@ describe('A dynamic route using a unique number (non-localizable) as parameters'
 
     // `useLocalizedUrl` (client-side)
     it(`has the correct URL when using (client-side) the 'useLocalizedUrl' hook for '${localeName}'`, () => {
-      cy.get(`#go-back a`)
-        .click()
-        .then(() => {
-          cy.get(`#parameter-input`).invoke('val').should('not.be.empty')
-          cy.get(`#route-push-button`).click()
-          cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`)
-        })
+      cy.get(`#go-back a`).click()
+      cy.get(`#parameter-input`).invoke('val').should('not.be.empty')
+      cy.get(`#route-push-button`).click()
+      cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`)
     })
 
     // Localized Canonical <Head> link (SSR)

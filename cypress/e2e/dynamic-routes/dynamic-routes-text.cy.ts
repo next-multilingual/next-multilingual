@@ -165,12 +165,9 @@ describe('A dynamic route using localized text as parameters', () => {
 
     // `useLocalizedUrl` (client-side)
     it(`has the correct URL when using (client-side) the 'useLocalizedUrl' hook for '${localeName}'`, () => {
-      cy.get(`#go-back a`)
-        .click()
-        .then(() => {
-          cy.get(`#route-push-button`).click()
-          cy.url().should('eq', `${Cypress.config().baseUrl}${poiUrl}`)
-        })
+      cy.get(`#go-back a`).click()
+      cy.get(`#route-push-button`).click()
+      cy.url().should('eq', `${Cypress.config().baseUrl}${poiUrl}`)
     })
 
     // Localized parameters (SSR)
