@@ -1,6 +1,6 @@
 {
   "name": "next-multilingual",
-  "version": "4.2.19",
+  "version": "4.2.20",
   "description": "An opinionated end-to-end solution for Next.js applications that requires multiple languages.",
   "keywords": [
     "Next",
