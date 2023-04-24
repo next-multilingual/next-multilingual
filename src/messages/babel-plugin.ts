@@ -1,10 +1,9 @@
+import type { PluginObj } from '@babel/core'
 import { HijackTarget, KeyValueObject, messageModulePlugin } from 'messages-modules'
-import { getProperties } from 'properties-file'
-
+import { readFileSync } from 'node:fs'
+import { Properties } from 'properties-file'
 import { highlight, highlightFilePath, log } from '../'
 import { keySegmentRegExp, keySegmentRegExpDescription } from './'
-
-import type { PluginObj } from '@babel/core'
 
 const isInNextJs = process?.env?.__NEXT_PROCESSED_ENV === 'true'
 const applicationId = process?.env?.nextMultilingualApplicationId as string
@@ -39,7 +38,7 @@ export const hijackTargets: HijackTarget[] = [
  * @returns A "key/value" object storing messages where the key only contains the identifier segment of the key.
  */
 export const getMessages = (propertiesFilePath: string): KeyValueObject => {
-  const properties = getProperties(propertiesFilePath)
+  const properties = new Properties(readFileSync(propertiesFilePath))
   let context: string | undefined
   const compactedKeyValueObject: KeyValueObject = {}
 

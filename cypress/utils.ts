@@ -1,5 +1,4 @@
-// Cannot use normal import path because of https://github.com/cypress-io/cypress/issues/23826
-import { propertiesToJson } from 'properties-file/lib/content/index'
+import { getProperties } from 'properties-file'
 
 /**
  * Get the messages of a `.properties` file.
@@ -8,7 +7,7 @@ import { propertiesToJson } from 'properties-file/lib/content/index'
  */
 export const getMessages = (content: string): { [key: string]: string } =>
   Object.fromEntries(
-    Object.entries(propertiesToJson(content)).map(([key, value]) => [key.split('.').pop(), value])
+    Object.entries(getProperties(content)).map(([key, value]) => [key.split('.').pop(), value])
   )
 
 /**

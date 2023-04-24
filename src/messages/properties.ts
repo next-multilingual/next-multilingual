@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { propertiesToJson } from 'properties-file/content'
-
+import { getProperties } from 'properties-file'
 import { highlight, highlightFilePath, log } from '../'
 
 /**
@@ -35,7 +34,7 @@ export const parsePropertiesFile = (filePath: string): KeyValueObject => {
     )
   }
 
-  return propertiesToJson(fileContent)
+  return getProperties(fileContent)
 }
 
 /**
