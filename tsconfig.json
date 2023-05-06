@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "ES5",
-    "lib": ["es2018", "dom"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "esModuleInterop": true,
     "isolatedModules": true,
     "jsx": "react-jsx",

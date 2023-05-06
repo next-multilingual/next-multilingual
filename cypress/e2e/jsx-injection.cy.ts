@@ -27,9 +27,9 @@ export const CONTACT_US_URLS: LocalizedConstant = {
  */
 const convertHtmlEntities = (markup: string): string =>
   markup
-    .replace(/&#x27;/gi, "'")
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/\s/g, ' ')
+    .replaceAll(/&#x27;/gi, "'")
+    .replaceAll(/&nbsp;/gi, ' ')
+    .replaceAll(/\s/g, ' ')
     .trim()
 
 /** Get the file path for the city messages. */
@@ -72,7 +72,7 @@ describe('The JSX test page', () => {
             `<a href="${BASE_PATH}/${locale.toLowerCase()}${localizedContentUsUrl}">`
           )
           .replace('</link>.', `</a>.`)
-          .replace(/'/g, '&#x27;')
+          .replaceAll("'", '&#x27;')
         // Expected example: <div id="baseTest1">This is a <a href="/en-us/contact-us">simple link</a>.</div>
         expect(source).to.contain(`<div id="baseTest1">${baseTest1Markup}</div`)
       })
@@ -124,11 +124,11 @@ describe('The JSX test page', () => {
     // Escape SSR test: `formatJsx` using '<', '>', '{', '}' and quotes
     it(`will display the correct SSR markup when using JSX elements and escaping characters for '${localeName}'`, () => {
       escapeTestMarkup = JSX_INJECTION_MESSAGES[locale].escapeTest
-        .replace(/'/g, '&#x27;')
-        .replace(/&#x3c;/gi, '&lt;')
-        .replace(/&#x3e;/gi, '&gt;')
-        .replace(/&#x7b;/gi, '{')
-        .replace(/&#x7d;/gi, '}')
+        .replaceAll("'", '&#x27;')
+        .replaceAll(/&#x3c;/gi, '&lt;')
+        .replaceAll(/&#x3e;/gi, '&gt;')
+        .replaceAll(/&#x7b;/gi, '{')
+        .replaceAll(/&#x7d;/gi, '}')
         .replace('<strong>', `<strong>`)
 
       // Expected example: <div id="escapeTest">This message <strong>should</strong> render with 3 quotes &#x27;&#x27;&#x27;, &lt; &lt; &gt; &gt; greater and lower than characters as well was, { { } } curly brackets.</div>

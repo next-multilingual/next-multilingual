@@ -397,10 +397,10 @@ export const getLocalizedRouteParameters = (
 
   if (isOptionalCatchAllDynamicRoute(pathname)) {
     const parameterNames = getParameterNames(pathname)
-    const optionalParameterName = parameterNames[parameterNames.length - 1]
+    const optionalParameterName = parameterNames.at(-1)
 
-    if (!routeParameters?.[optionalParameterName]) {
-      if (parameterNames.length === 1) {
+    if (!optionalParameterName || !routeParameters?.[optionalParameterName]) {
+      if (parameterNames.length <= 1) {
         // Optional catch-all route that has no parent dynamic route and no parameter are treated like static routes.
         return {}
       }

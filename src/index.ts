@@ -61,7 +61,7 @@ export const highlight = (segment: string | number): string => cyanBright(segmen
  * @returns The highlighted file path segment of a log message.
  */
 export const highlightFilePath = (filePath: string): string =>
-  highlight(pathSeparator === '/' ? filePath : filePath.replace(/\//g, pathSeparator))
+  highlight(pathSeparator === '/' ? filePath : filePath.replaceAll('/', pathSeparator))
 
 /**
  * The locales state that includes both the current locale and the locales configuration.

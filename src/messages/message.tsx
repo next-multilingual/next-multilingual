@@ -52,16 +52,16 @@ export class Message {
           this.intlMessageFormat ??
           new IntlMessageFormat(
             this.message
-              .replace(/'/g, '@apostrophe@') // Escape (hide) apostrophes.
-              .replace(/</g, "'<'") // Smaller than escape.
-              .replace(/>/g, "'>'") // Greater than escape.
-              .replace(/''/g, '') // This only happens when two escapable characters are next to each other.
-              .replace(/@apostrophe@/g, "''"), // Two consecutive ASCII apostrophes represents one ASCII apostrophe.
+              .replaceAll("'", '@apostrophe@') // Escape (hide) apostrophes.
+              .replaceAll('<', "'<'") // Smaller than escape.
+              .replaceAll('>', "'>'") // Greater than escape.
+              .replaceAll("''", '') // This only happens when two escapable characters are next to each other.
+              .replaceAll('@apostrophe@', "''"), // Two consecutive ASCII apostrophes represents one ASCII apostrophe.
             this.parent.locale
           )
         return String(this.intlMessageFormat.format(values))
-          .replace(/&#x7b;/gi, '{') // Unescape curly braces to avoid escaping them with `IntlMessageFormat`.
-          .replace(/&#x7d;/gi, '}')
+          .replaceAll(/&#x7b;/gi, '{') // Unescape curly braces to avoid escaping them with `IntlMessageFormat`.
+          .replaceAll(/&#x7d;/gi, '}')
       } catch (error) {
         log.warn(
           `unable to format message with key ${highlight(this.key)} in ${highlightFilePath(
@@ -162,7 +162,7 @@ export class Message {
         if (position === 0) {
           unexpectedClosing = true
         } else {
-          if (tagTracker[tagTracker.length - 1] !== tagName) {
+          if (tagTracker.at(-1) !== tagName) {
             unexpectedClosing = true
           }
         }
@@ -187,7 +187,7 @@ export class Message {
 
     if (tagTracker.length > 0) {
       throw new Error(
-        `unexpected unclosed XML tag ${highlight(`<${tagTracker[tagTracker.length - 1]}>`)}`
+        `unexpected unclosed XML tag ${highlight(`<${tagTracker.at(-1) as string}>`)}`
       )
     }
 
@@ -378,7 +378,7 @@ export class Message {
    */
   private unescapeXml(message: string): string {
     return message
-      .replace(/&#x3c;/gi, '<') // Using standard HTML entities (TMS friendly) to escape XML tag delimiters.
-      .replace(/&#x3e;/gi, '>')
+      .replaceAll(/&#x3c;/gi, '<') // Using standard HTML entities (TMS friendly) to escape XML tag delimiters.
+      .replaceAll(/&#x3e;/gi, '>')
   }
 }

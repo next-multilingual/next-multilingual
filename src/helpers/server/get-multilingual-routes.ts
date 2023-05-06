@@ -71,7 +71,7 @@ export const NON_ROUTABLE_PAGES = ((): string[] => {
 export const getNonLocalizedUrlPath = (filesystemPath: string): string => {
   const urlPath = pagesFilePathToUrlPath(filesystemPath)
   const urlPathSegments = urlPath.split('/')
-  const lastUrlPathSegment = urlPathSegments[urlPathSegments.length - 1]
+  const lastUrlPathSegment = urlPathSegments.at(-1)
 
   if (lastUrlPathSegment && lastUrlPathSegment === 'index') {
     urlPathSegments.pop() // Indexes do not need the last segment.
