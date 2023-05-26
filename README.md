@@ -1202,4 +1202,4 @@ Why did we put so much effort into these details? Because our hypothesis is that
 - Boosting customer trust with more locally relevant content.
 - Making string management easier and more modular.
 
-More details can be found on the implementation and design decision in the individual README files of each API and in the [documentation](./doc) directory.
+More details can be found on the implementation and design decision in the individual README files of each API and in the [documentation](./docs) directory.
