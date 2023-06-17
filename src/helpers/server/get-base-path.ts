@@ -64,6 +64,45 @@ export const getBasePath = (): string => {
 
   const warningMessages: string[] = []
 
+  // Try to get the base path from webpack.js - since Next.js 13.4.5-canary.1 this was the most reliable option.
+  const webpackPath = '.next/static/chunks/webpack.js'
+
+  if (existsSync(webpackPath)) {
+    try {
+      const match = readFileSync(webpackPath, 'utf8').match(
+        /webpack\/runtime\/publicPath.*?__webpack_require__.*?"(.*?\/_next\/)";/s
+      )
+      if (!match) {
+        throw new Error(`the base path was not found in ${webpackPath}`)
+      }
+
+      const [blockMatch, pathMatch] = match
+
+      if (blockMatch.split('\n').length > 10) {
+        // This code block should be 3 lines long, but we are giving ourselves some buffer.
+        throw new Error(`the base path was not found in ${webpackPath}`)
+      }
+
+      const firstPathSegment = pathMatch.replaceAll(/^\/|\/$/g, '').split('/')[0]
+
+      return firstPathSegment === '_next'
+        ? setBasePathCache('')
+        : setBasePathCache(`/${firstPathSegment}`)
+    } catch {
+      warningMessages.push(
+        `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
+          webpackPath
+        )} due to an unexpected file parsing error.`
+      )
+    }
+  } else {
+    warningMessages.push(
+      `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
+        webpackPath
+      )} because the file does not exist.`
+    )
+  }
+
   // Try to get the content of the routes-manifest (.next/routes-manifest.json) first - this is only available on builds.
   const routesManifestPath = '.next/routes-manifest.json'
 
@@ -126,9 +165,13 @@ export const getBasePath = (): string => {
   let ampFilePath = ''
   try {
     const buildManifest = JSON.parse(readFileSync(buildManifestPath, 'utf8')) as BuildManifest
-    ampFilePath = `.next/${
-      buildManifest.ampDevFiles.find((filePath) => filePath.endsWith(ampFilename)) as string
-    }`
+    const buildManifestAmpFilePath = buildManifest.ampDevFiles.find((filePath) =>
+      filePath.endsWith(ampFilename)
+    )
+    if (!buildManifestAmpFilePath) {
+      throw new Error(`unable to get the path for ${ampFilename}`)
+    }
+    ampFilePath = `.next/${buildManifestAmpFilePath}`
   } catch {
     warningMessages.push(
       `Unable to get the ${highlight('basePath')}: failed to get the location of ${highlight(
@@ -138,11 +181,11 @@ export const getBasePath = (): string => {
     return setEmptyCacheAndShowWarnings(warningMessages)
   }
 
-  if (!existsSync(ampFilePath)) {
+  if (ampFilePath && !existsSync(ampFilePath)) {
     warningMessages.push(
       `Failed to get the ${highlight('basePath')} from ${highlightFilePath(
         ampFilePath
-      )} because the file does not exist.`
+      )} because the file does not exist. 4`
     )
     return setEmptyCacheAndShowWarnings(warningMessages)
   }
