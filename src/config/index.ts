@@ -349,6 +349,7 @@ export const webpackConfigurationHandler = (
    *
    * `next-multilingual` uses the `node:` scheme to increase code clarity.
    *
+   * @see https://github.com/vercel/next.js/issues/28774
    * @see https://github.com/webpack/webpack/issues/13290
    */
   config.plugins = config.plugins ?? []
