@@ -349,6 +349,9 @@ export const webpackConfigurationHandler = (
    *
    * `next-multilingual` uses the `node:` scheme to increase code clarity.
    *
+   * Next.js supports the `node:` prefix for server-side code only. The only reason the client-side `node:` works is
+   * because of built-in Webpack shims which might not be supported by Next.js in the long run.
+   *
    * @see https://github.com/vercel/next.js/issues/28774
    * @see https://github.com/webpack/webpack/issues/13290
    */
