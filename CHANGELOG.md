@@ -1,3 +1,9 @@
+## [5.0.13](https://github.com/Avansai/next-multilingual/compare/5.0.12...5.0.13) (2023-08-03)
+
+### Bug Fixes
+
+- allow leading/trailing non-breaking in .properties files ([c69d821](https://github.com/Avansai/next-multilingual/commit/c69d821c75e45c04240cb52ab3871614f824201e))
+
 ## [5.0.12](https://github.com/Avansai/next-multilingual/compare/5.0.11...5.0.12) (2023-07-29)
 
 ## [5.0.11](https://github.com/Avansai/next-multilingual/compare/5.0.10...5.0.11) (2023-07-22)
