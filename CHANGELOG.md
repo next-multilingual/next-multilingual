@@ -1,3 +1,5 @@
+## [5.0.14](https://github.com/Avansai/next-multilingual/compare/5.0.13...5.0.14) (2023-08-05)
+
 ## [5.0.13](https://github.com/Avansai/next-multilingual/compare/5.0.12...5.0.13) (2023-08-03)
 
 ### Bug Fixes
