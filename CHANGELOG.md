@@ -1,3 +1,9 @@
+## [5.0.15](https://github.com/Avansai/next-multilingual/compare/5.0.14...5.0.15) (2023-08-11)
+
+### Features
+
+- add support for Next.js 13.4.13 ([67367ab](https://github.com/Avansai/next-multilingual/commit/67367ab874c2b49f5536cfc0ca5f2d4416815452))
+
 ## [5.0.14](https://github.com/Avansai/next-multilingual/compare/5.0.13...5.0.14) (2023-08-05)
 
 ## [5.0.13](https://github.com/Avansai/next-multilingual/compare/5.0.12...5.0.13) (2023-08-03)
