@@ -47,7 +47,7 @@ rules:
   # Enforce multiline comments to use the /* syntax.
   # @see https://eslint.org/docs/latest/rules/multiline-comment-style
   multiline-comment-style:
-    - error
+    - warn
   # Prevent omission of curly brace (e.g. same-line if/return).
   # @see https://eslint.org/docs/latest/rules/curly
   curly:

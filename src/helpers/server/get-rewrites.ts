@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { highlight, highlightFilePath, log } from '../..'
 import { isInDebugMode } from '../../config'
 import type { BuildManifest, Rewrites, RoutesManifest } from '../../types'
+import { normalizeRewrite } from '../normalize-rewrite'
 
 // Throw a clear error is this is included by mistake on the client side.
 if (typeof window !== 'undefined') {
@@ -69,15 +70,7 @@ export const getRewrites = (): Rewrite[] => {
   if (existsSync(routesManifestPath)) {
     try {
       const routesManifest = JSON.parse(readFileSync(routesManifestPath, 'utf8')) as RoutesManifest
-      return setRewritesCache(
-        routesManifest.rewrites.map((rewrite) => {
-          return {
-            source: rewrite.source,
-            destination: rewrite.destination,
-            locale: rewrite.locale,
-          }
-        })
-      )
+      return setRewritesCache(routesManifest.rewrites.map((rewrite) => normalizeRewrite(rewrite)))
     } catch {
       warningMessages.push(
         `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(
@@ -138,7 +131,11 @@ export const getRewrites = (): Rewrite[] => {
     const clientBuildManifest = {} as { __BUILD_MANIFEST: { __rewrites: Rewrites } }
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
     new Function('self', clientBuildManifestContent)(clientBuildManifest)
-    return setRewritesCache(clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles)
+    return setRewritesCache(
+      clientBuildManifest.__BUILD_MANIFEST.__rewrites.afterFiles.map((rewrite) =>
+        normalizeRewrite(rewrite)
+      )
+    )
   } catch {
     warningMessages.push(
       `Failed to get the ${highlight('rewrites')} from ${highlightFilePath(

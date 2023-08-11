@@ -13,6 +13,9 @@ import { ParsedUrlQuery } from 'node:querystring'
 import { useEffect } from 'react'
 import resolveAcceptLanguage from 'resolve-accept-language'
 
+/** The default locale configure in Next.js. */
+export const DEFAULT_LOCALE = 'mul'
+
 // The name of the cookie used to store the user locale, can be overwritten in an `.env` file.
 const LOCALE_COOKIE_NAME = process.env.NEXT_PUBLIC_LOCALE_COOKIE_NAME ?? 'L'
 

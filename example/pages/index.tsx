@@ -6,6 +6,7 @@ import {
   normalizeLocale,
   resolveLocale,
   useResolvedLocale,
+  DEFAULT_LOCALE,
 } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next-multilingual/router'
@@ -13,6 +14,9 @@ import { useRouter as useNextRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { HelloApiSchema } from './api/hello'
 import styles from './index.module.css'
+
+import fs from 'node:fs'
+import path from 'node:path'
 
 const Homepage: NextPage<ResolvedLocaleServerSideProps> = ({ resolvedLocale }) => {
   // Force Next.js to use a locale that was resolved dynamically on the homepage (this must be the first action on the homepage).
@@ -181,9 +185,29 @@ export const getServerSideProps: GetServerSideProps<ResolvedLocaleServerSideProp
   context
   // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
+  testNonLocalizedRewrite()
   return {
     props: {
       resolvedLocale: resolveLocale(context),
     },
+  }
+}
+
+/**
+ * This is a self-testing function to detect non-localized rewrite configuration problems.
+ */
+const testNonLocalizedRewrite = (): void => {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    !process.env.BASE_PATH &&
+    !fs
+      .readFileSync(path.join(process.cwd(), '.next/static/development/_buildManifest.js'))
+      .includes(`source:"\\u002F:nextInternalLocale(${DEFAULT_LOCALE}`)
+  ) {
+    //
+    /**
+     * If this error is ever triggered, this means that we must update `/src/helpers/normalize-rewrite.ts`
+     */
+    throw new Error('unable to find the non-localized rewrite configuration')
   }
 }

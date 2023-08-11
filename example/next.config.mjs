@@ -12,15 +12,28 @@ const multilingualConfig = getConfig('exampleApp', ['en-US', 'fr-CA'], 'en-US', 
   // debug: true,
 })
 
+// We are adding a non-localized route to verify that Next.js does not change its configuration syntax.
+const configWithNonLocalizedRewrite = {
+  ...multilingualConfig,
+  rewrites: async () => {
+    const rewrites = await multilingualConfig.rewrites()
+    rewrites.push({
+      source: '/non-localized',
+      destination: '/about-us',
+    })
+    return rewrites
+  },
+}
+
 // Set base path dynamically.
 if (process.env.BASE_PATH) {
-  multilingualConfig.basePath = process.env.BASE_PATH
+  configWithNonLocalizedRewrite.basePath = process.env.BASE_PATH
 }
 
 /** @type {import('next/dist/server/config-shared').I18NConfig} */
 export const i18n = multilingualConfig.i18n
 
 /** @type {import('next').NextConfig} */
-export const config = multilingualConfig
+export const config = configWithNonLocalizedRewrite
 
 export default withBundleAnalyzer(config)

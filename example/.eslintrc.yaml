@@ -35,7 +35,7 @@ rules:
   # Enforce multiline comments to use the /* syntax.
   # #see https://eslint.org/docs/latest/rules/multiline-comment-style
   multiline-comment-style:
-    - error
+    - warn
   # The Unicorn plugin comes with opinionated checks, including some that we prefer disabling.
   'unicorn/no-array-for-each':
     # Performance is no longer an issue - we prefer `forEach` for readability.

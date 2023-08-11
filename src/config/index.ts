@@ -4,7 +4,7 @@ import type { WebpackConfigContext } from 'next/dist/server/config-shared'
 import { existsSync, statSync, utimesSync } from 'node:fs'
 import Watchpack from 'watchpack'
 import type Webpack from 'webpack'
-import { LocalesConfig, isLocale, log, normalizeLocale } from '../'
+import { DEFAULT_LOCALE, LocalesConfig, isLocale, log, normalizeLocale } from '../'
 import { PAGE_FILE_EXTENSIONS, sortUrls } from '../helpers/paths-utils'
 import { MultilingualRoute, getMultilingualRoutes } from '../helpers/server/get-multilingual-routes'
 import { getSourceFilePath, keySegmentRegExp, keySegmentRegExpDescription } from '../messages'
@@ -98,7 +98,7 @@ export class Config {
     this.locales = this.locales.sort((locale) => (locale === this.defaultLocale ? -1 : 0))
 
     // The `mul` (multilingual) default locale is required for dynamic locale resolution for requests on `/`.
-    this.nextJsDefaultLocale = 'mul'
+    this.nextJsDefaultLocale = DEFAULT_LOCALE
     this.nextJsLocales = [this.nextJsDefaultLocale, ...this.locales]
 
     // Set locales information so we can easily access it from the server from anywhere.
@@ -472,8 +472,8 @@ export const sortRewritesDirectives = (
 }
 
 // Locale cache to avoid recomputing the values multiple times by page.
-let LOCALES: string[]
-let DEFAULT_LOCALE: string
+let CONFIGURED_LOCALES: string[]
+let CONFIGURED_DEFAULT_LOCALE: string
 
 /**
  * Get the configured locales.
@@ -481,11 +481,13 @@ let DEFAULT_LOCALE: string
  * @returns A locale config object.
  */
 export const getConfiguredLocales = (): LocalesConfig => {
-  LOCALES = LOCALES ?? (process.env.nextMultilingualLocales?.split(',') as string[])
-  DEFAULT_LOCALE = DEFAULT_LOCALE ?? (process.env.nextMultilingualDefaultLocale as string)
+  CONFIGURED_LOCALES =
+    CONFIGURED_LOCALES ?? (process.env.nextMultilingualLocales?.split(',') as string[])
+  CONFIGURED_DEFAULT_LOCALE =
+    CONFIGURED_DEFAULT_LOCALE ?? (process.env.nextMultilingualDefaultLocale as string)
 
   return {
-    locales: LOCALES,
-    defaultLocale: DEFAULT_LOCALE,
+    locales: CONFIGURED_LOCALES,
+    defaultLocale: CONFIGURED_DEFAULT_LOCALE,
   }
 }
