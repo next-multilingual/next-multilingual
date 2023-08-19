@@ -65,11 +65,8 @@ To use it, simply add the following code in your application's `next.config.js`:
 const { getConfig } = require('next-multilingual/config')
 
 const config = getConfig('exampleApp', ['en-US', 'fr-CA'], 'en-US', {
+  // Put your optional options below.
   poweredByHeader: false,
-  /* This is required since Next.js 11.1.3-canary.69 until we support ESM. */
-  experimental: {
-    esmExternals: false,
-  },
 })
 
 module.exports = config

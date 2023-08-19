@@ -432,12 +432,9 @@ export const getConfig = (
     throw new Error('invalid value for the `experimental` option')
   }
 
-  if (nextConfig.experimental) {
-    nextConfig.experimental.esmExternals = false
-  } else {
-    nextConfig.experimental = {
-      esmExternals: false,
-    }
+  nextConfig.experimental = nextConfig.experimental ?? {}
+  nextConfig.experimental = {
+    esmExternals: false,
   }
 
   // Set the Webpack configuration handler.
