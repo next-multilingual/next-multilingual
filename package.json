@@ -113,12 +113,12 @@
     "test": "npm run build-to-release && npm run e2e-headless && npm run e2e-headless-base-path && npm run e2e-build-headless && npm run e2e-build-headless-base-path"
   },
   "dependencies": {
-    "@babel/core": "7.22.10",
+    "@babel/core": "7.22.11",
     "colorette": "2.0.20",
     "intl-messageformat": "10.5.0",
-    "messages-modules": "1.1.57",
-    "properties-file": "3.2.17",
-    "resolve-accept-language": "2.0.14",
+    "messages-modules": "1.1.58",
+    "properties-file": "3.2.18",
+    "resolve-accept-language": "2.0.15",
     "watchpack": "2.4.0",
     "webpack": "5.88.2"
   },
@@ -126,18 +126,18 @@
     "@release-it/conventional-changelog": "7.0.0",
     "@types/babel__core": "7.20.1",
     "@types/cookie": "0.5.1",
-    "@types/node": "20.5.1",
-    "@types/react": "18.2.20",
+    "@types/node": "20.5.6",
+    "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@types/watchpack": "2.4.1",
-    "@typescript-eslint/eslint-plugin": "^6.4.0",
-    "@typescript-eslint/parser": "6.4.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/parser": "6.4.1",
     "cross-env": "7.0.3",
     "cypress": "12.17.3",
     "cypress-fail-on-console-error": "5.0.0",
     "cypress-wait-until": "2.0.1",
     "dotenv-cli": "7.3.0",
-    "eslint": "8.47.0",
+    "eslint": "8.48.0",
     "eslint-config-next": "v13.4.19",
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-node": "0.3.9",
@@ -161,7 +161,7 @@
     "react-dom": "18.2.0",
     "release-it": "16.1.5",
     "start-server-and-test": "2.0.0",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "engines": {
     "node": ">=16.0.0"
