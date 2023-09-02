@@ -873,8 +873,8 @@ One feature that is missing from Next.js is managing important HTML tags used fo
 
 The API is available under `next-multilingual/head` and you can import it like this:
 
-```ts
-
+```js
+import Head from 'next-multilingual/head'
 ```
 
 Just like `<Link>`, `<Head>` is meant to be a drop-in replacement for Next.js' [`<Head>` component](https://nextjs.org/docs/api-reference/next/head). In our example, we are using it in the [Layout component](./example/src/components/layout/Layout.tsx), like this:
