@@ -528,8 +528,8 @@ Imagine using Next.js' API to send transactional emails and wanting to leverage 
 ```ts
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { isLocale } from 'next-multilingual'
-import { getLocalizedUrl } from 'next-multilingual/url'
 import { getMessages } from 'next-multilingual/messages'
+import { getLocalizedUrl } from 'next-multilingual/url'
 import { sendEmail } from 'send-email'
 
 /**
@@ -874,7 +874,7 @@ One feature that is missing from Next.js is managing important HTML tags used fo
 The API is available under `next-multilingual/head` and you can import it like this:
 
 ```ts
-import Head from 'next-multilingual/head'
+
 ```
 
 Just like `<Link>`, `<Head>` is meant to be a drop-in replacement for Next.js' [`<Head>` component](https://nextjs.org/docs/api-reference/next/head). In our example, we are using it in the [Layout component](./example/src/components/layout/Layout.tsx), like this:
