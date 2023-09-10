@@ -1,3 +1,5 @@
+## [5.0.19](https://github.com/Avansai/next-multilingual/compare/5.0.18...5.0.19) (2023-09-10)
+
 ## [5.0.18](https://github.com/Avansai/next-multilingual/compare/5.0.17...5.0.18) (2023-09-02)
 
 ## [5.0.17](https://github.com/Avansai/next-multilingual/compare/5.0.16...5.0.17) (2023-08-26)
