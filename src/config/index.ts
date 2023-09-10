@@ -3,7 +3,8 @@ import type { Redirect, Rewrite } from 'next/dist/lib/load-custom-routes'
 import type { WebpackConfigContext } from 'next/dist/server/config-shared'
 import { existsSync, statSync, utimesSync } from 'node:fs'
 import Watchpack from 'watchpack'
-import type Webpack from 'webpack'
+import type { Configuration as WebpackConfiguration } from 'webpack'
+import { NormalModuleReplacementPlugin } from 'webpack'
 import { DEFAULT_LOCALE, LocalesConfig, isLocale, log, normalizeLocale } from '../'
 import { PAGE_FILE_EXTENSIONS, sortUrls } from '../helpers/paths-utils'
 import { MultilingualRoute, getMultilingualRoutes } from '../helpers/server/get-multilingual-routes'
@@ -13,11 +14,13 @@ import { isDynamicRoute, rewriteToRouteParameters, routeToRewriteParameters } fr
 /**
  * Next.js did not define any types for its Webpack configs.
  *
- * @see https://github.com/vercel/next.js/blob/canary/packages/next/compiled/webpack/webpack.d.ts
+ * @see https://github.com/vercel/next.js/blob/canary/packages/next/src/compiled/webpack/webpack.d.ts
  * @see https://github.com/vercel/next.js/blob/60c8e5c29e4da99ac1aa458b1ba3bdf829111115/packages/next/server/config-shared.ts#L67
  */
 export interface WebpackContext extends WebpackConfigContext {
-  webpack: typeof Webpack
+  webpack: {
+    NormalModuleReplacementPlugin: typeof NormalModuleReplacementPlugin
+  }
 }
 
 /**
@@ -330,9 +333,9 @@ export class Config {
  * @returns A Webpack configuration object.
  */
 export const webpackConfigurationHandler = (
-  config: Webpack.Configuration,
+  config: WebpackConfiguration,
   context: WebpackContext
-): Webpack.Configuration => {
+): WebpackConfiguration => {
   if (context.isServer) {
     // Override APIs with SSR-specific versions that use different ways to get URLs.
     const alias = config.resolve?.alias as { [index: string]: string }
