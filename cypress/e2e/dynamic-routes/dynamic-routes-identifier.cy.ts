@@ -58,8 +58,7 @@ describe('A dynamic route using a unique number (non-localizable) as parameters'
 
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
-      cy.get(`#link-with-parameter`).click({ force: true, timeout: 10000 })
-
+      cy.get(`#link-with-parameter`).click()
       cy.waitUntil(() => cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`), {
         errorMsg: 'Could not find the correct URL',
         timeout: Cypress.config('defaultCommandTimeout'),
