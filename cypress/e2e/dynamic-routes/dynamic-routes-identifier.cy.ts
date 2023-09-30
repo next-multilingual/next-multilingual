@@ -96,24 +96,22 @@ describe('A dynamic route using a unique number (non-localizable) as parameters'
     // Localized Canonical <Head> link (client-side)
     it(`has the correct 'canonical' <Head> link (client-side) markup for '${localeName}'`, () => {
       cy.visit(dynamicRouteUrl)
-      cy.get(`head link[rel=canonical]`)
-        .should('have.attr', 'href')
-        .then((href) => {
-          expect(href).eq(`${ORIGIN}${canonicalDynamicRouteUrl}`)
-        })
+      cy.get(`head link[rel=canonical]`).should(
+        'have.attr',
+        'href',
+        `${ORIGIN}${canonicalDynamicRouteUrl}`
+      )
     })
 
     // Localized Alternate <Head> link (client-side)
     it(`has the correct 'alternate' <Head> links (client-side) markup for '${localeName}'`, () => {
       ACTUAL_LOCALES.forEach((locale) => {
         const localizedDynamicRouteUrl = DYNAMIC_ROUTE_URLS[locale]
-        cy.get(`head link[rel=alternate][hreflang=${locale}]`)
-          .should('have.attr', 'href')
-          .then((href) => {
-            expect(href).eq(
-              `${ORIGIN}${BASE_PATH}/${locale.toLowerCase()}${localizedDynamicRouteUrl}/${parameterValue}`
-            )
-          })
+        cy.get(`head link[rel=alternate][hreflang=${locale}]`).should(
+          'have.attr',
+          'href',
+          `${ORIGIN}${BASE_PATH}/${locale.toLowerCase()}${localizedDynamicRouteUrl}/${parameterValue}`
+        )
       })
     })
 

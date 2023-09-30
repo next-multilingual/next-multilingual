@@ -115,11 +115,12 @@ describe('A catch-all dynamic route', () => {
       describe(`has the correct localized client-side markup`, () => {
         it(`on a <Link> component when the target is a non-optional catch-all route`, () => {
           cy.visit(dynamicRouteIndexUrl)
+
           hrefByIdEqualsTo(cy, 'category-link', categoryUrl)
         })
 
         it(`on an hidden input using 'getLocalizedUrl' when the target is a non-optional catch-all route`, () => {
-          valueByIdEqualsTo(cy, 'category-hidden-input', categoryUrl)
+          valueByIdEqualsTo(cy, 'category-hidden-input', encodeURI(categoryUrl))
         })
 
         it(`on a <Link> component when the target is an optional catch-all route`, () => {
@@ -127,7 +128,7 @@ describe('A catch-all dynamic route', () => {
         })
 
         it(`on an hidden input using 'getLocalizedUrl' when the target is an optional catch-all route`, () => {
-          valueByIdEqualsTo(cy, 'country-hidden-input', countrySingleParameterUrl)
+          valueByIdEqualsTo(cy, 'country-hidden-input', encodeURI(countrySingleParameterUrl))
         })
 
         it(`should have the correct URL when clicking on the category link`, () => {

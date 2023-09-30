@@ -225,9 +225,5 @@ export const valueByIdEqualsTo = (
   id: string,
   expectedValue: string
 ): void => {
-  cy.get(`#${id}`)
-    .invoke('attr', 'value')
-    .then((href) => {
-      expect(decodeURI(href)).to.equal(expectedValue)
-    })
+  cy.get(`#${id}`).invoke('val').should('eq', expectedValue)
 }
