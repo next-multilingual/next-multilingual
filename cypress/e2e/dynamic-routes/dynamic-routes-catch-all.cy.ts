@@ -133,21 +133,42 @@ describe('A catch-all dynamic route', () => {
 
         it(`should have the correct URL when clicking on the category link`, () => {
           cy.get('#category-link').click()
-          cy.url().should('eq', encodeURI(`${Cypress.config().baseUrl}${categoryUrl}`))
+          cy.waitUntil(
+            () => cy.url().should('eq', encodeURI(`${Cypress.config().baseUrl}${categoryUrl}`)),
+            {
+              errorMsg: 'Could not find the correct URL',
+              timeout: Cypress.config('defaultCommandTimeout'),
+              interval: 50,
+            }
+          )
           cy.go('back')
         })
 
         it(`should have the correct URL when clicking on the category link`, () => {
           cy.get('#category-link').click()
-          cy.url().should('eq', encodeURI(`${Cypress.config().baseUrl}${categoryUrl}`))
+          cy.waitUntil(
+            () => cy.url().should('eq', encodeURI(`${Cypress.config().baseUrl}${categoryUrl}`)),
+            {
+              errorMsg: 'Could not find the correct URL',
+              timeout: Cypress.config('defaultCommandTimeout'),
+              interval: 50,
+            }
+          )
         })
 
         it(`should have the correct URL when clicking on the country link`, () => {
           cy.visit(dynamicRouteIndexUrl)
           cy.get('#country-link').click()
-          cy.url().should(
-            'eq',
-            encodeURI(`${Cypress.config().baseUrl}${countrySingleParameterUrl}`)
+          cy.waitUntil(
+            () =>
+              cy
+                .url()
+                .should('eq', encodeURI(`${Cypress.config().baseUrl}${countrySingleParameterUrl}`)),
+            {
+              errorMsg: 'Could not find the correct URL',
+              timeout: Cypress.config('defaultCommandTimeout'),
+              interval: 50,
+            }
           )
         })
       })
@@ -189,9 +210,16 @@ describe('A catch-all dynamic route', () => {
 
         it(`should have the correct URL when clicking on the link with 2 parameters when the target is an optional catch-all route`, () => {
           cy.get('#link-with-2-parameters').click()
-          cy.url().should(
-            'eq',
-            encodeURI(`${Cypress.config().baseUrl}${categoryUrlWithParameters}`)
+          cy.waitUntil(
+            () =>
+              cy
+                .url()
+                .should('eq', encodeURI(`${Cypress.config().baseUrl}${categoryUrlWithParameters}`)),
+            {
+              errorMsg: 'Could not find the correct URL',
+              timeout: Cypress.config('defaultCommandTimeout'),
+              interval: 50,
+            }
           )
         })
       })
@@ -235,9 +263,16 @@ describe('A catch-all dynamic route', () => {
 
         it(`should have the correct URL when clicking on the link with 2 parameters when the target is a catch-all route`, () => {
           cy.get('#link-with-2-parameters').click()
-          cy.url().should(
-            'eq',
-            encodeURI(`${Cypress.config().baseUrl}${categoryUrlWithParameters}`)
+          cy.waitUntil(
+            () =>
+              cy
+                .url()
+                .should('eq', encodeURI(`${Cypress.config().baseUrl}${categoryUrlWithParameters}`)),
+            {
+              errorMsg: 'Could not find the correct URL',
+              timeout: Cypress.config('defaultCommandTimeout'),
+              interval: 50,
+            }
           )
         })
       })
@@ -281,7 +316,17 @@ describe('A catch-all dynamic route', () => {
 
         it(`should have the correct URL when clicking on the link with 2 parameters when the target is a catch-all route`, () => {
           cy.get('#link-with-2-parameters').click()
-          cy.url().should('eq', encodeURI(`${Cypress.config().baseUrl}${countryTwoParameterUrl}`))
+          cy.waitUntil(
+            () =>
+              cy
+                .url()
+                .should('eq', encodeURI(`${Cypress.config().baseUrl}${countryTwoParameterUrl}`)),
+            {
+              errorMsg: 'Could not find the correct URL',
+              timeout: Cypress.config('defaultCommandTimeout'),
+              interval: 50,
+            }
+          )
         })
       })
     })

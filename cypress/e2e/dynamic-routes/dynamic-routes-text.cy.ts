@@ -167,7 +167,11 @@ describe('A dynamic route using localized text as parameters', () => {
     it(`has the correct URL when using (client-side) the 'useLocalizedUrl' hook for '${localeName}'`, () => {
       cy.get(`#go-back a`).click()
       cy.get(`#route-push-button`).click()
-      cy.url().should('eq', `${Cypress.config().baseUrl}${poiUrl}`)
+      cy.waitUntil(() => cy.url().should('eq', `${Cypress.config().baseUrl}${poiUrl}`), {
+        errorMsg: 'Could not find the correct URL',
+        timeout: Cypress.config('defaultCommandTimeout'),
+        interval: 50,
+      })
     })
 
     // Localized parameters (SSR)

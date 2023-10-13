@@ -41,7 +41,11 @@ describe('An anchor link', () => {
 
     it(`will redirect to the correct page and position when clicked for '${localeName}'`, () => {
       cy.get(`#anchor-link-test a`).click({ timeout: 10000 })
-      cy.url().should('eq', `${Cypress.config().baseUrl}${linkWithFragment}`)
+      cy.waitUntil(() => cy.url().should('eq', `${Cypress.config().baseUrl}${linkWithFragment}`), {
+        errorMsg: 'Could not find the correct URL',
+        timeout: Cypress.config('defaultCommandTimeout'),
+        interval: 50,
+      })
       cy.window().its('scrollY').should('not.equal', '0')
     })
   })

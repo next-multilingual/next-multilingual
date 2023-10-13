@@ -71,7 +71,11 @@ describe('A dynamic route using a unique number (non-localizable) as parameters'
       cy.get(`#go-back a`).click()
       cy.get(`#parameter-input`).invoke('val').should('not.be.empty')
       cy.get(`#route-push-button`).click()
-      cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`)
+      cy.waitUntil(() => cy.url().should('eq', `${Cypress.config().baseUrl}${dynamicRouteUrl}`), {
+        errorMsg: 'Could not find the correct URL',
+        timeout: Cypress.config('defaultCommandTimeout'),
+        interval: 50,
+      })
     })
 
     // Localized Canonical <Head> link (SSR)
