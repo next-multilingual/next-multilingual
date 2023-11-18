@@ -2,11 +2,11 @@ import { Layout } from '@/components/layout/Layout'
 import { useFruitsMessages } from '@/messages/fruits/useFruitsMessages'
 import type { GetServerSideProps, NextPage } from 'next'
 import {
+  DEFAULT_LOCALE,
   ResolvedLocaleServerSideProps,
   normalizeLocale,
   resolveLocale,
   useResolvedLocale,
-  DEFAULT_LOCALE,
 } from 'next-multilingual'
 import { getTitle, useMessages } from 'next-multilingual/messages'
 import { useRouter } from 'next-multilingual/router'

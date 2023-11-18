@@ -18,6 +18,11 @@ semi: false
 trailingComma: es5
 singleQuote: true
 
+plugins:
+  - prettier-plugin-organize-imports
+  - prettier-plugin-properties
+  - prettier-plugin-sh
+
 overrides:
   # Add support for Next.js environment files
   - files: '.env.*'
