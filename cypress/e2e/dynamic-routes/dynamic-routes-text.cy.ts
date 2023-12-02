@@ -155,9 +155,14 @@ describe('A dynamic route using localized text as parameters', () => {
 
     // Localized <Link> click() (client-side)
     it(`has the correct URL when clicking (client-side) on a <Link> component for '${localeName}'`, () => {
+      cy.waitUntil(() => cy.get(`#link-with-parameter`).should('have.attr', 'href', poiUrl), {
+        errorMsg: 'Could not find the correct URL on the link component',
+        timeout: Cypress.config('defaultCommandTimeout'),
+        interval: 50,
+      })
       cy.get(`#link-with-parameter`).click()
       cy.waitUntil(() => cy.url().should('eq', `${Cypress.config().baseUrl}${poiUrl}`), {
-        errorMsg: 'Could not find the correct URL',
+        errorMsg: 'The navigated URL is invalid',
         timeout: Cypress.config('defaultCommandTimeout'),
         interval: 50,
       })
