@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["esnext", "dom"],
-    "types": ["cypress", "node"],
+    "types": ["cypress", "node"]
   },
-  "include": ["../cypress.config.ts", "**/*.ts"],
+  "include": ["../cypress.config.ts", "**/*.ts"]
 }
