@@ -1,3 +1,9 @@
+# [5.1.0](https://github.com/Avansai/next-multilingual/compare/5.0.37...5.1.0) (2024-02-29)
+
+### Features
+
+- remove Next.js experimental `esmExternals` config and update packages ([2464094](https://github.com/Avansai/next-multilingual/commit/24640945731bf0130c28ec9e2e42aeb29304d51e))
+
 ## [5.0.37](https://github.com/Avansai/next-multilingual/compare/5.0.36...5.0.37) (2024-02-11)
 
 ## [5.0.36](https://github.com/Avansai/next-multilingual/compare/5.0.35...5.0.36) (2024-01-28)

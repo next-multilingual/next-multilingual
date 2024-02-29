@@ -1,6 +1,6 @@
 {
   "name": "next-multilingual",
-  "version": "5.0.37",
+  "version": "5.1.0",
   "description": "An opinionated end-to-end solution for Next.js applications that requires multiple languages.",
   "keywords": [
     "Next",
