@@ -4,7 +4,7 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### To-do 📝
 
-- Add ESM module support to remove `esmExternals: false`
+- add query (?page=1) params support (encodeURI because Next.js does not encode strings on its `<Link>` component)
 - Compiler plugin related:
   - Add SWC support
   - Add anchor links support on language switcher (requires Babel plugin?)
@@ -21,7 +21,6 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 - Translation Export/import CLI
 - Profiling, package size optimization (e.g. intl-messageformat strip down)
 - Look to see if we can use middleware to redirect default (fake) locale: https://nextjs.org/docs/advanced-features/i18n-routing
-
 - Check if we can add `title` attributes on `Link` components (not supported by Next.js?) (ref: https://backlinko.com/google-ranking-factors)
 - Add automated test:
   - Test when a string file changes, the page is updated (developer experience?)
@@ -38,10 +37,9 @@ To make tracking of to-dos easier, this file can be used to track progress on th
 
 ### In Progress 🚧
 
-- add query (?page=1) params support (encodeURI because Next.js does not encode strings on its `<Link>` component)
-
 ### Done ✔️
 
+- Add ESM module support to remove `esmExternals: false`
 - Bug: the Babel plugin does not check if an hijack target (import) is used before injecting. This cause the import to be removed for optimization and cause a 500 error when trying to inject the non-existing import.
 - Add support for catch-all dynamic routes
 - Improve overall locales values access with new APIs
