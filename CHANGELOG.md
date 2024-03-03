@@ -1,3 +1,5 @@
+## [5.1.1](https://github.com/Avansai/next-multilingual/compare/5.1.0...5.1.1) (2024-03-03)
+
 # [5.1.0](https://github.com/Avansai/next-multilingual/compare/5.0.37...5.1.0) (2024-02-29)
 
 ### Features
