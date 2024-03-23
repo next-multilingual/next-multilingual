@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 import { sep as pathSeparator } from 'node:path'
 import { ParsedUrlQuery } from 'node:querystring'
 import { useEffect } from 'react'
-import resolveAcceptLanguage from 'resolve-accept-language'
+import { resolveAcceptLanguage } from 'resolve-accept-language'
 
 /** The default locale configure in Next.js. */
 export const DEFAULT_LOCALE = 'mul'
