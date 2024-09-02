@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "target": "ES5",
+    "target": "es2018",
     "lib": ["dom", "dom.iterable", "esnext"],
     "esModuleInterop": true,
     "isolatedModules": true,

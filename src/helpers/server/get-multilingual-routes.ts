@@ -143,9 +143,9 @@ export class MultilingualRoute {
         : '' || nonLocalizedSlug
       const urlPath = `${
         parentRoute
-          ? parentRoute.localizedUrlPaths.find(
+          ? (parentRoute.localizedUrlPaths.find(
               (localizedUrlPath) => localizedUrlPath.locale === locale
-            )?.urlPath ?? ''
+            )?.urlPath ?? '')
           : ''
       }/${applicableSlug}`
 

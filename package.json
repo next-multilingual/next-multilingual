@@ -17,16 +17,16 @@
     "ICU",
     "MessageFormat"
   ],
-  "homepage": "https://github.com/Avansai/next-multilingual#readme",
+  "homepage": "https://github.com/next-multilingual/next-multilingual#readme",
   "bugs": {
-    "url": "https://github.com/Avansai/next-multilingual/issues"
+    "url": "https://github.com/next-multilingual/next-multilingual/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Avansai/next-multilingual.git"
+    "url": "git+https://github.com/next-multilingual/next-multilingual.git"
   },
   "license": "MIT",
-  "author": "Avansai (https://avansai.com)",
+  "author": "next-multilingual",
   "type": "commonjs",
   "exports": {
     ".": "./lib/index.js",
@@ -113,30 +113,30 @@
     "test": "npm run build-to-release && npm run e2e-headless && npm run e2e-headless-base-path && npm run e2e-build-headless && npm run e2e-build-headless-base-path"
   },
   "dependencies": {
-    "@babel/core": "7.24.3",
+    "@babel/core": "7.25.2",
     "colorette": "2.0.20",
-    "intl-messageformat": "10.5.11",
-    "messages-modules": "1.2.4",
-    "properties-file": "3.5.4",
-    "resolve-accept-language": "3.1.4",
-    "watchpack": "2.4.1",
-    "webpack": "5.91.0"
+    "intl-messageformat": "10.5.14",
+    "messages-modules": "1.2.5",
+    "properties-file": "3.5.7",
+    "resolve-accept-language": "3.1.6",
+    "watchpack": "2.4.2",
+    "webpack": "5.94.0"
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "8.0.1",
     "@types/babel__core": "7.20.5",
     "@types/cookie": "0.6.0",
-    "@types/node": "20.12.2",
-    "@types/react": "18.2.73",
-    "@types/react-dom": "18.2.23",
+    "@types/node": "22.5.2",
+    "@types/react": "18.3.5",
+    "@types/react-dom": "18.3.0",
     "@types/watchpack": "2.4.4",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "7.4.0",
     "cross-env": "7.0.3",
-    "cypress": "13.7.1",
-    "cypress-fail-on-console-error": "5.1.0",
-    "cypress-wait-until": "3.0.1",
-    "dotenv-cli": "7.4.1",
+    "cypress": "13.14.1",
+    "cypress-fail-on-console-error": "5.1.1",
+    "cypress-wait-until": "3.0.2",
+    "dotenv-cli": "7.4.2",
     "eslint": "8.57.0",
     "eslint-config-next": "v14.1.4",
     "eslint-config-prettier": "9.1.0",
@@ -152,16 +152,16 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-plugin-tsdoc": "0.2.17",
     "eslint-plugin-unicorn": "51.0.1",
-    "next": "14.1.4",
-    "prettier": "3.2.5",
-    "prettier-plugin-organize-imports": "3.2.4",
+    "next": "14.2.7",
+    "prettier": "3.3.3",
+    "prettier-plugin-organize-imports": "4.0.0",
     "prettier-plugin-properties": "0.3.0",
     "prettier-plugin-sh": "^0.14.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "release-it": "17.1.1",
-    "start-server-and-test": "2.0.3",
-    "typescript": "5.4.3"
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "release-it": "17.6.0",
+    "start-server-and-test": "2.0.5",
+    "typescript": "5.5.4"
   },
   "engines": {
     "node": ">=16.0.0"
