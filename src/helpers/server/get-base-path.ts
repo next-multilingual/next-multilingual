@@ -201,7 +201,7 @@ export const getBasePath = (): string => {
         // This is the default value when no `basePath` is set.
         return setBasePathCache('')
       } else {
-        if (basePath.startsWith('\\"') && basePath.endsWith('\\"')) {
+        if (basePath.startsWith(String.raw`\"`) && basePath.endsWith(String.raw`\"`)) {
           return setBasePathCache(basePath.slice(2, -2))
         } else {
           warningMessages.push(

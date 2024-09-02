@@ -43,16 +43,13 @@ describe('A dynamic route using a unique number (non-localizable) as parameters'
       cy.visit(dynamicRouteIndexUrl)
       cy.get(`#parameter-input`)
         .invoke('val')
-        .then((value) => {
-          expect(value).to.exist
-          const parameterInputValue = value as string
+        .should('exist')
+        .then((parameterInputValue: string) => {
           cy.get(`#link-with-parameter`)
             .invoke('attr', 'href')
-            .then((href) => {
-              expect(href).to.exist
-              expect(href).to.equal(`${dynamicRouteIndexUrl}/${parameterInputValue}`)
-              expect(href).to.equal(dynamicRouteUrl) // Test with the SSR value to make sure it matches.
-            })
+            .should('exist')
+            .and('equal', `${dynamicRouteIndexUrl}/${parameterInputValue}`)
+            .and('equal', dynamicRouteUrl) // Test with the SSR value to make sure it matches.
         })
     })
 

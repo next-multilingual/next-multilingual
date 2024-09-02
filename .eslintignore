@@ -1,8 +1,0 @@
-# @see https://eslint.org/docs/latest/user-guide/configuring/ignoring-code
-# ESLint ignores `node_modules` and dot-files by default.
-
-# Compiled roject
-/lib/*
-
-# Example
-/example/*

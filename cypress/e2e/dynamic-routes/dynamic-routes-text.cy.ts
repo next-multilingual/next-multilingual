@@ -144,12 +144,9 @@ describe('A dynamic route using localized text as parameters', () => {
         .invoke('text')
         .then((urlPreview) => {
           expect(`${BASE_PATH}${urlPreview}`).to.equal(poiUrl)
-          cy.get(`#link-with-parameter`)
-            .invoke('attr', 'href')
-            .then((href) => {
-              expect(href).to.exist
-              expect(href).to.equal(poiUrl)
-            })
+        })
+        .then(() => {
+          cy.get(`#link-with-parameter`).invoke('attr', 'href').should('exist').and('equal', poiUrl)
         })
     })
 

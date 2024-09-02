@@ -40,7 +40,6 @@ const isClientBuildManifest = (
  * @returns The localized URL or null when they are still loading.
  */
 export const useRewrites = (): null | Rewrite[] => {
-  // eslint-disable-next-line unicorn/no-null
   const [rewrites, setRewrites] = useState<null | Rewrite[]>(null)
 
   useEffect(() => {

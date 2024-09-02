@@ -10,7 +10,7 @@ export const LOCALES = [DEFAULT_LOCALE, ...ACTUAL_LOCALES]
 /**
  * String constants which are defined by locale.
  *
- * @example {'en-US': 'hello', 'fr-CA': 'bonjour'}
+ * @example `{'en-US': 'hello', 'fr-CA': 'bonjour'}`
  */
 export type LocalizedConstant = {
   [locale: string]: string
