@@ -1,5 +1,9 @@
 # ![next-multilingual](./assets/next-multilingual-banner.svg)
 
+### 🚨 This package is no longer actively maintained 🚨
+
+> Due to shifts in focus and priorities, we can no longer maintain this package. It will not receive updates, bug fixes, or new features and may become incompatible over time. We recommend switching to packages that support the latest Next.js app directory.
+
 `next-multilingual` is an opinionated end-to-end solution for Next.js applications **✱** that requires multiple languages.
 
 Check out our [demo app](https://next-multilingual-example.vercel.app)!
